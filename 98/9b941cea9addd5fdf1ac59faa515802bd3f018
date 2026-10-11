@@ -1,0 +1,19 @@
+research/droid-mission-client-surface.md
+  s_a080a5215edce4::t_c65eeed2f302e6 1-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "989b941cea9addd5fdf1ac59faa515802bd3f018",
+  "prompts": {},
+  "sessions": {
+    "s_a080a5215edce4": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "674c9cf3-cdf4-4bba-ad9a-f2d63e53cbcb",
+        "model": "custom:Custom:-Grok-4.7-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
