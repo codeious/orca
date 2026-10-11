@@ -52,7 +52,7 @@ https://downloads.factory.ai/factory-cli/releases/<version>/<platform>/<arch>/<b
 
 `<platform>` is `linux`, `darwin`, or `windows`. `<arch>` is `x64`, `arm64`, or `x64-baseline`. `<binary>` is `droid` or, on Windows, `droid.exe`.
 
-npm: the quickstart and the CLI reference (`npm install -g droid@0.174.0`) name the package `droid`. The registry also publishes `@factory/cli` at `0.238.0`, and its readme says `npm install -g @factory/cli`. Both readmes say the command on `PATH` is `droid`. On this Mac the installed binary is `/Users/noter/.local/bin/droid`, which matches the curl destination, not a Homebrew or npm prefix (`droid --version` → `0.238.0`).
+npm: the quickstart and the CLI reference (`npm install -g droid@0.174.0`) name the package `droid`. The registry also publishes `@factory/cli` at `0.238.0`, and its readme says `npm install -g @factory/cli`. Both readmes say the command on `PATH` is `droid`. On this Mac the installed binary is `~/.local/bin/droid`, which matches the curl destination, not a Homebrew or npm prefix (`droid --version` → `0.238.0`).
 
 Linux quickstart note: install `xdg-utils` "for proper functionality." The page does not say headless `droid exec` requires it.
 
@@ -134,7 +134,7 @@ Droid's own macOS path does use the login keychain (`auth.v2.loginkeychain`, `se
 ## Evidence log
 
 - `gh issue view 7 -R codeious/orca`
-- `droid --help`, `droid --version` → `0.238.0`, `command -v droid` → `/Users/noter/.local/bin/droid`, `droid update --help`, `droid doctor --help`, `droid exec --help`. `droid doctor` was not run.
+- `droid --help`, `droid --version` → `0.238.0`, `command -v droid` → `~/.local/bin/droid`, `droid update --help`, `droid doctor --help`, `droid exec --help`. `droid doctor` was not run.
 - Fetched: `https://app.factory.ai/cli`, `https://app.factory.ai/cli/windows`, `https://docs.factory.com/droid-cli/quickstart.md`, `https://docs.factory.com/droid-exec/overview`, `https://docs.factory.com/docs/droid-cli/cli-reference`, `https://docs.factory.com/docs/droid-cli/settings`, `https://docs.factory.com/docs/enterprise/hierarchical-settings-and-org-control`, `https://docs.factory.com/enterprise/identity-and-access.md`, Homebrew cask `droid.rb`, npm pages for `droid` and `@factory/cli`.
 - Filenames and JSON key names only under `~/.factory`. No secret values recorded.
 - Printable strings from the local `0.238.0` binary for `auth.v2.*`, `FACTORY_API_KEY`, `FACTORY_DISABLE_KEYRING`, `update-policy.json`, and the auto-update messages. Account identifiers were not copied.
