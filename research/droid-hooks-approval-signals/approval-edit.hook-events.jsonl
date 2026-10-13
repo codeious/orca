@@ -1,0 +1,4 @@
+{"dms":0,"event":"SessionStart","keys":["CLAUDE_ENV_FILE","cwd","hook_event_name","permission_mode","session_id","source","transcript_path"],"tool_name":null,"tool_input_keys":null,"risk":null,"message":null}
+{"dms":7428,"event":"UserPromptSubmit","keys":["cwd","has_images","hook_event_name","message_id","permission_mode","prompt","session_id","transcript_path"],"tool_name":null,"tool_input_keys":null,"risk":null,"message":null}
+{"dms":10669,"event":"PreToolUse","keys":["cwd","hook_event_name","permission_mode","session_id","tool_input","tool_name","transcript_path"],"tool_name":"ApplyPatch","tool_input_keys":["input"],"risk":null,"message":null}
+{"dms":10708,"event":"Notification","keys":["cwd","hook_event_name","message","notification_type","permission_mode","session_id","transcript_path"],"tool_name":null,"tool_input_keys":null,"risk":null,"message":"Factory CLI needs permission to execute 1 tool(s)"}
