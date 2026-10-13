@@ -1,0 +1,86 @@
+research/droid-session-sharing/probes/scrub-transcripts.mjs
+  s_83bf62363c85f9::t_b5022353300713 1-4,6-18,21-23,30-37,40-48,52-66,70-71
+  s_83bf62363c85f9::t_80b218f3f927fb 5,19-20,24-29,38-39,49-51,67-69,72-74
+research/droid-session-sharing/probes/step8-load-with-cwd.mjs
+  s_83bf62363c85f9::t_6170cc3ad096c3 1-11
+research/droid-session-sharing.md
+  s_83bf62363c85f9::t_332a98a4c23bcf 1-32,34-51,53-128,130-132
+  s_83bf62363c85f9::t_e2d5488feb76f8 52
+  s_83bf62363c85f9::t_a99c23e96202c2 129
+  s_83bf62363c85f9::t_27be2c6dc7c6eb 33
+research/droid-session-sharing/probes/parse-with-orca-vault.ts
+  s_83bf62363c85f9::t_d37aed174f2d12 1-8
+  s_1b103940c8be0b::t_d047dde1331328 9-34
+research/droid-session-sharing/fixtures/empty-terminal-session.jsonl
+  s_83bf62363c85f9::t_16e8790599762b 1
+research/droid-session-sharing/fixtures/structured-session-fork.jsonl
+  s_83bf62363c85f9::t_807fc8a199fa1e 1-21
+research/droid-session-sharing/fixtures/structured-session.jsonl
+  s_83bf62363c85f9::t_dd7f8ac79b5dd9 1-17
+research/droid-session-sharing/fixtures/terminal-session-fork.jsonl
+  s_83bf62363c85f9::t_d736189e511285 1-10
+research/droid-session-sharing/fixtures/terminal-session.jsonl
+  s_83bf62363c85f9::t_31e205af6e9438 1-8
+research/droid-session-sharing/fixtures/terminal-session.settings.json
+  s_83bf62363c85f9::t_9c3fef66e49c88 1-37
+research/droid-session-sharing/probes/fork-report.mjs
+  s_83bf62363c85f9::t_3690b066cc2f2a 1-16
+research/droid-session-sharing/probes/lib.mjs
+  s_83bf62363c85f9::t_0a03af09626271 1-84
+research/droid-session-sharing/probes/outline.mjs
+  s_83bf62363c85f9::t_412d580568d88e 1-14
+research/droid-session-sharing/probes/pty_drive.py
+  s_83bf62363c85f9::t_9fff45ef3c9252 1-69
+research/droid-session-sharing/probes/render_screen.py
+  s_83bf62363c85f9::t_8ff37b4f966410 1-17
+research/droid-session-sharing/probes/run-step6.sh
+  s_83bf62363c85f9::t_a097c4b6b9bc6d 1-37
+research/droid-session-sharing/probes/run-tui-paid.sh
+  s_83bf62363c85f9::t_3165be27786d76 1-13
+research/droid-session-sharing/probes/run-tui-ready.sh
+  s_83bf62363c85f9::t_39e785c96331d5 1-12
+research/droid-session-sharing/probes/step1-init-only.mjs
+  s_83bf62363c85f9::t_02ebe884188799 1-20
+research/droid-session-sharing/probes/step2-failed-turn-and-second-process.mjs
+  s_83bf62363c85f9::t_eb8243176e0437 1-58
+research/droid-session-sharing/probes/step3-concurrent-writers.mjs
+  s_83bf62363c85f9::t_b62a7000016c2b 1-45
+research/droid-session-sharing/probes/step4a-check-pin.mjs
+  s_83bf62363c85f9::t_eb28af96e8e28c 1-15
+research/droid-session-sharing/probes/step5-load-tui-session.mjs
+  s_83bf62363c85f9::t_064461f87426d5 1-29
+research/droid-session-sharing/probes/step6d-structured-writes.mjs
+  s_83bf62363c85f9::t_0ee3d537d72809 1-14
+research/droid-session-sharing/probes/step6e-provider-lock.mjs
+  s_83bf62363c85f9::t_a8339ce36337f8 1-17
+research/droid-session-sharing/probes/step7-other-cwd.mjs
+  s_83bf62363c85f9::t_ed26adc1e17001 1-12
+research/droid-session-sharing/probes/tui-settings.json
+  s_83bf62363c85f9::t_4cafd6fc9f4312 1-4
+research/droid-session-sharing/probes/with-key.sh
+  s_83bf62363c85f9::t_1a5a6c7a4f1cc6 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0340b8a6c14b31a95d073348374820118936234f",
+  "prompts": {},
+  "sessions": {
+    "s_1b103940c8be0b": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "358c4921-0bb7-4f98-a28e-e0bb40b7cc26",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_83bf62363c85f9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "9eb5b7a1-45e8-4092-8b10-b19275d8926b",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
