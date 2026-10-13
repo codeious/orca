@@ -1,0 +1,21 @@
+{
+  "permissionRules": {
+    "version": 1,
+    "rules": [
+      {
+        "id": "probe/ask-echo",
+        "decision": "ask",
+        "reason": "probe: ask rule",
+        "match": { "prefix": ["echo", "ASKME"] },
+        "tests": { "match": ["echo ASKME"], "noMatch": ["echo hello"] }
+      },
+      {
+        "id": "probe/block-echo",
+        "decision": "block",
+        "reason": "probe: block rule",
+        "match": { "prefix": ["echo", "BLOCKME"] },
+        "tests": { "match": ["echo BLOCKME"], "noMatch": ["echo hello"] }
+      }
+    ]
+  }
+}

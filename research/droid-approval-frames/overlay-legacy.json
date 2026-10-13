@@ -1,0 +1,4 @@
+{
+  "commandBlocklist": ["echo LEGACYBLOCK"],
+  "commandDenylist": ["echo LEGACYASK"]
+}
