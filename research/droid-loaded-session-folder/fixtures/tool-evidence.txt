@@ -1,0 +1,22 @@
+# Z-session (id 1d115ac9, folder slug proj-a)
+  [0] session_start cwd=proj-a parent=-
+  [6] tool_use Execute command="pwd"
+  [9] tool_result proj-a [Process exited with code 0]
+  [11] outcome completed
+  [16] tool_use Execute command="pwd"
+  [19] tool_result proj-a [Process exited with code 0]
+  [21] outcome completed
+  [26] tool_use Execute command="pwd"
+  [29] tool_result proj-c [Process exited with code 0]
+  [31] outcome completed
+# TUI-fork (id 2673549f, folder slug proj-a)
+  [0] session_start cwd=proj-a parent=1d115ac9
+  [6] tool_use Execute command="pwd"
+  [9] tool_result proj-a [Process exited with code 0]
+  [11] outcome completed
+  [16] tool_use Execute command="pwd"
+  [19] tool_result proj-a [Process exited with code 0]
+  [21] outcome completed
+  [25] tool_use Execute command="pwd"
+  [28] tool_result proj-a [Process exited with code 0]
+  [30] outcome completed

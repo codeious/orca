@@ -1,0 +1,5 @@
+{"tag":"A-init","event":"SessionStart","session":"7f6a3877","payloadCwd":"proj-a","hookProcessCwd":"proj-a"}
+{"tag":"B-load","event":"SessionStart","session":"7f6a3877","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"B-load","event":"UserPromptSubmit","session":"7f6a3877","payloadCwd":"proj-c","hookProcessCwd":"proj-c"}
+{"tag":"B-reload","event":"SessionStart","session":"7f6a3877","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"D-init-with-id","event":"SessionStart","session":"7f6a3877","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}

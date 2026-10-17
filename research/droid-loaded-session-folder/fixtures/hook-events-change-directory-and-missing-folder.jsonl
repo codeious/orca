@@ -1,0 +1,8 @@
+{"tag":"S4-change-dir","event":"SessionStart","session":"1d115ac9","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"S4-change-dir","event":"UserPromptSubmit","session":"1d115ac9","payloadCwd":"proj-c","hookProcessCwd":"proj-c"}
+{"tag":"S4-change-dir","event":"PreToolUse","session":"1d115ac9","payloadCwd":"proj-c","hookProcessCwd":"proj-c","tool":"Execute","command":"pwd"}
+{"tag":"S4-change-dir","event":"PostToolUse","session":"1d115ac9","payloadCwd":"proj-c","hookProcessCwd":"proj-c","tool":"Execute","command":"pwd"}
+{"tag":"S4-reload","event":"SessionStart","session":"1d115ac9","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"D-init","event":"SessionStart","session":"9d606331","payloadCwd":"proj-d","hookProcessCwd":"proj-d"}
+{"tag":"missing-folder","event":"SessionStart","session":"9d606331","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"missing-folder","event":"UserPromptSubmit","session":"9d606331","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}

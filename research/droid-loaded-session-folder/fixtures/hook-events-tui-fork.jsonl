@@ -1,0 +1,4 @@
+{"tag":"tui-fork-from-B","event":"SessionStart","session":"2673549f","payloadCwd":"proj-a","hookProcessCwd":"proj-a"}
+{"tag":"tui-fork-from-B","event":"UserPromptSubmit","session":"2673549f","payloadCwd":"proj-a","hookProcessCwd":"proj-a"}
+{"tag":"tui-fork-from-B","event":"PreToolUse","session":"2673549f","payloadCwd":"proj-a","hookProcessCwd":"proj-a","tool":"Execute","command":"pwd"}
+{"tag":"tui-fork-from-B","event":"PostToolUse","session":"2673549f","payloadCwd":"proj-a","hookProcessCwd":"proj-a","tool":"Execute","command":"pwd"}

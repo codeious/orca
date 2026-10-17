@@ -1,0 +1,12 @@
+{"tag":"Y-init","event":"SessionStart","session":"105f2061","payloadCwd":"proj-a","hookProcessCwd":"proj-a"}
+{"tag":"exec-s-B","event":"SessionStart","session":"105f2061","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"exec-s-B-cwdC","event":"SessionStart","session":"105f2061","payloadCwd":"proj-c","hookProcessCwd":"proj-c"}
+{"tag":"exec-fork-B","event":"SessionStart","session":"9f2e9ba3","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"exec-fork-B-cwdC","event":"SessionStart","session":"f485e3d0","payloadCwd":"proj-c","hookProcessCwd":"proj-c"}
+{"tag":"fork-session-B","event":"SessionStart","session":"105f2061","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"dup-A","event":"SessionStart","session":"ac030e51","payloadCwd":"proj-a","hookProcessCwd":"proj-a"}
+{"tag":"dup-B","event":"SessionStart","session":"ac030e51","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"dup-C","event":"SessionStart","session":"ac030e51","payloadCwd":"proj-c","hookProcessCwd":"proj-c"}
+{"tag":"","event":"SessionStart","session":"ac9b0845","payloadCwd":"proj-a","hookProcessCwd":"proj-a"}
+{"tag":"","event":"SessionStart","session":"4740347b","payloadCwd":"proj-b","hookProcessCwd":"proj-b"}
+{"tag":"","event":"SessionStart","session":"010c25ba","payloadCwd":"proj-c","hookProcessCwd":"proj-c"}

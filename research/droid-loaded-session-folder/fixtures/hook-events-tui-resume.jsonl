@@ -1,0 +1,4 @@
+{"tag":"tui-resume-from-B","event":"SessionStart","session":"1d115ac9","payloadCwd":"proj-a","hookProcessCwd":"proj-a"}
+{"tag":"tui-resume-from-B","event":"UserPromptSubmit","session":"1d115ac9","payloadCwd":"proj-a","hookProcessCwd":"proj-a"}
+{"tag":"tui-resume-from-B","event":"PreToolUse","session":"1d115ac9","payloadCwd":"proj-a","hookProcessCwd":"proj-a","tool":"Execute","command":"pwd"}
+{"tag":"tui-resume-from-B","event":"PostToolUse","session":"1d115ac9","payloadCwd":"proj-a","hookProcessCwd":"proj-a","tool":"Execute","command":"pwd"}
