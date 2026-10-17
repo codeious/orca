@@ -8,7 +8,7 @@ import json, os, re, sys, urllib.request
 from subprocess import run
 
 SAFE_NAME = re.compile(r"^[A-Za-z0-9_]{1,64}$")
-TOKEN = re.compile(r"^[A-Za-z0-9_.:-]{1,40}$")
+TOKEN = re.compile(r"^[A-Za-z0-9_.:/-]{1,40}$")
 ID_KEYS = ("session_id", "calling_session_id", "previous_session_id")
 FORBIDDEN = ("fk-" + "invalid-000000", "no" + "ter", "/Us" + "ers/")
 
@@ -17,7 +17,7 @@ sys.stdout.write("{}\n")
 sys.stdout.flush()
 
 url = os.environ.get("LISTENER_URL", "")
-tag = os.environ.get("PROBE_TAG", "")
+tag = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("PROBE_TAG", "")
 if not url:
     sys.exit(0)
 

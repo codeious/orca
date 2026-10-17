@@ -1,10 +1,13 @@
 #!/bin/sh
-# Intended /new arrival run. Not run for this note: both binaries exited at auth before a prompt.
-# usage: run-new.sh <0.238.0|0.244.0> <run-label> <new-count>
+# One signed-in process that types /new, or /new and /clear alternating.
+# The counted runs used this timing. Set KEY_FILE to a file with a FACTORY_API_KEY= line.
+# The value is passed only in the child environment. This script never prints it.
+# usage: run-new.sh <0.238.0|0.244.0> <run-label> <new-count> [clear]
 set -eu
 VER="${1:?version}"
 LABEL="${2:?label}"
 COUNT="${3:?count}"
+ALT="${4:-}"
 ROOT="${PROBE_ROOT:-/tmp/droid-34}"
 PROBE="${ROOT}/probe"
 export PROBE_ROOT="$ROOT" PROBE_OUT="${ROOT}/out" PROBE_TAG="${VER}/${LABEL}"
@@ -27,13 +30,17 @@ done
 PORT=$(cat "$PROBE_OUT/listener.port")
 export LISTENER_URL="http://127.0.0.1:${PORT}/hook"
 sh "$PROBE/make-home.sh" "$LABEL" >/dev/null
-# Enter at 9s, then /new. Spacing is copied from the earlier free-run driver and was not rechecked.
-SENDS="--send 9000:\r"
-T=12000
+# Enter accepts the folder-trust dialog. Commands start at 5s, one every 4s.
+SENDS="--send 1500:\r"
+T=5000
 N=0
 while [ "$N" -lt "$COUNT" ]; do
-  SENDS="$SENDS --send ${T}:/new --send $((T + 800)):\r"
+  SENDS="$SENDS --send ${T}:/new --send $((T + 500)):\r"
   T=$((T + 4000))
+  if [ "$ALT" = "clear" ]; then
+    SENDS="$SENDS --send ${T}:/clear --send $((T + 500)):\r"
+    T=$((T + 4000))
+  fi
   N=$((N + 1))
 done
 END_MS=$((T + 3000))

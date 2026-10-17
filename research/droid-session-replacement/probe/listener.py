@@ -11,7 +11,7 @@ OUT = os.environ.get("PROBE_OUT", "/tmp/droid-34/out")
 PORT_FILE = os.path.join(OUT, "listener.port")
 LOG = os.path.join(OUT, "hooks.jsonl")
 SAFE = re.compile(r"^[A-Za-z0-9_]{1,64}$")
-TOKEN = re.compile(r"^[A-Za-z0-9_.:-]{1,40}$")
+TOKEN = re.compile(r"^[A-Za-z0-9_.:/-]{1,40}$")
 ID_KEYS = ("session_id", "calling_session_id", "previous_session_id")
 SCALAR = ("source", "reason")
 
@@ -45,15 +45,13 @@ def relate_proc(tag, pid, start):
     return table[key] + ("" if known else " (new)")
 
 
-def scrub(body, arrival_ns):
-    global seq
+def scrub(body, arrival_ns, arrival_seq):
     try:
         payload = json.loads(body)
     except ValueError:
         payload = None
     with lock:
-        seq += 1
-        rec = {"kind": "hook", "seq": seq, "arrivalNs": arrival_ns}
+        rec = {"kind": "hook", "seq": arrival_seq, "arrivalNs": arrival_ns}
         if not isinstance(payload, dict):
             rec["event"] = "unparsed"
             return rec
@@ -97,19 +95,25 @@ class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
     def do_POST(self):
+        global seq
         length = int(self.headers.get("Content-Length", "0") or "0")
         body = self.rfile.read(length) if length else b""
-        arrival = __import__("time").monotonic_ns()
+        # Number the request as soon as its body is in hand, before parsing or the reply.
+        with lock:
+            seq += 1
+            arrival_seq = seq
+            arrival = __import__("time").monotonic_ns()
         self.send_response(204)
         self.send_header("Content-Length", "0")
         self.end_headers()
         if self.path != "/hook":
             return
-        rec = scrub(body, arrival)
+        rec = scrub(body, arrival, arrival_seq)
         line = (json.dumps(rec, separators=(",", ":")) + "\n").encode()
-        fd = os.open(LOG, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
-        os.write(fd, line)
-        os.close(fd)
+        with lock:
+            fd = os.open(LOG, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
+            os.write(fd, line)
+            os.close(fd)
 
     def log_message(self, fmt, *args):
         return
