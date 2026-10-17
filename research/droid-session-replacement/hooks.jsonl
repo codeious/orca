@@ -1,0 +1,4 @@
+{"kind":"hook","seq":1,"arrivalNs":893414660730291,"tag":"self-test","event":"SessionStart","keys":["calling_session_id","cwd","hook_event_name","message","previous_session_id","prompt","reason","session_id","source","tool_input"],"source":"startup","reason":"other","ids":{"session_id":"S1 (new)","calling_session_id":"S1","previous_session_id":"S2 (new)"},"process":"P1 (new)"}
+{"kind":"hook","seq":2,"arrivalNs":893414673317583,"tag":"self-test","event":"SessionEnd","keys":["cwd","prompt"],"reason":"clear","ids":{"session_id":"S2","calling_session_id":"absent","previous_session_id":"absent"},"process":"absent"}
+{"kind":"auth-smoke","tag":"0.244.0/auth","version":"0.244.0","exited":true,"sawPrompt":false}
+{"kind":"auth-smoke","tag":"0.238.0/auth","version":"0.238.0","exited":true,"sawPrompt":false}
