@@ -1,0 +1,45 @@
+research/droid-subagent-session-start.md
+  s_bdb3f54de3e9c7::t_4bb95ee84fd670 1-129
+research/droid-subagent-session-start/hooks.jsonl
+  s_bdb3f54de3e9c7::t_fc88eff4d1755e 1-102
+research/droid-subagent-session-start/probe/hook-log.py
+  s_bdb3f54de3e9c7::t_6ad67ad0864f7a 1-97
+research/droid-subagent-session-start/probe/inspect-sessions.py
+  s_bdb3f54de3e9c7::t_d859e361cdbae9 1-37
+research/droid-subagent-session-start/probe/make-home.sh
+  s_bdb3f54de3e9c7::t_8c3707300c5d6e 1-16
+research/droid-subagent-session-start/probe/pty_drive.py
+  s_bdb3f54de3e9c7::t_4bd707b195e9b7 1-141
+research/droid-subagent-session-start/probe/render.py
+  s_bdb3f54de3e9c7::t_02e984cbb4001a 1-18
+research/droid-subagent-session-start/probe/render_screen.py
+  s_bdb3f54de3e9c7::t_f0007c06e9c11b 1-17
+research/droid-subagent-session-start/probe/run-free.sh
+  s_bdb3f54de3e9c7::t_7e88a813286558 1-20
+research/droid-subagent-session-start/probe/run-paid-bg.sh
+  s_bdb3f54de3e9c7::t_c2530b2107473c 1-24
+research/droid-subagent-session-start/probe/run-paid.sh
+  s_bdb3f54de3e9c7::t_5481f715bd49e2 1-23
+research/droid-subagent-session-start/probe/tui-settings.json
+  s_bdb3f54de3e9c7::t_1922cc79122ffc 1-4
+research/droid-subagent-session-start/probe/with-key.sh
+  s_bdb3f54de3e9c7::t_a373bfbff3ddb5 1-19
+research/droid-subagent-session-start/sessions-shape.jsonl
+  s_bdb3f54de3e9c7::t_4bffefa1363957 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2272bb1906364f2e84f5fc861d2d9822cea3766e",
+  "prompts": {},
+  "sessions": {
+    "s_bdb3f54de3e9c7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "40154320-bdf8-4d1b-a16d-8350da398a0c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
