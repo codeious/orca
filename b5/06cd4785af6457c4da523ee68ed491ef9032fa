@@ -1,0 +1,36 @@
+research/droid-session-replacement/probe/scrub.py
+  s_c47c561b8a0d6f::t_71360bf2c2d264 2,4,9-28,30,40-43
+  s_c47c561b8a0d6f::t_5f4f026a7749ea 33
+research/droid-session-replacement/probe/hook-log.py
+  s_c47c561b8a0d6f::t_274f42a3b961ae 11
+  s_c47c561b8a0d6f::t_385d88c4bf7641 20
+research/droid-session-replacement/probe/env_child.py
+  s_c47c561b8a0d6f::t_d1f1b0a838171d 1,10-25,31
+research/droid-session-replacement/probe/run-new.sh
+  s_c47c561b8a0d6f::t_f3f20eec698c99 2-5,10,33-35,38,40-43
+research/droid-session-replacement/probe/listener.py
+  s_c47c561b8a0d6f::t_6122fb8836da56 48,54
+  s_c47c561b8a0d6f::t_ee90f61d9b5535 98
+  s_c47c561b8a0d6f::t_33bc4e1da9d874 14
+  s_c47c561b8a0d6f::t_7412461f25525d 101-105,111,113-116
+research/droid-session-replacement.md
+  s_c47c561b8a0d6f::t_67e3e493acb063 15,17-25,31-35,37,39,41-45,47,49-52,54,56,58,60-66,68,70,72,74-81,83,85,87-89,91,95-97,101-106,110-112
+research/droid-session-replacement/hooks.jsonl
+  s_c47c561b8a0d6f::t_c62a34285f898f 5-381
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b506cd4785af6457c4da523ee68ed491ef9032fa",
+  "prompts": {},
+  "sessions": {
+    "s_c47c561b8a0d6f": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "8bfb1611-9746-4eba-8369-36c5651f50df",
+        "model": "custom:grok-4.7"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
