@@ -32,7 +32,7 @@
 
 ### `/new` and `/clear`
 
-Same order on both versions (`hooks.jsonl`, tag `tui-<version>/f1-new-clear`). Times are seconds after the first hook, and they differ by about 0.1 s between versions.
+Same order on both versions (`hooks.jsonl`, tag `tui-<version>/f1-new-clear`).
 
 | Step | Hook | Session | `calling_session_id` | `previous_session_id` | `droid` pid |
 | --- | --- | --- | --- | --- | --- |
@@ -90,7 +90,7 @@ S1 is the lead, S2 the child. Seconds after the first hook. Every row came from 
 - The child ran about 25 s after the lead's `Stop`.
 - While it ran, the TUI's descendants were `bash`, `bash`, `sleep`, `sleep` (the `Execute` call). No second `droid` process exists.
 - No child `SessionEnd`, no second child start, and no `Notification` at all in this run.
-- A notification-sound process (`afplay`) shows under the TUI at the end of a turn. Ignore it when reading descendants.
+- An `afplay` process shows under the TUI shortly after a lead's `Stop` (probably Droid's end-of-turn sound, not checked). Ignore it when reading descendants.
 
 ### On disk (`sessions-shape.jsonl`, key names only)
 
@@ -106,10 +106,10 @@ No fallback is needed on the floor, because the key is there. If a later Droid d
 
 ## Shapes the current rules do not cover
 
-These come from the same runs. The first two break the child rule in ADR 0005 and the Claude-shaped exit rule that [Does a Droid hook command's parent process identify the droid terminal process?](https://github.com/codeious/orca/issues/31) left open.
+These come from the same runs. The first two are not covered by the child rule in ADR 0005 or by the Claude-shaped exit rule that [Does a Droid hook command's parent process identify the droid terminal process?](https://github.com/codeious/orca/issues/31) left open. The Droid listener is not built yet (`calling_session_id` appears nowhere in `src`), so these are gaps in the written rules, not bugs.
 
-1. **A child `SessionStart` after the child's `Stop` (0.244.0).** The rule says `SessionStart` creates a child snapshot and `Stop` removes it, so the late start would re-create it. The next child hook is `SessionEnd`, which the rule drops, and a lead `Stop` keeps children. The row would stay `working` on a finished subagent until something else drops it.
-2. **A child `SessionEnd reason=other` with the TUI's process identity (0.244.0).** A Claude-shaped exit rule reads that as "this process ended". It would end the Droid terminal's row after every subagent. The existing late `SessionEnd other` for the old id after `/new` is the same kind of event. Only a `SessionEnd` for the **current lead** can mean the process ended.
+1. **A child `SessionStart` after the child's `Stop` (0.244.0).** ADR 0005 says a child's `Stop` removes its snapshot and keeps its id known, and that prompt and tool events mean `working`. It does not say what a `SessionStart` for a child that already stopped does. If a start creates a snapshot, the late one re-creates it, and nothing after it removes it: the child's `SessionEnd` is dropped and a lead `Stop` keeps children. The listener must ignore a start for an id it has already finished.
+2. **A child `SessionEnd reason=other` that looks like the process ending (0.244.0).** Orca's exit rule in `src/shared/agent-hook-listener.ts` ends a row on a `SessionEnd` whose `reason` is `prompt_input_exit`, `logout`, `other`, or `bypass_permissions_disabled`, unless the payload has an `agent_id`. It runs for Claude only today. Droid's child `SessionEnd` has no `agent_id` (its keys are `cwd`, `hook_event_name`, `message_count`, `message_id`, `permission_mode`, `reason`, `session_duration_ms`, `session_id`, `transcript_path`), so the rule extended to Droid would end the terminal's row after every 0.244.0 subagent. The late `SessionEnd other` for the old id after `/new` is the same kind of event. Only a `SessionEnd` for the **current lead** can mean the process ended.
 3. **A child that never ends (0.238.0).** No child `SessionEnd`, so `Stop` is the only end signal there.
 4. **A background child outlives the lead's `Stop`.** The rule handles this (a lead `Stop` keeps children, and a row is not `done` while a child works). Two details: the row may read `done` for about 0.6 s between the child's `Stop` and the lead's wake-up `UserPromptSubmit`, and the lead's **idle `Notification` would drop a child that is still working** if Droid sends one during a long background run. No `Notification` fired in any of the 6 runs, including the 25 s gap, so the idle threshold is unknown.
 
@@ -119,7 +119,7 @@ These come from the same runs. The first two break the child rule in ADR 0005 an
 - Custom droids, `Task` with `resume`, two subagents in parallel, and an interrupt while a subagent runs.
 - Mission workers and validators on these two versions. [What hooks and session metadata does a Mission produce inside a Droid terminal session?](https://github.com/codeious/orca/issues/24) saw `calling_session_id` on 0.242.1.
 - Linux, Windows, WSL, and SSH. Hook payloads should not depend on the OS, but only macOS was run.
-- Why some terminal starts run no `SessionStart` ([Does a Droid hook command's parent process identify the droid terminal process?](https://github.com/codeious/orca/issues/31)). All 8 terminal starts here ran one.
+- Why some terminal starts run no `SessionStart` ([Does a Droid hook command's parent process identify the droid terminal process?](https://github.com/codeious/orca/issues/31)). All 6 terminal launches here ran one.
 
 ## Fixtures
 
