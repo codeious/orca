@@ -26,7 +26,8 @@ def summarize(name, hooks, markers):
               "clear": 0, "extraRows": 0, "processChanged": 0, "newSessionNotStartedOnce": 0, "startPreviousIsOld": 0,
               "sessionsWithMoreThanOnePreviousId": 0, "callingPresent": 0, "promptBack": 0, "exitRowsOk": 0,
               "nonSessionHooks": sum(1 for r in hooks if r.get("kind") != "hook" or r.get("event") not in ("SessionStart", "SessionEnd")),
-              "arrivalClockBackwards": 0, "gapMs": []}
+              "arrivalClockBackwards": 0, "gapMs": [], "launchGapMs": [], "startHookMs": [],
+              "endLaunchedBeforeStartPosted": 0, "withLaunchStamps": 0}
     for tag in tags:
         rows = sorted((r for r in hooks if r.get("tag") == tag), key=lambda r: r["seq"])
         if not all(a["arrivalNs"] <= b["arrivalNs"] for a, b in zip(rows, rows[1:])):
@@ -34,7 +35,11 @@ def summarize(name, hooks, markers):
         procs = {rel(r.get("process")) for r in rows}
         if len(procs) != 1 or "absent" in procs:
             result["processChanged"] += 1
-        startup = next(r for r in rows if r["event"] == "SessionStart")
+        startup = next((r for r in rows if r["event"] == "SessionStart"), None)
+        if startup is None:
+            # Timeout captures: the start hook was killed before it posted, so there is no order to count.
+            result["processesWithoutStartRow"] = result.get("processesWithoutStartRow", 0) + 1
+            continue
         current = rel(startup["ids"]["session_id"])
         last_after = startup["seq"]
         previous_by_session = {}
@@ -69,11 +74,23 @@ def summarize(name, hooks, markers):
             if rel(start["ids"].get("calling_session_id")) != "absent":
                 result["callingPresent"] += 1
             result["gapMs"].append((end["arrivalNs"] - start["arrivalNs"]) / 1e6)
+            if "launchNs" in start and "launchNs" in end and "arrivalWallNs" in start:
+                result["withLaunchStamps"] += 1
+                result["launchGapMs"].append((end["launchNs"] - start["launchNs"]) / 1e6)
+                result["startHookMs"].append((start["arrivalWallNs"] - start["launchNs"]) / 1e6)
+                if end["launchNs"] < start["arrivalWallNs"]:
+                    result["endLaunchedBeforeStartPosted"] += 1
             current = rel(start["ids"]["session_id"])
             last_after = m["seqAfter"]
         tail = [r for r in rows if r["seq"] > last_after]
         if len(tail) == 1 and tail[0]["event"] == "SessionEnd" and tail[0].get("reason") == "other" and rel(tail[0]["ids"]["session_id"]) == current:
             result["exitRowsOk"] += 1
+    for key in ("launchGapMs", "startHookMs"):
+        values = result.pop(key)
+        if values:
+            result[key + "Min"] = round(min(values))
+            result[key + "Median"] = round(statistics.median(values))
+            result[key + "Max"] = round(max(values))
     gaps = result.pop("gapMs")
     if gaps:
         result["gapMsMin"] = round(min(gaps), 1)

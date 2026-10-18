@@ -11,10 +11,11 @@ mkdir -p "$H/.factory" "${ROOT}/proj"
 CMD="/usr/bin/python3 ${HOOK}"
 node -e '
 const cmd = process.argv[1]
-const entry = (matcher) => [{ ...(matcher ? { matcher } : {}), hooks: [{ type: "command", command: cmd }] }]
+const timeout = process.argv[2] ? Number(process.argv[2]) : undefined
+const entry = (matcher) => [{ ...(matcher ? { matcher } : {}), hooks: [{ type: "command", command: cmd, ...(timeout ? { timeout } : {}) }] }]
 const hooks = {}
 for (const name of ["SessionStart","SessionEnd","UserPromptSubmit","Stop","SubagentStop","Notification","PreCompact"]) hooks[name] = entry()
 for (const name of ["PreToolUse","PostToolUse"]) hooks[name] = entry("*")
 process.stdout.write(JSON.stringify({ hooks }, null, 2))
-' "$CMD" > "$H/.factory/settings.json"
+' "$CMD" "${HOOK_TIMEOUT_S:-}" > "$H/.factory/settings.json"
 echo "home ready"

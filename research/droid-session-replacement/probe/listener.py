@@ -4,7 +4,7 @@
 Binds 127.0.0.1 on an ephemeral port. Writes one JSON object per POST to $PROBE_OUT/hooks.jsonl.
 Session ids and process identity are stored as relations (S1, P1), never as the raw values.
 """
-import json, os, re, threading
+import json, os, re, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 OUT = os.environ.get("PROBE_OUT", "/tmp/droid-34/out")
@@ -80,6 +80,9 @@ def scrub(body, arrival_ns, arrival_seq):
             else:
                 rels[name] = relate(tag, value)
         rec["ids"] = rels
+        for name in ("launchNs", "delayMs"):
+            if isinstance(payload.get(name), int) and not isinstance(payload.get(name), bool):
+                rec[name] = payload[name]
         proc = payload.get("process")
         if isinstance(proc, dict) and isinstance(proc.get("pid"), int) and isinstance(proc.get("start"), str) and not dirty(proc["start"]):
             rec["process"] = relate_proc(tag, proc["pid"], proc["start"])
@@ -102,13 +105,15 @@ class Handler(BaseHTTPRequestHandler):
         with lock:
             seq += 1
             arrival_seq = seq
-            arrival = __import__("time").monotonic_ns()
+            arrival = time.monotonic_ns()
+            arrival_wall = time.time_ns()
         self.send_response(204)
         self.send_header("Content-Length", "0")
         self.end_headers()
         if self.path != "/hook":
             return
         rec = scrub(body, arrival, arrival_seq)
+        rec["arrivalWallNs"] = arrival_wall
         line = (json.dumps(rec, separators=(",", ":")) + "\n").encode()
         with lock:
             fd = os.open(LOG, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)

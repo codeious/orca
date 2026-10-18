@@ -23,6 +23,11 @@ HOOK_PROBE = os.path.join(ROOT, "probe")
 COLS, ROWS = 120, 40
 UP, DOWN, ESC = "\x1b[A", "\x1b[B", "\x1b"
 SESSION_EVENTS = ("SessionStart", "SessionEnd")
+# Timeout check: a hook killed at its timeout never posts, so a switch is complete once SessionEnd arrives.
+START_MAY_BE_MISSING = os.environ.get("EXPECT_START_MISSING") == "1"
+HOOK_SETTLE_S = 8
+# Extra seconds on every wait, for a hook that runs past Droid's default 60 s timeout.
+EXTRA_WAIT = float(os.environ.get("SLOW_WAIT_S", "0") or "0")
 
 
 class Stop(Exception):
@@ -95,9 +100,13 @@ class Batch:
         self.version, self.mode = version, mode
         if mode == "resume" and version != "0.244.0":
             raise SystemExit("/resume <id> is only a slash command on 0.244.0; refusing")
-        self.out = os.path.join(ROOT, "out-switch-%s-%s" % (version, mode))
+        self.delay_ms = int(os.environ.get("SS_DELAY_MS", "0") or "0")
+        self.delay_mode = os.environ.get("SS_DELAY_MODE", "before")
+        self.hook_timeout = os.environ.get("HOOK_TIMEOUT_S", "")
+        self.suffix = "d%d" % self.delay_ms + ("a" if self.delay_mode == "after" else "") + ("t" + self.hook_timeout if self.hook_timeout else "")
+        self.out = os.path.join(ROOT, "out-switch-%s-%s-%s" % (version, mode, self.suffix))
         os.makedirs(self.out, exist_ok=True)
-        for name in ("listener.port", "hooks.jsonl", "switches.jsonl", "problems.log"):
+        for name in ("listener.port", "hooks.jsonl", "switches.jsonl", "problems.log", "hook-lifecycle.jsonl"):
             try:
                 os.remove(os.path.join(self.out, name))
             except OSError:
@@ -262,18 +271,21 @@ def goto_other_session_tip(term):
 
 
 def wait_for_hooks(batch, term, tag, since):
-    end = time.time() + 25
+    end = time.time() + 25 + EXTRA_WAIT
     while time.time() < end:
         term.pump(0.1)
         batch.guard(tag)
         fresh = [row for row in batch.rows(tag) if row.get("seq", 0) > since]
-        if any(r["event"] == "SessionStart" for r in fresh) and any(r["event"] == "SessionEnd" for r in fresh):
+        start_ok = START_MAY_BE_MISSING or any(r["event"] == "SessionStart" for r in fresh)
+        if start_ok and any(r["event"] == "SessionEnd" for r in fresh):
+            if START_MAY_BE_MISSING:
+                term.pump(HOOK_SETTLE_S)
             return True
     return False
 
 
 def wait_for_prompt(term):
-    end = time.time() + 15
+    end = time.time() + 15 + EXTRA_WAIT
     while time.time() < end and term.alive:
         term.settle(quiet=0.8, timeout=3)
         if term.has("? for help") and not term.has("Session tree"):
@@ -282,12 +294,13 @@ def wait_for_prompt(term):
 
 
 def run_process(batch, index, switches):
-    tag = "%s/%s-p%d" % (batch.version, batch.mode, index)
-    label = "%s-%s-p%d" % (batch.version, batch.mode, index)
-    env_now = {**os.environ, "PROBE_ROOT": ROOT}
+    tag = "%s/%s-%s-p%d" % (batch.version, batch.mode, batch.suffix, index)
+    label = "%s-%s-%s-p%d" % (batch.version, batch.mode, batch.suffix, index)
+    env_now = {**os.environ, "PROBE_ROOT": ROOT, "HOOK_TIMEOUT_S": batch.hook_timeout}
     subprocess.check_call(["sh", os.path.join(HOOK_PROBE, "make-home.sh"), label], env=env_now, stdout=subprocess.DEVNULL)
     home = os.path.join(ROOT, "home-" + label)
-    env = child_env(home, {"LISTENER_URL": batch.url, "PROBE_TAG": tag, "PROBE_OUT": batch.out})
+    env = child_env(home, {"LISTENER_URL": batch.url, "PROBE_TAG": tag, "PROBE_OUT": batch.out,
+                           "SS_DELAY_MS": str(batch.delay_ms), "SS_DELAY_MODE": batch.delay_mode})
     term = Term([batch.bin], env, os.path.join(ROOT, "proj"))
     stamp = ""
     problems = []
@@ -295,7 +308,7 @@ def run_process(batch, index, switches):
     try:
         term.pump(1.5)
         term.send("\r")
-        end = time.time() + 25
+        end = time.time() + (10 if START_MAY_BE_MISSING else 25) + EXTRA_WAIT
         while time.time() < end and not any(r.get("event") == "SessionStart" for r in batch.rows(tag)):
             term.pump(0.1)
         if not wait_for_prompt(term):
