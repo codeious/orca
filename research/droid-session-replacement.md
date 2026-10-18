@@ -1,5 +1,7 @@
 # What do SessionEnd and SessionStart fire when a Droid terminal replaces its session in place?
 
+Follow-up: [does the old session's `SessionEnd` `other` ever arrive before the new `SessionStart` on `/tree` and `/resume <id>`?](droid-session-replacement-tree-resume.md)
+
 ## Question
 
 [How does Orca's Droid listener read SessionEnd and late or missing session hooks?](https://github.com/codeious/orca/issues/33) decided that a Droid `SessionEnd` ends a terminal's process only when all of these hold: it carries the identity of the row's owner process, its `session_id` is the pane's current lead, its `reason` is `other`, and an earlier `reason=clear` has not already replaced that lead. `clear` (from `/new` and `/clear`) only marks the lead replaced. A row marked ended drops every later hook from that process, so a wrong exit blanks a live pane. ADR 0007, "Orca keeps one writer per Droid session among the writers it can see", records that rule.
