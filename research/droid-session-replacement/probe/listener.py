@@ -11,7 +11,7 @@ OUT = os.environ.get("PROBE_OUT", "/tmp/droid-34/out")
 PORT_FILE = os.path.join(OUT, "listener.port")
 LOG = os.path.join(OUT, "hooks.jsonl")
 SAFE = re.compile(r"^[A-Za-z0-9_]{1,64}$")
-TOKEN = re.compile(r"^[A-Za-z0-9_.:/-]{1,40}$")
+TOKEN = re.compile(r"^[A-Za-z0-9_.:/-]{1,80}$")
 ID_KEYS = ("session_id", "calling_session_id", "previous_session_id")
 SCALAR = ("source", "reason")
 
@@ -57,6 +57,9 @@ def scrub(body, arrival_ns, arrival_seq):
             return rec
         tag = payload.get("tag") if isinstance(payload.get("tag"), str) and TOKEN.match(payload["tag"]) else "untagged"
         rec["tag"] = tag
+        cmd = payload.get("cmd")
+        if isinstance(cmd, str) and TOKEN.match(cmd) and not dirty(cmd):
+            rec["cmd"] = cmd
         event = payload.get("event")
         rec["event"] = event if isinstance(event, str) and TOKEN.match(event) else "unparsed"
         keys = payload.get("keys")

@@ -3,12 +3,23 @@
 
 usage: tree_resume_switches.py <0.238.0|0.244.0> <tree|resume> <processes> <switches-per-process>
 
-Needs pyte (pip install pyte) to read the rendered screen. Set KEY_FILE to a file with a FACTORY_API_KEY= line;
-the value only goes into the child environment and is never printed or written.
+Needs pyte to read the rendered screen. Set KEY_FILE to a file with a FACTORY_API_KEY= line;
+the value only goes into the child environment and is never printed or written. Never reads ~/.factory.
 
-Only /fork, /tree and (0.244.0 only) /resume <id> are ever typed. Any hook other than SessionStart and
-SessionEnd stops the run at once, because it would mean a prompt was submitted.
-Writes hooks.jsonl (from listener.py) and switches.jsonl (one marker per switch) under $PROBE_ROOT/out-switch-<version>-<mode>.
+Free runs only. 0.238.0 has no /resume slash command: typing it sends a message and spends credits.
+This driver refuses /resume unless the version is 0.244.0. It never types /compress, /handoff or /missions.
+Any hook other than SessionStart or SessionEnd stops the run.
+
+One SessionStart command (SS_PLACE unset): SS_DELAY_MS / SS_DELAY_MODE / HOOK_TIMEOUT_S, as before.
+Two SessionStart commands, when SS_PLACE is set:
+  SS_PLACE=entry|entries|split  SS_ORDER=slow-first|fast-first  SS_SLOW_MS  SS_FAST_MS
+  SS_FAST_MS=0 posts immediately (the fast command). SS_SLOW_MODE / SS_FAST_MODE default to before.
+  split order is file placement: slow-first means settings.json is slow and hooks.json is fast.
+  hooks.json replaces the settings.json command for that event, so a split run waits for the hooks.json command only.
+Output: $PROBE_ROOT/out-switch-<version>-<tree|resume>-<suffix>
+  one command: d<ms>[a][t<timeout>]
+  two: <place>-<order>-s<slow>-f<fast>[t<timeout>]
+A two-command switch waits for cmd slow, cmd fast, and one SessionEnd (three listener rows).
 """
 import fcntl, glob, json, os, pty, re, select, signal, struct, subprocess, sys, termios, time
 
@@ -28,6 +39,30 @@ START_MAY_BE_MISSING = os.environ.get("EXPECT_START_MISSING") == "1"
 HOOK_SETTLE_S = 8
 # Extra seconds on every wait, for a hook that runs past Droid's default 60 s timeout.
 EXTRA_WAIT = float(os.environ.get("SLOW_WAIT_S", "0") or "0")
+
+
+def output_suffix(delay_ms, delay_mode, hook_timeout, place, order, slow_ms, fast_ms):
+    if place == "split":
+        # hooks.json replaces the settings.json command for the same event. Not a two-command cell.
+        suffix = "split-repl-%s-s%s-f%s" % (order, slow_ms, fast_ms)
+        return suffix + ("t" + hook_timeout if hook_timeout else "")
+    if place:
+        suffix = "%s-%s-s%s-f%s" % (place, order, slow_ms, fast_ms)
+        return suffix + ("t" + hook_timeout if hook_timeout else "")
+    return "d%d" % delay_ms + ("a" if delay_mode == "after" else "") + ("t" + hook_timeout if hook_timeout else "")
+
+
+def switch_starts_ready(two, fresh, hooks_cmd=""):
+    starts = [row for row in fresh if row.get("event") == "SessionStart"]
+    if hooks_cmd:
+        return any(row.get("cmd") == hooks_cmd for row in starts)
+    if two:
+        return {"slow", "fast"} <= {row.get("cmd") for row in starts}
+    return bool(starts)
+
+
+def slow_extra(batch):
+    return int(batch.slow_ms) / 1000.0 if batch.two else 0
 
 
 class Stop(Exception):
@@ -100,10 +135,22 @@ class Batch:
         self.version, self.mode = version, mode
         if mode == "resume" and version != "0.244.0":
             raise SystemExit("/resume <id> is only a slash command on 0.244.0; refusing")
+        self.place = os.environ.get("SS_PLACE", "")
+        self.order = os.environ.get("SS_ORDER", "")
+        self.slow_ms = os.environ.get("SS_SLOW_MS", "")
+        self.fast_ms = os.environ.get("SS_FAST_MS", "")
+        self.two = self.place != ""
+        # slow-first puts slow in settings.json and fast in hooks.json. Only the hooks.json command runs.
+        self.hooks_cmd = {"slow-first": "fast", "fast-first": "slow"}.get(self.order, "") if self.place == "split" else ""
+        if self.two:
+            if self.place not in ("entry", "entries", "split") or self.order not in ("slow-first", "fast-first"):
+                raise SystemExit("SS_PLACE must be entry, entries or split; SS_ORDER must be slow-first or fast-first")
+            if not self.slow_ms.isdigit() or not self.fast_ms.isdigit():
+                raise SystemExit("two-command run needs numeric SS_SLOW_MS and SS_FAST_MS")
         self.delay_ms = int(os.environ.get("SS_DELAY_MS", "0") or "0")
         self.delay_mode = os.environ.get("SS_DELAY_MODE", "before")
         self.hook_timeout = os.environ.get("HOOK_TIMEOUT_S", "")
-        self.suffix = "d%d" % self.delay_ms + ("a" if self.delay_mode == "after" else "") + ("t" + self.hook_timeout if self.hook_timeout else "")
+        self.suffix = output_suffix(self.delay_ms, self.delay_mode, self.hook_timeout, self.place, self.order, self.slow_ms, self.fast_ms)
         self.out = os.path.join(ROOT, "out-switch-%s-%s-%s" % (version, mode, self.suffix))
         os.makedirs(self.out, exist_ok=True)
         for name in ("listener.port", "hooks.jsonl", "switches.jsonl", "problems.log", "hook-lifecycle.jsonl"):
@@ -200,7 +247,10 @@ def type_slash(batch, term, tag, text):
         raise Stop("refusing to type %r" % text.split(" ")[0])
     batch.guard(tag)
     term.send(text)
-    term.pump(0.6)
+    # A slow command can leave the prompt painted while input is still ignored. Wait to see the echo.
+    deadline = time.time() + (2 if getattr(batch, "two", False) else 0.6)
+    while time.time() < deadline and not term.has(text.split(" ")[0]):
+        term.pump(0.1)
     if not term.has(text.split(" ")[0]):
         raise Stop("typed command not on screen")
     term.send("\r")
@@ -271,12 +321,12 @@ def goto_other_session_tip(term):
 
 
 def wait_for_hooks(batch, term, tag, since):
-    end = time.time() + 25 + EXTRA_WAIT
+    end = time.time() + 25 + EXTRA_WAIT + slow_extra(batch)
     while time.time() < end:
         term.pump(0.1)
         batch.guard(tag)
         fresh = [row for row in batch.rows(tag) if row.get("seq", 0) > since]
-        start_ok = START_MAY_BE_MISSING or any(r["event"] == "SessionStart" for r in fresh)
+        start_ok = START_MAY_BE_MISSING or switch_starts_ready(batch.two, fresh, batch.hooks_cmd)
         if start_ok and any(r["event"] == "SessionEnd" for r in fresh):
             if START_MAY_BE_MISSING:
                 term.pump(HOOK_SETTLE_S)
@@ -284,8 +334,18 @@ def wait_for_hooks(batch, term, tag, since):
     return False
 
 
-def wait_for_prompt(term):
-    end = time.time() + 15 + EXTRA_WAIT
+def wait_for_start_cmd(batch, term, tag, since, cmd):
+    end = time.time() + 20 + slow_extra(batch)
+    while time.time() < end and term.alive:
+        term.pump(0.1)
+        batch.guard(tag)
+        if any(r.get("seq", 0) > since and r.get("event") == "SessionStart" and r.get("cmd") == cmd for r in batch.rows(tag)):
+            return True
+    return False
+
+
+def wait_for_prompt(term, extra=0):
+    end = time.time() + 15 + EXTRA_WAIT + extra
     while time.time() < end and term.alive:
         term.settle(quiet=0.8, timeout=3)
         if term.has("? for help") and not term.has("Session tree"):
@@ -299,8 +359,10 @@ def run_process(batch, index, switches):
     env_now = {**os.environ, "PROBE_ROOT": ROOT, "HOOK_TIMEOUT_S": batch.hook_timeout}
     subprocess.check_call(["sh", os.path.join(HOOK_PROBE, "make-home.sh"), label], env=env_now, stdout=subprocess.DEVNULL)
     home = os.path.join(ROOT, "home-" + label)
+    delay_env = "0" if batch.two else str(batch.delay_ms)
+    mode_env = "before" if batch.two else batch.delay_mode
     env = child_env(home, {"LISTENER_URL": batch.url, "PROBE_TAG": tag, "PROBE_OUT": batch.out,
-                           "SS_DELAY_MS": str(batch.delay_ms), "SS_DELAY_MODE": batch.delay_mode})
+                           "SS_DELAY_MS": delay_env, "SS_DELAY_MODE": mode_env})
     term = Term([batch.bin], env, os.path.join(ROOT, "proj"))
     stamp = ""
     problems = []
@@ -308,11 +370,18 @@ def run_process(batch, index, switches):
     try:
         term.pump(1.5)
         term.send("\r")
-        end = time.time() + (10 if START_MAY_BE_MISSING else 25) + EXTRA_WAIT
+        start_wait = (10 if START_MAY_BE_MISSING else 25) + EXTRA_WAIT + slow_extra(batch)
+        end = time.time() + start_wait
         while time.time() < end and not any(r.get("event") == "SessionStart" for r in batch.rows(tag)):
             term.pump(0.1)
-        if not wait_for_prompt(term):
+        if not wait_for_prompt(term, slow_extra(batch)):
             raise Stop("no prompt after start")
+        # Both commands: the fast post is immediate, and the prompt can look idle while the slow one still holds input.
+        if batch.two and (not batch.hooks_cmd or batch.hooks_cmd == "slow"):
+            if not wait_for_start_cmd(batch, term, tag, 0, "slow"):
+                raise Stop("slow SessionStart did not post after start")
+            if not wait_for_prompt(term, 0):
+                raise Stop("no prompt after slow SessionStart")
         stamp = process_stamp(term.pid)
         known = session_files(home)
         forks = []
@@ -320,18 +389,18 @@ def run_process(batch, index, switches):
             # Two forks give the two sessions to alternate between. Files of sessions that were left empty can vanish.
             if number <= 2:
                 type_slash(batch, term, tag, "/fork")
-                end = time.time() + 10
+                end = time.time() + 10 + slow_extra(batch)
                 while time.time() < end and not session_files(home) - known:
                     term.pump(0.1)
                 term.pump(1.5)
                 forks.append(pick_fork(home, session_files(home) - known))
                 known |= session_files(home)
-                wait_for_prompt(term)
+                wait_for_prompt(term, slow_extra(batch))
             target_id = forks[(number - 1) % 2]
             nav_keys, window = 0, (0, 0, 0)
             if batch.mode == "tree":
                 type_slash(batch, term, tag, "/tree")
-                end = time.time() + 10
+                end = time.time() + 10 + slow_extra(batch)
                 while time.time() < end and tree_view(term) is None:
                     term.pump(0.1)
                 term.settle(quiet=0.6, timeout=5)
@@ -350,11 +419,26 @@ def run_process(batch, index, switches):
             if term.has("Session tree"):
                 term.send(ESC)
                 problems.append("tree still open after switch %d" % number)
-            prompt_back = wait_for_prompt(term)
+            prompt_back = wait_for_prompt(term, slow_extra(batch))
             same = process_stamp(term.pid) == stamp and stamp != ""
-            batch.mark({"tag": tag, "n": number, "mode": batch.mode, "version": batch.version, "seqBefore": since, "seqAfter": after, "hooksArrived": arrived, "promptBack": prompt_back, "sameProcess": same, "navKeys": nav_keys, "treeWindow": list(window), "ms": int((time.time() - t0) * 1000)})
+            record = {"tag": tag, "n": number, "mode": batch.mode, "version": batch.version, "seqBefore": since, "seqAfter": after, "hooksArrived": arrived, "promptBack": prompt_back, "sameProcess": same, "navKeys": nav_keys, "treeWindow": list(window), "ms": int((time.time() - t0) * 1000)}
+            if batch.two:
+                record["place"] = batch.place
+                record["order"] = batch.order
+                record["slowMs"] = int(batch.slow_ms)
+                record["fastMs"] = int(batch.fast_ms)
+            if batch.hooks_cmd:
+                record["check"] = "replacement"
+                record["hooksCmd"] = batch.hooks_cmd
+            batch.mark(record)
             if not arrived:
-                raise Stop("no SessionStart and SessionEnd pair after switch %d" % number)
+                if batch.hooks_cmd:
+                    missing = "no SessionStart (%s) and SessionEnd after switch %d" % (batch.hooks_cmd, number)
+                elif batch.two:
+                    missing = "no two SessionStart commands and one SessionEnd after switch %d" % number
+                else:
+                    missing = "no SessionStart and SessionEnd pair after switch %d" % number
+                raise Stop(missing)
             if not term.alive or not same:
                 raise Stop("process changed or exited at switch %d" % number)
             done = number
