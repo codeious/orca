@@ -1,0 +1,59 @@
+## 0.245.0 droid "/missions", after the trust Enter (end of run)
+rename
+Esc
+cancel
+0-0
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+Missions
+V1
+T
+ype to filter missions...
+>
+Begin new mission
+State
+Updated
+Features
+Title
+Path
+╰─
+No missions found. Select Begin new mission to start one.
+────────────────────────────────────────────────────────────╯
+↑↓
+navigate
+Enter
+select
+Ctrl+R
+rename
+Esc
+cancel
+0-0
+
+## 0.245.0 after one more Enter on "Begin new mission" (end of run)
+rename
+Esc
+cancel
+0-0
+●
+/missions closed — mission onboarding required
+⠧ Checking mission readiness…
+⠼ Checking mission readiness…
+⠦ Checking mission readiness…
+⠧ Checking mission readiness…
+⠏ Checking mission readiness…
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+Missions - Autonomous Multi-Agent Execution
+How it works:
+1. Describe your goal
+2. Review and approve the mission plan
+3. Droid executes features autonomously
+4. Validation occurs at milestones
+Key concepts:
+• Orchestrator - Plans and manages the mission
+• Workers - Execute individual features
+• Milestones - Groups of features with validation
+Warnings:
+• Not for simple tasks - designed for complex, multi-step work
+• Runs for multiple hours or days autonomously
+• Significantly higher credit usage compared to regular sessions
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Press Enter to continue • Esc to return to default session
