@@ -1,329 +1,177 @@
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import type { SFTPWrapper } from 'ssh2'
-import type { AgentHookInstallState, AgentHookInstallStatus } from '../../shared/agent-hook-types'
-import {
-  buildManagedCommandHook,
-  createManagedCommandMatcher,
-  buildWindowsAgentHookPostCommand,
-  getSharedManagedScriptPath,
-  readHooksJson,
-  removeManagedCommands,
-  wrapPosixHookCommand,
-  wrapWindowsHookCommand,
-  writeHooksJson,
-  writeManagedScript,
-  type HookDefinition,
-  type HooksConfig
-} from '../agent-hooks/installer-utils'
+import type { AgentHookInstallStatus } from '../../shared/agent-hook-types'
+import { readHooksJson, writeHooksJson, writeManagedScript } from '../agent-hooks/installer-utils'
 import { refreshManagedScriptIfPresent } from '../agent-hooks/managed-hook-script-refresh'
 import {
   readHooksJsonRemote,
   writeHooksJsonRemote,
   writeManagedScriptRemote
 } from '../agent-hooks/installer-utils-remote'
+import { applyDroidInstall, applyDroidRemove, type DroidHookFiles } from './droid-hook-config'
+import { resolveDroidHookCoverage } from './droid-hook-status'
+import { getDroidOrgSettingsPath, orgAllowsManagedHooksOnly } from './droid-org-policy'
 import {
-  buildPosixHookPayloadCapture,
-  buildPosixHookSpoolLines,
-  buildWindowsHookEnvironmentGuardLines,
-  buildWindowsHookStdinDrainEpilogue
-} from '../agent-hooks/hook-stdin-contract'
+  getDroidManagedCommand,
+  getDroidManagedScript,
+  getDroidManagedScriptFileName,
+  getDroidManagedScriptPath
+} from './droid-hook-script'
 
-// Why: SessionStart is installed (not just listened for) so that resuming a
-// droid session via `droid --resume` resets the per-pane prompt/tool caches
-// without waiting for the next UserPromptSubmit. Mirrors the codex pattern in
-// src/main/codex/hook-service.ts.
-const DROID_EVENTS = [
-  { eventName: 'SessionStart', definition: { hooks: [{ type: 'command', command: '' }] } },
-  { eventName: 'UserPromptSubmit', definition: { hooks: [{ type: 'command', command: '' }] } },
-  { eventName: 'Stop', definition: { hooks: [{ type: 'command', command: '' }] } },
-  // Why: sub-droid completion is mission progress, not parent Droid completion.
-  // The listener intentionally ignores SubagentStop so it cannot notify.
-  { eventName: 'SubagentStop', definition: { hooks: [{ type: 'command', command: '' }] } },
-  {
-    eventName: 'PreToolUse',
-    definition: { matcher: '*', hooks: [{ type: 'command', command: '' }] }
-  },
-  {
-    eventName: 'PostToolUse',
-    definition: { matcher: '*', hooks: [{ type: 'command', command: '' }] }
-  },
-  // Why: Droid approval prompts are emitted at PermissionRequest, including
-  // low-impact Edit approvals that have no riskLevel marker on PreToolUse.
-  {
-    eventName: 'PermissionRequest',
-    definition: { matcher: '*', hooks: [{ type: 'command', command: '' }] }
-  },
-  { eventName: 'Notification', definition: { hooks: [{ type: 'command', command: '' }] } }
-] as const
+function getHooksJsonPath(): string {
+  return join(homedir(), '.factory', 'hooks.json')
+}
 
-function getConfigPath(): string {
+function getSettingsJsonPath(): string {
   return join(homedir(), '.factory', 'settings.json')
 }
 
-function getManagedScriptFileName(): string {
-  return process.platform === 'win32' ? 'droid-hook.cmd' : 'droid-hook.sh'
+function errorStatus(configPath: string, detail: string): AgentHookInstallStatus {
+  return { agent: 'droid', state: 'error', configPath, managedHooksPresent: false, detail }
 }
 
-function getManagedScriptPath(): string {
-  return getSharedManagedScriptPath(getManagedScriptFileName())
-}
-
-function getManagedCommand(scriptPath: string): string {
-  // Why: Factory invokes the .cmd via cmd.exe, but the raw path still splits at
-  // whitespace when the user profile contains a space (e.g. `C:\Users\Jane Doe`).
-  // The shared Windows wrapper keeps the path out of cmd.exe's raw command line. #6078.
-  return process.platform === 'win32'
-    ? wrapWindowsHookCommand(scriptPath)
-    : wrapPosixHookCommand(scriptPath)
-}
-
-function getManagedScript(target: 'local' | 'posix' = 'local'): string {
-  if (target === 'local' && process.platform === 'win32') {
-    return [
-      '@echo off',
-      'setlocal',
-      'if defined ORCA_AGENT_HOOK_ENDPOINT if exist "%ORCA_AGENT_HOOK_ENDPOINT%" call "%ORCA_AGENT_HOOK_ENDPOINT%" 2>nul',
-      ...buildWindowsHookEnvironmentGuardLines(),
-      buildWindowsAgentHookPostCommand('droid'),
-      'exit /b 0',
-      ...buildWindowsHookStdinDrainEpilogue(),
-      ''
-    ].join('\r\n')
+function readDroidHookFiles(): DroidHookFiles | { error: AgentHookInstallStatus } {
+  const configPath = getHooksJsonPath()
+  const hooksFile = readHooksJson(configPath)
+  if (!hooksFile) {
+    return { error: errorStatus(configPath, 'Could not parse Factory hooks.json') }
   }
-
-  return [
-    '#!/bin/sh',
-    ...buildPosixHookPayloadCapture(),
-    ...buildPosixHookSpoolLines('droid'),
-    'if [ -n "$ORCA_AGENT_HOOK_ENDPOINT" ] && [ -r "$ORCA_AGENT_HOOK_ENDPOINT" ]; then',
-    '  . "$ORCA_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
-    'fi',
-    'if [ -z "$ORCA_AGENT_HOOK_PORT" ] || [ -z "$ORCA_AGENT_HOOK_TOKEN" ] || [ -z "$ORCA_PANE_KEY" ]; then',
-    '  spool_hook_event',
-    '  exit 0',
-    'fi',
-    // Timeout caps best-effort hook posts if the local listener stalls.
-    // Why: pipe payload to curl's stdin (`payload@-`) instead of an inline
-    // `payload=$VALUE` arg, so tens-of-KB tool output stays off the curl
-    // command line (EDR command-line false positives). Wire body is identical.
-    'printf \'%s\' "$payload" | curl -sS -X POST "http://127.0.0.1:${ORCA_AGENT_HOOK_PORT}/hook/droid" \\',
-    '  --connect-timeout 0.5 --max-time 1.5 \\',
-    '  -H "Content-Type: application/x-www-form-urlencoded" \\',
-    '  -H "X-Orca-Agent-Hook-Token: ${ORCA_AGENT_HOOK_TOKEN}" \\',
-    '  --data-urlencode "paneKey=${ORCA_PANE_KEY}" \\',
-    '  --data-urlencode "tabId=${ORCA_TAB_ID}" \\',
-    '  --data-urlencode "launchToken=${ORCA_AGENT_LAUNCH_TOKEN}" \\',
-    '  --data-urlencode "worktreeId=${ORCA_WORKTREE_ID}" \\',
-    '  --data-urlencode "env=${ORCA_AGENT_HOOK_ENV}" \\',
-    '  --data-urlencode "version=${ORCA_AGENT_HOOK_VERSION}" \\',
-    '  --data-urlencode "payload@-" >/dev/null 2>&1 || spool_hook_event',
-    'exit 0',
-    ''
-  ].join('\n')
+  const settings = readHooksJson(getSettingsJsonPath())
+  if (!settings) {
+    return { error: errorStatus(configPath, 'Could not parse Factory settings.json') }
+  }
+  return { hooksFile, settings }
 }
 
-// Why: local install() and installRemote() must produce byte-identical Factory
-// settings.json hook trees; sharing this mutation is what keeps the SSH install
-// from drifting off the local one (the exact class of bug that left Droid with
-// no remote installer at all — issue #7253).
-function buildInstalledDroidConfig(
-  config: HooksConfig,
-  command: string,
-  scriptFileName: string
-): void {
-  const nextHooks = { ...config.hooks }
-  const isManagedCommand = createManagedCommandMatcher(scriptFileName)
-  const managedEvents = new Set<string>(DROID_EVENTS.map((event) => event.eventName))
-
-  // Why: sweep managed entries out of events we no longer subscribe to.
-  for (const [eventName, definitions] of Object.entries(nextHooks)) {
-    if (managedEvents.has(eventName) || !Array.isArray(definitions)) {
-      continue
-    }
-    const cleaned = removeManagedCommands(definitions, isManagedCommand)
-    if (cleaned.length === 0) {
-      delete nextHooks[eventName]
-    } else {
-      nextHooks[eventName] = cleaned
-    }
+async function readRemoteDroidHookFiles(
+  sftp: SFTPWrapper,
+  hooksPath: string,
+  settingsPath: string
+): Promise<DroidHookFiles | { error: AgentHookInstallStatus }> {
+  const hooksFile = await readHooksJsonRemote(sftp, hooksPath)
+  if (!hooksFile) {
+    return { error: errorStatus(hooksPath, 'Could not parse remote Factory hooks.json') }
   }
-
-  for (const event of DROID_EVENTS) {
-    const current = Array.isArray(nextHooks[event.eventName]) ? nextHooks[event.eventName] : []
-    const cleaned = removeManagedCommands(current, isManagedCommand)
-    const definition: HookDefinition = {
-      ...event.definition,
-      hooks: [buildManagedCommandHook(command)]
-    }
-    nextHooks[event.eventName] = [...cleaned, definition]
+  const settings = await readHooksJsonRemote(sftp, settingsPath)
+  if (!settings) {
+    return { error: errorStatus(hooksPath, 'Could not parse remote Factory settings.json') }
   }
-
-  config.hooks = nextHooks
+  return { hooksFile, settings }
 }
 
 export class DroidHookService {
+  private readonly orgSettingsPath: string
+
+  constructor(options: { orgSettingsPath?: string } = {}) {
+    this.orgSettingsPath = options.orgSettingsPath ?? getDroidOrgSettingsPath()
+  }
+
   async refreshManagedScripts(): Promise<void> {
-    await refreshManagedScriptIfPresent(getManagedScriptPath(), getManagedScript())
+    await refreshManagedScriptIfPresent(getDroidManagedScriptPath(), getDroidManagedScript())
   }
 
   getStatus(): AgentHookInstallStatus {
-    const configPath = getConfigPath()
-    const scriptPath = getManagedScriptPath()
-    const config = readHooksJson(configPath)
-    if (!config) {
-      return {
-        agent: 'droid',
-        state: 'error',
-        configPath,
-        managedHooksPresent: false,
-        detail: 'Could not parse Factory settings.json'
-      }
+    const files = readDroidHookFiles()
+    if ('error' in files) {
+      return files.error
     }
-
-    const command = getManagedCommand(scriptPath)
-    const missing: string[] = []
-    let presentCount = 0
-    for (const event of DROID_EVENTS) {
-      const definitions = Array.isArray(config.hooks?.[event.eventName])
-        ? config.hooks![event.eventName]!
-        : []
-      const hasCommand = definitions.some((definition) =>
-        (definition.hooks ?? []).some((hook) => hook.command === command)
-      )
-      if (hasCommand) {
-        presentCount += 1
-      } else {
-        missing.push(event.eventName)
-      }
+    const command = getDroidManagedCommand(getDroidManagedScriptPath())
+    return {
+      agent: 'droid',
+      configPath: getHooksJsonPath(),
+      ...resolveDroidHookCoverage(files, command, orgAllowsManagedHooksOnly(this.orgSettingsPath))
     }
-    const managedHooksPresent = presentCount > 0
-    let state: AgentHookInstallState
-    let detail: string | null
-    // Why: surface hooksDisabled across every branch — without this, a
-    // disabled-AND-partially-installed (or disabled-AND-not-installed) state
-    // would silently swallow the disabled flag and the user would think a
-    // re-install fixed it.
-    if (missing.length === 0) {
-      if (config.hooksDisabled === true) {
-        state = 'partial'
-        detail = 'Droid hooks are disabled in Factory settings'
-      } else {
-        state = 'installed'
-        detail = null
-      }
-    } else if (presentCount === 0) {
-      if (config.hooksDisabled === true) {
-        state = 'partial'
-        detail = 'Droid hooks are disabled in Factory settings'
-      } else {
-        state = 'not_installed'
-        detail = null
-      }
-    } else {
-      state = 'partial'
-      detail =
-        config.hooksDisabled === true
-          ? `Droid hooks are disabled in Factory settings; managed hook missing for events: ${missing.join(', ')}`
-          : `Managed hook missing for events: ${missing.join(', ')}`
-    }
-    return { agent: 'droid', state, configPath, managedHooksPresent, detail }
   }
 
   install(): AgentHookInstallStatus {
-    const configPath = getConfigPath()
-    const scriptPath = getManagedScriptPath()
-    const config = readHooksJson(configPath)
-    if (!config) {
-      return {
-        agent: 'droid',
-        state: 'error',
-        configPath,
-        managedHooksPresent: false,
-        detail: 'Could not parse Factory settings.json'
-      }
+    const configPath = getHooksJsonPath()
+    const scriptPath = getDroidManagedScriptPath()
+    // Why: an unparseable file must fail before the script is written, with no side effects.
+    const preflight = readDroidHookFiles()
+    if ('error' in preflight) {
+      return preflight.error
     }
+    writeManagedScript(scriptPath, getDroidManagedScript())
 
-    buildInstalledDroidConfig(config, getManagedCommand(scriptPath), getManagedScriptFileName())
-    writeManagedScript(scriptPath, getManagedScript())
-    writeHooksJson(configPath, config)
+    // Why: read again right before writing so a /hooks save that landed during the script
+    // write is merged into, not overwritten.
+    const files = readDroidHookFiles()
+    if ('error' in files) {
+      return files.error
+    }
+    const { settingsChanged } = applyDroidInstall(
+      files,
+      getDroidManagedCommand(scriptPath),
+      getDroidManagedScriptFileName()
+    )
+    // Why: hooks.json first — once it replaces an event, the old settings.json entry is inert,
+    // so a failure between the two writes can never leave Orca's hook double-registered.
+    writeHooksJson(configPath, files.hooksFile, { preserveMode: true })
+    if (settingsChanged) {
+      writeHooksJson(getSettingsJsonPath(), files.settings, { preserveMode: true })
+    }
     return this.getStatus()
   }
 
-  // Why: SSH remotes run the Droid CLI on the remote host, so its hook config
-  // and managed script must be written into the remote ~/.factory + ~/.orca via
-  // SFTP. Without this, Droid never fires the managed hook over SSH and its
-  // status row is absent from the task tree (issue #7253). Mirrors the local
-  // install() but always emits POSIX script/paths — even from a Windows host.
+  // Why: SSH remotes run the Droid CLI on the remote host, so its hook config and managed
+  // script are written into the remote ~/.factory + ~/.orca via SFTP (issue #7253). It runs the
+  // same mutation as install() but always emits POSIX script and paths, even from a Windows host.
   async installRemote(sftp: SFTPWrapper, remoteHome: string): Promise<AgentHookInstallStatus> {
     const home = remoteHome.replace(/\/$/, '')
-    const remoteConfigPath = `${home}/.factory/settings.json`
-    const remoteScriptPath = `${home}/.orca/agent-hooks/droid-hook.sh`
+    const hooksPath = `${home}/.factory/hooks.json`
+    const settingsPath = `${home}/.factory/settings.json`
+    const scriptPath = `${home}/.orca/agent-hooks/droid-hook.sh`
     try {
-      const config = await readHooksJsonRemote(sftp, remoteConfigPath)
-      if (!config) {
-        return {
-          agent: 'droid',
-          state: 'error',
-          configPath: remoteConfigPath,
-          managedHooksPresent: false,
-          detail: 'Could not parse remote Factory settings.json'
-        }
+      const preflight = await readRemoteDroidHookFiles(sftp, hooksPath, settingsPath)
+      if ('error' in preflight) {
+        return preflight.error
       }
+      // Why: script first, config last — a partial config write must never point Droid at a
+      // script that isn't on disk yet.
+      await writeManagedScriptRemote(sftp, scriptPath, getDroidManagedScript('posix'))
 
-      buildInstalledDroidConfig(config, wrapPosixHookCommand(remoteScriptPath), 'droid-hook.sh')
-      // Why: script first, config last — a partial config write must never
-      // point Droid at a script that isn't on disk yet.
-      await writeManagedScriptRemote(sftp, remoteScriptPath, getManagedScript('posix'))
-      await writeHooksJsonRemote(sftp, remoteConfigPath, config)
+      const files = await readRemoteDroidHookFiles(sftp, hooksPath, settingsPath)
+      if ('error' in files) {
+        return files.error
+      }
+      const { settingsChanged } = applyDroidInstall(
+        files,
+        getDroidManagedCommand(scriptPath, 'posix'),
+        'droid-hook.sh'
+      )
+      await writeHooksJsonRemote(sftp, hooksPath, files.hooksFile)
+      if (settingsChanged) {
+        await writeHooksJsonRemote(sftp, settingsPath, files.settings)
+      }
 
       return {
         agent: 'droid',
         state: 'installed',
-        configPath: remoteConfigPath,
+        configPath: hooksPath,
         managedHooksPresent: true,
         detail: null
       }
     } catch (err) {
-      return {
-        agent: 'droid',
-        state: 'error',
-        configPath: remoteConfigPath,
-        managedHooksPresent: false,
-        detail: err instanceof Error ? err.message : String(err)
-      }
+      return errorStatus(hooksPath, err instanceof Error ? err.message : String(err))
     }
   }
 
   remove(): AgentHookInstallStatus {
-    const configPath = getConfigPath()
-    const config = readHooksJson(configPath)
-    if (!config) {
-      return {
-        agent: 'droid',
-        state: 'error',
-        configPath,
-        managedHooksPresent: false,
-        detail: 'Could not parse Factory settings.json'
-      }
+    const files = readDroidHookFiles()
+    if ('error' in files) {
+      return files.error
     }
-
-    const nextHooks = { ...config.hooks }
-    const isManagedCommand = createManagedCommandMatcher(getManagedScriptFileName())
-    for (const [eventName, definitions] of Object.entries(nextHooks)) {
-      if (!Array.isArray(definitions)) {
-        continue
-      }
-      const cleaned = removeManagedCommands(definitions, isManagedCommand)
-      if (cleaned.length === 0) {
-        delete nextHooks[eventName]
-      } else {
-        nextHooks[eventName] = cleaned
-      }
+    const { hooksChanged, settingsChanged } = applyDroidRemove(
+      files,
+      getDroidManagedScriptFileName()
+    )
+    if (hooksChanged) {
+      writeHooksJson(getHooksJsonPath(), files.hooksFile, { preserveMode: true })
     }
-
-    config.hooks = nextHooks
-    writeHooksJson(configPath, config)
+    if (settingsChanged) {
+      writeHooksJson(getSettingsJsonPath(), files.settings, { preserveMode: true })
+    }
     return this.getStatus()
   }
 }
