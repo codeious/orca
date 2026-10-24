@@ -1,0 +1,14 @@
+{
+  "capturedAt": "2026-10-24T11:21:10.594Z",
+  "platform": "darwin",
+  "command": [
+    "/bin/bash",
+    "--noprofile",
+    "--norc",
+    "-i"
+  ],
+  "cols": 120,
+  "rows": 40,
+  "note": "droid 0.249.0 case badkey-prompt signed out, throwaway HOME",
+  "exitCode": 0
+}

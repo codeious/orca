@@ -1,0 +1,267 @@
+[
+  {
+    "name": "droid-0-249-0-signed-out-bare-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5289,
+    "droidLeftForegroundAtMs": null,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "│                                                                                                                      │",
+      "╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+      "Please login with your Factory account to continue.",
+      "> Login",
+      "  Sign into a Factory Private deployment",
+      "  Exit"
+    ]
+  },
+  {
+    "name": "droid-0-249-0-signed-out-prompt-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5147,
+    "droidLeftForegroundAtMs": null,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "│                                                                                                                      │",
+      "╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+      "Please login with your Factory account to continue.",
+      "> Login",
+      "  Sign into a Factory Private deployment",
+      "  Exit"
+    ]
+  },
+  {
+    "name": "droid-0-249-0-signed-out-auto-prompt-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5492,
+    "droidLeftForegroundAtMs": null,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "│                                                                                                                      │",
+      "╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+      "Please login with your Factory account to continue.",
+      "> Login",
+      "  Sign into a Factory Private deployment",
+      "  Exit"
+    ]
+  },
+  {
+    "name": "droid-0-249-0-signed-out-badkey-bare-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5580,
+    "droidLeftForegroundAtMs": 5574,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.",
+      "$"
+    ]
+  },
+  {
+    "name": "droid-0-249-0-signed-out-badkey-prompt-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5665,
+    "droidLeftForegroundAtMs": 5658,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.",
+      "$"
+    ]
+  },
+  {
+    "name": "droid-0-238-0-signed-out-bare-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5463,
+    "droidLeftForegroundAtMs": null,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "│                                                                                                                      │",
+      "╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+      "Please login with your Factory account to continue.",
+      "> Login",
+      "  Sign into a Factory Private deployment",
+      "  Exit"
+    ]
+  },
+  {
+    "name": "droid-0-238-0-signed-out-prompt-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5248,
+    "droidLeftForegroundAtMs": null,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "│                                                                                                                      │",
+      "╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+      "Please login with your Factory account to continue.",
+      "> Login",
+      "  Sign into a Factory Private deployment",
+      "  Exit"
+    ]
+  },
+  {
+    "name": "droid-0-238-0-signed-out-badkey-bare-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5923,
+    "droidLeftForegroundAtMs": 5916,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.",
+      "$"
+    ]
+  },
+  {
+    "name": "droid-0-238-0-signed-out-badkey-prompt-120x40",
+    "observedForMs": 130000,
+    "lastReadAtMs": 5646,
+    "droidLeftForegroundAtMs": 5640,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 0,
+      "firstAtMs": null
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": null,
+    "observerVerdictAtMs": null,
+    "tail": [
+      "Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.",
+      "$"
+    ]
+  },
+  {
+    "name": "droid-0-249-0-signed-out-bare-120x40",
+    "observedForMs": 22200000,
+    "lastReadAtMs": 5289,
+    "droidLeftForegroundAtMs": null,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 72,
+      "firstAtMs": 300000
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": {
+      "status": "dispatch_failed",
+      "error": "Orca stopped watching this run after 6h without a completion signal."
+    },
+    "observerVerdictAtMs": 21600000,
+    "tail": [
+      "│                                                                                                                      │",
+      "╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+      "Please login with your Factory account to continue.",
+      "> Login",
+      "  Sign into a Factory Private deployment",
+      "  Exit"
+    ]
+  },
+  {
+    "name": "droid-0-249-0-signed-out-badkey-bare-120x40",
+    "observedForMs": 22200000,
+    "lastReadAtMs": 5580,
+    "droidLeftForegroundAtMs": 5574,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 72,
+      "firstAtMs": 300000
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": {
+      "status": "dispatch_failed",
+      "error": "Orca stopped watching this run after 6h without a completion signal."
+    },
+    "observerVerdictAtMs": 21600000,
+    "tail": [
+      "Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.",
+      "$"
+    ]
+  },
+  {
+    "name": "droid-0-238-0-signed-out-bare-120x40",
+    "observedForMs": 22200000,
+    "lastReadAtMs": 5463,
+    "droidLeftForegroundAtMs": null,
+    "firstSatisfiedTuiIdleAtMs": null,
+    "tuiIdleWaits": [],
+    "tuiIdleTimeouts": {
+      "count": 72,
+      "firstAtMs": 300000
+    },
+    "agentStatusRows": 0,
+    "observerVerdict": {
+      "status": "dispatch_failed",
+      "error": "Orca stopped watching this run after 6h without a completion signal."
+    },
+    "observerVerdictAtMs": 21600000,
+    "tail": [
+      "│                                                                                                                      │",
+      "╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯",
+      "Please login with your Factory account to continue.",
+      "> Login",
+      "  Sign into a Factory Private deployment",
+      "  Exit"
+    ]
+  }
+]
