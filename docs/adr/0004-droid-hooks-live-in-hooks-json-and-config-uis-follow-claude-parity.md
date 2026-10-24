@@ -19,7 +19,7 @@ Droid's config UIs in Orca stop at what Claude and Codex already get: `.factory/
 ## Consequences
 
 - The hook fix stays in `src/main/droid/` plus the `PermissionRequest` branches in `droid-events.ts` and `droid-tool-fields.ts`. The shared `installer-utils.ts` and the `AgentHookInstallStatus` type do not change. Only the reported config path does.
-- Install, refresh, and remove migrate Orca's old entries out of the `settings.json` `hooks` key with a key-level edit that keeps every other key. Whether that key is cleared after migration follows what a `/hooks` save is observed to do.
+- Install, refresh, and remove migrate Orca's old entries out of the `settings.json` `hooks` key with a key-level edit that keeps every other key. Only Orca's entries are removed: the `hooks` key stays even when that leaves it empty, and anything the user keeps under it, such as `hooksDisabled`, is untouched.
 - Orca's entries show up in Droid's `/hooks`. If a user deletes them there, Orca reinstalls them, as it does today.
 - The status check resolves each Orca event separately, taking the file Droid loads for that event, and reads a set with any event shadowed or missing as not installed, so the installer repairs it. A user `hooks.json` that defines only `SessionStart` otherwise drops Orca's `SessionStart` while its `SessionEnd` from `settings.json` still fires, and the row keeps following the old lead after a session switch.
 - Local, SSH, and WSL installs keep sharing one mutation, so the three hosts write the same `hooks.json` tree.
