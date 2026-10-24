@@ -1,0 +1,201 @@
+{
+  "version": "0.249.0",
+  "mode": "bad",
+  "A": {
+    "loadReportedCwd": "a",
+    "forkError": null,
+    "newFiles": [
+      {
+        "id": "<id7>",
+        "slug": "-private-tmp-droid-47-run-s3-0.249.0-bad-a",
+        "slugFolder": "same as S (a)",
+        "recordedCwd": "a",
+        "parent": "<id1>",
+        "forkedAtMessageId": "<id5>",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed",
+          "message seq=3 id=<id5> parent=<id4> user",
+          "message seq=4 id=<id6> parent=<id5> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed"
+        ]
+      }
+    ],
+    "openForkInBReportsCwd": "a",
+    "openForkInAReportsCwd": "a"
+  },
+  "B": [
+    {
+      "id": "b1",
+      "desc": "process in b, no --cwd, prompt",
+      "argv": "droid exec --fork <id1> FORK-PROBE-EXEC",
+      "exitCode": 1,
+      "stderr": "Error during droid execution: Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.\n",
+      "newFiles": [
+        {
+          "id": "<F1>",
+          "slug": "-private-tmp-droid-47-run-s3-0.249.0-bad-a",
+          "slugFolder": "same as S (a)",
+          "recordedCwd": "a",
+          "parent": "<id1>",
+          "forkedAtMessageId": "<id5>",
+          "records": [
+            "session_start",
+            "message seq=0 id=<m1> user/llm_only",
+            "message seq=1 id=<id3> parent=<m1> user",
+            "message seq=2 id=<id4> parent=<id3> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed",
+            "message seq=3 id=<id5> parent=<id4> user",
+            "message seq=4 id=<id6> parent=<id5> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed",
+            "message seq=5 id=<m2> parent=<id6> user/llm_only",
+            "message seq=6 id=<m3> parent=<m2> user",
+            "message seq=7 id=<m4> parent=<m3> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed"
+          ]
+        }
+      ],
+      "originalChanged": false
+    },
+    {
+      "id": "b2",
+      "desc": "process in a, --cwd b, prompt",
+      "argv": "droid exec --fork <id1> --cwd <root>/b FORK-PROBE-EXEC",
+      "exitCode": 1,
+      "stderr": "Error during droid execution: Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.\n",
+      "newFiles": [
+        {
+          "id": "<F2>",
+          "slug": "-private-tmp-droid-47-run-s3-0.249.0-bad-b",
+          "slugFolder": "different from S",
+          "recordedCwd": "b",
+          "parent": "<id1>",
+          "forkedAtMessageId": "<id5>",
+          "records": [
+            "session_start",
+            "message seq=0 id=<m1> user/llm_only",
+            "message seq=1 id=<id3> parent=<m1> user",
+            "message seq=2 id=<id4> parent=<id3> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed",
+            "message seq=3 id=<id5> parent=<id4> user",
+            "message seq=4 id=<id6> parent=<id5> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed",
+            "message seq=5 id=<m5> parent=<id6> user/llm_only",
+            "message seq=6 id=<m6> parent=<m5> user",
+            "message seq=7 id=<m7> parent=<m6> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed"
+          ]
+        }
+      ],
+      "originalChanged": false
+    },
+    {
+      "id": "b3",
+      "desc": "process in a, --cwd a, prompt",
+      "argv": "droid exec --fork <id1> --cwd <root>/a FORK-PROBE-EXEC",
+      "exitCode": 1,
+      "stderr": "Error during droid execution: Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.\n",
+      "newFiles": [
+        {
+          "id": "<F3>",
+          "slug": "-private-tmp-droid-47-run-s3-0.249.0-bad-a",
+          "slugFolder": "same as S (a)",
+          "recordedCwd": "a",
+          "parent": "<id1>",
+          "forkedAtMessageId": "<id5>",
+          "records": [
+            "session_start",
+            "message seq=0 id=<m1> user/llm_only",
+            "message seq=1 id=<id3> parent=<m1> user",
+            "message seq=2 id=<id4> parent=<id3> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed",
+            "message seq=3 id=<id5> parent=<id4> user",
+            "message seq=4 id=<id6> parent=<id5> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed",
+            "message seq=5 id=<m8> parent=<id6> user/llm_only",
+            "message seq=6 id=<m9> parent=<m8> user",
+            "message seq=7 id=<m10> parent=<m9> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed"
+          ]
+        }
+      ],
+      "originalChanged": false
+    },
+    {
+      "id": "b4",
+      "desc": "no prompt, --output-format stream-jsonrpc only",
+      "argv": "droid exec --fork <id1> --output-format stream-jsonrpc",
+      "exitCode": 1,
+      "stderr": "Invalid flags: --fork is not supported with one-shot --output-format stream-jsonrpc. Use --output-format stream-json, or drive the session with --input-format stream-jsonrpc.\n",
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "id": "b5",
+      "desc": "prompt, --output-format stream-jsonrpc only",
+      "argv": "droid exec --fork <id1> --output-format stream-jsonrpc FORK-PROBE-EXEC",
+      "exitCode": 1,
+      "stderr": "Invalid flags: --fork is not supported with one-shot --output-format stream-jsonrpc. Use --output-format stream-json, or drive the session with --input-format stream-jsonrpc.\n",
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "id": "b6",
+      "desc": "prompt, --input-format stream-jsonrpc",
+      "argv": "droid exec --fork <id1> --input-format stream-jsonrpc FORK-PROBE-EXEC",
+      "exitCode": 1,
+      "stderr": "Invalid flags: --input-format stream-jsonrpc requires --output-format stream-jsonrpc for proper JSON-RPC streaming.\n",
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "id": "b7",
+      "desc": "prompt, --output-format stream-json",
+      "argv": "droid exec --fork <id1> --output-format stream-json FORK-PROBE-EXEC",
+      "exitCode": 1,
+      "stderr": "",
+      "newFiles": [
+        {
+          "id": "<id8>",
+          "slug": "-private-tmp-droid-47-run-s3-0.249.0-bad-a",
+          "slugFolder": "same as S (a)",
+          "recordedCwd": "a",
+          "parent": "<id1>",
+          "forkedAtMessageId": "<id5>",
+          "records": [
+            "session_start",
+            "message seq=0 id=<m1> user/llm_only",
+            "message seq=1 id=<id3> parent=<m1> user",
+            "message seq=2 id=<id4> parent=<id3> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed",
+            "message seq=3 id=<id5> parent=<id4> user",
+            "message seq=4 id=<id6> parent=<id5> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed",
+            "message seq=5 id=<m11> parent=<id6> user/llm_only",
+            "message seq=6 id=<id9> parent=<m11> user",
+            "message seq=7 id=<m12> parent=<id9> user/user_only",
+            "agent_turn_outcome reason=model_authentication_failed"
+          ]
+        }
+      ],
+      "originalChanged": false
+    }
+  ],
+  "seeded": {
+    "recordedCwd": "a",
+    "slug": "-private-tmp-droid-47-run-s3-0.249.0-bad-a",
+    "records": [
+      "session_start",
+      "message seq=0 id=<m1> user/llm_only",
+      "message seq=1 id=<id3> parent=<m1> user",
+      "message seq=2 id=<id4> parent=<id3> user/user_only",
+      "agent_turn_outcome reason=model_authentication_failed",
+      "message seq=3 id=<id5> parent=<id4> user",
+      "message seq=4 id=<id6> parent=<id5> user/user_only",
+      "agent_turn_outcome reason=model_authentication_failed"
+    ]
+  }
+}

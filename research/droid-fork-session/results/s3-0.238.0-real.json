@@ -1,0 +1,46 @@
+{
+  "version": "0.238.0",
+  "mode": "real",
+  "A": {
+    "loadReportedCwd": "a",
+    "forkError": null,
+    "newFiles": [
+      {
+        "id": "<id7>",
+        "slug": "-private-tmp-droid-47-run-s3-0.238.0-real-a",
+        "slugFolder": "same as S (a)",
+        "recordedCwd": "a",
+        "parent": "<id1>",
+        "forkedAtMessageId": "<id5>",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed",
+          "message seq=3 id=<id5> parent=<id4> user",
+          "message seq=4 id=<id6> parent=<id5> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed",
+          "message seq=5 id=<m2> parent=<id5> user/user_only"
+        ]
+      }
+    ],
+    "openForkInBReportsCwd": "a",
+    "openForkInAReportsCwd": "a"
+  },
+  "B": [],
+  "seeded": {
+    "recordedCwd": "a",
+    "slug": "-private-tmp-droid-47-run-s3-0.238.0-real-a",
+    "records": [
+      "session_start",
+      "message seq=0 id=<m1> user/llm_only",
+      "message seq=1 id=<id3> parent=<m1> user",
+      "message seq=2 id=<id4> parent=<id3> user/user_only",
+      "agent_turn_outcome reason=model_authentication_failed",
+      "message seq=3 id=<id5> parent=<id4> user",
+      "message seq=4 id=<id6> parent=<id5> user/user_only",
+      "agent_turn_outcome reason=model_authentication_failed"
+    ]
+  }
+}

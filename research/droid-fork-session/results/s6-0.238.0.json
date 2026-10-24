@@ -1,0 +1,41 @@
+{
+  "version": "0.238.0",
+  "mode": "bad",
+  "nothingLoaded": {
+    "error": "{\"code\":-32603,\"message\":\"No active session. Call initialize_session or load_session first.\"}",
+    "resultKeys": [],
+    "newFiles": 0
+  },
+  "titled": {
+    "withTagObject": {
+      "error": null,
+      "resultKeys": [
+        "newSessionId"
+      ]
+    },
+    "withTagString": {
+      "error": "{\"code\":-32602,\"message\":\"Invalid request for droid.fork_session: params.tags.0: Expected object, received string\"}",
+      "resultKeys": []
+    },
+    "newFiles": [
+      {
+        "id": "<id5>",
+        "title": "FORK-PROBE-TITLED",
+        "isSessionTitleManuallySet": true,
+        "startKeys": [
+          "type",
+          "id",
+          "title",
+          "owner",
+          "version",
+          "cwd",
+          "hostId",
+          "isSessionTitleManuallySet",
+          "parent",
+          "forkedAtMessageId"
+        ],
+        "tags": null
+      }
+    ]
+  }
+}

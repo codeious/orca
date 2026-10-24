@@ -1,0 +1,50 @@
+{
+  "version": "0.249.0",
+  "T1": {
+    "forkError": null,
+    "originalBytesChangedByFork": false,
+    "originalBytesChangedByTerminalByEnd": false,
+    "holderOutput": "exited_on_its_own=True bytes=18560 status=0",
+    "newFiles": [
+      {
+        "id": "<id5>",
+        "recordedCwd": "a",
+        "parent": "<id1>",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed"
+        ]
+      }
+    ],
+    "originalAtEnd": [
+      "session_start",
+      "message seq=0 id=<m1> user/llm_only",
+      "message seq=1 id=<id3> parent=<m1> user",
+      "message seq=2 id=<id4> parent=<id3> user/user_only",
+      "agent_turn_outcome reason=model_authentication_failed"
+    ]
+  },
+  "T2": {
+    "output": "exited_on_its_own=True bytes=20218 status=0",
+    "originalChanged": false,
+    "newFiles": [
+      {
+        "id": "<T1>",
+        "slugFolder": "same as S (a)",
+        "recordedCwd": "a",
+        "parent": "<id1>",
+        "forkedAtMessageId": "<id3>",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed"
+        ]
+      }
+    ]
+  }
+}

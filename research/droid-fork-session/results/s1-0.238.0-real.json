@@ -1,0 +1,225 @@
+{
+  "version": "0.238.0",
+  "mode": "real",
+  "steps": [
+    {
+      "label": "seeded S",
+      "S": {
+        "slug": "-private-tmp-droid-47-run-s1-0.238.0-real-a",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed"
+        ],
+        "start": {
+          "keys": [
+            "type",
+            "id",
+            "title",
+            "owner",
+            "version",
+            "cwd",
+            "hostId",
+            "isSessionTitleManuallySet"
+          ],
+          "idMatchesFile": true,
+          "cwd": "<root>/a",
+          "title": "FORK-PROBE-SEED"
+        }
+      }
+    },
+    {
+      "label": "P1 load_session(S)",
+      "error": null,
+      "sessionKeys": [
+        "messages",
+        "title"
+      ],
+      "titleReported": "FORK-PROBE-SEED",
+      "cwdReported": "<root>/a",
+      "messages": 3,
+      "notifications": [
+        "mcp_status_changed x1",
+        "settings_updated x1"
+      ]
+    },
+    {
+      "label": "P1 fork_session",
+      "error": null,
+      "resultKeys": [
+        "newSessionId"
+      ],
+      "newSessionIdIsNew": true,
+      "notificationsDuringFork": [],
+      "filesChanged": [
+        "<id5> new (6 records)"
+      ],
+      "S": {
+        "slug": "-private-tmp-droid-47-run-s1-0.238.0-real-a",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed"
+        ],
+        "start": {
+          "keys": [
+            "type",
+            "id",
+            "title",
+            "owner",
+            "version",
+            "cwd",
+            "hostId",
+            "isSessionTitleManuallySet"
+          ],
+          "idMatchesFile": true,
+          "cwd": "<root>/a",
+          "title": "FORK-PROBE-SEED"
+        }
+      },
+      "F": {
+        "slug": "-private-tmp-droid-47-run-s1-0.238.0-real-a",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed",
+          "message seq=3 id=<m2> parent=<id3> user/user_only"
+        ],
+        "start": {
+          "keys": [
+            "type",
+            "id",
+            "title",
+            "owner",
+            "version",
+            "cwd",
+            "hostId",
+            "isSessionTitleManuallySet",
+            "parent",
+            "forkedAtMessageId"
+          ],
+          "idMatchesFile": true,
+          "cwd": "<root>/a",
+          "parent": "<id1>",
+          "forkedAtMessageId": "<id3>",
+          "title": "FORK-PROBE-SEED"
+        }
+      },
+      "forkCopiesSMessageIds": false
+    },
+    {
+      "label": "P1 writes after fork (process never reloaded)",
+      "renameError": null,
+      "renameChanged": [
+        "<id1> changed: records 5->5, transcript bytes differ, settings same"
+      ],
+      "titles": {
+        "S": "FORK-PROBE-RENAME-1",
+        "F": "FORK-PROBE-SEED"
+      },
+      "renameNotifications": [
+        "session_title_updated:S x1"
+      ]
+    },
+    {
+      "label": "P1 load_session(F) in the same process",
+      "error": null,
+      "titleReported": "FORK-PROBE-SEED",
+      "messages": 4,
+      "notifications": [
+        "settings_updated x1"
+      ]
+    },
+    {
+      "label": "P1 writes after load_session(F)",
+      "renameError": null,
+      "renameChanged": [
+        "<id5> changed: records 6->6, transcript bytes differ, settings same"
+      ],
+      "titles": {
+        "S": "FORK-PROBE-RENAME-1",
+        "F": "FORK-PROBE-RENAME-2"
+      },
+      "renameNotifications": [
+        "session_title_updated:F x1"
+      ]
+    },
+    {
+      "label": "P1 exit",
+      "code": 0,
+      "signal": null,
+      "stderrFirst200": ""
+    },
+    {
+      "label": "P2 (new process) load_session(F)",
+      "error": null,
+      "titleReported": "FORK-PROBE-RENAME-2",
+      "cwdReported": "<root>/a",
+      "messages": 4
+    },
+    {
+      "label": "final files",
+      "S": {
+        "slug": "-private-tmp-droid-47-run-s1-0.238.0-real-a",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed"
+        ],
+        "start": {
+          "keys": [
+            "type",
+            "id",
+            "title",
+            "owner",
+            "version",
+            "cwd",
+            "hostId",
+            "isSessionTitleManuallySet"
+          ],
+          "idMatchesFile": true,
+          "cwd": "<root>/a",
+          "title": "FORK-PROBE-RENAME-1"
+        }
+      },
+      "F": {
+        "slug": "-private-tmp-droid-47-run-s1-0.238.0-real-a",
+        "records": [
+          "session_start",
+          "message seq=0 id=<m1> user/llm_only",
+          "message seq=1 id=<id3> parent=<m1> user",
+          "message seq=2 id=<id4> parent=<id3> user/user_only",
+          "agent_turn_outcome reason=model_authentication_failed",
+          "message seq=3 id=<m2> parent=<id3> user/user_only"
+        ],
+        "start": {
+          "keys": [
+            "type",
+            "id",
+            "title",
+            "owner",
+            "version",
+            "cwd",
+            "hostId",
+            "isSessionTitleManuallySet",
+            "parent",
+            "forkedAtMessageId"
+          ],
+          "idMatchesFile": true,
+          "cwd": "<root>/a",
+          "parent": "<id1>",
+          "forkedAtMessageId": "<id3>",
+          "title": "FORK-PROBE-RENAME-2"
+        }
+      }
+    }
+  ]
+}

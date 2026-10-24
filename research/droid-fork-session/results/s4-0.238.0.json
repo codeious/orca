@@ -1,0 +1,51 @@
+{
+  "version": "0.238.0",
+  "mode": "bad",
+  "cases": [
+    {
+      "id": "c1",
+      "desc": "stdin stays open 8 s, then closes empty",
+      "argv": "droid exec --fork <id1>",
+      "whileStdinOpen": {
+        "exited": false,
+        "stdoutBytes": 0,
+        "stderr": "",
+        "newFiles": 0
+      },
+      "afterStdinClosedEmpty": {
+        "exitCode": 1,
+        "stderr": "No prompt received on stdin (the input was empty). Pass a prompt argument, use -f <file>, or pipe non-empty text.\n"
+      },
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "id": "c2",
+      "desc": "stdin closed at once (what a spawn with stdin ignored does)",
+      "argv": "droid exec --fork <id1>",
+      "afterStdinClosedEmpty": {
+        "exitCode": 1,
+        "stderr": "No prompt received on stdin (the input was empty). Pass a prompt argument, use -f <file>, or pipe non-empty text.\n"
+      },
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "id": "c3",
+      "desc": "--cwd b, stdin open 8 s, then closes empty",
+      "argv": "droid exec --fork <id1> --cwd <root>/b",
+      "whileStdinOpen": {
+        "exited": false,
+        "stdoutBytes": 0,
+        "stderr": "",
+        "newFiles": 0
+      },
+      "afterStdinClosedEmpty": {
+        "exitCode": 1,
+        "stderr": "No prompt received on stdin (the input was empty). Pass a prompt argument, use -f <file>, or pipe non-empty text.\n"
+      },
+      "newFiles": [],
+      "originalChanged": false
+    }
+  ]
+}

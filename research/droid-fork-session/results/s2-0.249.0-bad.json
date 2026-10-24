@@ -1,0 +1,86 @@
+{
+  "version": "0.249.0",
+  "mode": "bad",
+  "variants": [
+    {
+      "variant": "v1",
+      "desc": "process in a, no --cwd",
+      "argv": "droid exec --fork <id1> --input-format stream-jsonrpc --output-format stream-jsonrpc",
+      "afterSixSecondsOfSilence": {
+        "exited": true,
+        "code": 1,
+        "signal": null,
+        "atMs": 930
+      },
+      "stdoutFrames": [],
+      "stderr": "Invalid flags: --fork is not supported with --input-format stream-jsonrpc, --output-format acp, or --output-format acp-daemon.\n",
+      "newFilesBeforeAnyRequest": [],
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "variant": "v2",
+      "desc": "process in b, --cwd b",
+      "argv": "droid exec --fork <id1> --cwd <root>/b --input-format stream-jsonrpc --output-format stream-jsonrpc",
+      "afterSixSecondsOfSilence": {
+        "exited": true,
+        "code": 1,
+        "signal": null,
+        "atMs": 708
+      },
+      "stdoutFrames": [],
+      "stderr": "Invalid flags: --fork is not supported with --input-format stream-jsonrpc, --output-format acp, or --output-format acp-daemon.\n",
+      "newFilesBeforeAnyRequest": [],
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "variant": "v3",
+      "desc": "process in b, no --cwd",
+      "argv": "droid exec --fork <id1> --input-format stream-jsonrpc --output-format stream-jsonrpc",
+      "afterSixSecondsOfSilence": {
+        "exited": true,
+        "code": 1,
+        "signal": null,
+        "atMs": 896
+      },
+      "stdoutFrames": [],
+      "stderr": "Invalid flags: --fork is not supported with --input-format stream-jsonrpc, --output-format acp, or --output-format acp-daemon.\n",
+      "newFilesBeforeAnyRequest": [],
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "variant": "v4",
+      "desc": "process in a, --cwd b",
+      "argv": "droid exec --fork <id1> --cwd <root>/b --input-format stream-jsonrpc --output-format stream-jsonrpc",
+      "afterSixSecondsOfSilence": {
+        "exited": true,
+        "code": 1,
+        "signal": null,
+        "atMs": 988
+      },
+      "stdoutFrames": [],
+      "stderr": "Invalid flags: --fork is not supported with --input-format stream-jsonrpc, --output-format acp, or --output-format acp-daemon.\n",
+      "newFilesBeforeAnyRequest": [],
+      "newFiles": [],
+      "originalChanged": false
+    },
+    {
+      "variant": "v5",
+      "desc": "process in a, --cwd that does not exist",
+      "argv": "droid exec --fork <id1> --cwd <root>/does-not-exist --input-format stream-jsonrpc --output-format stream-jsonrpc",
+      "afterSixSecondsOfSilence": {
+        "exited": true,
+        "code": 1,
+        "signal": null,
+        "atMs": 48
+      },
+      "stdoutFrames": [],
+      "stderr": "Error changing to directory: <root>/does-not-exist\nENOENT: no such file or directory, chdir '<root>/a' -> '<root>/does-not-exist'\n",
+      "newFilesBeforeAnyRequest": [],
+      "newFiles": [],
+      "originalChanged": false
+    }
+  ]
+}
