@@ -255,7 +255,7 @@ describe('shared agent-hook-listener', () => {
       {
         paneKey: PANE_KEY,
         payload: {
-          hook_event_name: 'PermissionRequest',
+          hook_event_name: 'PostToolUse',
           tool_name: 'BespokeTool',
           tool_input: { request_id: 'approval-1' }
         }

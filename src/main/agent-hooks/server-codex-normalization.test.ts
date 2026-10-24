@@ -386,7 +386,7 @@ describe('Droid hook normalization', () => {
     expect(result?.payload.toolInput).toBe('echo "test modification" >> ~/.claude/config.json')
   })
 
-  it('PermissionRequest maps low-impact Edit approvals to waiting and carries cached tool', () => {
+  it('Notification maps low-impact Edit approvals to waiting and carries cached tool', () => {
     _internals.normalizeHookPayload(
       'droid',
       buildBody({ hook_event_name: 'UserPromptSubmit', prompt: 'edit it to none' }),
@@ -408,7 +408,10 @@ describe('Droid hook normalization', () => {
 
     const result = _internals.normalizeHookPayload(
       'droid',
-      buildBody({ hook_event_name: 'PermissionRequest' }),
+      buildBody({
+        hook_event_name: 'Notification',
+        message: 'Droid needs your permission to use Edit'
+      }),
       'production'
     )
 
@@ -416,6 +419,16 @@ describe('Droid hook normalization', () => {
     expect(result?.payload.prompt).toBe('edit it to none')
     expect(result?.payload.toolName).toBe('Edit')
     expect(result?.payload.toolInput).toBe('/Users/thebr/.claude/settings.json')
+  })
+
+  it('ignores PermissionRequest, which Droid has no event for', () => {
+    const result = _internals.normalizeHookPayload(
+      'droid',
+      buildBody({ hook_event_name: 'PermissionRequest', tool_name: 'Edit' }),
+      'production'
+    )
+
+    expect(result).toBeNull()
   })
 
   it('SessionStart resets turn caches without marking Droid working', () => {

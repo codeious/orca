@@ -33,7 +33,7 @@ export function normalizeDroidEvent(
     eventName === 'PreToolUse' &&
     (isDroidAskUserTool(droidToolName) || isDroidHighRiskToolUse(hookPayload))
   ) {
-    // Why: Droid surfaces AskUser and high-risk approvals as PreToolUse; the approval path emits no Notification hook.
+    // Why: AskUser and high-risk calls are known to need the user at PreToolUse; lower-impact approvals arrive later as a Notification permission prompt.
     stateName = 'waiting'
   } else if (
     eventName === 'UserPromptSubmit' ||
@@ -43,8 +43,6 @@ export function normalizeDroidEvent(
     stateName = 'working'
   } else if (eventName === 'Stop') {
     stateName = 'done'
-  } else if (eventName === 'PermissionRequest') {
-    stateName = 'waiting'
   } else if (eventName === 'Notification' && isDroidPermissionNotification(notificationMessage)) {
     stateName = 'waiting'
   } else if (eventName === 'Notification' && isDroidIdleNotification(notificationMessage)) {
