@@ -1,0 +1,3 @@
+# Captured PTY transcripts keep their CRLFs; the timing files index them by UTF-16 offset.
+capture/*.txt -text
+replay/*.txt -text
