@@ -1,0 +1,86 @@
+research/droid-fork-session/probes/s6-fork-session-params.mjs
+  s_9d52dc6a9689b0::t_c7c5264b2727fa 1-43
+research/droid-fork-session.md
+  s_9d52dc6a9689b0::t_39f78c0c450f1d 72
+  s_9d52dc6a9689b0::t_3ba69be0f2557c 41
+  s_9d52dc6a9689b0::t_e7125628d4fd81 8
+  s_9d52dc6a9689b0::t_d514747fe93829 56
+  s_9d52dc6a9689b0::t_ac040b237542a0 1-7,9-12,14-40,42-55,57-65,67-71,73-86,88-92,94-121,123
+  s_9d52dc6a9689b0::t_869f7de3b7c3ab 87
+  s_9d52dc6a9689b0::t_55e3e8093b0261 66
+  s_9d52dc6a9689b0::t_0a2c883902fbe0 93
+  s_9d52dc6a9689b0::t_e43c2ac11ab036 13
+  s_9d52dc6a9689b0::t_6ae6d0f537c758 122
+research/droid-fork-session/probes/s3-fork-folder.mjs
+  s_9d52dc6a9689b0::t_f859230816f578 62-66
+  s_9d52dc6a9689b0::t_6c36b9f10a60bf 1-61,67-80
+research/droid-fork-session/probes/s4-exec-fork-no-prompt.mjs
+  s_9d52dc6a9689b0::t_9f580ad8e61483 1-56
+research/droid-fork-session/probes/s1-fork-in-process.mjs
+  s_9d52dc6a9689b0::t_89b08f81438558 107
+  s_9d52dc6a9689b0::t_e6a88e4a9136fa 128
+  s_9d52dc6a9689b0::t_9bfe118664d3c5 97-98
+  s_9d52dc6a9689b0::t_9dc1e22556faa3 1-62,65-66,68,70-81,83-96,99-106,108-117,119-127,129-137
+  s_9d52dc6a9689b0::t_e79a576beede92 63-64,67,69
+  s_9d52dc6a9689b0::t_bfa380a325a32e 82
+  s_9d52dc6a9689b0::t_6699e3a5dc6b58 118
+research/droid-fork-session/probes/lib.mjs
+  s_9d52dc6a9689b0::t_0f012b74b57e59 1-142,144-183
+  s_9d52dc6a9689b0::t_8fa60381b89a45 143
+research/droid-fork-session/probes/s2-exec-fork.mjs
+  s_9d52dc6a9689b0::t_bc33edd8db7ef2 1-89
+research/droid-fork-session/probes/s5-terminal-held.mjs
+  s_9d52dc6a9689b0::t_56c67005cd6643 1-78
+research/droid-fork-session/results/s1-0.238.0-bad.json
+  s_9d52dc6a9689b0::t_8a5ecfe54510f7 1-286
+research/droid-fork-session/results/s1-0.238.0-real.json
+  s_9d52dc6a9689b0::t_f036714cb11fca 1-225
+research/droid-fork-session/results/s1-0.249.0-bad.json
+  s_9d52dc6a9689b0::t_9e0635044fa64f 1-286
+research/droid-fork-session/results/s1-0.249.0-real.json
+  s_9d52dc6a9689b0::t_fd998068f49dc9 1-225
+research/droid-fork-session/results/s2-0.238.0-bad.json
+  s_9d52dc6a9689b0::t_21456834a94646 1-86
+research/droid-fork-session/results/s2-0.238.0-real.json
+  s_9d52dc6a9689b0::t_ec37937a689212 1-86
+research/droid-fork-session/results/s2-0.249.0-bad.json
+  s_9d52dc6a9689b0::t_18fc3d687f5468 1-86
+research/droid-fork-session/results/s2-0.249.0-real.json
+  s_9d52dc6a9689b0::t_272449aabfbe38 1-86
+research/droid-fork-session/results/s3-0.238.0-bad.json
+  s_9d52dc6a9689b0::t_e4a2e9f1595d56 1-201
+research/droid-fork-session/results/s3-0.238.0-real.json
+  s_9d52dc6a9689b0::t_cae56904b0d74c 1-46
+research/droid-fork-session/results/s3-0.249.0-bad.json
+  s_9d52dc6a9689b0::t_471c42b27a15c6 1-201
+research/droid-fork-session/results/s3-0.249.0-real.json
+  s_9d52dc6a9689b0::t_f4e3fbbc99ba94 1-46
+research/droid-fork-session/results/s4-0.238.0.json
+  s_9d52dc6a9689b0::t_4bb7fd2b3a7eb6 1-51
+research/droid-fork-session/results/s4-0.249.0.json
+  s_9d52dc6a9689b0::t_c096562dd573db 1-51
+research/droid-fork-session/results/s5-0.238.0.json
+  s_9d52dc6a9689b0::t_831c6802629156 1-50
+research/droid-fork-session/results/s5-0.249.0.json
+  s_9d52dc6a9689b0::t_bafd6d1f018cc6 1-50
+research/droid-fork-session/results/s6-0.238.0.json
+  s_9d52dc6a9689b0::t_f483e1ddbb9815 1-41
+research/droid-fork-session/results/s6-0.249.0.json
+  s_9d52dc6a9689b0::t_0008ba06a930a4 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fc3b7ed00bd8de754bebb0b59083f3e4e4699dfb",
+  "prompts": {},
+  "sessions": {
+    "s_9d52dc6a9689b0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "3433f54e-0dd1-4423-9a44-f8b8365114da",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
