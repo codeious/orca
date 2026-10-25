@@ -209,6 +209,15 @@ export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaR
     }) => AgentSessionAccountHome | Promise<AgentSessionAccountHome>
   ): Promise<AgentSessionAttachParams> {
     const support = await this.getStructuredAgentSessionCreateSupport(input.worktree, input.agent)
+    if (!support.supported && support.unsupportedVersion) {
+      const { found, floor, updateCommand } = support.unsupportedVersion
+      throw agentSessionRefusalError('structured_agent_session_unsupported', {
+        reason: 'versionUnsupported',
+        version: found,
+        floor,
+        updateCommand
+      })
+    }
     // Adopting a conversation reads the agent's own transcript, which only Claude and Codex have
     // importers for.
     if (!support.supported || (input.resumeFrom && !isAgentSessionHandleProvider(input.agent))) {
