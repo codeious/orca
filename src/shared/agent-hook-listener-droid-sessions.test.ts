@@ -102,6 +102,20 @@ describe('Droid lead session', () => {
     expect(driver.state.lastPromptByPaneKey.has(PANE_KEY)).toBe(false)
   })
 
+  it('replaces the lead on a repeat start that sends an identity when the row has none', () => {
+    driver.hook(sessionStart(LEAD_ID), null)
+    driver.hook(userPrompt(LEAD_ID, 'ship it'), null)
+    driver.hook(sessionStart(CHILD_ID, { calling_session_id: LEAD_ID }), null)
+
+    driver.hook(sessionStart(LEAD_ID, { source: 'resume' }))
+
+    expect(driver.state.lastPromptByPaneKey.has(PANE_KEY)).toBe(false)
+    expect(driver.state.droidSessionsByPaneKey.get(PANE_KEY)?.children.size).toBe(0)
+    expect(driver.hook(userPrompt(LEAD_ID, 'relaunched'))?.agentPresence?.process).toEqual(
+      DROID_OWNER
+    )
+  })
+
   it('never lets a hook from another process choose or replace the lead', () => {
     driver.hook(sessionStart(LEAD_ID))
     driver.hook(userPrompt(LEAD_ID, 'ship it'))

@@ -103,14 +103,20 @@ function confirmOrRepointLead(sessions: DroidPaneSessions, parentId: string): vo
   sessions.provisional = false
 }
 
-/** An owner is a live row with a captured process; a sender that is not that process is foreign. */
+/** An owner is a live row with a captured process. */
+function rowOwner(previous: AgentHookEventPayload | undefined): AgentProcessIdentity | undefined {
+  const presence = previous?.agentPresence
+  return presence && !presence.ended && !previous?.providerSessionOnly
+    ? presence.process
+    : undefined
+}
+
+/** A sender that is not the row's owner process is foreign. */
 function isForeignSender(
   previous: AgentHookEventPayload | undefined,
   sender: AgentProcessIdentity | undefined
 ): boolean {
-  const presence = previous?.agentPresence
-  const owner =
-    presence && !presence.ended && !previous?.providerSessionOnly ? presence.process : undefined
+  const owner = rowOwner(previous)
   return owner !== undefined && !(sender && isSameAgentProcess(owner, sender))
 }
 
@@ -156,8 +162,9 @@ function admitStart(
     return SKIP
   }
   clearExitMarker(state, paneKey)
-  // Why: without a captured identity a repeat of the lead's id can be a relaunch of the same session.
-  if (sessions?.leadId === sessionId && sender) {
+  // Why: a stored row with no owner cannot tell a relaunch of the same session from /resume of it.
+  const rowLacksOwner = previous !== undefined && rowOwner(previous) === undefined
+  if (sessions?.leadId === sessionId && sender && !rowLacksOwner) {
     return SKIP
   }
   const hadChildWork = (sessions?.roster.size ?? 0) > 0
