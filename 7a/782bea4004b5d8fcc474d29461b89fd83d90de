@@ -1,0 +1,25 @@
+src/renderer/src/components/right-sidebar/use-ai-vault-droid-holders.ts
+  s_523078ea2e2274::t_b04f266e7ae71b 29-30,33-36,38-41,43,50-55
+  s_523078ea2e2274::t_78b3d2019d4965 56
+src/renderer/src/components/right-sidebar/use-ai-vault-droid-holders.test.ts
+  s_523078ea2e2274::t_1dfe5691650799 121-130,132-152
+  s_523078ea2e2274::t_cbdb03d673d3e6 131
+src/shared/agent-launch-mode-preference.ts
+  s_523078ea2e2274::t_f08d8eb9325966 44,47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7a782bea4004b5d8fcc474d29461b89fd83d90de",
+  "prompts": {},
+  "sessions": {
+    "s_523078ea2e2274": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5349094e-5431-4287-9aa5-0e6e2938419d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
