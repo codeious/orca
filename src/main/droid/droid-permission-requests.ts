@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { formatToolInput, truncateToolDetail } from '../../shared/native-chat-tool-summary'
 import { boundJournalPromptBody } from '../native-chat/agent-session-journal/journal-prompt-body-bounds'
 import { pendingDroidResolution, type DroidPromptPresentation } from './droid-prompt-presentation'
-import { DroidRpcError } from './droid-rpc-errors'
+import { DroidRpcError, JSON_RPC_INVALID_PARAMS } from './droid-rpc-errors'
 
 const detailsSchema = z.looseObject({
   fullCommand: z.string().optional(),
@@ -35,7 +35,7 @@ const unanswerableFromPlan = (value: string): boolean =>
 export function droidPermissionPresentation(params: unknown): DroidPromptPresentation {
   const parsed = requestSchema.safeParse(params)
   if (!parsed.success) {
-    throw new DroidRpcError(-32602, 'Invalid Droid permission request')
+    throw new DroidRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid Droid permission request')
   }
   const { toolUses, options } = parsed.data
   const plan = toolUses.find((use) => use.confirmationType === PLAN_CONFIRMATION)

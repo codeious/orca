@@ -9,7 +9,7 @@ import {
   MAX_JOURNAL_GROUPED_PROMPT_QUESTIONS
 } from '../native-chat/agent-session-journal/journal-prompt-body-bounds'
 import { pendingDroidResolution, type DroidPromptPresentation } from './droid-prompt-presentation'
-import { DroidRpcError } from './droid-rpc-errors'
+import { DroidRpcError, JSON_RPC_INVALID_PARAMS } from './droid-rpc-errors'
 
 // Shaped after the SDK's AskUser schema; no recording of Droid asking one exists yet.
 const requestSchema = z.looseObject({
@@ -32,12 +32,12 @@ const ANSWER_SEPARATOR = ', '
 export function droidQuestionPresentation(params: unknown): DroidPromptPresentation {
   const parsed = requestSchema.safeParse(params)
   if (!parsed.success) {
-    throw new DroidRpcError(-32602, 'Invalid Droid question request')
+    throw new DroidRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid Droid question request')
   }
   const asked = parsed.data.questions
   if (asked.length > MAX_JOURNAL_GROUPED_PROMPT_QUESTIONS) {
     throw new DroidRpcError(
-      -32602,
+      JSON_RPC_INVALID_PARAMS,
       `Orca shows at most ${MAX_JOURNAL_GROUPED_PROMPT_QUESTIONS} questions at once`
     )
   }

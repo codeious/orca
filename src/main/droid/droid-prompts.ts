@@ -13,7 +13,7 @@ import type { DroidRequestContext } from './droid-json-rpc-peer'
 import { droidPermissionPresentation } from './droid-permission-requests'
 import type { DroidPromptPresentation } from './droid-prompt-presentation'
 import { droidQuestionPresentation } from './droid-question-requests'
-import { DroidRpcError } from './droid-rpc-errors'
+import { DroidRpcError, JSON_RPC_METHOD_NOT_FOUND } from './droid-rpc-errors'
 
 const PRESENTERS = new Map<string, (params: unknown) => DroidPromptPresentation>([
   ['droid.request_permission', droidPermissionPresentation],
@@ -39,7 +39,10 @@ export class DroidPrompts {
   handle(method: string, params: unknown, context: DroidRequestContext): Promise<unknown> {
     const present = PRESENTERS.get(method)
     if (!present) {
-      throw new DroidRpcError(-32601, `Unsupported Droid client method: ${method}`)
+      throw new DroidRpcError(
+        JSON_RPC_METHOD_NOT_FOUND,
+        `Unsupported Droid client method: ${method}`
+      )
     }
     const presentation = present(params)
     const key = `${method}:${context.id}`

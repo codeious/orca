@@ -12,6 +12,8 @@ import {
   type DroidSavedPicks
 } from './droid-model-options'
 
+const OPTION_REQUEST_TIMEOUT_MS = 15_000
+
 type Ask = (
   method: string,
   params?: unknown,
@@ -45,7 +47,11 @@ export class DroidSessionModel {
     request: Ask
   ): Promise<ReturnType<typeof withLiveCatalogListing<AgentSessionOptionsResult>>> {
     if (!this.reported) {
-      const listed = await request('droid.list_models', {}, { timeoutMs: 15_000 })
+      const listed = await request(
+        'droid.list_models',
+        {},
+        { timeoutMs: OPTION_REQUEST_TIMEOUT_MS }
+      )
       this.reported = { models: droidModelOptionsFromListing(listed), current: {} }
     }
     return withLiveCatalogListing(this.reported)
@@ -64,7 +70,7 @@ export class DroidSessionModel {
     await request(
       'droid.update_session_settings',
       droidOptionParams(key === 'model' ? { model: value } : { effort: value }, spec),
-      { timeoutMs: 15_000 }
+      { timeoutMs: OPTION_REQUEST_TIMEOUT_MS }
     )
     if (!spec) {
       this.reported = droidOptionsAfterPick(this.reported, key, value)
@@ -84,7 +90,7 @@ export class DroidSessionModel {
     }
     try {
       await request('droid.update_session_settings', droidOptionParams(saved, spec), {
-        timeoutMs: 15_000
+        timeoutMs: OPTION_REQUEST_TIMEOUT_MS
       })
     } catch (error) {
       warn(error)

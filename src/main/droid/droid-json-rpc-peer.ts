@@ -14,14 +14,17 @@ import {
 import {
   DroidConnectionClosedError,
   DroidRequestTimeoutError,
-  DroidRpcError
+  DroidRpcError,
+  JSON_RPC_INTERNAL_ERROR,
+  JSON_RPC_METHOD_NOT_FOUND,
+  JSON_RPC_SERVER_BUSY
 } from './droid-rpc-errors'
 
 export type DroidPeerOptions = AcpPeerOptions
 export type DroidRequestContext = { id: string; signal: AbortSignal }
 export type DroidPeerHandlers = {
   /** What a request from Droid (a permission, a question) is answered with. Unhandled methods
-   *  throw `DroidRpcError(-32601)`; any other throw is answered as an internal error. */
+   *  throw `DroidRpcError(JSON_RPC_METHOD_NOT_FOUND)`; any other throw is answered as an internal error. */
   onRequest?: (method: string, params: unknown, context: DroidRequestContext) => unknown
   onNotification?: (method: string, params: unknown) => void
   onDiagnostic?: (message: string) => void
@@ -220,7 +223,7 @@ export class DroidJsonRpcPeer {
       void this.send({
         type: 'response',
         id,
-        error: { code: -32000, message: 'Too many open requests' }
+        error: { code: JSON_RPC_SERVER_BUSY, message: 'Too many open requests' }
       }).catch(() => undefined)
       return
     }
@@ -229,7 +232,7 @@ export class DroidJsonRpcPeer {
     const { onRequest } = this.handlers
     void new Promise<unknown>((resolve, reject) => {
       if (!onRequest) {
-        reject(new DroidRpcError(-32601, 'Method not found'))
+        reject(new DroidRpcError(JSON_RPC_METHOD_NOT_FOUND, 'Method not found'))
         return
       }
       resolve(onRequest(method, params, { id, signal: controller.signal }))
@@ -242,7 +245,7 @@ export class DroidJsonRpcPeer {
           error:
             error instanceof DroidRpcError
               ? { code: error.code, message: error.message }
-              : { code: -32603, message: 'Internal error' }
+              : { code: JSON_RPC_INTERNAL_ERROR, message: 'Internal error' }
         })
       )
       .then((frame) => {
