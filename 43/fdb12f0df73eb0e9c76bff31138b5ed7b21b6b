@@ -1,0 +1,33 @@
+src/renderer/src/components/right-sidebar/ai-vault-droid-session-holder-check.test.ts
+  s_f87fd4e7a08936::t_9f25669c64c98b 1-88
+src/renderer/src/components/right-sidebar/ai-vault-droid-session-holder-check.ts
+  s_f87fd4e7a08936::t_cb7c02cdcd7803 1-67
+src/renderer/src/i18n/locales/en.json
+  s_f87fd4e7a08936::t_3da9d6a4fd6c7c 13913,14056-14060
+src/renderer/src/i18n/locales/es.json
+  s_f87fd4e7a08936::t_e06736f77dc8de 13633,13776-13780
+src/renderer/src/i18n/locales/fr.json
+  s_f87fd4e7a08936::t_340b0b71efc022 13739,13882-13886
+src/renderer/src/i18n/locales/ja.json
+  s_f87fd4e7a08936::t_aba3f21bc30fd1 13633,13776-13780
+src/renderer/src/i18n/locales/ko.json
+  s_f87fd4e7a08936::t_4f67904062c55b 13633,13776-13780
+src/renderer/src/i18n/locales/zh.json
+  s_f87fd4e7a08936::t_0af66acdbd0ebe 13647,13790-13794
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "43fdb12f0df73eb0e9c76bff31138b5ed7b21b6b",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
