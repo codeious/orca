@@ -12,6 +12,7 @@ import type {
   SessionAccumulator
 } from './session-scanner-types'
 import type { TranscriptMessageSink } from './session-transcript-consumers'
+import { isDroidConversationMessage } from '../droid/droid-message-visibility'
 import {
   accumulatorFoldResumeState,
   addPreviewMessage,
@@ -131,9 +132,7 @@ function consumeDroidMessage(
   if (role !== 'user' && role !== 'assistant') {
     return
   }
-  // Droid's reminders and sign-in notice are stored as user-role messages but are not conversation.
-  const visibility = asRecord(record.message)?.visibility
-  if (visibility === 'llm_only' || visibility === 'user_only') {
+  if (!isDroidConversationMessage(asRecord(record.message))) {
     return
   }
   accumulator.messageCount++

@@ -93,6 +93,7 @@ import {
   resolveRuntimeAiVaultSessionTitles,
   scanRuntimeAiVaultSessions
 } from '../../ai-vault/runtime-session-scanner'
+import { readRuntimeAiVaultDroidSessionHolder } from '../../ai-vault/runtime-droid-session-holder'
 import { callRuntimeSessionSearch } from '../../ai-vault/runtime-session-search-call'
 import { ensureStructuredAgentSessionHostUnlessRefused } from '../../runtime/structured-agent-session-host-refusal'
 import type { PluginService } from '../../plugins/plugin-service'
@@ -235,6 +236,9 @@ export function registerCoreHandlers(
     ensureStructuredSessionOwnership,
     getAdditionalCodexHomePaths: lifecycleOptions.getAdditionalAiVaultCodexHomePaths,
     prepareSessionResume: lifecycleOptions.prepareAiVaultSessionResume,
+    readLocalDroidSessionHolder: (sessionId) => runtime.droidSessionHolder(sessionId),
+    readRuntimeDroidSessionHolder: (environmentId, sessionId) =>
+      readRuntimeAiVaultDroidSessionHolder(app.getPath('userData'), environmentId, sessionId),
     getActiveRuntimeAiVaultHostInfos: () =>
       getSavedRuntimeAiVaultHostInfos(app.getPath('userData')),
     scanRuntimeAiVaultSessions: async (environmentId, args, options) =>

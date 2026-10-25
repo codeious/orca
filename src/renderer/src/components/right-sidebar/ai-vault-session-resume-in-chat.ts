@@ -8,7 +8,12 @@ import { isAntigravityReferenceSession } from '../../../../shared/antigravity-se
 import { isWslStoredAiVaultSessionFile } from '@/lib/ai-vault-resume-target'
 import { normalizeRuntimePathForComparison } from '../../../../shared/cross-platform-path'
 import { LOCAL_EXECUTION_HOST_ID } from '../../../../shared/execution-host'
-import { isAgentSessionHandleProvider } from '../../../../shared/agent-session-provider-handle'
+import {
+  isAgentSessionHandleProvider,
+  type AgentSessionHandleProvider
+} from '../../../../shared/agent-session-provider-handle'
+import type { AiVaultDroidSessionHolderVerdict } from '../../../../shared/ai-vault-droid-session-holder'
+import type { AiVaultOriginalPaneTarget } from './ai-vault-original-pane'
 import {
   isAiVaultSessionResumableContent,
   type AiVaultSession
@@ -29,11 +34,20 @@ export type AiVaultResumeInChatEligibility =
       /** The session may still be open in a terminal Orca cannot confirm is gone. */
       confirmHeldSession?: true
     }
-  | { available: false; reason: AiVaultResumeInChatBlockedReason }
+  | { available: false; reason: Exclude<AiVaultResumeInChatBlockedReason, 'held'> }
+  | {
+      available: false
+      reason: 'held'
+      /** The open terminal the host says holds the session, when this window can open it. */
+      openTerminal?: AiVaultOriginalPaneTarget
+    }
 
 /** What a Droid terminal pane's row says about the process holding a session. `live` blocks the
  *  chat; `unverifiable` asks first. A process proven exited is not a holder, so it is not here. */
-export type AiVaultDroidHolder = 'live' | 'unverifiable'
+export type AiVaultDroidHolder = AiVaultDroidSessionHolderVerdict
+
+/** The agents a history row can resume into a chat: the provider-handle agents, plus Droid. */
+export type AiVaultResumeInChatAgent = AgentSessionHandleProvider | 'droid'
 
 /**
  * Claude and Droid do not have the same freedom about *where* a conversation may be resumed as
@@ -55,7 +69,9 @@ export function aiVaultSessionResumeInChatWorkspaceMatters(
 
 /** Droid is not a provider-handle agent (`isAgentSessionHandleProvider` stays Claude and Codex),
  *  so its chat resume is its own branch rather than a widening of that guard. */
-export function aiVaultSessionHasResumeInChatBranch(agent: AiVaultSession['agent']): boolean {
+export function aiVaultSessionHasResumeInChatBranch(
+  agent: AiVaultSession['agent']
+): agent is AiVaultResumeInChatAgent {
   return isAgentSessionHandleProvider(agent) || agent === 'droid'
 }
 
@@ -89,7 +105,8 @@ export function resolveAiVaultSessionResumeInChatEligibility(args: {
    *  not apply. Reused rather than re-derived: it already encodes host capability, platform refusals
    *  and the WSL/repair refusal, and a second copy of those conditions would drift from it. */
   structuredRouteAvailable: boolean
-  /** Who holds a Droid session in a terminal pane; read for Droid rows only. */
+  /** Who holds a Droid session in a terminal pane; read for Droid rows only. `null` is the host's
+   *  proof that nobody does; omitted means nobody was asked, which is cannot-tell, never free. */
   droidHolder?: AiVaultDroidHolder | null
 }): AiVaultResumeInChatEligibility {
   const { session } = args
@@ -122,14 +139,18 @@ export function resolveAiVaultSessionResumeInChatEligibility(args: {
   ) {
     return { available: false, reason: 'workspace' }
   }
-  if (session.agent === 'droid' && args.droidHolder === 'live') {
+  const droidHolder =
+    session.agent !== 'droid'
+      ? null
+      : args.droidHolder === undefined
+        ? 'unverifiable'
+        : args.droidHolder
+  if (droidHolder === 'live') {
     return { available: false, reason: 'held' }
   }
   return {
     available: true,
     workspaceId: args.targetWorkspaceId,
-    ...(session.agent === 'droid' && args.droidHolder === 'unverifiable'
-      ? { confirmHeldSession: true as const }
-      : {})
+    ...(droidHolder === 'unverifiable' ? { confirmHeldSession: true as const } : {})
   }
 }

@@ -2,7 +2,6 @@ import { toast } from 'sonner'
 import { translate } from '@/i18n/i18n'
 import { useAppStore } from '@/store'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
-import type { AgentSessionHandleProvider } from '../../../../shared/agent-session-provider-handle'
 import { hasRuntimeRpcErrorCode } from '../../../../shared/runtime-rpc-error-code'
 import { parseWorkspaceKey } from '../../../../shared/workspace-scope'
 import { prepareAiVaultSessionForResume } from '@/lib/ai-vault-session-resume-preparation'
@@ -13,6 +12,7 @@ import {
   activateAndRevealWorktree
 } from '@/lib/worktree-activation'
 import { beginStructuredAgentSessionProvisionalLaunch } from '@/lib/structured-agent-session-provisional-tab'
+import type { AiVaultResumeInChatAgent } from './ai-vault-session-resume-in-chat'
 
 export function activateAiVaultResumeWorkspace(workspaceId: string): boolean {
   const workspaceScope = parseWorkspaceKey(workspaceId)
@@ -28,7 +28,7 @@ export function activateAiVaultResumeWorkspace(workspaceId: string): boolean {
  *  would hide the refusal the user needs to see. */
 export async function resumeAiVaultSessionInNewChat(
   session: AiVaultSession,
-  agent: AgentSessionHandleProvider,
+  agent: AiVaultResumeInChatAgent,
   worktreeId: string,
   requestId: AgentLaunchRequestId
 ): Promise<void> {

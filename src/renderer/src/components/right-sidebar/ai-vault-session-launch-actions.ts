@@ -23,12 +23,8 @@ import type { AiVaultSessionResumeTargetState } from './ai-vault-session-resume'
 import { prepareAiVaultSessionContinuation } from './ai-vault-session-continuation'
 import type { AgentSessionContinuationRequest } from '@/lib/agent-session-continuation'
 import { activateAiVaultStructuredSession } from '@/lib/activate-ai-vault-structured-session'
-import { isAgentSessionHandleProvider } from '../../../../shared/agent-session-provider-handle'
-import { newAgentLaunchRequestId } from '@/lib/agent-launch-request-id'
-import {
-  activateAiVaultResumeWorkspace,
-  resumeAiVaultSessionInNewChat
-} from './ai-vault-session-resume-in-chat-launch'
+import { useAiVaultResumeInNewChatAction } from './ai-vault-session-resume-in-chat-action'
+import { activateAiVaultResumeWorkspace } from './ai-vault-session-resume-in-chat-launch'
 import {
   aiVaultResumeUnsupportedMessage,
   resolveAiVaultSessionLaunchTarget,
@@ -195,29 +191,8 @@ export function useAiVaultSessionLaunchActions({
     [agentCmdOverrides, launchInTerminal]
   )
 
-  const handleResumeInNewChat = useCallback(
-    (session: AiVaultSession, targetWorktreeId?: string): void => {
-      if (!isAgentSessionHandleProvider(session.agent)) {
-        return
-      }
-      const worktreeId = targetWorktreeId ?? activeWorktreeId ?? activeWorktree?.id ?? null
-      if (!worktreeId) {
-        toast.error(
-          translate(
-            'auto.components.right.sidebar.AiVaultPanel.openWorkspaceBeforeResuming',
-            'Open a workspace before resuming a session.'
-          )
-        )
-        return
-      }
-      void resumeAiVaultSessionInNewChat(
-        session,
-        session.agent,
-        worktreeId,
-        newAgentLaunchRequestId()
-      )
-    },
-    [activeWorktree?.id, activeWorktreeId]
+  const handleResumeInNewChat = useAiVaultResumeInNewChatAction(
+    activeWorktreeId ?? activeWorktree?.id ?? null
   )
 
   const handleContinueInNewSession = useCallback(

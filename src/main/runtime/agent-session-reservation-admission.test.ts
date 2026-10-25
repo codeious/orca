@@ -12,6 +12,10 @@ import type {
 import type { AgentSessionOwnerProbe } from '../../shared/agent-session-lease-adjudication'
 import type { AgentSessionProviderHandleLink } from '../../shared/agent-session-provider-handle'
 import {
+  DROID_ACCOUNT_HOME_VARIABLE,
+  DROID_HANDLE_TRANSPORT
+} from '../droid/droid-agent-definition'
+import {
   applyAgentSessionReservation,
   type AgentSessionReserveRequest
 } from './agent-session-reservation-admission'
@@ -213,6 +217,50 @@ describe('adopted conversation ownership', () => {
         LEASE_TTL_MS
       )
     ).toThrow('agent_session_conflict')
+  })
+})
+
+describe('adopted Droid conversation ownership', () => {
+  const droidHandle = (nativeId: string) => ({
+    transport: DROID_HANDLE_TRANSPORT,
+    agent: 'droid' as const,
+    nativeId
+  })
+  const droidHolder: AgentSessionRecord = {
+    ...agentSessionRecordFixture(agentSessionLeaseFixture({ sessionId: 'session-droid' })),
+    provider: 'droid',
+    accountHome: { variable: DROID_ACCOUNT_HOME_VARIABLE, path: '/home/dev/.factory' },
+    providerHandleChain: [
+      {
+        linkId: 'droid-1-session-1',
+        handle: droidHandle('session-1'),
+        origin: 'adopted',
+        mintedAtFence: 1,
+        observedAt: NOW
+      }
+    ]
+  }
+  const adopting = (nativeId: string) =>
+    reserveRequest({
+      sessionId: 'session-droid-adopting',
+      provider: 'droid',
+      accountHome: { variable: DROID_ACCOUNT_HOME_VARIABLE, path: '/home/dev/.factory' },
+      adoptedHandleLink: adoptedLink({
+        linkId: `droid-1-${nativeId}`,
+        handle: droidHandle(nativeId)
+      })
+    })
+
+  it('refuses a Droid adoption another record already holds', () => {
+    expect(() =>
+      applyAgentSessionReservation(storeState([droidHolder]), adopting('session-1'), LEASE_TTL_MS)
+    ).toThrow('agent_session_conflict')
+  })
+
+  it('admits a different Droid session', () => {
+    expect(() =>
+      applyAgentSessionReservation(storeState([droidHolder]), adopting('session-2'), LEASE_TTL_MS)
+    ).not.toThrow()
   })
 })
 

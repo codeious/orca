@@ -26,7 +26,7 @@ export type LegacyIdentityTracker = {
 }
 
 export function createLegacyIdentityTracker(input: {
-  transcriptAgent: NativeChatTranscriptAgent
+  transcriptAgent: NativeChatTranscriptAgent | 'droid'
   agent: AgentType
   sessionId: string
 }): LegacyIdentityTracker {

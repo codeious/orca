@@ -27,6 +27,7 @@ import {
   decodeGrokTranscriptLine,
   decodeOmpTranscriptLine
 } from '../transcript-line-decoders'
+import { decodeDroidTranscriptLine } from '../transcript-line-decoders-droid'
 import { decodeTranscriptStream } from '../transcript-stream-lines'
 import { boundSubagentEntryId } from '../subagent-entry-id-bounds'
 import { createLegacyIdentityTracker } from './journal-legacy-identity'
@@ -88,7 +89,9 @@ export async function prepareLegacyTranscriptImport(input: {
 }): Promise<{ ok: true; items: JournalReplacementItem[] } | { ok: false; error: string }> {
   const options = input.options ?? {}
   const limits = options.limits ?? DEFAULT_JOURNAL_PAYLOAD_LIMITS
-  const transcriptAgent = resolveNativeChatTranscriptAgent(input.agent)
+  // Droid is not a native-chat transcript agent (no PTY view reads its file); only adoption imports it.
+  const transcriptAgent =
+    input.agent === 'droid' ? 'droid' : resolveNativeChatTranscriptAgent(input.agent)
   if (!transcriptAgent || transcriptAgent === 'opencode') {
     return { ok: false, error: `Unsupported agent for journal import: ${input.agent}` }
   }
@@ -148,7 +151,8 @@ const TRANSCRIPT_DECODERS = {
   claude: decodeClaudeTranscriptLine,
   codex: decodeCodexTranscriptLine,
   grok: decodeGrokTranscriptLine,
-  omp: decodeOmpTranscriptLine
+  omp: decodeOmpTranscriptLine,
+  droid: decodeDroidTranscriptLine
 } as const
 
 /** Run the real decoder while recording an identity anchor per emitted message,

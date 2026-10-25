@@ -9,7 +9,7 @@ vi.mock('../telemetry/client', () => ({ track: vi.fn() }))
 vi.mock('../telemetry/cohort-classifier', () => ({ getCohortAtEmit: () => ({}) }))
 
 const probe = vi.hoisted(() =>
-  vi.fn(async (): Promise<'live' | 'unverifiable' | 'exited'> => 'live')
+  vi.fn(async (_target: { pid: number }): Promise<'live' | 'unverifiable' | 'exited'> => 'live')
 )
 vi.mock('../../shared/agent-process-presence-probe', () => ({ probeAgentProcessPresence: probe }))
 
@@ -42,6 +42,10 @@ async function startServer(): Promise<AgentHookServer> {
 
 function identity(pid: number): string {
   return JSON.stringify({ pid, platform: process.platform, startTime: `birth-${pid}` })
+}
+
+async function holderOf(server: AgentHookServer): Promise<unknown> {
+  return (await server.droidSessionHolder(SESSION)).holder
 }
 
 async function hook(
@@ -83,7 +87,7 @@ describe('the pane that holds a Droid session', () => {
     await hook(server, 'UserPromptSubmit')
     await hook(server, 'Stop')
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBe('live')
+    await expect(holderOf(server)).resolves.toBe('live')
   })
 
   it('is unverifiable when the process cannot be read', async () => {
@@ -91,14 +95,14 @@ describe('the pane that holds a Droid session', () => {
     await hook(server, 'UserPromptSubmit')
     probe.mockResolvedValue('unverifiable')
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBe('unverifiable')
+    await expect(holderOf(server)).resolves.toBe('unverifiable')
   })
 
   it('is unverifiable when the row carries no process identity, so Resume asks', async () => {
     const server = await startServer()
     await hook(server, 'UserPromptSubmit', { pid: null })
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBe('unverifiable')
+    await expect(holderOf(server)).resolves.toBe('unverifiable')
     expect(probe).not.toHaveBeenCalled()
   })
 
@@ -107,7 +111,7 @@ describe('the pane that holds a Droid session', () => {
     await hook(server, 'SessionStart', { fields: { source: 'resume' } })
 
     // No row means no captured process to read, so the host cannot call it free or held.
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBe('unverifiable')
+    await expect(holderOf(server)).resolves.toBe('unverifiable')
     expect(probe).not.toHaveBeenCalled()
   })
 
@@ -116,7 +120,7 @@ describe('the pane that holds a Droid session', () => {
     await hook(server, 'SessionStart', { fields: { source: 'resume' } })
     await hook(server, 'UserPromptSubmit')
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBe('live')
+    await expect(holderOf(server)).resolves.toBe('live')
   })
 
   it('holds nothing once the process is proven exited, though the row keeps the id for resume', async () => {
@@ -125,10 +129,10 @@ describe('the pane that holds a Droid session', () => {
     await hook(server, 'UserPromptSubmit')
     probe.mockResolvedValue('exited')
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBeNull()
+    await expect(holderOf(server)).resolves.toBeNull()
     // The row is now ended, and a later question needs no second probe.
     probe.mockClear()
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBeNull()
+    await expect(holderOf(server)).resolves.toBeNull()
     expect(probe).not.toHaveBeenCalled()
   })
 
@@ -138,7 +142,7 @@ describe('the pane that holds a Droid session', () => {
     await hook(server, 'UserPromptSubmit', { pane: OTHER_PANE, pid: 5151 })
     probe.mockImplementation(async () => (probe.mock.calls.length === 1 ? 'unverifiable' : 'live'))
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBe('live')
+    await expect(holderOf(server)).resolves.toBe('live')
   })
 
   describe('on an SSH host', () => {
@@ -160,7 +164,7 @@ describe('the pane that holds a Droid session', () => {
       const server = await startServer()
       server.ingestRemote(remote, 'ssh-1')
 
-      await expect(server.droidSessionHolder(SESSION)).resolves.toBe('unverifiable')
+      await expect(holderOf(server)).resolves.toBe('unverifiable')
       expect(probe).not.toHaveBeenCalled()
     })
 
@@ -178,7 +182,7 @@ describe('the pane that holds a Droid session', () => {
         'ssh-1'
       )
 
-      await expect(server.droidSessionHolder(SESSION)).resolves.toBeNull()
+      await expect(holderOf(server)).resolves.toBeNull()
     })
 
     it('stays held when an exit report does not name the holder process', async () => {
@@ -195,7 +199,7 @@ describe('the pane that holds a Droid session', () => {
         'ssh-1'
       )
 
-      await expect(server.droidSessionHolder(SESSION)).resolves.toBe('unverifiable')
+      await expect(holderOf(server)).resolves.toBe('unverifiable')
     })
   })
 
@@ -203,7 +207,7 @@ describe('the pane that holds a Droid session', () => {
     const server = await startServer()
     await hook(server, 'SessionStart', { session: 'someone-elses' })
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBeNull()
+    await expect(holderOf(server)).resolves.toBeNull()
     expect(probe).not.toHaveBeenCalled()
   })
 
@@ -216,13 +220,95 @@ describe('the pane that holds a Droid session', () => {
       pid: 5151
     })
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBeNull()
+    await expect(holderOf(server)).resolves.toBeNull()
   })
 
   it('does not count another agent that happens to share the id', async () => {
     const server = await startServer()
     await hook(server, 'UserPromptSubmit', { source: 'claude' })
 
-    await expect(server.droidSessionHolder(SESSION)).resolves.toBeNull()
+    await expect(holderOf(server)).resolves.toBeNull()
+  })
+})
+
+describe('the panes named as holding a Droid session', () => {
+  it('names the pane that holds it, with what its own process says', async () => {
+    const server = await startServer()
+    await hook(server, 'UserPromptSubmit')
+
+    await expect(server.droidSessionHolder(SESSION)).resolves.toEqual({
+      holder: 'live',
+      panes: [{ paneKey: PANE, verdict: 'live' }]
+    })
+  })
+
+  it('gives each pane its own verdict rather than the aggregate one', async () => {
+    const server = await startServer()
+    await hook(server, 'UserPromptSubmit', { pane: PANE, pid: 4242 })
+    await hook(server, 'UserPromptSubmit', { pane: OTHER_PANE, pid: 5151 })
+    probe.mockImplementation(async (target) => (target.pid === 5151 ? 'live' : 'unverifiable'))
+
+    const answer = await server.droidSessionHolder(SESSION)
+
+    expect(answer.holder).toBe('live')
+    expect(answer.panes).toHaveLength(2)
+    expect(answer.panes).toContainEqual({ paneKey: PANE, verdict: 'unverifiable' })
+    expect(answer.panes).toContainEqual({ paneKey: OTHER_PANE, verdict: 'live' })
+  })
+
+  it('leaves out a pane whose process is proven exited', async () => {
+    const server = await startServer()
+    await hook(server, 'UserPromptSubmit', { pane: PANE, pid: 4242 })
+    await hook(server, 'UserPromptSubmit', { pane: OTHER_PANE, pid: 5151 })
+    probe.mockImplementation(async (target) => (target.pid === 4242 ? 'exited' : 'live'))
+
+    await expect(server.droidSessionHolder(SESSION)).resolves.toEqual({
+      holder: 'live',
+      panes: [{ paneKey: OTHER_PANE, verdict: 'live' }]
+    })
+  })
+
+  it('names no pane when nothing holds it', async () => {
+    const server = await startServer()
+    await hook(server, 'UserPromptSubmit')
+    probe.mockResolvedValue('exited')
+
+    await expect(server.droidSessionHolder(SESSION)).resolves.toEqual({ holder: null, panes: [] })
+  })
+
+  it('names a resumed pane that has no row yet, as unverifiable', async () => {
+    const server = await startServer()
+    await hook(server, 'SessionStart', { fields: { source: 'resume' } })
+
+    await expect(server.droidSessionHolder(SESSION)).resolves.toEqual({
+      holder: 'unverifiable',
+      panes: [{ paneKey: PANE, verdict: 'unverifiable' }]
+    })
+  })
+
+  it('names an SSH pane as unverifiable without probing it here', async () => {
+    const server = await startServer()
+    server.ingestRemote(
+      {
+        paneKey: PANE,
+        tabId: 'tab-1',
+        worktreeId: 'wt-1',
+        source: 'droid',
+        hookEventName: 'UserPromptSubmit',
+        providerSession: { key: 'session_id', id: SESSION },
+        agentPresence: {
+          agent: 'droid',
+          process: { pid: 4242, platform: 'linux', startTime: 'remote-birth' }
+        },
+        payload: { state: 'working', prompt: 'remote task', agentType: 'droid' }
+      },
+      'ssh-1'
+    )
+
+    await expect(server.droidSessionHolder(SESSION)).resolves.toEqual({
+      holder: 'unverifiable',
+      panes: [{ paneKey: PANE, verdict: 'unverifiable' }]
+    })
+    expect(probe).not.toHaveBeenCalled()
   })
 })

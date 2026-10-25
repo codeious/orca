@@ -3,6 +3,7 @@ import { isAntigravityReferenceSession } from '../../../../shared/antigravity-se
 import type { AiVaultScope, AiVaultSession } from '../../../../shared/ai-vault-types'
 import type { AiVaultResumeStartup } from '@/lib/ai-vault-resume-command'
 import { cn } from '@/lib/utils'
+import { translate } from '@/i18n/i18n'
 import { VaultGroupHeader } from './AiVaultPanelControls'
 import { VaultSessionRow } from './AiVaultSessionRow'
 import type { AiVaultSessionGroup } from './ai-vault-session-filters'
@@ -84,7 +85,7 @@ export function AiVaultVirtualRow({
   getSessionResumeInChat: (session: AiVaultSession) => AiVaultResumeInChatEligibility
   onToggleGroup: (key: string) => void
   onToggleSessionDetails: (sessionId: string) => void
-  onJumpToOriginalPane: (session: AiVaultSession) => void
+  onJumpToOriginalPane: (session: AiVaultSession, terminal?: AiVaultOriginalPaneTarget) => void
   onJumpToWorktree: (worktreeId: string) => void
   onResume: (session: AiVaultSession, worktreeId: string) => void
   onContinueInNewSession: (session: AiVaultSession, worktreeId: string) => void
@@ -117,6 +118,11 @@ export function AiVaultVirtualRow({
   const resumeState = row.type === 'session' ? getSessionResumeState(row.session) : null
   const resumeActions = row.type === 'session' ? getSessionResumeActions(row.session) : null
   const resumeInChat = row.type === 'session' ? getSessionResumeInChat(row.session) : null
+  // Why: a held Droid row is not resumable; the host-named terminal is what the row offers instead.
+  const openTerminal =
+    resumeInChat && !resumeInChat.available && resumeInChat.reason === 'held'
+      ? resumeInChat.openTerminal
+      : undefined
   const continuationWorktreeId =
     row.type === 'session' &&
     canContinueAiVaultSessionInNewSession(row.session, resumeState?.worktreeId)
@@ -194,8 +200,16 @@ export function AiVaultVirtualRow({
           resumeActions={visibleResumeActions}
           onToggleDetails={() => onToggleSessionDetails(row.session.id)}
           onJumpToOriginalPane={
-            originalPaneTarget || structuredSessionOpen
-              ? () => onJumpToOriginalPane(row.session)
+            openTerminal || originalPaneTarget || structuredSessionOpen
+              ? () => onJumpToOriginalPane(row.session, openTerminal)
+              : undefined
+          }
+          jumpToOriginalPaneLabel={
+            openTerminal
+              ? translate(
+                  'auto.components.right.sidebar.AiVaultSessionRow.openTerminal',
+                  'Open terminal'
+                )
               : undefined
           }
           resumeHidden={structuredSessionOpen}

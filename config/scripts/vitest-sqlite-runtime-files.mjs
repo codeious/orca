@@ -18,6 +18,7 @@ export const SQLITE_RUNTIME_INCLUDE = [
   'src/main/pi/rpc-turn-races.test.ts',
   'src/main/droid/droid-turns.test.ts',
   'src/main/droid/droid-steering.test.ts',
+  'src/main/runtime/rpc/methods/structured-agent-session-droid-adoption-replay.test.ts',
   'src/main/droid/droid-configured-default.test.ts',
   'src/main/agent-hooks/server-droid-background-child-lease.test.ts',
   'src/wsl-guest/agent-hook-server-droid-background-child-lease.test.ts',

@@ -67,6 +67,10 @@ export const AiVaultPrepareSessionResumeParams = z.object({
   fork: z.boolean().optional()
 })
 
+export const AiVaultDroidSessionHolderParams = z.object({
+  sessionId: z.string().min(1).max(512)
+})
+
 export const AiVaultSessionTitlesParams = z.object({
   requests: z
     .array(

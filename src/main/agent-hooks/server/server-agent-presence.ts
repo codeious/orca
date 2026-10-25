@@ -6,9 +6,11 @@ import {
 import { probeAgentProcessPresence } from '../../../shared/agent-process-presence-probe'
 import { AgentProcessExitWatch } from '../../../shared/agent-process-exit-watch'
 import { droidExitMarker } from '../../../shared/agent-hook-listener/providers/droid-sessions'
+import type {
+  AiVaultDroidHoldingPane,
+  AiVaultDroidSessionHolderResult
+} from '../../../shared/ai-vault-droid-session-holder'
 import { AgentHookServerLifecycle } from './server-lifecycle'
-
-export type DroidSessionHolder = Exclude<AgentProcessVerdict, 'exited'>
 
 export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecycle {
   private readonly presenceChecks = new WeakMap<
@@ -53,8 +55,8 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
     return presence?.process !== undefined && !presence.ended
   }
 
-  /** The firmest hold a terminal pane has on a Droid session, or null when none does. */
-  async droidSessionHolder(sessionId: string): Promise<DroidSessionHolder | null> {
+  /** The firmest hold a terminal pane has on a Droid session (null when none does), with each pane that has one. */
+  async droidSessionHolder(sessionId: string): Promise<AiVaultDroidSessionHolderResult> {
     // Why: a pane has no row until its first prompt, so a resumed session idling at its prompt is
     // only in the pane's session record.
     const panes = new Set<string>()
@@ -68,7 +70,7 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
         panes.add(paneKey)
       }
     }
-    const checks: Promise<AgentProcessVerdict | null>[] = []
+    const checks: Promise<{ paneKey: string; verdict: AgentProcessVerdict | null }>[] = []
     for (const paneKey of panes) {
       const row = this.state.lastStatusByPaneKey.get(paneKey)
       // Why: a Droid pane's session record outlives the Droid when another agent takes the pane.
@@ -76,17 +78,21 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
         continue
       }
       // Why: a pane with no captured process cannot be proven gone, so it is never read as free.
-      checks.push(
-        row?.agentPresence?.process
-          ? this.checkAgentPresence(paneKey)
-          : Promise.resolve('unverifiable')
-      )
+      const check = row?.agentPresence?.process
+        ? this.checkAgentPresence(paneKey)
+        : Promise.resolve('unverifiable' as const)
+      checks.push(check.then((verdict) => ({ paneKey, verdict })))
     }
-    const verdicts = await Promise.all(checks)
-    if (verdicts.includes('live')) {
-      return 'live'
+    const holding: AiVaultDroidHoldingPane[] = []
+    for (const { paneKey, verdict } of await Promise.all(checks)) {
+      if (verdict === 'live' || verdict === 'unverifiable') {
+        holding.push({ paneKey, verdict })
+      }
     }
-    return verdicts.includes('unverifiable') ? 'unverifiable' : null
+    if (holding.some((pane) => pane.verdict === 'live')) {
+      return { holder: 'live', panes: holding }
+    }
+    return { holder: holding.length > 0 ? 'unverifiable' : null, panes: holding }
   }
 
   checkAgentPresence(paneKey: string): Promise<AgentProcessVerdict | null> {

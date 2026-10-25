@@ -160,9 +160,17 @@ describe('Droid rows', () => {
     })
 
   it('offers the chat for a local Droid row in its own folder that nobody holds', () => {
-    expect(eligibility({ session: droid() })).toEqual({
+    expect(eligibility({ session: droid(), droidHolder: null })).toEqual({
       available: true,
       workspaceId: 'repo-1::/repo/orca'
+    })
+  })
+
+  it('does not call a Droid row free before anyone has asked who holds it', () => {
+    expect(eligibility({ session: droid() })).toEqual({
+      available: true,
+      workspaceId: 'repo-1::/repo/orca',
+      confirmHeldSession: true
     })
   })
 

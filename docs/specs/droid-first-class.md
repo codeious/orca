@@ -161,7 +161,7 @@ Droid enforces approvals (`approvalEnforcement: provider`). Orca never answers f
 ### 5.7 Status and search
 
 - One row per Droid session in the AI vault. A structured session is marked chat-owned and not listed twice, by widening the `claude`/`codex`-only join in `src/main/ai-vault/structured-session-ownership.ts` to include Droid. Droid is already scanned from its own transcripts, so no second index is needed. Sessions on SSH or WSL stay terminal rows.
-- The vault stops counting records with `visibility` `llm_only` or `user_only`, and `completion` lines, as messages (`src/main/ai-vault/session-scanner-droid-parser.ts`). A session that only failed to sign in is then empty and cannot be resumed.
+- The vault stops counting records with `visibility` `llm_only` or `user_only`, and `completion` lines, as messages (`src/main/ai-vault/session-scanner-droid-parser.ts`). A session whose only records are hidden ones, such as a failed sign-in with nothing typed, is then empty and cannot be resumed. A prompt the user typed still counts as a message, so a signed-out session that received one is not empty.
 
 ## 6. Droid terminal session: hooks and status row (ADR 0004, 0005, 0007)
 
@@ -257,7 +257,7 @@ Droid takes no lock. A second process loads a held session without error and app
 
 **Adapter rules.**
 
-- Load with `droid.load_session` only. It works from any folder, returns the id in `result.session.id`, and writes nothing. Compare the folder Droid reports with the workspace and close the process on a mismatch.
+- Load with `droid.load_session` only. It works from any folder and writes nothing. On 0.238.0 and 0.249.0 its reply names no session id (the adapter keeps the id it sent; `droid.initialize_session` replies with a `session` that has no `id` either) and reports the folder in `result.cwd`. Compare that folder with the workspace, both resolved to real paths, and close the process on a mismatch. When the recorded folder no longer exists, `result.cwd` is the loader's folder, so a deleted folder is invisible there; read it from the vault's recorded `session_start.cwd`.
 - Never call `droid.initialize_session` with an existing id (it writes a second file with the same id under the new folder). Never call `droid.change_working_directory` (not a published contract, needs a trusted folder, and the change lives in Droid's session index where the vault cannot see it).
 - A loaded session's tools run in the folder it was recorded in, whichever folder the loading process, `droid --resume`, or `droid --fork` started in.
 - The adapter reports its Droid session id as a provider handle (agent `droid`) and joins the shared ownership list.
@@ -267,7 +267,7 @@ Droid takes no lock. A second process loads a held session without error and app
 - Refused while a chat owns the id: `-r <id>`, `--resume <id>`, `droid resume <id>`, `droid exec -s <id>`, `droid exec --session-id <id>`.
 - Treated as target-less and refused while any Droid chat is live: `--resume` with no id, `--last`, `droid resume` with no id, a session link as the target.
 - Always allowed: `--fork`.
-- Flags were read from `droid --help` on 0.244.0. Re-check on the 0.238.0 floor before the grammar ships (section 15).
+- Flags were read from `droid --help`, `droid resume --help`, and `droid exec --help` on 0.244.0, then re-checked on 0.238.0 and 0.249.0: the grammar is the same. Inside `droid exec`, `-r` is the reasoning effort, not resume, so only the root command reads it as resume.
 
 **Host query.** The host needs a query that joins a session id to the pane rows holding it and to each pane's verdict. Nothing does that today. It runs where the transcript lives.
 
@@ -477,7 +477,7 @@ The map's order is session core, Missions, config UIs, `droid exec` automation, 
 A Mission spends credits, so these are done by hand and repeated when a version changes.
 
 - **Mission hosting.** Whenever the Droid floor is raised, re-check that workers and validators run inside the TUI process (ADR 0005). Raising the floor without it leaves worker verdicts `unverifiable`.
-- **Resume and fork flags.** Re-check `-r`, `--resume`, `droid resume`, `-s`, `--session-id`, and `--fork` on the 0.238.0 floor before the guard grammar ships. `droid --fork` itself ran on 0.238.0.
+- **Resume and fork flags.** Checked on 0.238.0 and 0.249.0 while building the guard grammar (`-r`, `--resume`, `droid resume`, `-s`, `--session-id`, `--fork`): the same grammar on both. Repeat it whenever the Droid floor is raised.
 - **Pause gate.** Pause is gated at 0.245.1, the one version run. A by-hand Esc run on 0.238.0 and 0.244.0 can lower the gate.
 - **Real-CLI gates.** A no-prompt `droid.initialize_session` in a throwaway `HOME` fires `SessionStart` with no credits. A signed-out throwaway `HOME` reaches `model_authentication_failed` on the first prompt with no credits. The signed-out terminal stops at the login screen, so no terminal-launch check can run signed out. A signed-in launch with nothing typed spends no credits.
 - **Captured transcripts.** Any rule that reads a Droid screen (the signed-out rule, a future guarded Enter) is written against a transcript captured with `config/scripts/capture-agent-pty-transcript.mjs`. That script's secret scan passed a plain email in a control file, so search committed files for keys, emails, and UUIDs yourself.

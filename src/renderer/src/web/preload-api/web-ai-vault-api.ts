@@ -7,6 +7,11 @@ import type {
   AiVaultPrepareSessionResumeArgs,
   AiVaultPrepareSessionResumeResult
 } from '../../../../shared/ai-vault-resume-preparation'
+import {
+  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT,
+  parseAiVaultDroidSessionHolderResult,
+  type AiVaultDroidSessionHolderArgs
+} from '../../../../shared/ai-vault-droid-session-holder'
 import type { AiVaultDeleteSessionArgs } from '../../../../shared/ai-vault-session-deletion'
 import type {
   AiVaultSessionTitlesArgs,
@@ -84,6 +89,20 @@ export function createWebAiVaultApi(): NonNullable<Partial<PreloadApi>['aiVault'
     cancelListSessions: () => Promise.resolve(),
     prepareSessionResume: (args: AiVaultPrepareSessionResumeArgs) =>
       callRuntimeResult<AiVaultPrepareSessionResumeResult>('aiVault.prepareSessionResume', args),
+    // Why: only the paired runtime owns its panes; any other host, or a failed ask, cannot be told.
+    droidSessionHolder: async (args: AiVaultDroidSessionHolderArgs) => {
+      try {
+        const ownRuntimeId = toRuntimeExecutionHostId(requireActiveEnvironment().id)
+        if (normalizeExecutionHostId(args.executionHostId) !== ownRuntimeId) {
+          return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
+        }
+        return parseAiVaultDroidSessionHolderResult(
+          await callRuntimeResult('aiVault.droidSessionHolder', { sessionId: args.sessionId })
+        )
+      } catch {
+        return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
+      }
+    },
     // Why: no server-side RPC for subagent transcript listing yet, so report an empty (not erroring) result.
     listSubagentSessions: () => Promise.resolve({ sessions: [], issues: [] }),
     // Why: full first-prompt re-parse is local-FS only; web/runtime falls back to preview text.
