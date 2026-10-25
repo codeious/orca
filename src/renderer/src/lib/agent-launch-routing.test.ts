@@ -205,6 +205,23 @@ describe('a per-agent launch setting', () => {
     expect(structuredAgentLaunchDowngrade(input, route(input))).toBeNull()
   })
 
+  // The floating workspace takes no rule of its own: it follows the setting exactly as it follows the switch.
+  it.each(['git-worktree', 'folder', 'floating'] as const)(
+    'decides a %s workspace by the same choice',
+    (workspaceKind) => {
+      const terminal = {
+        experimentalNativeChat: true,
+        agentLaunchModes: { droid: 'terminal' as const }
+      }
+      const chat = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' as const } }
+
+      expect(route({ ...droidSupported, workspaceKind, settings: terminal })).toBe('terminal-tui')
+      expect(route({ ...droidSupported, workspaceKind, settings: chat })).toBe(
+        'structured-native-chat'
+      )
+    }
+  )
+
   it('never lets Terminal stop an explicit chat request such as Resume in new chat', () => {
     const settings = {
       experimentalNativeChat: false,
