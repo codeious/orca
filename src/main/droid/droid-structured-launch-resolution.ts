@@ -1,3 +1,4 @@
+import { isAbsolute } from 'node:path'
 import {
   agentSessionProviderHandleChainHead,
   type AgentSessionProviderHandleLink
@@ -85,8 +86,10 @@ export function createDroidLaunchResolver(
     const command = resolveDroidCommand(env, deps.resolveCommandSettings?.(), deps.resolveCommand)
     // Again at every launch: the binary on PATH may have changed since the chat was created.
     const version = await readDroidVersion({ command, cwd, env }, deps.readVersion, deps.orcaEnv)
-    if (version !== null && !isSupportedDroidVersion(version)) {
-      const older = unsupportedDroidRelease(version)
+    // Why: a bare name means nothing is installed, which the spawn refuses in words a person can act on.
+    const unreadable = version === null && isAbsolute(command)
+    if (unreadable || (version !== null && !isSupportedDroidVersion(version))) {
+      const older = version === null ? null : unsupportedDroidRelease(version)
       throw AgentSessionPreSpawnError.unsupportedRelease(
         older
           ? { version: older.found, floor: older.floor, updateCommand: older.updateCommand }

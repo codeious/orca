@@ -152,10 +152,20 @@ describe('Droid host launch resolution', () => {
     })
   })
 
-  it('leaves an unreadable release to the spawn, which states a missing binary itself', async () => {
+  it('refuses an installed Droid whose release cannot be read, as a new chat does', async () => {
     const h = await setup()
     readVersion.mockResolvedValue(null)
-    await expect(h.resolver(identity)).resolves.toMatchObject({ command: '/host/bin/droid' })
+    await expect(h.resolver(identity)).rejects.toMatchObject({
+      name: 'AgentSessionPreSpawnError',
+      releaseFacts: {}
+    })
+  })
+
+  it('leaves a missing binary to the spawn, which states it in words a person can act on', async () => {
+    const h = await setup()
+    h.resolveCommand.mockReturnValue('droid')
+    readVersion.mockResolvedValue(null)
+    await expect(h.resolver(identity)).resolves.toMatchObject({ command: 'droid' })
   })
 
   it('carries the previous Droid session so the start loads it', async () => {
