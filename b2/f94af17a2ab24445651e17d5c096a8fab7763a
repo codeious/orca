@@ -1,0 +1,31 @@
+src/main/native-chat/agent-session-wire/structured-agent-session-adapter.ts
+  s_48f3bc0d7f0337::t_34351526f71d9a 123-128
+src/main/native-chat/agent-session-wire/structured-agent-session-pre-spawn-error.ts
+  s_48f3bc0d7f0337::t_597617919cddee 1-51
+src/main/native-chat/agent-session-wire/structured-agent-session-failed-create-refusal.ts
+  s_48f3bc0d7f0337::t_e41618448ee810 49-77,106-117,181-184
+src/main/native-chat/agent-session-wire/structured-agent-session-pre-spawn-first-answer.test.ts
+  s_48f3bc0d7f0337::t_27ec6e6072e72d 118-119,235-268
+src/main/native-chat/agent-session-wire/structured-agent-session-refusal-details.test.ts
+  s_48f3bc0d7f0337::t_a661c89cdc7899 21-24,158-223
+src/main/runtime/orca-runtime-get-structured-agent-session-create-support.ts
+  s_48f3bc0d7f0337::t_13cf489b61baa5 212-220
+src/main/runtime/orca-runtime-structured-agent-session-create-intent.test.ts
+  s_48f3bc0d7f0337::t_3da6b28d45cdef 44,47-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b2f94af17a2ab24445651e17d5c096a8fab7763a",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
