@@ -89,7 +89,8 @@ export function resolveAiVaultSessionResumeInChatEligibility(args: {
    *  not apply. Reused rather than re-derived: it already encodes host capability, platform refusals
    *  and the WSL/repair refusal, and a second copy of those conditions would drift from it. */
   structuredRouteAvailable: boolean
-  /** Who holds a Droid session in a terminal pane; read for Droid rows only. */
+  /** Who holds a Droid session in a terminal pane; read for Droid rows only. `null` is the host's
+   *  proof that nobody does; omitted means nobody was asked, which is cannot-tell, never free. */
   droidHolder?: AiVaultDroidHolder | null
 }): AiVaultResumeInChatEligibility {
   const { session } = args
@@ -122,14 +123,18 @@ export function resolveAiVaultSessionResumeInChatEligibility(args: {
   ) {
     return { available: false, reason: 'workspace' }
   }
-  if (session.agent === 'droid' && args.droidHolder === 'live') {
+  const droidHolder =
+    session.agent !== 'droid'
+      ? null
+      : args.droidHolder === undefined
+        ? 'unverifiable'
+        : args.droidHolder
+  if (droidHolder === 'live') {
     return { available: false, reason: 'held' }
   }
   return {
     available: true,
     workspaceId: args.targetWorkspaceId,
-    ...(session.agent === 'droid' && args.droidHolder === 'unverifiable'
-      ? { confirmHeldSession: true as const }
-      : {})
+    ...(droidHolder === 'unverifiable' ? { confirmHeldSession: true as const } : {})
   }
 }
