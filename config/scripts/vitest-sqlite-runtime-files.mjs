@@ -21,6 +21,7 @@ export const SQLITE_RUNTIME_INCLUDE = [
   'src/main/droid/droid-autonomy-cap.test.ts',
   'src/main/droid/droid-approvals.test.ts',
   'src/main/droid/droid-questions.test.ts',
+  'src/main/droid/droid-spec-option.test.ts',
   'src/main/droid/droid-session-real-cli.test.ts',
   'src/main/droid/droid-structured-launch-resolution.test.ts',
   'src/main/acp/acp-structured-child-session-end.test.ts',

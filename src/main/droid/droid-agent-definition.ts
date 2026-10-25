@@ -20,8 +20,8 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
     approvalEnforcement: 'provider'
   },
   restingOptions: {
-    // No pick reaches Droid until models and modes are wired, so none is taken and then dropped.
-    acceptsKey: () => false,
+    // Spec is the one pick that reaches Droid (the next start opens in it); models are not wired yet.
+    acceptsKey: (key) => key === 'planMode',
     fallbackModels: () => null,
     effortDefaultsToModel: false
   }

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { AgentSessionOptionsResult } from '../../shared/agent-session-wire'
 import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import { providerTimelineSink } from '../native-chat/agent-session-timeline/provider-timeline-plan'
 import {
@@ -12,6 +13,7 @@ import type { ProviderProcessLaunch } from '../provider-process/provider-process
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
 import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
 import { DroidPrompts } from './droid-prompts'
+import { droidCurrentOptions, setDroidSpecMode } from './droid-session-options'
 import {
   DroidReportedSettings,
   type DroidSettings,
@@ -179,8 +181,21 @@ export class DroidSession {
     return id
   }
 
+  readOptions(): AgentSessionOptionsResult {
+    return {
+      models: [],
+      current: droidCurrentOptions(this.settings.current, this.begin.interactionMode)
+    }
+  }
+
+  setSpecMode(on: boolean): Promise<Record<string, string>> {
+    return setDroidSpecMode((params) => this.updateSettings(params), this.begin.interactionMode, on)
+  }
+
   /** What Droid reported holding in answer to this update, if it reported at all. */
-  private async updateSettings(params: DroidStartSettings): Promise<DroidSettings | undefined> {
+  private async updateSettings(
+    params: Partial<DroidStartSettings>
+  ): Promise<DroidSettings | undefined> {
     const sent: { id?: string } = {}
     await this.connection.request('droid.update_session_settings', params, {
       timeoutMs: START_TIMEOUT_MS,

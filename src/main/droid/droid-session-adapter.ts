@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { waitForPromiseWithSignal } from '../../shared/abort-signal-reason'
 import { agentSessionFailureWords } from '../../shared/agent-session-failure-words'
+import { decodeStructuredAgentSessionOptionValue } from '../../shared/structured-agent-session-option-codec'
 import {
   AgentSessionAcquisitionExitProvenError,
   AgentSessionAcquisitionExitUnprovenError,
@@ -185,9 +186,19 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
       input.response,
       input.commit
     )
-  setOption: StructuredAgentSessionAdapter['setOption'] = async () => {
-    throw new AgentSessionOptionRejectedError(new Error('Droid has no options to set'))
+  setOption: StructuredAgentSessionAdapter['setOption'] = async (input) => {
+    const session = this.session(input.sessionId, input.fence)
+    const spec =
+      input.key === 'planMode'
+        ? decodeStructuredAgentSessionOptionValue('planMode', input.value)
+        : null
+    if (typeof spec !== 'boolean') {
+      throw new AgentSessionOptionRejectedError(new Error('Droid has no such option to set'))
+    }
+    return session.setSpecMode(spec)
   }
+  readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = async (input) =>
+    this.session(input.sessionId, input.fence).readOptions()
 
   holdsDispatch(id: string): boolean {
     return this.sessions.get(id)?.turns.holdsDispatch ?? false
