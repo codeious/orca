@@ -280,7 +280,12 @@ describe('structured AI Vault ownership', () => {
       `droid exec --session-id=${DROID_SESSION} "carry on"`,
       `droid exec -m some-model -s ${DROID_SESSION} "carry on"`,
       // The command a vault row stores for its own resume.
-      `cd '/tmp/droid' && droid --resume '${DROID_SESSION}'`
+      `cd '/tmp/droid' && droid --resume '${DROID_SESSION}'`,
+      // Only the first operand can be a subcommand, and the resume flag's own id comes first.
+      `droid --resume ${DROID_SESSION} help`,
+      `droid --resume ${DROID_SESSION} fix search bug`,
+      `droid -r ${DROID_SESSION} --cwd search`,
+      `droid exec -s ${DROID_SESSION} --fork ${OTHER_DROID_SESSION} "carry on"`
     ])('refuses a writer that names the owned session: %s', async (command) => {
       installOwnership({ provider: 'droid', providerSessionId: DROID_SESSION })
 

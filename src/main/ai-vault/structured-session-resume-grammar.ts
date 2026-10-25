@@ -85,24 +85,51 @@ const DROID_SESSION_ID = /^[A-Za-z0-9_-]+$/
 function parseDroidInvocation(args: readonly string[]): Pick<ResumeInvocation, 'target'> | null {
   const terminatorIndex = args.indexOf('--')
   const options = terminatorIndex === -1 ? args : args.slice(0, terminatorIndex)
-  // Droid refuses `exec --session-id` with `--fork`, so a fork never writes the session it reads.
-  if (options.some((token) => token === '--fork' || token.startsWith('--fork='))) {
-    return null
+  const subcommandIndex = droidSubcommandIndex(options)
+  if (subcommandIndex === -1) {
+    return parseDroidRoot(options)
   }
-  const subcommand = options.find((token) => DROID_SUBCOMMANDS.has(token))
+  const subcommand = options[subcommandIndex]
   if (subcommand === 'exec') {
-    return parseDroidExec(options)
+    return parseDroidExec(options.slice(subcommandIndex + 1))
   }
   if (subcommand === 'resume') {
-    return parseDroidResumeSubcommand(args, options)
+    return parseDroidResumeSubcommand(args, options, subcommandIndex)
   }
-  if (subcommand !== undefined) {
-    return null
+  return null
+}
+
+/** Only the first operand can name a subcommand; anything after it is that command's own arguments. */
+function droidSubcommandIndex(options: readonly string[]): number {
+  for (let index = 0; index < options.length; index++) {
+    const token = options[index]!
+    if (takesDroidOptionValue(options, index)) {
+      index++
+    } else if (!token.startsWith('-')) {
+      return DROID_SUBCOMMANDS.has(token) ? index : -1
+    }
   }
-  return parseDroidRoot(options)
+  return -1
+}
+
+function isDroidForkOption(token: string): boolean {
+  return token === '--fork' || token.startsWith('--fork=')
+}
+
+function takesDroidOptionValue(options: readonly string[], index: number): boolean {
+  const token = options[index]!
+  if (DROID_VALUE_OPTIONS.has(token)) {
+    return true
+  }
+  const next = options[index + 1]
+  return DROID_OPTIONAL_VALUE_OPTIONS.has(token) && next !== undefined && !next.startsWith('-')
 }
 
 function parseDroidRoot(options: readonly string[]): Pick<ResumeInvocation, 'target'> | null {
+  // A root-command fork reads one conversation and writes another.
+  if (options.some(isDroidForkOption)) {
+    return null
+  }
   if (options.includes('--last')) {
     return { target: null }
   }
@@ -129,21 +156,21 @@ function parseDroidExec(options: readonly string[]): Pick<ResumeInvocation, 'tar
 
 function parseDroidResumeSubcommand(
   args: readonly string[],
-  options: readonly string[]
-): Pick<ResumeInvocation, 'target'> {
-  if (options.includes('--last')) {
+  options: readonly string[],
+  subcommandIndex: number
+): Pick<ResumeInvocation, 'target'> | null {
+  const own = options.slice(subcommandIndex + 1)
+  if (own.some(isDroidForkOption)) {
+    return null
+  }
+  if (own.includes('--last')) {
     return { target: null }
   }
-  for (let index = options.indexOf('resume') + 1; index < options.length; index++) {
-    const token = options[index]!
-    if (DROID_VALUE_OPTIONS.has(token)) {
+  for (let index = 0; index < own.length; index++) {
+    if (takesDroidOptionValue(own, index)) {
       index++
-    } else if (DROID_OPTIONAL_VALUE_OPTIONS.has(token)) {
-      if (options[index + 1] !== undefined && !options[index + 1]!.startsWith('-')) {
-        index++
-      }
-    } else if (!token.startsWith('-')) {
-      return { target: droidTarget(token) }
+    } else if (!own[index]!.startsWith('-')) {
+      return { target: droidTarget(own[index]!) }
     }
   }
   // Everything after `--` is an argument, so the first of them is the session.

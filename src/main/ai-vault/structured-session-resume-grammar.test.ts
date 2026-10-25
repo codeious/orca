@@ -159,4 +159,59 @@ describe('resume command parsing', () => {
       expect(parseResumeInvocation(command)).toBeNull()
     })
   })
+
+  describe('Droid subcommands', () => {
+    it.each([
+      `droid --resume ${ID} fix search bug`,
+      `droid --resume ${ID} help`,
+      `droid -r ${ID} --cwd search`,
+      `droid -r ${ID} --cwd search "carry on"`,
+      `droid --cwd search -r ${ID}`,
+      `droid -r ${ID} "fix the exec flow"`
+    ])('resumes at the root when the first operand is not a subcommand: %s', (command) => {
+      expect(parseResumeInvocation(command)).toEqual({ provider: 'droid', target: ID })
+    })
+
+    it.each([
+      `droid search --resume ${ID}`,
+      `droid find ${ID}`,
+      `droid --cwd /repo doctor`,
+      `droid --last doctor`,
+      `droid mcp add ${ID}`,
+      `droid help resume`,
+      // `-w` takes the next word as its name, so no subcommand is left to run.
+      `droid -w resume ${ID}`
+    ])('leaves the arguments of another subcommand alone: %s', (command) => {
+      expect(parseResumeInvocation(command)).toBeNull()
+    })
+
+    it.each([
+      `droid --cwd resume resume ${ID}`,
+      `droid --cwd /repo exec -s ${ID} "carry on"`,
+      `droid --settings /tmp/s.json resume ${ID}`,
+      `droid resume ${ID}`,
+      `droid exec -s ${ID} "carry on"`
+    ])('finds the subcommand after the options before it: %s', (command) => {
+      expect(parseResumeInvocation(command)).toEqual({ provider: 'droid', target: ID })
+    })
+  })
+
+  describe('Droid fork', () => {
+    it.each([
+      `droid --fork ${ID}`,
+      `droid --fork=${ID}`,
+      `droid resume ${ID} --fork`,
+      `droid exec --fork ${ID} "carry on"`
+    ])('writes no second history to the session it reads: %s', (command) => {
+      expect(parseResumeInvocation(command)).toBeNull()
+    })
+
+    it.each([
+      `droid exec -s ${ID} --fork other "carry on"`,
+      `droid exec --fork other -s ${ID} "carry on"`,
+      `droid exec --session-id=${ID} --fork other "carry on"`
+    ])('still names the session exec continues when --fork is also given: %s', (command) => {
+      expect(parseResumeInvocation(command)).toEqual({ provider: 'droid', target: ID })
+    })
+  })
 })
