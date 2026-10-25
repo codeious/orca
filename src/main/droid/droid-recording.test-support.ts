@@ -121,15 +121,24 @@ export function playUntilAsk(
     throw new Error('The recorded turn never asks the user')
   }
   playSteps(connection, steps.slice(0, asked))
+  const answer = askAsDroid(connection, ask.method, ask.params, ask.id)
+  return { answer, rest: steps.slice(asked + 1) }
+}
+
+/** A request Droid makes of the client. A handler that throws becomes a rejection, as the peer
+ *  turns it into an error answer. `signal` aborts when the connection closes. */
+export function askAsDroid(
+  connection: FakeConnection,
+  method: string,
+  params: unknown,
+  id = 'ask-1',
+  signal: AbortSignal = new AbortController().signal
+): Promise<unknown> {
   const { onRequest } = connection.handlers
   if (!onRequest) {
     throw new Error('The session answers no request from Droid')
   }
-  // The peer turns a handler that throws into an error answer, as this does.
-  const answer = new Promise<unknown>((resolve) =>
-    resolve(onRequest(ask.method, ask.params, { id: ask.id, signal: new AbortController().signal }))
-  )
-  return { answer, rest: steps.slice(asked + 1) }
+  return new Promise<unknown>((resolve) => resolve(onRequest(method, params, { id, signal })))
 }
 
 export function playSteps(connection: FakeConnection, steps: DroidRecordedStep[]): void {

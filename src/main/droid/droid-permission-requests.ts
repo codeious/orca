@@ -1,8 +1,7 @@
 import { z } from 'zod'
-import type { AgentJournalApprovalItem } from '../../shared/agent-session-journal-types'
-import type { AgentSessionPromptResponse } from '../../shared/agent-session-question-answer'
 import { formatToolInput, truncateToolDetail } from '../../shared/native-chat-tool-summary'
 import { boundJournalPromptBody } from '../native-chat/agent-session-journal/journal-prompt-body-bounds'
+import { pendingDroidResolution, type DroidPromptPresentation } from './droid-prompt-presentation'
 import { DroidRpcError } from './droid-rpc-errors'
 
 const detailsSchema = z.looseObject({
@@ -31,13 +30,6 @@ const REFUSAL = 'cancel'
 /** A plan's other endings follow a new session id, or need an editor, neither of which Orca has. */
 const unanswerableFromPlan = (value: string): boolean =>
   value.startsWith('proceed_new_session') || value === 'proceed_edit'
-
-/** A request Droid made of the person: the card that shows it and the answer a choice makes. */
-export type DroidPromptPresentation = {
-  body: AgentJournalApprovalItem
-  /** What Droid is answered with; null is a dismissal, which Droid hears as its own refusal. */
-  reply: (response: AgentSessionPromptResponse | null) => { selectedOption: string }
-}
 
 /** Throws a `DroidRpcError` for a request Orca cannot show, so Droid is told rather than left waiting. */
 export function droidPermissionPresentation(params: unknown): DroidPromptPresentation {
@@ -69,7 +61,7 @@ export function droidPermissionPresentation(params: unknown): DroidPromptPresent
       ...(text ? { subject: { kind: 'plan', text } } : {}),
       detail: truncateToolDetail(text ?? shown) || null,
       options: offered.map(({ label, value }) => ({ id: value, label })),
-      resolution: { state: 'pending', selectedOptionId: null, resolvedBy: null, resolvedAt: null }
+      resolution: pendingDroidResolution
     }),
     reply: (response) => {
       if (response === null) {
