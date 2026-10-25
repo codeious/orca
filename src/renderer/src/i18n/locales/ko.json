@@ -13771,7 +13771,8 @@
             "resumeInNewNativeChat": "새 기본 채팅에서 재개",
             "resumeInNewCli": "새 CLI에서 재개",
             "resumeInNewCliTooltipFork": "이 대화를 새 CLI 세션으로 포크합니다.",
-            "resumeInNewCliTooltipChat": "기본 채팅은 그대로 유지됩니다."
+            "resumeInNewCliTooltipChat": "기본 채팅은 그대로 유지됩니다.",
+            "openTerminal": "터미널 열기"
           },
           "AiVaultResumeInChatHeldDialog": {
             "title": "새 채팅에서 재개할까요?",

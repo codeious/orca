@@ -77,7 +77,7 @@ export function AiVaultSessionVirtualList({
   getSessionResumeActions: (session: AiVaultSession) => AiVaultSessionResumeActions
   getSessionResumeInChat: (session: AiVaultSession) => AiVaultResumeInChatEligibility
   onToggleGroup: (key: string) => void
-  onJumpToOriginalPane: (session: AiVaultSession) => void
+  onJumpToOriginalPane: (session: AiVaultSession, terminal?: AiVaultOriginalPaneTarget) => void
   onJumpToWorktree: (worktreeId: string) => void
   onResume: (session: AiVaultSession, worktreeId: string) => void
   onContinueInNewSession: (session: AiVaultSession, worktreeId: string) => void

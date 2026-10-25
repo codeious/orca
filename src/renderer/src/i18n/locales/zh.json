@@ -13785,7 +13785,8 @@
             "resumeInNewNativeChat": "在新的本机聊天中恢复",
             "resumeInNewCli": "在新的 CLI 中恢复",
             "resumeInNewCliTooltipFork": "将此对话派生到新的 CLI 会话中。",
-            "resumeInNewCliTooltipChat": "本机聊天保持不变。"
+            "resumeInNewCliTooltipChat": "本机聊天保持不变。",
+            "openTerminal": "打开终端"
           },
           "AiVaultResumeInChatHeldDialog": {
             "title": "在新聊天中恢复？",

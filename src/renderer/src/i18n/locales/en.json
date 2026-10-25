@@ -14051,7 +14051,8 @@
             "resumeInNewNativeChat": "Resume in New Native Chat",
             "resumeInNewCli": "Resume in New CLI",
             "resumeInNewCliTooltipFork": "Forks this conversation into a new CLI session.",
-            "resumeInNewCliTooltipChat": "The native chat stays as it is."
+            "resumeInNewCliTooltipChat": "The native chat stays as it is.",
+            "openTerminal": "Open terminal"
           },
           "AiVaultResumeInChatHeldDialog": {
             "title": "Resume in a new chat?",

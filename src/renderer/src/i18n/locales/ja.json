@@ -13771,7 +13771,8 @@
             "resumeInNewNativeChat": "新規ネイティブチャットで再開",
             "resumeInNewCli": "新規 CLI で再開",
             "resumeInNewCliTooltipFork": "この会話を新しい CLI セッションにフォークします。",
-            "resumeInNewCliTooltipChat": "ネイティブチャットはそのまま残ります。"
+            "resumeInNewCliTooltipChat": "ネイティブチャットはそのまま残ります。",
+            "openTerminal": "ターミナルを開く"
           },
           "AiVaultResumeInChatHeldDialog": {
             "title": "新規チャットで再開しますか？",

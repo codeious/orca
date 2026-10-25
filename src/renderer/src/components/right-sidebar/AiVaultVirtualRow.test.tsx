@@ -7,6 +7,8 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import type { AiVaultSearchHit } from '../../../../shared/ai-vault-search-types'
 import { AiVaultVirtualRow } from './AiVaultVirtualRow'
+import type { AiVaultOriginalPaneTarget } from './ai-vault-original-pane'
+import type { AiVaultResumeInChatEligibility } from './ai-vault-session-resume-in-chat'
 
 const cliSession: AiVaultSession = {
   id: 'local:codex:session-1:/tmp/session-1.jsonl',
@@ -35,11 +37,20 @@ afterEach(() => {
   cleanup()
 })
 
-function renderSession(session: AiVaultSession, blocked = false, searchHit?: AiVaultSearchHit) {
+function renderSession(
+  session: AiVaultSession,
+  blocked = false,
+  searchHit?: AiVaultSearchHit,
+  options: {
+    resumeInChat?: AiVaultResumeInChatEligibility
+    originalPane?: AiVaultOriginalPaneTarget
+  } = {}
+) {
   const buildResumeStartup = vi.fn(() => ({ command: session.resumeCommand }))
   const onCopyResume = vi.fn()
   const onResume = vi.fn()
   const onResumeInNewCli = vi.fn()
+  const onJumpToOriginalPane = vi.fn()
   render(
     <TooltipProvider>
       <AiVaultVirtualRow
@@ -53,7 +64,7 @@ function renderSession(session: AiVaultSession, blocked = false, searchHit?: AiV
         vaultScope="all"
         searchHits={searchHit ? new Map([[session.id, searchHit]]) : undefined}
         buildResumeStartup={buildResumeStartup}
-        getOriginalPaneTarget={() => null}
+        getOriginalPaneTarget={() => options.originalPane ?? null}
         isStructuredSessionOpen={() => false}
         getSessionLiveState={() => null}
         getWorktreeInfo={() => null}
@@ -66,10 +77,12 @@ function renderSession(session: AiVaultSession, blocked = false, searchHit?: AiV
           worktree: { worktreeId: null, disabled: true },
           newTab: { worktreeId: 'worktree-1', disabled: blocked }
         })}
-        getSessionResumeInChat={() => ({ available: false, reason: 'already-structured' })}
+        getSessionResumeInChat={() =>
+          options.resumeInChat ?? { available: false, reason: 'already-structured' }
+        }
         onToggleGroup={vi.fn()}
         onToggleSessionDetails={vi.fn()}
-        onJumpToOriginalPane={vi.fn()}
+        onJumpToOriginalPane={onJumpToOriginalPane}
         onJumpToWorktree={vi.fn()}
         onResume={onResume}
         onContinueInNewSession={vi.fn()}
@@ -85,7 +98,7 @@ function renderSession(session: AiVaultSession, blocked = false, searchHit?: AiV
       />
     </TooltipProvider>
   )
-  return { buildResumeStartup, onCopyResume, onResume, onResumeInNewCli }
+  return { buildResumeStartup, onCopyResume, onResume, onResumeInNewCli, onJumpToOriginalPane }
 }
 
 describe('AiVaultVirtualRow resume command actions', () => {
@@ -206,5 +219,101 @@ describe('AiVaultVirtualRow Resume in New CLI', () => {
     await user.click(screen.getByTestId('ai-vault-session-more-actions'))
     await screen.findByRole('menu')
     expect(screen.queryByRole('menuitem', { name: 'Resume in New CLI' })).toBeNull()
+  })
+})
+
+describe('AiVaultVirtualRow Open terminal on a held Droid row', () => {
+  const droid: AiVaultSession = {
+    ...cliSession,
+    id: 'local:droid:conversation-1:/tmp/conversation-1.jsonl',
+    agent: 'droid',
+    sessionId: 'conversation-1',
+    title: 'Held Droid chat'
+  }
+  const terminal: AiVaultOriginalPaneTarget = {
+    paneKey: 'tab-1:leaf-1',
+    worktreeId: 'worktree-1',
+    tabId: 'tab-1',
+    leafId: 'leaf-1'
+  }
+  const heldWithTerminal: AiVaultResumeInChatEligibility = {
+    available: false,
+    reason: 'held',
+    openTerminal: terminal
+  }
+  const JUMP_TESTID = 'ai-vault-session-jump-original-pane'
+
+  it('labels the resting action Open terminal and jumps to the terminal the host named', async () => {
+    const { onJumpToOriginalPane } = renderSession(droid, false, undefined, {
+      resumeInChat: heldWithTerminal
+    })
+    const user = userEvent.setup()
+
+    const action = screen.getByTestId(JUMP_TESTID)
+    expect(action.getAttribute('aria-label')).toBe('Open terminal')
+    await user.click(action)
+
+    expect(onJumpToOriginalPane).toHaveBeenCalledExactlyOnceWith(droid, terminal)
+  })
+
+  it('offers Open terminal in both menus instead of Jump to Original Pane', async () => {
+    const { onJumpToOriginalPane } = renderSession(droid, false, undefined, {
+      resumeInChat: heldWithTerminal
+    })
+    const user = userEvent.setup()
+
+    await user.click(screen.getByTestId('ai-vault-session-more-actions'))
+    expect(screen.queryByRole('menuitem', { name: 'Jump to Original Pane' })).toBeNull()
+    await user.click(await screen.findByRole('menuitem', { name: 'Open terminal' }))
+    fireEvent.contextMenu(screen.getByText('Held Droid chat'))
+    await user.click(await screen.findByRole('menuitem', { name: 'Open terminal' }))
+
+    expect(onJumpToOriginalPane).toHaveBeenCalledTimes(2)
+    expect(onJumpToOriginalPane).toHaveBeenLastCalledWith(droid, terminal)
+  })
+
+  it('offers nothing to open when no terminal here holds the session', async () => {
+    renderSession(droid, false, undefined, {
+      resumeInChat: { available: false, reason: 'held' }
+    })
+    const user = userEvent.setup()
+
+    expect(screen.queryByTestId(JUMP_TESTID)).toBeNull()
+    await user.click(screen.getByTestId('ai-vault-session-more-actions'))
+    await screen.findByRole('menu')
+    expect(screen.queryByRole('menuitem', { name: 'Open terminal' })).toBeNull()
+    expect(screen.queryByRole('menuitem', { name: 'Jump to Original Pane' })).toBeNull()
+  })
+
+  it('opens the terminal the host named even when another pane matches by session identity', async () => {
+    const byIdentity: AiVaultOriginalPaneTarget = {
+      ...terminal,
+      paneKey: 'tab-2:leaf-2',
+      tabId: 'tab-2'
+    }
+    const { onJumpToOriginalPane } = renderSession(droid, false, undefined, {
+      resumeInChat: heldWithTerminal,
+      originalPane: byIdentity
+    })
+    const user = userEvent.setup()
+
+    const action = screen.getByTestId(JUMP_TESTID)
+    expect(action.getAttribute('aria-label')).toBe('Open terminal')
+    await user.click(action)
+
+    expect(onJumpToOriginalPane).toHaveBeenCalledExactlyOnceWith(droid, terminal)
+  })
+
+  it('keeps Jump to Original Pane, with no terminal given, on a row that is not held', async () => {
+    const { onJumpToOriginalPane } = renderSession(droid, false, undefined, {
+      originalPane: terminal
+    })
+    const user = userEvent.setup()
+
+    const action = screen.getByTestId(JUMP_TESTID)
+    expect(action.getAttribute('aria-label')).toBe('Jump to Original Pane')
+    await user.click(action)
+
+    expect(onJumpToOriginalPane).toHaveBeenCalledExactlyOnceWith(droid, undefined)
   })
 })

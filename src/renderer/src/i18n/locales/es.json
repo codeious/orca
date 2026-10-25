@@ -13771,7 +13771,8 @@
             "resumeInNewNativeChat": "Reanudar en un nuevo chat nativo",
             "resumeInNewCli": "Reanudar en una nueva CLI",
             "resumeInNewCliTooltipFork": "Hace un fork de esta conversación en una nueva sesión de CLI.",
-            "resumeInNewCliTooltipChat": "El chat nativo queda como está."
+            "resumeInNewCliTooltipChat": "El chat nativo queda como está.",
+            "openTerminal": "Abrir terminal"
           },
           "AiVaultResumeInChatHeldDialog": {
             "title": "¿Reanudar en un chat nuevo?",
