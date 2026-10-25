@@ -29,6 +29,7 @@ export function localLocation(
 /** A runtime whose workspace sits at `location`. Droid's own location rule decides what is
  *  supported; only "is the droid CLI installed" is taken as given. */
 export function droidRuntimeAt(location: AgentSessionExecutionLocation): OrcaRuntimeService {
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: The runtime reads only the Droid default environment from this store double.
   const runtime = new OrcaRuntimeService({
     getSettings: () => ({ agentDefaultEnv: { droid: {} } })
   } as never)
@@ -39,6 +40,7 @@ export function droidRuntimeAt(location: AgentSessionExecutionLocation): OrcaRun
         structuredAgentRuntimeRegistration('droid')?.supportsLocation(location) ?? false
     })
   )
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: This is the runtime's private location seam, replaced so the test chooses where the workspace sits.
   const internal = runtime as unknown as {
     resolveStructuredAgentSessionLocation: () => Promise<AgentSessionExecutionLocation>
   }

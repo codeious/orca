@@ -5,9 +5,10 @@ import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import type { AiVaultResumeInChatEligibility } from './ai-vault-session-resume-in-chat'
 
 const mocks = vi.hoisted(() => ({
-  ask: vi.fn<(args: { executionHostId: string; sessionId: string }) => Promise<unknown>>(),
-  rowResume: undefined as ((session: AiVaultSession) => AiVaultResumeInChatEligibility) | undefined
+  ask: vi.fn<(args: { executionHostId: string; sessionId: string }) => Promise<unknown>>()
 }))
+// What the panel last handed the list to answer "can this row resume into a chat".
+let rowResume: ((session: AiVaultSession) => AiVaultResumeInChatEligibility) | undefined
 
 vi.mock('@/store', () => ({
   useAppStore: Object.assign(
@@ -80,7 +81,7 @@ vi.mock('./AiVaultSessionVirtualList', () => ({
   AiVaultSessionVirtualList: (props: {
     getSessionResumeInChat: (session: AiVaultSession) => AiVaultResumeInChatEligibility
   }) => {
-    mocks.rowResume = props.getSessionResumeInChat
+    rowResume = props.getSessionResumeInChat
     return null
   }
 }))
@@ -111,7 +112,7 @@ function vaultSession(sessionId: string): AiVaultSession {
 }
 
 beforeEach(() => {
-  mocks.rowResume = undefined
+  rowResume = undefined
   mocks.ask.mockReset()
   Object.defineProperty(window, 'api', {
     configurable: true,
@@ -134,9 +135,7 @@ it('stops offering a Droid history row once its host says a terminal holds it', 
 
   await mountPanel()
 
-  await waitFor(() =>
-    expect(mocks.rowResume?.(droidRow)).toEqual({ available: false, reason: 'held' })
-  )
+  await waitFor(() => expect(rowResume?.(droidRow)).toEqual({ available: false, reason: 'held' }))
   expect(mocks.ask).toHaveBeenCalledWith({ executionHostId: 'local', sessionId: 'droid-1' })
 })
 
@@ -146,5 +145,5 @@ it('offers a Droid history row while its host has not yet answered', async () =>
   await mountPanel()
 
   await waitFor(() => expect(mocks.ask).toHaveBeenCalledTimes(1))
-  expect(mocks.rowResume?.(droidRow)).toEqual({ available: true, workspaceId: 'ws-1' })
+  expect(rowResume?.(droidRow)).toEqual({ available: true, workspaceId: 'ws-1' })
 })

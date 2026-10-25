@@ -135,7 +135,7 @@ describe('the aiVault droid session holder IPC channel', () => {
       expect.any(Function)
     )
     const [, handler] = ipcHandle.mock.calls[0]
-    return (args: unknown) => handler({}, args) as Promise<unknown>
+    return async (args: unknown): Promise<unknown> => handler({}, args)
   }
 
   it('answers in the shape the host RPC uses', async () => {

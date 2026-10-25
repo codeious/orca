@@ -82,11 +82,7 @@ async function call(dispatcher: RpcDispatcher, params: unknown): Promise<RpcResp
     method: 'agentSession.create',
     params
   }
-  await dispatcher.dispatchStreaming(
-    request,
-    (raw) => replies.push(JSON.parse(raw) as RpcResponse),
-    CLIENT
-  )
+  await dispatcher.dispatchStreaming(request, (raw) => replies.push(JSON.parse(raw)), CLIENT)
   return replies[0]
 }
 
@@ -125,6 +121,7 @@ async function openRig(publishTab: () => Promise<void> = async () => undefined) 
   vi.spyOn(runtime, 'getClientSettings').mockReturnValue({
     experimentalNativeChat: true
   } as ReturnType<OrcaRuntimeService['getClientSettings']>)
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: These are the runtime's private seams, reached only to stand in for a paired workspace.
   const internal = runtime as unknown as {
     resolveRuntimeFileTarget: () => Promise<{ worktree: { path: string } }>
     ensureStructuredAgentSessionHost: () => Promise<void>
@@ -165,6 +162,7 @@ async function openRig(publishTab: () => Promise<void> = async () => undefined) 
 }
 
 function pageText(response: RpcResponse): string {
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: Every caller passes a successful agentSession reply, which carries the page under result.value.
   return JSON.stringify((response as { result: { value: { page: unknown } } }).result.value.page)
 }
 
