@@ -5,7 +5,7 @@ import {
   AgentSessionAcquisitionExitProvenError,
   AgentSessionAcquisitionExitUnprovenError,
   AgentSessionAcquisitionRootExitObservedError,
-  AgentSessionPromptAnswerRejectedError
+  AgentSessionPromptUnavailableError
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { providerStartupFailureFact } from '../native-chat/agent-session-wire/structured-agent-session-failure-text'
 import { withMissingProviderExecutable } from '../provider-process/provider-executable-missing'
@@ -527,8 +527,8 @@ describe('Droid session end', () => {
   })
 })
 
-describe('Droid session options and prompts until they are wired', () => {
-  it('rejects an option pick and a prompt answer without ending the session', async () => {
+describe('Droid session options and prompts', () => {
+  it('rejects an option pick, and an answer to a card Droid is not waiting on, without ending the session', async () => {
     const h = await setup()
     const { connection } = await h.start()
 
@@ -543,7 +543,7 @@ describe('Droid session options and prompts until they are wired', () => {
         fence: 7,
         commit: vi.fn(async () => {})
       })
-    ).rejects.toBeInstanceOf(AgentSessionPromptAnswerRejectedError)
+    ).rejects.toBeInstanceOf(AgentSessionPromptUnavailableError)
     expect(connection.closed).toBe(false)
   })
 })

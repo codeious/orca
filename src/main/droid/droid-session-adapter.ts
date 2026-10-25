@@ -6,7 +6,6 @@ import {
   AgentSessionAcquisitionExitUnprovenError,
   AgentSessionAcquisitionRootExitObservedError,
   AgentSessionPreSpawnError,
-  AgentSessionPromptAnswerRejectedError,
   type AgentSessionAcquisition,
   type StructuredAgentSessionAcquireInput,
   type StructuredAgentSessionAdapter
@@ -162,6 +161,7 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
       return { cancelled: false }
     }
     session.turns.stop()
+    session.prompts.withdrawAll()
     await session.connection.request('droid.interrupt_session', {}, { timeoutMs: 2_000 })
     return { cancelled: true, ...(turnId ? { turnId } : {}) }
   }
@@ -169,10 +169,22 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
     return true
   }
 
-  // No Droid prompt reaches the journal yet, so there is nothing for a person to answer or pick.
-  answerPrompt: StructuredAgentSessionAdapter['answerPrompt'] = async () => {
-    throw new AgentSessionPromptAnswerRejectedError('Droid has no prompt waiting for an answer')
+  routePromptCancel(): { kind: 'dismiss' } {
+    return { kind: 'dismiss' }
   }
+  dismissPrompt: NonNullable<StructuredAgentSessionAdapter['dismissPrompt']> = (input) =>
+    this.session(input.sessionId, input.fence).prompts.respond(
+      input.itemId,
+      null,
+      input.commit,
+      input.answer
+    )
+  answerPrompt: StructuredAgentSessionAdapter['answerPrompt'] = (input) =>
+    this.session(input.sessionId, input.fence).prompts.respond(
+      input.itemId,
+      input.response,
+      input.commit
+    )
   setOption: StructuredAgentSessionAdapter['setOption'] = async () => {
     throw new AgentSessionOptionRejectedError(new Error('Droid has no options to set'))
   }

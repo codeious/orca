@@ -17,9 +17,19 @@ const recordedFrame = z.object({
     result: z.unknown().optional(),
     error: z
       .object({ code: z.number(), message: z.string(), data: z.unknown().optional() })
-      .optional()
+      .optional(),
+    event: z.string().optional(),
+    label: z.string().optional()
   })
 })
+
+async function readRecordedFrames(name: string): Promise<z.infer<typeof recordedFrame>[]> {
+  const text = await readFile(new URL(`./fixtures/${name}.jsonl`, import.meta.url), 'utf8')
+  return text
+    .trim()
+    .split('\n')
+    .map((line) => recordedFrame.parse(JSON.parse(line)))
+}
 
 export type DroidExchange = {
   method: string
@@ -29,12 +39,10 @@ export type DroidExchange = {
 
 /** The recording's requests by the id it gave them (`r1`, `r2`, ...). */
 export async function readDroidExchanges(name: string): Promise<Map<string, DroidExchange>> {
-  const text = await readFile(new URL(`./fixtures/${name}.jsonl`, import.meta.url), 'utf8')
   const exchanges = new Map<string, DroidExchange>()
   const open = new Map<string, Omit<DroidExchange, 'answer'>>()
   let asking: string | undefined
-  for (const line of text.trim().split('\n')) {
-    const { dir, frame } = recordedFrame.parse(JSON.parse(line))
+  for (const { dir, frame } of await readRecordedFrames(name)) {
     if (dir === 'out' && frame.type === 'request' && frame.id && frame.method) {
       open.set(frame.id, { method: frame.method, notifications: [] })
       asking = frame.id
@@ -77,5 +85,58 @@ export function replayExchange(
       throw new DroidRpcError(code, message)
     }
     return exchange.answer.result
+  }
+}
+
+/** What Droid sent while it worked a recorded turn: its notifications, and its asks of the user. */
+export type DroidRecordedStep =
+  | { kind: 'notification'; method: string; params: unknown }
+  | { kind: 'ask'; id: string; method: string; params: unknown }
+
+/** The steps of the turn the recording labels `label`, in the order Droid sent them. */
+export async function readDroidTurn(name: string, label: string): Promise<DroidRecordedStep[]> {
+  const steps: DroidRecordedStep[] = []
+  let inside = false
+  for (const { dir, frame } of await readRecordedFrames(name)) {
+    if (dir === 'mark' && frame.label === label) {
+      inside = frame.event === 'turn_start'
+    } else if (inside && dir === 'in' && frame.type === 'notification' && frame.method) {
+      steps.push({ kind: 'notification', method: frame.method, params: frame.params })
+    } else if (inside && dir === 'in' && frame.type === 'request' && frame.id && frame.method) {
+      steps.push({ kind: 'ask', id: frame.id, method: frame.method, params: frame.params })
+    }
+  }
+  return steps
+}
+
+/** Plays a turn up to Droid's first ask of the user. `answer` is what Droid hears back; `rest` is
+ *  what it sent after asking, to play once the person has answered. */
+export function playUntilAsk(
+  connection: FakeConnection,
+  steps: DroidRecordedStep[]
+): { answer: Promise<unknown>; rest: DroidRecordedStep[] } {
+  const asked = steps.findIndex((step) => step.kind === 'ask')
+  const ask = steps[asked]
+  if (ask?.kind !== 'ask') {
+    throw new Error('The recorded turn never asks the user')
+  }
+  playSteps(connection, steps.slice(0, asked))
+  const { onRequest } = connection.handlers
+  if (!onRequest) {
+    throw new Error('The session answers no request from Droid')
+  }
+  // The peer turns a handler that throws into an error answer, as this does.
+  const answer = new Promise<unknown>((resolve) =>
+    resolve(onRequest(ask.method, ask.params, { id: ask.id, signal: new AbortController().signal }))
+  )
+  return { answer, rest: steps.slice(asked + 1) }
+}
+
+export function playSteps(connection: FakeConnection, steps: DroidRecordedStep[]): void {
+  for (const step of steps) {
+    if (step.kind !== 'notification') {
+      throw new Error('Play a turn that asks with playUntilAsk')
+    }
+    connection.handlers.onNotification?.(step.method, step.params)
   }
 }

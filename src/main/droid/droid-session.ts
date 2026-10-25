@@ -11,6 +11,7 @@ import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
 import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
+import { DroidPrompts } from './droid-prompts'
 import {
   DroidReportedSettings,
   type DroidSettings,
@@ -67,6 +68,7 @@ export class DroidSession {
   readonly connection: DroidConnection
   readonly lane: JsonlRpcTimelineLane
   readonly turns: DroidTurns
+  readonly prompts: DroidPrompts
   requestedClose = false
   /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
   readonly settings = new DroidReportedSettings()
@@ -102,6 +104,7 @@ export class DroidSession {
           providerIdentity: { provider: 'orca', clientMessageId }
         })
     })
+    this.prompts = new DroidPrompts(this.lane)
     this.turns = new DroidTurns({
       lane: this.lane,
       generation,
@@ -115,6 +118,7 @@ export class DroidSession {
     )(launch, {
       ...(input.onOutput ? { onOutput: input.onOutput } : {}),
       onNotification: (method, params) => this.notified(method, params),
+      onRequest: (method, params, context) => this.prompts.handle(method, params, context),
       onClose: (error) => this.fail(error),
       onDiagnostic: (message) => deps.logger.warn(message, { scope: 'droid-rpc', sessionId }),
       onExit: (error) => {
@@ -261,6 +265,7 @@ export class DroidSession {
       return
     }
     this.publishedExit = true
+    this.prompts.clear()
     this.turns.end()
     this.lane.finalize()
     this.lane.apply([
