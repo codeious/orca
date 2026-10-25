@@ -8,9 +8,9 @@ import { useAppStore } from '@/store'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import { normalizeExecutionHostId } from '../../../../shared/execution-host'
 import { STRUCTURED_AGENT_SESSION_RESUME_HISTORY_RUNTIME_CAPABILITY } from '../../../../shared/protocol-version'
+import { isStructuredAdoptionAgent } from '../../../../shared/structured-adoption-agent'
 import { resolveAiVaultTargetWorkspacePath } from './ai-vault-session-launch-target'
 import {
-  aiVaultSessionHasResumeInChatBranch,
   resolveAiVaultSessionResumeInChatEligibility,
   type AiVaultDroidHolder,
   type AiVaultResumeInChatEligibility
@@ -48,7 +48,7 @@ export function resolveAiVaultSessionResumeInChatForWorkspace(args: {
     targetWorkspacePath,
     droidHolder: args.droidHolder,
     structuredRouteAvailable:
-      aiVaultSessionHasResumeInChatBranch(args.session.agent) &&
+      isStructuredAdoptionAgent(args.session.agent) &&
       targetWorkspaceId !== null &&
       targetOwner !== null &&
       targetOwner === normalizeExecutionHostId(args.session.executionHostId) &&

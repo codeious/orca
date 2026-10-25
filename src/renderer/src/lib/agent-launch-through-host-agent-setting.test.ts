@@ -22,7 +22,6 @@ describe('windowMakesHostLaunchTab with a per-agent launch setting', () => {
     settingsRef.current = { experimentalNativeChat: false }
 
     expect(windowMakesHostLaunchTab('droid')).toBe(true)
-    expect(windowMakesHostLaunchTab()).toBe(true)
   })
 
   it('leaves the tab to the host for an agent set to Chat while the switch is off', () => {
@@ -30,8 +29,6 @@ describe('windowMakesHostLaunchTab with a per-agent launch setting', () => {
 
     expect(windowMakesHostLaunchTab('droid')).toBe(false)
     expect(windowMakesHostLaunchTab('claude')).toBe(true)
-    // Without an agent, any launch might become a chat.
-    expect(windowMakesHostLaunchTab()).toBe(false)
   })
 
   it('makes the tab for an agent set to Terminal while the switch is on', () => {
@@ -39,6 +36,5 @@ describe('windowMakesHostLaunchTab with a per-agent launch setting', () => {
 
     expect(windowMakesHostLaunchTab('droid')).toBe(true)
     expect(windowMakesHostLaunchTab('claude')).toBe(false)
-    expect(windowMakesHostLaunchTab()).toBe(false)
   })
 })

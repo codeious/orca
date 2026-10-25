@@ -110,6 +110,30 @@ describe('machine name setting', () => {
   })
 })
 
+describe('per-agent launch modes', () => {
+  it('keeps Terminal and Chat for known agents and drops everything else on load', () => {
+    expect(
+      normalizeLegacyProfile({
+        agentLaunchModes: {
+          droid: 'bogus',
+          claude: 'chat',
+          codex: 'terminal',
+          gemini: 'follow',
+          aider: 7,
+          notAnAgent: 'chat'
+        }
+      }).agentLaunchModes
+    ).toEqual({ claude: 'chat', codex: 'terminal' })
+  })
+
+  it.each([[undefined], [null], ['chat'], [7], [['chat']]])(
+    'reads %j as no preferences',
+    (stored) => {
+      expect(normalizeLegacyProfile({ agentLaunchModes: stored }).agentLaunchModes).toEqual({})
+    }
+  )
+})
+
 describe('chat appearance settings', () => {
   it('normalizes old and malformed profiles on load', () => {
     expect(normalizeLegacyProfile({}).nativeChatAppearance).toBeUndefined()

@@ -1,8 +1,9 @@
 import { z } from 'zod'
 import { formatToolInput, truncateToolDetail } from '../../shared/native-chat-tool-summary'
+import { JSON_RPC_INVALID_PARAMS } from '../acp/acp-errors'
 import { boundJournalPromptBody } from '../native-chat/agent-session-journal/journal-prompt-body-bounds'
 import { pendingDroidResolution, type DroidPromptPresentation } from './droid-prompt-presentation'
-import { DroidRpcError, JSON_RPC_INVALID_PARAMS } from './droid-rpc-errors'
+import { DroidRpcError } from './droid-rpc-errors'
 
 const detailsSchema = z.looseObject({
   fullCommand: z.string().optional(),

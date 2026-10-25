@@ -106,6 +106,28 @@ describe('what Droid sends on its own', () => {
     ])
   })
 
+  it('starts a request handler before the next line of the same chunk is read', async () => {
+    const seen: string[] = []
+    const { fromDroid } = connect({
+      onRequest: () => {
+        seen.push('request')
+        return null
+      },
+      onNotification: () => {
+        seen.push('notification')
+      }
+    })
+    const lines = [
+      { jsonrpc: '2.0', type: 'request', id: 'cli-1', method: 'droid.request_permission' },
+      { jsonrpc: '2.0', type: 'notification', method: 'droid.session_notification' }
+    ]
+
+    fromDroid.write(lines.map((line) => `${JSON.stringify(line)}\n`).join(''))
+
+    await vi.waitFor(() => expect(seen).toHaveLength(2))
+    expect(seen).toEqual(['request', 'notification'])
+  })
+
   it('turns away a request past the number it will hold open', async () => {
     const release: (() => void)[] = []
     const onRequest = vi.fn(() => new Promise<null>((resolve) => release.push(() => resolve(null))))

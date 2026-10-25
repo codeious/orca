@@ -118,6 +118,38 @@ describe('the Droid holder verdicts a history list shows', () => {
     await waitFor(() => expect(mocks.ask).toHaveBeenCalledTimes(2))
   })
 
+  it('asks about each row once per scan while the list is filtered, reordered or grown', async () => {
+    mocks.ask.mockResolvedValue({ holder: null })
+    const rows = Array.from({ length: 50 }, (_, index) => droid(`s${index}`))
+
+    const { rerender } = renderHook(
+      ({ sessions }) => useAiVaultDroidHolders({ sessions, generation: 1 }),
+      { initialProps: { sessions: rows.slice(0, 40) } }
+    )
+    await waitFor(() => expect(mocks.ask).toHaveBeenCalledTimes(40))
+    rerender({ sessions: rows.slice(0, 20) })
+    rerender({ sessions: rows.slice(0, 20).toReversed() })
+    rerender({ sessions: rows })
+    await act(async () => {})
+
+    expect(mocks.ask).toHaveBeenCalledTimes(50)
+  })
+
+  it('keeps an answer still in flight when the list changes under it', async () => {
+    const pending = deferred<unknown>()
+    mocks.ask.mockReturnValueOnce(pending.promise).mockResolvedValue({ holder: null })
+
+    const { result, rerender } = renderHook(
+      ({ sessions }) => useAiVaultDroidHolders({ sessions, generation: 1 }),
+      { initialProps: { sessions: [droid('a')] } }
+    )
+    rerender({ sessions: [droid('a'), droid('b')] })
+    await act(async () => pending.resolve({ holder: 'live' }))
+
+    expect(result.current.get('local:droid:a')).toStrictEqual({ holder: 'live' })
+    expect(mocks.ask).toHaveBeenCalledTimes(2)
+  })
+
   it('asks about a row that appears later', async () => {
     mocks.ask.mockResolvedValue({ holder: null })
 

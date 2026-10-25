@@ -26,20 +26,33 @@ export function useAiVaultDroidHolders({
     latestSessions.current = sessions
   })
   const rowKey = sessions.map((session) => session.id).join('\n')
+  // The rows asked since the last rescan: a filter, sort or new row must not ask the host again.
+  const scan = useRef<{ generation: unknown; asked: Set<string> } | null>(null)
 
   useEffect(() => {
-    let superseded = false
+    if (scan.current === null || scan.current.generation !== generation) {
+      scan.current = { generation, asked: new Set() }
+    }
+    const thisScan = scan.current
     for (const session of latestSessions.current) {
+      if (thisScan.asked.has(session.id)) {
+        continue
+      }
+      thisScan.asked.add(session.id)
       void askAiVaultDroidSessionHolder(session).then((answer) => {
-        if (!superseded) {
+        if (scan.current === thisScan) {
           setHolders((current) => new Map(current).set(session.id, answer))
         }
       })
     }
-    return () => {
-      superseded = true
-    }
   }, [rowKey, generation])
+
+  useEffect(
+    () => () => {
+      scan.current = null
+    },
+    []
+  )
 
   return holders
 }

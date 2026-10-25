@@ -4,7 +4,8 @@ import {
   AcpConnectionClosedError,
   AcpInvalidResponseError,
   AcpRequestTimeoutError,
-  AcpRpcError
+  AcpRpcError,
+  JSON_RPC_INTERNAL_ERROR
 } from './acp-errors'
 import { settleOversizedAcpLine, type AcpOversizedLineTarget } from './acp-oversized-lines'
 import {
@@ -33,6 +34,8 @@ export type AcpPeerDialect = {
   }
   /** How a request is turned away when too many are already open. */
   overCapacity: () => AcpRpcError
+  /** Start a request's handler as its line is read, so a later line of the same chunk sees it open. */
+  startRequestsSynchronously?: boolean
   /** What a line over the size limit costs: its sender, its caller, or the connection. */
   onOversizedLine: (
     rejected: NdjsonRejectedRecord & { kind: 'line-too-long' },
@@ -54,6 +57,7 @@ export const acpPeerDialect: AcpPeerDialect = {
     remote: (code, message, data) => new AcpAgentError(code, message, data),
     invalidResponse: (message, raw) => new AcpInvalidResponseError(message, raw)
   },
-  overCapacity: () => new AcpRpcError(-32603, 'ACP incoming request capacity exceeded'),
+  overCapacity: () =>
+    new AcpRpcError(JSON_RPC_INTERNAL_ERROR, 'ACP incoming request capacity exceeded'),
   onOversizedLine: settleOversizedAcpLine
 }

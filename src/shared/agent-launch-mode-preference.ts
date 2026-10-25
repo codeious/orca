@@ -4,10 +4,14 @@ import { isTuiAgent } from './tui-agent-config'
 /** `follow` defers to the Chat UI switch. */
 export type AgentLaunchModePreference = 'follow' | 'terminal' | 'chat'
 
+type StoredAgentLaunchMode = Exclude<AgentLaunchModePreference, 'follow'>
+
 /** Keyed by agent id. An agent with no entry follows the switch, so `follow` is never stored. */
-export type AgentLaunchModePreferences = Partial<
-  Record<TuiAgent, Exclude<AgentLaunchModePreference, 'follow'>>
->
+export type AgentLaunchModePreferences = Partial<Record<TuiAgent, StoredAgentLaunchMode>>
+
+function isStoredLaunchMode(value: unknown): value is StoredAgentLaunchMode {
+  return value === 'terminal' || value === 'chat'
+}
 
 export function normalizeAgentLaunchModePreferences(value: unknown): AgentLaunchModePreferences {
   const normalized: AgentLaunchModePreferences = {}
@@ -15,7 +19,7 @@ export function normalizeAgentLaunchModePreferences(value: unknown): AgentLaunch
     return normalized
   }
   for (const [agent, preference] of Object.entries(value)) {
-    if (isTuiAgent(agent) && (preference === 'terminal' || preference === 'chat')) {
+    if (isTuiAgent(agent) && isStoredLaunchMode(preference)) {
       normalized[agent] = preference
     }
   }
@@ -32,12 +36,13 @@ export function withAgentLaunchModePreference(
   return preference === 'follow' ? others : { ...others, [agent]: preference }
 }
 
+/** Total over untrusted settings: anything but a stored Terminal or Chat for a known agent follows the switch. */
 export function agentLaunchModePreference(
-  settings: { agentLaunchModes?: AgentLaunchModePreferences } | null | undefined,
+  settings: { agentLaunchModes?: unknown } | null | undefined,
   agent: string | undefined
 ): AgentLaunchModePreference {
   if (!agent || !isTuiAgent(agent)) {
     return 'follow'
   }
-  return settings?.agentLaunchModes?.[agent] ?? 'follow'
+  return normalizeAgentLaunchModePreferences(settings?.agentLaunchModes)[agent] ?? 'follow'
 }

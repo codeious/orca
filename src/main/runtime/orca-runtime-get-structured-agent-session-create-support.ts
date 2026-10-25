@@ -28,7 +28,7 @@ import {
   type AgentSessionAccountHome
 } from '../../shared/agent-session-account-home'
 import type { StructuredAgentId } from '../../shared/agent-session-provider-handle'
-import { isStructuredAdoptionAgent } from '../native-chat/structured-agent-session-history-adoption'
+import { isStructuredAdoptionAgent } from '../../shared/structured-adoption-agent'
 import { adoptedProviderHandle } from '../native-chat/agent-session-wire/structured-agent-session-adopted-handle'
 
 export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaRuntimeWithGetWorktreePs {

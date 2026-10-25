@@ -1,14 +1,16 @@
 import type { Readable, Writable } from 'node:stream'
-import { AcpRpcError } from '../acp/acp-errors'
+import {
+  AcpRpcError,
+  JSON_RPC_INTERNAL_ERROR,
+  JSON_RPC_METHOD_NOT_FOUND,
+  JSON_RPC_SERVER_BUSY
+} from '../acp/acp-errors'
 import { AcpJsonRpcPeer, type AcpPeerDialect, type AcpPeerOptions } from '../acp/acp-json-rpc-peer'
 import { droidInboundFrameSchema, stampDroidFrame } from './droid-rpc-envelope'
 import {
   DroidConnectionClosedError,
   DroidRequestTimeoutError,
-  DroidRpcError,
-  JSON_RPC_INTERNAL_ERROR,
-  JSON_RPC_METHOD_NOT_FOUND,
-  JSON_RPC_SERVER_BUSY
+  DroidRpcError
 } from './droid-rpc-errors'
 
 export type DroidPeerOptions = AcpPeerOptions
@@ -45,6 +47,8 @@ function droidDialect(noteProtocolVersion: (version: string) => void): AcpPeerDi
       invalidResponse: () => new Error('Droid sent an invalid response')
     },
     overCapacity: () => new AcpRpcError(JSON_RPC_SERVER_BUSY, 'Too many open requests'),
+    // A notification right behind a permission request in one chunk can already be about it.
+    startRequestsSynchronously: true,
     // The lost frame may be the reply a turn waits on, and nothing else would ever settle it.
     onOversizedLine: (_rejected, target) =>
       target.close(new Error('Droid sent a line over the size limit'))

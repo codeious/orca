@@ -118,7 +118,6 @@ export function AiVaultVirtualRow({
   const resumeState = row.type === 'session' ? getSessionResumeState(row.session) : null
   const resumeActions = row.type === 'session' ? getSessionResumeActions(row.session) : null
   const resumeInChat = row.type === 'session' ? getSessionResumeInChat(row.session) : null
-  // Why: a held Droid row is not resumable; the host-named terminal is what the row offers instead.
   const openTerminal =
     resumeInChat && !resumeInChat.available && resumeInChat.reason === 'held'
       ? resumeInChat.openTerminal

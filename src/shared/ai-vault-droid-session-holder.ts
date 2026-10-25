@@ -36,15 +36,21 @@ export const AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL: AiVaultDroidSessionHolde
 export const AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT: AiVaultDroidSessionHolderResult =
   Object.freeze({ holder: AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL })
 
+// Typed against the union so the schema cannot admit a verdict the type excludes.
+const holderVerdictSchema: z.ZodType<AiVaultDroidSessionHolderVerdict> = z.enum([
+  'live',
+  'unverifiable'
+])
+
 // `panes` stays unknown here so a pane list this client cannot read never costs the holder.
 // zod 4 treats a bare `z.unknown()` key as required, which would make a host that omits it unreadable.
 const holderReplySchema = z.object({
-  holder: z.enum(['live', 'unverifiable']).nullable(),
+  holder: holderVerdictSchema.nullable(),
   panes: z.unknown().optional()
 })
 
 const holdingPanesSchema = z.array(
-  z.object({ paneKey: z.string().min(1), verdict: z.enum(['live', 'unverifiable']) })
+  z.object({ paneKey: z.string().min(1), verdict: holderVerdictSchema })
 )
 
 /** A malformed or missing reply is "cannot tell", not a free session. */
