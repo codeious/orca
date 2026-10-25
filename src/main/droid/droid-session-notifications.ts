@@ -51,6 +51,12 @@ const handledSchema = z.discriminatedUnion('type', [
     reason: z.string(),
     turnId: z.string().optional()
   }),
+  // `settings` is read leniently by `parseDroidSettings`: an unknown field never costs the turn.
+  z.looseObject({
+    type: z.literal('settings_updated'),
+    settings: z.unknown().optional(),
+    requestId: z.string().optional()
+  }),
   z.looseObject({
     type: z.literal('queued_messages_discarded'),
     requestId: z.string().optional(),

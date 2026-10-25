@@ -35,7 +35,7 @@ export const NativeChatSessionOptionPick = z.union([
   z
     .object({
       ...NativeChatSessionOptionPickBase,
-      optionId: z.enum(['fastMode', 'thinking']),
+      optionId: z.enum(['fastMode', 'thinking', 'planMode']),
       value: z.boolean()
     })
     .strict()

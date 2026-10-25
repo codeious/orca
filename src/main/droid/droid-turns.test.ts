@@ -42,7 +42,14 @@ async function setup(reply: () => Promise<unknown> = async () => ({})) {
     options?.onId?.(`orca-${++ids}`)
     return reply()
   })
-  const turns = new DroidTurns({ lane, generation: 'generation-1', request, settled, idle })
+  const turns = new DroidTurns({
+    lane,
+    generation: 'generation-1',
+    request,
+    settled,
+    idle,
+    settings: vi.fn()
+  })
   pending.push(() => {
     turns.end()
     lane.dispose()

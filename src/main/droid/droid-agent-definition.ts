@@ -20,8 +20,8 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
     approvalEnforcement: 'provider'
   },
   restingOptions: {
-    // Model and effort are kept at rest and sent on the next start. Modes are not session options.
-    acceptsKey: (key) => key === 'model' || key === 'effort',
+    // Model, effort and Spec are kept at rest and sent on the next start.
+    acceptsKey: (key) => key === 'model' || key === 'effort' || key === 'planMode',
     fallbackModels: () => null,
     effortDefaultsToModel: false
   }

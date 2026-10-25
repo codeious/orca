@@ -88,7 +88,8 @@ describe.skipIf(gate.skipReason !== null)('A signed-out Droid chat (real CLI)', 
           command: resolveDroidCommand(env),
           cwd: join(root, folder),
           env,
-          previous
+          previous,
+          autonomyLevel: 'off'
         }),
         onLifecycle: vi.fn(),
         onSettled: vi.fn(),

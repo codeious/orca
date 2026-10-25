@@ -100,7 +100,8 @@ describe('the session-less Droid model probe', () => {
     expect(DROID_AGENT.restingOptions.effortDefaultsToModel).toBe(false)
     expect(DROID_AGENT.restingOptions.acceptsKey('model')).toBe(true)
     expect(DROID_AGENT.restingOptions.acceptsKey('effort')).toBe(true)
-    expect(DROID_AGENT.restingOptions.acceptsKey('planMode')).toBe(false)
+    expect(DROID_AGENT.restingOptions.acceptsKey('planMode')).toBe(true)
+    expect(DROID_AGENT.restingOptions.acceptsKey('fastMode')).toBe(false)
   })
 
   it('calls droid.list_models with no session and no includeDisabled, under the account HOME', async () => {

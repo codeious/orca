@@ -38,6 +38,7 @@ function createDroidAdapter(context: StructuredAgentAdapterContext): StructuredA
       store: context.store,
       resolveWorkspacePath: deps.resolveWorkspacePath,
       resolveEnvironment: droidEnvironment(context),
+      resolveLaunchArgs: () => deps.resolveLaunchArgs('droid'),
       ...(deps.resolveAgentCommandSettings
         ? { resolveCommandSettings: deps.resolveAgentCommandSettings }
         : {})

@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { waitForPromiseWithSignal } from '../../shared/abort-signal-reason'
 import { agentSessionFailureWords } from '../../shared/agent-session-failure-words'
+import { decodeStructuredAgentSessionOptionValue } from '../../shared/structured-agent-session-option-codec'
 import {
   AgentSessionAcquisitionExitProvenError,
   AgentSessionAcquisitionExitUnprovenError,
   AgentSessionAcquisitionRootExitObservedError,
   AgentSessionPreSpawnError,
-  AgentSessionPromptAnswerRejectedError,
   type AgentSessionAcquisition,
   type StructuredAgentSessionAcquireInput,
   type StructuredAgentSessionAdapter
@@ -19,6 +19,7 @@ import { supportsSupervisedProviderChildLocation } from '../provider-process/sup
 import { buildDroidExecLaunch } from './droid-exec-launch'
 import { prepareDroidPrompt } from './droid-prompt'
 import { DroidSession, type DroidConnection, type DroidSessionDeps } from './droid-session'
+import { droidInteractionModeFromSavedOptions } from './droid-session-settings'
 import { droidProviderLink, type DroidResolvedLaunch } from './droid-structured-launch-resolution'
 
 export type DroidSessionAdapterDeps = DroidSessionDeps & {
@@ -84,7 +85,9 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
       })
       session = new DroidSession(input, randomUUID(), spec, this.deps, {
         cwd: launch.cwd,
-        resumeId: launch.previous?.handle.nativeId ?? null
+        resumeId: launch.previous?.handle.nativeId ?? null,
+        autonomyLevel: launch.autonomyLevel,
+        interactionMode: droidInteractionModeFromSavedOptions(input.options)
       })
       this.sessions.set(id, session)
       this.starts.track(attempt, session.connection)
@@ -160,6 +163,7 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
       return { cancelled: false }
     }
     session.turns.stop()
+    session.prompts.withdrawAll()
     await session.connection.request('droid.interrupt_session', {}, { timeoutMs: 2_000 })
     return { cancelled: true, ...(turnId ? { turnId } : {}) }
   }
@@ -167,16 +171,35 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
     return true
   }
 
-  // No Droid prompt reaches the journal yet, so there is nothing for a person to answer.
-  answerPrompt: StructuredAgentSessionAdapter['answerPrompt'] = async () => {
-    throw new AgentSessionPromptAnswerRejectedError('Droid has no prompt waiting for an answer')
+  routePromptCancel(): { kind: 'dismiss' } {
+    return { kind: 'dismiss' }
   }
-  readOptions: StructuredAgentSessionAdapter['readOptions'] = (input) =>
-    this.session(input.sessionId, input.fence).readOptions()
+  dismissPrompt: NonNullable<StructuredAgentSessionAdapter['dismissPrompt']> = (input) =>
+    this.session(input.sessionId, input.fence).prompts.respond(
+      input.itemId,
+      null,
+      input.commit,
+      input.answer
+    )
+  answerPrompt: StructuredAgentSessionAdapter['answerPrompt'] = (input) =>
+    this.session(input.sessionId, input.fence).prompts.respond(
+      input.itemId,
+      input.response,
+      input.commit
+    )
+  readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = (input) =>
+    this.session(input.sessionId, input.fence).options.read()
   setOption: StructuredAgentSessionAdapter['setOption'] = async (input) => {
-    const session = this.session(input.sessionId, input.fence)
+    const { options } = this.session(input.sessionId, input.fence)
+    if (input.key === 'planMode') {
+      const spec = decodeStructuredAgentSessionOptionValue('planMode', input.value)
+      if (typeof spec !== 'boolean') {
+        throw new AgentSessionOptionRejectedError(new Error('Spec is either on or off'))
+      }
+      return options.setSpec(spec)
+    }
     try {
-      return await session.setOption(input.key, input.value)
+      return await options.set(input.key, input.value)
     } catch (error) {
       throw new AgentSessionOptionRejectedError(error)
     }

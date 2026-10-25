@@ -1,209 +1,37 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AgentSessionProcessIdentity } from '../../shared/agent-session-record'
 import type { AgentJournalMessageItem } from '../../shared/agent-session-journal-types'
-import {
-  closeProviderTimelineRigs,
-  messageText,
-  openProviderTimelineRig
-} from '../native-chat/agent-session-timeline/provider-timeline-assembler-test-support'
+import { messageText } from '../native-chat/agent-session-timeline/provider-timeline-assembler-test-support'
 import {
   AgentSessionAcquisitionExitProvenError,
   AgentSessionAcquisitionExitUnprovenError,
   AgentSessionAcquisitionRootExitObservedError,
-  AgentSessionPromptAnswerRejectedError,
-  type StructuredAgentSessionAcquireInput
+  AgentSessionPromptUnavailableError
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { providerStartupFailureFact } from '../native-chat/agent-session-wire/structured-agent-session-failure-text'
 import { withMissingProviderExecutable } from '../provider-process/provider-executable-missing'
 import { agentSessionLaunchFolderMissing } from '../runtime/agent-session-launch-directory'
 import { isAgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
-import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
+import {
+  DROID_RIG_SESSION,
+  FakeConnection,
+  runDroidRigCleanups,
+  setupDroidAdapter
+} from './droid-adapter-rig.test-support'
 import { DROID_HANDLE_TRANSPORT } from './droid-agent-definition'
-import type { DroidAgentConnectionOptions } from './droid-agent-connection'
 import { DroidRpcError } from './droid-rpc-errors'
-import type { DroidConnection } from './droid-session'
 import { DroidSessionAdapter } from './droid-session-adapter'
 import { stopAgentSessionProviderRoot } from '../native-chat/agent-session-wire/structured-agent-session-provider-exit-proof'
 import { buildDroidExecLaunch } from './droid-exec-launch'
-import type { DroidResolvedLaunch } from './droid-structured-launch-resolution'
 
-const sessionId = 'session-timeline'
-const cleanups: (() => Promise<void>)[] = []
-afterEach(async () => {
-  for (const cleanup of cleanups.splice(0)) {
-    await cleanup()
-  }
-  await closeProviderTimelineRigs()
-})
-
-type Reply = (params: unknown) => unknown
-
-class FakeConnection implements DroidConnection {
-  pid = 4123
-  closed = false
-  rootVerdict: 'live' | 'unverifiable' | 'exited' = 'live'
-  processless = false
-  protocolVersion: string | undefined = '1.275.0'
-  lastCloseResult: DroidConnection['lastCloseResult'] = null
-  closeResult: Awaited<ReturnType<DroidConnection['close']>> = { root: 'exited', tree: 'exited' }
-  readonly requests: { method: string; params: unknown; timeoutMs?: number | null }[] = []
-  readonly replies = new Map<string, Reply>()
-  lastId = ''
-  private closing = false
-  private ids = 0
-  private readonly exitListeners: (() => void)[] = []
-  constructor(readonly handlers: DroidAgentConnectionOptions) {}
-  async request(
-    method: string,
-    params: unknown = {},
-    options: { timeoutMs?: number | null; onId?: (id: string) => void } = {}
-  ): Promise<unknown> {
-    this.lastId = `orca-${++this.ids}`
-    options.onId?.(this.lastId)
-    this.requests.push({
-      method,
-      params,
-      ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {})
-    })
-    const reply = this.replies.get(method)
-    if (reply) {
-      return reply(params)
-    }
-    if (method === 'droid.initialize_session') {
-      return { sessionId: 'droid-session-1' }
-    }
-    if (method === 'droid.load_session') {
-      // A real Droid answers a load with the session's content and folder, never its id.
-      return { session: { messages: [], title: 'loaded' }, hostId: 'host-1', cwd: '/host/folder' }
-    }
-    return {}
-  }
-  async close(): Promise<Awaited<ReturnType<DroidConnection['close']>>> {
-    this.closing = true
-    this.closed = true
-    this.rootVerdict = this.closeResult.root
-    this.lastCloseResult = this.closeResult
-    if (this.closeResult.root === 'exited') {
-      this.exit(new Error('Droid closed'))
-    }
-    return this.closeResult
-  }
-  pauseReading(): void {}
-  resumeReading(): void {}
-  onExit(listener: () => void): void {
-    if (this.rootVerdict === 'exited') {
-      listener()
-    } else {
-      this.exitListeners.push(listener)
-    }
-  }
-  notify(notification: Record<string, unknown>): void {
-    this.handlers.onNotification?.('droid.session_notification', {
-      sessionId: 'droid-session-1',
-      notification
-    })
-  }
-  echo(text: string, requestId = this.lastId): void {
-    this.notify({
-      type: 'create_message',
-      message: { id: `user-${text}`, role: 'user', content: [{ type: 'text', text }] },
-      requestId
-    })
-  }
-  exit(error = new Error('child exited')): void {
-    this.closed = true
-    this.rootVerdict = 'exited'
-    for (const listener of this.exitListeners.splice(0)) {
-      listener()
-    }
-    this.handlers.onExit?.(error, {
-      expected: this.closing,
-      exit: { code: 1, signal: null, processless: this.processless }
-    })
-  }
-}
+const sessionId = DROID_RIG_SESSION
+const setup = setupDroidAdapter
+afterEach(runDroidRigCleanups)
 
 const text = (value: string): AgentJournalMessageItem => ({
   kind: 'message',
   role: 'user',
   blocks: [{ type: 'text', text: value }]
 })
-
-async function setup(
-  launch: Partial<DroidResolvedLaunch> = {},
-  extraDeps: { realpath?: (path: string) => Promise<string> } = {}
-) {
-  const rig = await openProviderTimelineRig({ agent: 'droid', sessionId })
-  const connections: FakeConnection[] = []
-  const lifecycle = vi.fn(),
-    settled = vi.fn(),
-    idle = vi.fn()
-  const onSpawned = vi.fn(async (_process: AgentSessionProcessIdentity) => {
-    expect(connections.at(-1)?.requests).toEqual([])
-  })
-  const input: StructuredAgentSessionAcquireInput = {
-    identity: {
-      sessionId,
-      workspaceId: 'folder-1',
-      hostId: 'local',
-      agent: 'droid',
-      providerHandle: null
-    },
-    fence: 7,
-    spawnToken: 'spawn-token',
-    events: rig.eventSink,
-    onSpawned
-  }
-  const resolved = vi.fn(async (): Promise<DroidResolvedLaunch> => ({
-    command: '/host/bin/droid',
-    cwd: '/host/folder',
-    env: { PATH: '/host/bin' },
-    previous: null,
-    ...launch
-  }))
-  const openConnection = vi.fn(
-    (_launch: ProviderProcessLaunch, handlers: DroidAgentConnectionOptions) => {
-      const connection = new FakeConnection(handlers)
-      connections.push(connection)
-      return connection
-    }
-  )
-  const adapter = new DroidSessionAdapter({
-    resolveLaunch: resolved,
-    readProcessStartTime: async () => 12345,
-    openConnection,
-    onLifecycle: lifecycle,
-    onSettled: settled,
-    onIdle: idle,
-    logger: { warn: vi.fn(), error: vi.fn() },
-    ...extraDeps
-  })
-  cleanups.push(async () => {
-    await adapter.closeAll().catch(() => {})
-    await adapter.drainObservedExits()
-    adapter.acknowledgeSessionRelease(sessionId)
-  })
-  const start = async () => {
-    const acquired = await adapter.acquire(input)
-    const connection = connections[0]
-    if (!connection) {
-      throw new Error('connection missing')
-    }
-    return { acquired, connection }
-  }
-  return {
-    adapter,
-    rig,
-    input,
-    lifecycle,
-    settled,
-    idle,
-    onSpawned,
-    openConnection,
-    connections,
-    start
-  }
-}
 
 const assistantRows = async (h: Awaited<ReturnType<typeof setup>>) =>
   (await h.rig.rows()).flatMap(({ body }) =>
@@ -229,7 +57,7 @@ describe('Droid session start', () => {
       machineId: expect.any(String),
       cwd: '/host/folder',
       interactionMode: 'auto',
-      autonomyLevel: 'off'
+      autonomyLevel: 'high'
     })
     expect(acquired.link).toMatchObject({
       handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-1' },
@@ -277,23 +105,89 @@ describe('Droid session start', () => {
     expect(JSON.stringify(connection.requests)).not.toContain('mission')
   })
 
+  it.each([
+    ['Manual', 'off'],
+    ['Auto Low', 'low'],
+    ['Auto Medium', 'medium'],
+    ['Yolo', 'high']
+  ] as const)('starts a new session at the %s autonomy level it resolved', async (_name, level) => {
+    const h = await setup({ autonomyLevel: level })
+    const { connection } = await h.start()
+    expect(connection.requests[0]?.params).toMatchObject({ autonomyLevel: level })
+  })
+
+  it.each([
+    ['true', 'spec'],
+    ['false', 'auto']
+  ])('starts a new session with the saved Spec value %s in %s mode', async (saved, mode) => {
+    const h = await setup()
+    const { connection } = await h.start({ planMode: saved })
+    expect(connection.requests[0]?.params).toMatchObject({ interactionMode: mode })
+  })
+
+  it('starts in auto mode when the saved Spec value is not a boolean', async () => {
+    const h = await setup()
+    const { connection } = await h.start({ planMode: 'spec' })
+    expect(connection.requests[0]?.params).toMatchObject({ interactionMode: 'auto' })
+  })
+
+  const heldSession = {
+    linkId: 'prior',
+    handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-9' },
+    origin: 'created' as const,
+    mintedAtFence: 1,
+    observedAt: 100
+  }
+
   it('loads the session the chat last held, and names no folder or mode', async () => {
-    const previous = {
-      linkId: 'prior',
-      handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-9' },
-      origin: 'created' as const,
-      mintedAtFence: 1,
-      observedAt: 100
-    }
-    const h = await setup({ previous })
+    const h = await setup({ previous: heldSession })
     const { acquired, connection } = await h.start()
 
-    expect(connection.requests.map(({ method }) => method)).toEqual(['droid.load_session'])
-    expect(connection.requests[0]?.params).toEqual({ sessionId: 'droid-session-9' })
+    expect(connection.requests[0]).toMatchObject({
+      method: 'droid.load_session',
+      params: { sessionId: 'droid-session-9' }
+    })
     expect(acquired.link).toMatchObject({
       origin: 'resumed',
       handle: { nativeId: 'droid-session-9' }
     })
+  })
+
+  it('re-sends the resolved level and Spec mode after a load, never the stored ones', async () => {
+    const h = await setup({ previous: heldSession, autonomyLevel: 'off' })
+    const { connection } = await h.start({ planMode: 'true' })
+
+    expect(connection.requests.map(({ method }) => method)).toEqual([
+      'droid.load_session',
+      'droid.update_session_settings'
+    ])
+    expect(connection.requests[1]?.params).toEqual({
+      autonomyLevel: 'off',
+      interactionMode: 'spec'
+    })
+  })
+
+  it('re-sends auto mode after a load when the chat saved no Spec', async () => {
+    const h = await setup({ previous: heldSession, autonomyLevel: 'high' })
+    const { connection } = await h.start()
+    expect(connection.requests[1]?.params).toEqual({
+      autonomyLevel: 'high',
+      interactionMode: 'auto'
+    })
+  })
+
+  it('fails the start, and closes the child, when Droid refuses the settings after a load', async () => {
+    const h = await setup({ previous: heldSession })
+    h.openConnection.mockImplementationOnce((_launch, handlers) => {
+      const connection = new FakeConnection(handlers)
+      connection.replies.set('droid.update_session_settings', () => {
+        throw new DroidRpcError(-32603, 'Settings refused')
+      })
+      h.connections.push(connection)
+      return connection
+    })
+    await expect(h.start()).rejects.toThrow()
+    expect(h.connections[0]?.closed).toBe(true)
   })
 
   it('fails the start when Droid loads a different session than it was asked for', async () => {
@@ -344,10 +238,9 @@ describe('Droid session start', () => {
     })
 
     it('accepts the workspace when Droid reports the real path behind a symlink', async () => {
-      const h = await setup(
-        { previous, cwd: '/link/folder' },
-        { realpath: async (path) => (path === '/link/folder' ? '/real/folder' : path) }
-      )
+      const h = await setup({ previous, cwd: '/link/folder' }, undefined, {
+        realpath: async (path) => (path === '/link/folder' ? '/real/folder' : path)
+      })
       loadReplying(h, { session: { messages: [] }, cwd: '/real/folder' })
 
       const { acquired } = await h.start()
@@ -701,7 +594,7 @@ describe('Droid session end', () => {
 })
 
 describe('Droid session options and prompts', () => {
-  it('sends a model or effort pick and rejects anything else, without ending the session', async () => {
+  it('sends a model or effort pick, rejects any other option and an answer to a card Droid is not waiting on, without ending the session', async () => {
     const h = await setup()
     const { connection } = await h.start()
 
@@ -717,7 +610,7 @@ describe('Droid session options and prompts', () => {
         { method: 'droid.update_session_settings', params: { reasoningEffort: 'high' } }
       ]
     )
-    const option = h.adapter.setOption({ sessionId, key: 'planMode', value: 'true', fence: 7 })
+    const option = h.adapter.setOption({ sessionId, key: 'fastMode', value: 'true', fence: 7 })
     await expect(option).rejects.toSatisfy(isAgentSessionOptionRejectedError)
     await expect(
       h.adapter.answerPrompt({
@@ -728,7 +621,7 @@ describe('Droid session options and prompts', () => {
         fence: 7,
         commit: vi.fn(async () => {})
       })
-    ).rejects.toBeInstanceOf(AgentSessionPromptAnswerRejectedError)
+    ).rejects.toBeInstanceOf(AgentSessionPromptUnavailableError)
     expect(connection.closed).toBe(false)
   })
 })

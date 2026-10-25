@@ -23,6 +23,11 @@ export class DroidSessionModel {
   private reported?: AgentSessionOptionsResult
   startListing?: AgentModelCatalogLiveListing
 
+  /** The picks this child holds, without asking Droid for anything. */
+  get current(): AgentSessionOptionsResult['current'] {
+    return this.reported?.current ?? {}
+  }
+
   capture(result: unknown, saved: DroidSavedPicks, resolvesConfig: boolean): void {
     const reported = droidReportedSessionOptions(result)
     if (!reported) {

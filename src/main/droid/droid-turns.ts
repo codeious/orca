@@ -19,6 +19,8 @@ export type DroidTurnDeps = {
   ) => Promise<unknown>
   settled: (id: string, outcome: AgentSessionDispatchOutcome) => void
   idle: () => void
+  /** Droid's report of the session's settings; it belongs to the session, not to a turn. */
+  settings: (report: { requestId?: string; settings: unknown }) => void
   /** The echo's message id, recorded before the timeline admits the send. */
   rememberEcho?: (clientMessageId: string, messageId: string) => void
   warn?: (message: string, fields: { requestId: string }) => void
@@ -150,6 +152,12 @@ export class DroidTurns {
         return
       case 'agent_turn_completed':
         this.finish(notification.reason)
+        break
+      case 'settings_updated':
+        this.deps.settings({
+          settings: notification.settings,
+          ...(notification.requestId ? { requestId: notification.requestId } : {})
+        })
         break
       case 'other':
         break

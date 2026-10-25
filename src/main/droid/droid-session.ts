@@ -9,9 +9,13 @@ import {
 import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-wire/structured-agent-session-logger'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
+import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
 import { droidOptionParams, droidSavedOptionPicks } from './droid-model-options'
+import { DroidPrompts } from './droid-prompts'
 import { DroidSessionModel } from './droid-session-model'
-import { refuseSessionFromOtherFolder, startedSchema } from './droid-started-session'
+import { DroidSessionOptions } from './droid-session-options'
+import { DroidReportedSettings, type DroidStartSettings } from './droid-session-settings'
+import { readStartedSession } from './droid-started-session'
 import { DroidTurns } from './droid-turns'
 import { isSupportedDroidProtocol } from './droid-version-support'
 
@@ -49,7 +53,7 @@ export type DroidSessionDeps = {
 }
 
 /** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. */
-export type DroidSessionBegin = { cwd: string; resumeId: string | null }
+export type DroidSessionBegin = DroidStartSettings & { cwd: string; resumeId: string | null }
 
 export const DROID_MACHINE_ID = 'orca'
 const START_TIMEOUT_MS = 120_000
@@ -59,10 +63,14 @@ export class DroidSession {
   readonly connection: DroidConnection
   readonly lane: JsonlRpcTimelineLane
   readonly turns: DroidTurns
+  readonly prompts: DroidPrompts
   private readonly echoed = new Map<string, string>()
   requestedClose = false
+  /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
+  readonly settings = new DroidReportedSettings()
   /** What a no-pick new session resolved, for the host catalog. Absent when the start listed none. */
   readonly model = new DroidSessionModel()
+  readonly options: DroidSessionOptions
   private publishedExit = false
   private failedCause?: Error
   private exitDelivery: Promise<void> = Promise.resolve()
@@ -100,12 +108,21 @@ export class DroidSession {
         })
       }
     })
+    this.prompts = new DroidPrompts(this.lane)
+    this.options = new DroidSessionOptions({
+      request: (method, params, options) => this.connection.request(method, params, options),
+      settings: this.settings,
+      model: this.model,
+      requested: begin.interactionMode,
+      timeoutMs: START_TIMEOUT_MS
+    })
     this.turns = new DroidTurns({
       lane: this.lane,
       generation,
       request: (method, params, options) => this.connection.request(method, params, options),
       settled: (id, outcome) => this.settle(id, outcome),
       idle: () => deps.onIdle({ sessionId }),
+      settings: (report) => this.settings.receive(report),
       rememberEcho: (clientMessageId, messageId) => {
         this.echoed.set(clientMessageId, messageId)
       },
@@ -117,6 +134,7 @@ export class DroidSession {
     )(launch, {
       ...(input.onOutput ? { onOutput: input.onOutput } : {}),
       onNotification: (method, params) => this.notified(method, params),
+      onRequest: (method, params, context) => this.prompts.handle(method, params, context),
       onClose: (error) => this.fail(error),
       onDiagnostic: (message) => deps.logger.warn(message, { scope: 'droid-rpc', sessionId }),
       onExit: (error) => {
@@ -135,7 +153,7 @@ export class DroidSession {
 
   /** Droid's own id for the session this child now holds. Nothing else is sent before it answers. */
   async start(): Promise<string> {
-    const { cwd, resumeId } = this.begin
+    const { cwd, resumeId, autonomyLevel, interactionMode } = this.begin
     const saved = droidSavedOptionPicks(this.input.options)
     let result: unknown
     try {
@@ -147,12 +165,12 @@ export class DroidSession {
           )
         : this.connection.request(
             'droid.initialize_session',
-            // Never a Mission: those spend the person's credits unattended.
+            // The mode is Auto or Spec, never a Mission: those spend the person's credits unattended.
             {
               machineId: DROID_MACHINE_ID,
               cwd,
-              interactionMode: 'auto',
-              autonomyLevel: 'off',
+              interactionMode,
+              autonomyLevel,
               ...droidOptionParams(saved)
             },
             { timeoutMs: START_TIMEOUT_MS }
@@ -162,22 +180,14 @@ export class DroidSession {
       throw error
     }
     this.refuseUnsupportedProtocol(true)
-    const parsed = startedSchema.safeParse(result)
-    if (resumeId) {
-      const reported = parsed.success ? parsed.data.cwd : undefined
-      await refuseSessionFromOtherFolder(this.begin.cwd, reported, this.deps.realpath)
-    }
-    // A load answers with the session's content, never its id, so the one asked for is the one held.
-    const id = parsed.success
-      ? (parsed.data.sessionId ?? parsed.data.session?.id ?? resumeId ?? undefined)
-      : undefined
-    if (!id) {
-      throw new Error('Droid did not name its session')
-    }
+    const resume = resumeId ? { id: resumeId, cwd, realpath: this.deps.realpath } : null
+    const { id, settings } = await readStartedSession(result, resume)
+    this.settings.adopt(settings)
     this.model.capture(result, saved, resumeId === null)
+    let reportedLevel = this.settings.current.autonomyLevel
     if (resumeId) {
-      await this.model.applySaved(
-        (method, params, options) => this.connection.request(method, params, options),
+      reportedLevel = await this.options.resume(
+        { autonomyLevel, interactionMode },
         saved,
         (error) =>
           this.deps.logger.warn('Droid did not take the saved model', {
@@ -187,21 +197,8 @@ export class DroidSession {
           })
       )
     }
+    this.lane.apply(droidAutonomyCapRow(autonomyLevel, reportedLevel))
     return id
-  }
-
-  readOptions(): ReturnType<DroidSessionModel['read']> {
-    return this.model.read((method, params, options) =>
-      this.connection.request(method, params, options)
-    )
-  }
-
-  setOption(key: string, value: string): ReturnType<DroidSessionModel['set']> {
-    return this.model.set(
-      (method, params, options) => this.connection.request(method, params, options),
-      key,
-      value
-    )
   }
 
   async close(requested = true): ReturnType<DroidConnection['close']> {
@@ -278,6 +275,7 @@ export class DroidSession {
       return
     }
     this.publishedExit = true
+    this.prompts.clear()
     this.turns.end()
     this.lane.finalize()
     this.lane.apply([

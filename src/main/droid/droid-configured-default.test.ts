@@ -186,6 +186,7 @@ async function droidHost() {
         command: '/opt/droid/bin/droid',
         cwd: workspacePath,
         env: { PATH: '/usr/bin' },
+        autonomyLevel: 'off',
         previous: opts.resumeId
           ? {
               linkId: 'link-1',
@@ -373,9 +374,13 @@ describe('Droid model and effort in the composer', () => {
     })
     const resumed = await chat(clean, { resumeId: 'old-session', saved: { model: 'gpt-6-sol' } })
     expect(resumed.listing).not.toHaveProperty('configuredDefault')
-    expect(resumed.connection.requests.map((request) => request.method)).toEqual([
-      'droid.load_session',
-      'droid.update_session_settings'
+    expect(resumed.connection.requests.map(({ method, params }) => ({ method, params }))).toEqual([
+      { method: 'droid.load_session', params: { sessionId: 'old-session' } },
+      {
+        method: 'droid.update_session_settings',
+        params: { autonomyLevel: 'off', interactionMode: 'auto' }
+      },
+      { method: 'droid.update_session_settings', params: { modelId: 'gpt-6-sol' } }
     ])
     expect(firstFrame(await catalog.read({ agent: 'droid', workspacePath: clean }))).toEqual(
       NOTHING

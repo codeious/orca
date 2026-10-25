@@ -503,6 +503,8 @@ export type AgentSessionOptionsResult = {
     fastMode?: boolean
     /** Next-turn service tier id where the model lists `serviceTiers`; `default` is standard. */
     serviceTier?: string
+    /** Spec mode, from a provider that has one. Absent means the provider reports none, so no toggle. */
+    planMode?: boolean
     /** Provider-reported effective routing, distinct from the next-turn preference. */
     fastModeState?: AgentSessionFastModeState
     /**

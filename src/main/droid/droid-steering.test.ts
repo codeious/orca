@@ -154,6 +154,7 @@ async function setup() {
       command: '/host/bin/droid',
       cwd: '/host/folder',
       env: { PATH: '/host/bin' },
+      autonomyLevel: 'off',
       previous: null
     }),
     readProcessStartTime: async () => 12345,
