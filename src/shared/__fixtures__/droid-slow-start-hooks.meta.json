@@ -1,0 +1,10 @@
+{
+  "source_scenario": "session-replacement-slow-start",
+  "source_branch": "research/droid-session-replacement",
+  "source_commit": "0f495ba481",
+  "droid_versions": ["0.238.0", "0.244.0"],
+  "platforms": ["darwin"],
+  "recorded_at": "2026-10-20",
+  "note": "/tree and /resume <id> with a SessionStart hook that waits 11 s or 15 s: the old session's SessionEnd other arrives before the new SessionStart in 124 of 124 switches while the droid process stays alive. Only the captures with a delay past 10 s are kept (tree-d15000 on both versions, resume-d15000, tree-d11000, tree-d11000a). Session ids are S1/S2 relations and the process is P1; the replay assigns a synthetic pid per process. No prompt, path, pid or key is in the rows.",
+  "clock": "rows are in the order the probe listener or logger recorded them"
+}

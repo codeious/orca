@@ -92,6 +92,7 @@ describe('DroidHookService', () => {
         'Notification',
         'PostToolUse',
         'PreToolUse',
+        'SessionEnd',
         'SessionStart',
         'Stop',
         'SubagentStop',
@@ -183,12 +184,12 @@ describe('DroidHookService', () => {
 
     it('keeps a hooks.json change that lands while the hook script is being written', () => {
       const savedByHooksUi = { hooks: [{ type: 'command', command: 'saved-meanwhile' }] }
-      whileScriptIsWritten.run = () => writeJson(hooksJsonPath(), { SessionEnd: [savedByHooksUi] })
+      whileScriptIsWritten.run = () => writeJson(hooksJsonPath(), { PreCompact: [savedByHooksUi] })
 
       expect(new DroidHookService().install().state).toBe('installed')
 
       const hooks = readHooks()
-      expect(hooks.SessionEnd).toEqual([savedByHooksUi])
+      expect(hooks.PreCompact).toEqual([savedByHooksUi])
       expect(eventEntries(hooks, 'Stop')).toHaveLength(1)
     })
   })

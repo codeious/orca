@@ -4,6 +4,8 @@ import {
   type AgentProcessVerdict
 } from '../../../shared/agent-process-presence'
 import { probeAgentProcessPresence } from '../../../shared/agent-process-presence-probe'
+import { AgentProcessExitWatch } from '../../../shared/agent-process-exit-watch'
+import { droidExitMarker } from '../../../shared/agent-hook-listener/providers/droid-sessions'
 import { AgentHookServerLifecycle } from './server-lifecycle'
 
 export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecycle {
@@ -11,6 +13,7 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
     AgentHookEventPayload,
     Promise<AgentProcessVerdict | null>
   >()
+  private readonly exitWatch = new AgentProcessExitWatch()
 
   /** A live hook proves its own process alive; only another process's hook casts doubt on the owner. */
   checkAgentPresenceAfterHook(event: AgentHookEventPayload, row: AgentHookEventPayload): void {
@@ -18,6 +21,25 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
     const owner = row.agentPresence
     if (sender && owner?.process && !owner.ended && !isSameAgentProcess(sender, owner.process)) {
       void this.checkAgentPresence(row.paneKey)
+    }
+    if (event.source === 'droid' && event.hookEventName === 'SessionEnd') {
+      this.watchDroidExit(row.paneKey)
+    }
+  }
+
+  stop(): void {
+    this.exitWatch.stopAll()
+    super.stop()
+  }
+
+  /** A Droid SessionEnd is no proof of exit, so ask the process until it answers or the window closes. */
+  private watchDroidExit(paneKey: string): void {
+    const marker = droidExitMarker(this.state, paneKey)
+    if (marker) {
+      this.exitWatch.start(paneKey, {
+        isCurrent: () => droidExitMarker(this.state, paneKey) === marker,
+        probe: () => this.checkAgentPresence(paneKey)
+      })
     }
   }
 

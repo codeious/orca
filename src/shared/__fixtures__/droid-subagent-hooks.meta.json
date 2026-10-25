@@ -1,0 +1,10 @@
+{
+  "source_scenario": "subagent-session-start",
+  "source_branch": "research/droid-subagent-session-start",
+  "source_commit": "419daef5fc",
+  "droid_versions": ["0.238.0", "0.244.0"],
+  "platforms": ["darwin"],
+  "recorded_at": "2026-10-17",
+  "note": "Task subagent runs: p1-task (0.238.0), p2-task (0.244.0) and p3-bg, a background child that outlives the lead's Stop (0.238.0). Each hook row names the droid pid and start; tui rows are the probe's view of it. Rows are copied unchanged from the research branch. Scanned for emails, home paths, API keys and tokens: none. Session ids are 8-character prefixes or S1/S2 relations. The Linux startTime embeds the kernel boot id of a throwaway container.",
+  "clock": "rows are in the order the probe listener or logger recorded them"
+}

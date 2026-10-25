@@ -26,6 +26,11 @@ import {
   trackOpenCodePaneLaunchToken
 } from './agent-hook-listener/opencode-session-registry'
 import { claudeRowHasUnlistedLiveWork } from './agent-hook-listener/providers/claude-pane-hold-evidence'
+import {
+  admitDroidHook,
+  droidRowProviderSession,
+  restatedDroidEvent
+} from './agent-hook-listener/providers/droid-sessions'
 import { readString } from './agent-hook-listener/tool-input-preview'
 /** Canonical transport-agnostic normalization entry shared by main and relay listeners. */
 const CLAUDE_EXIT_SESSION_END_REASONS = new Set([
@@ -193,11 +198,13 @@ export function normalizeHookPayload(
   }
 
   // Why: presence needs the agent's own process; without it the hook cannot speak for liveness.
-  const agentProcess =
-    source === 'claude' ? readAgentProcessIdentity(record.agentProcess) : undefined
+  const agentProcess = readAgentProcessIdentity(
+    source === 'claude' || source === 'droid' ? record.agentProcess : undefined
+  )
   const agentPresence = agentProcess ? { agent: source, process: agentProcess } : undefined
   const sessionEndReason = readString(hookPayloadRecord, 'reason')
   if (
+    source === 'claude' &&
     eventName === 'SessionEnd' &&
     agentPresence &&
     !readString(hookPayloadRecord, 'agent_id') &&
@@ -208,7 +215,11 @@ export function normalizeHookPayload(
   ) {
     const payload =
       previousStatus?.payload ??
-      normalizeAgentStatusPayload({ state: 'done', prompt: '', agentType: source })
+      normalizeAgentStatusPayload({
+        state: 'done',
+        prompt: '',
+        agentType: source
+      })
     if (!payload) {
       return null
     }
@@ -226,6 +237,20 @@ export function normalizeHookPayload(
     }
   }
 
+  const droidAdmission =
+    source === 'droid'
+      ? admitDroidHook(state, paneKey, eventName, hookPayloadRecord, agentProcess)
+      : undefined
+  if (droidAdmission?.kind === 'skip' || droidAdmission?.kind === 'restate') {
+    return restatedDroidEvent(previousStatus, droidAdmission, {
+      launchToken,
+      tabId,
+      worktreeId,
+      agentPresence,
+      providerSession: providerSession ?? undefined
+    })
+  }
+
   const promptText = extractedPrompt.text
   const dispatched = normalizeProviderEvent({
     state,
@@ -236,8 +261,10 @@ export function normalizeHookPayload(
     hookPayload: hookPayloadRecord,
     envelope: record,
     extractedPrompt,
-    previousOpenCodeMainAgent: options.previousOpenCodeMainAgent
+    previousOpenCodeMainAgent: options.previousOpenCodeMainAgent,
+    droidAdmission
   })
+  const rowProviderSession = droidRowProviderSession(droidAdmission, providerSession)
   const providerSessionOnly =
     (source === 'pi' || source === 'prime-agent' || source === 'jcode') &&
     eventName === 'session_start' &&
@@ -246,7 +273,11 @@ export function normalizeHookPayload(
   const transportPayload =
     dispatched.payload ??
     (providerSessionOnly
-      ? normalizeAgentStatusPayload({ state: 'done', prompt: '', agentType: source })
+      ? normalizeAgentStatusPayload({
+          state: 'done',
+          prompt: '',
+          agentType: source
+        })
       : null)
   const restoredUnconfirmed =
     source === 'claude' && state.claudeUnconfirmedRestoredStatusPaneKeys.delete(paneKey)
@@ -266,17 +297,19 @@ export function normalizeHookPayload(
     connectionId: null,
     ...(restoredUnconfirmed ? { restoredUnconfirmed: true } : {}),
     hasExplicitPrompt:
-      source === 'amp'
-        ? hasExplicitAmpPrompt(eventName, promptText, hookPayloadRecord)
-          ? true
-          : undefined
-        : hasExplicitUserPrompt(
-            source,
-            eventName,
-            extractedPrompt,
-            dispatched.resolvedPromptText,
-            dispatched.hasTranscriptPromptEvidence
-          ),
+      droidAdmission?.kind === 'child'
+        ? undefined
+        : source === 'amp'
+          ? hasExplicitAmpPrompt(eventName, promptText, hookPayloadRecord)
+            ? true
+            : undefined
+          : hasExplicitUserPrompt(
+              source,
+              eventName,
+              extractedPrompt,
+              dispatched.resolvedPromptText,
+              dispatched.hasTranscriptPromptEvidence
+            ),
     promptInteractionKey: dispatched.promptInteractionKey,
     hookEventName: typeof eventName === 'string' ? eventName : undefined,
     providerPromptId:
@@ -295,7 +328,7 @@ export function normalizeHookPayload(
           claudeRunningNonAgentTask: claudeRowHasUnlistedLiveWork(state, paneKey)
         }
       : {}),
-    ...(providerSession ? { providerSession } : {}),
+    ...(rowProviderSession ? { providerSession: rowProviderSession } : {}),
     ...(providerSessionOnly ? { providerSessionOnly: true } : {}),
     payload: transportPayload
   }

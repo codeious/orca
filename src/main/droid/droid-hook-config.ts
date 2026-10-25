@@ -27,7 +27,9 @@ export const DROID_EVENTS = [
     eventName: 'PostToolUse',
     definition: { matcher: '*', hooks: [{ type: 'command', command: '' }] }
   },
-  { eventName: 'Notification', definition: { hooks: [{ type: 'command', command: '' }] } }
+  { eventName: 'Notification', definition: { hooks: [{ type: 'command', command: '' }] } },
+  // Why: the host exit watch starts from SessionEnd; without it a Droid exit is never confirmed.
+  { eventName: 'SessionEnd', definition: { hooks: [{ type: 'command', command: '' }] } }
 ] as const
 
 // Why: Droid's hook event enum has no PermissionRequest and a /hooks save leaves it out of hooks.json.
