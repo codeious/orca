@@ -55,19 +55,20 @@ export async function writeHooksJsonRemote(
   const dir = dirnamePosix(remotePath)
   await mkdirpRemote(sftp, dir)
   const serialized = options?.serialized ?? `${JSON.stringify(config, null, 2)}\n`
-  let existing: string | undefined
-  try {
-    existing = await readFile(sftp, remotePath)
-  } catch {
-    // ENOENT or read error — fall through to the write below.
-  }
+  const existing = await readFile(sftp, remotePath).catch((err: unknown) => {
+    // Why: a file that exists but cannot be read must not be replaced without its backup.
+    if (options?.backup && !isNoEntryError(err)) {
+      throw err
+    }
+    return undefined // ENOENT or read error: fall through to the write below.
+  })
   // Why: skip the write when on-disk content is identical so repeated
   // install() calls do not bump the file's mtime / inode unnecessarily, or roll the backup.
   if (existing === serialized) {
     return
   }
   if (options?.backup && existing !== undefined) {
-    // Why: temp + rename replaces a `.bak` that is a symlink instead of writing through it.
+    // Why: temp + rename replaces a symlinked `.bak` rather than writing through it.
     await writeTextFileRemoteAtomic(sftp, `${remotePath}.bak`, existing)
   }
   // Why: tmp + rename so a partial network drop mid-write does not leave a
