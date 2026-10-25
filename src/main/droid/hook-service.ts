@@ -114,9 +114,7 @@ export class DroidHookService {
     return this.getStatus()
   }
 
-  // Why: SSH remotes run the Droid CLI on the remote host, so its hook config and managed
-  // script are written into the remote ~/.factory + ~/.orca via SFTP (issue #7253). It runs the
-  // same mutation as install() but always emits POSIX script and paths, even from a Windows host.
+  // Why: the remote host runs Droid, so its hooks and script go there over SFTP (#7253), in POSIX form even from Windows.
   async installRemote(sftp: SFTPWrapper, remoteHome: string): Promise<AgentHookInstallStatus> {
     const home = remoteHome.replace(/\/$/, '')
     const hooksPath = `${home}/.factory/hooks.json`

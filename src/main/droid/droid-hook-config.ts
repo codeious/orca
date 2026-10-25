@@ -43,11 +43,7 @@ function eventDefinitions(file: DroidHooksFile, eventName: string): HookDefiniti
   return Array.isArray(value) ? value : null
 }
 
-/**
- * Copies the settings.json `hooks` events that hooks.json does not define into hooks.json.
- * Droid lets a hooks.json event replace the settings.json event wholesale, so adding Orca's
- * entry to an event without carrying the user's own entries over would silence them.
- */
+/** Carries settings.json events hooks.json lacks into it: a hooks.json event replaces the settings one wholesale. */
 function carrySettingsHooksIntoHooksFile(hooksFile: DroidHooksFile, settings: HooksConfig): void {
   const settingsHooks: unknown = settings.hooks
   if (!isPlainObject(settingsHooks)) {
@@ -65,11 +61,7 @@ function carrySettingsHooksIntoHooksFile(hooksFile: DroidHooksFile, settings: Ho
   }
 }
 
-/**
- * Removes Orca's entries from an event map (hooks.json, or the settings.json `hooks` object) and
- * returns whether any were found. Only an event Orca emptied is dropped; non-event keys such as
- * `hooksDisabled` and events without an Orca entry are never touched.
- */
+/** Removes Orca's entries from an event map; true if any were found. Non-event keys are never touched. */
 function stripManagedEntries(
   events: Record<string, unknown>,
   isManagedCommand: (command: string | undefined) => boolean,
@@ -119,12 +111,7 @@ export function applyDroidRemove(
   }
 }
 
-/**
- * The one install mutation local, SSH and WSL all run: Orca's entries go into hooks.json and
- * leave the settings.json `hooks` key. Every other key and entry in both files is left as found.
- * Returns whether settings.json changed; hooks.json is always rewritten and the writer skips an
- * identical result.
- */
+/** The install mutation local, SSH and WSL share: Orca's entries move into hooks.json and out of settings.json. */
 export function applyDroidInstall(
   { hooksFile, settings }: DroidHookFiles,
   command: string,

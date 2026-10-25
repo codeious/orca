@@ -219,11 +219,7 @@ export function admitDroidHook(
   return sessions.children.has(sessionId) ? { kind: 'child', sessions, sessionId } : SKIP
 }
 
-/**
- * The event for an admission that settles without a dispatch: null for a skip, else the stored row
- * re-published under the sender, so the host's owner check and exit watch see the event while the
- * row stays as it was. `settled` also clears child work, for a lead replaced while children showed.
- */
+/** The stored row re-published under the sender so the owner check and exit watch see it; null for a skip. */
 export function restatedDroidEvent(
   previous: AgentHookEventPayload | undefined,
   admission: Extract<DroidHookAdmission, { kind: 'skip' | 'restate' }>,
@@ -249,8 +245,7 @@ export function restatedDroidEvent(
     paneKey: previous.paneKey,
     source: 'droid',
     connectionId: null,
-    // Why: the restated row is the one the host keeps for resume, so it must name the lead the pane
-    // holds: the replacement's own id once the lead changed, never the sender's.
+    // Why: the restated row is kept for resume, so it names the lead the pane holds, not the sender's.
     providerSession: admission.settled ? base.providerSession : previous.providerSession,
     ...(admission.sessionEnd ? { hookEventName: 'SessionEnd' } : {}),
     payload

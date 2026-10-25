@@ -164,7 +164,6 @@ export function normalizeDroidEvent(
   if (sessions) {
     applyDroidLeadEvent(sessions, { eventName, stateName, notification })
   }
-  // Effective promptText: Notification.message is status text, not the prompt; '' keeps the cached UserPromptSubmit value.
   return buildDroidStatusPayload(state, paneKey, {
     eventName,
     promptText: eventName === 'Notification' ? '' : promptText,

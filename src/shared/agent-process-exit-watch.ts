@@ -14,11 +14,7 @@ export type AgentExitWatchHost = {
 
 type Watch = AgentExitWatchHost & { delayMs: number; waitedMs: number }
 
-/**
- * Confirms that an agent which announced its end has really exited. The announcement is not proof
- * (a `/clear` also ends a session), so the host asks the process itself, quickly at first and
- * then less often, and leaves the row alone if the process outlives the window.
- */
+/** Asks the process itself whether an agent that announced its end exited; a `/clear` also ends a session. */
 export class AgentProcessExitWatch {
   private readonly watches = new Map<string, Watch>()
   private readonly wakeups = new CodexSubagentPollScheduler<Watch>(
