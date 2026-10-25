@@ -50,6 +50,7 @@ import {
   resolveAcpLaunchCommand
 } from '../acp/acp-structured-launch-resolution'
 import { AcpStructuredSessionAdapter } from '../acp/acp-structured-session-adapter'
+import { DROID_RUNTIME_REGISTRATION } from '../droid/droid-runtime-registration'
 import { PI_RPC_RUNTIME_REGISTRATION } from '../pi/rpc-runtime-registration'
 import type { AgentModelCatalogDiscovery } from '../native-chat/agent-model-catalog/agent-model-catalog-discovery'
 import {
@@ -320,6 +321,7 @@ export const STRUCTURED_AGENT_RUNTIME_REGISTRATIONS: readonly StructuredAgentRun
           })
         )
     },
+    DROID_RUNTIME_REGISTRATION,
     ...ACP_LAUNCH_SPECS.map(acpRegistration)
   ]
 
