@@ -1,0 +1,51 @@
+src/main/runtime/rpc/methods/ai-vault.ts
+  s_f87fd4e7a08936::t_ab8beefc8ebddb 24,29-34
+  s_f87fd4e7a08936::t_cd1c71387ba37d 145-153
+src/main/runtime/rpc/methods/ai-vault-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_7533bc90fda7eb 1-68
+src/main/orcad/orcad-entry.ts
+  s_f87fd4e7a08936::t_f2481885eb00a0 285
+src/main/runtime/runtime-service-command-surface.ts
+  s_f87fd4e7a08936::t_5920e19a88d512 17
+  s_f87fd4e7a08936::t_d668d2c7cfff6a 116
+src/shared/ai-vault-droid-session-holder.ts
+  s_f87fd4e7a08936::t_6893ed8a1dddaf 1-30
+src/main/runtime/runtime-ai-vault-commands.ts
+  s_f87fd4e7a08936::t_f6a8e2be40f5c9 5-8,21-23,27-38
+  s_f87fd4e7a08936::t_6fbdb4c1dc841d 39
+src/main/runtime/runtime-ai-vault-commands.test.ts
+  s_f87fd4e7a08936::t_b171dcc020f2f8 1-38
+  s_f87fd4e7a08936::t_4a0c26ff38bedd 39-41
+src/main/startup/main-process-runtime-service.ts
+  s_f87fd4e7a08936::t_f4ff90b7ddbc70 132
+src/shared/ai-vault-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_da3cbde2a15609 1-23
+src/main/runtime/orca-runtime-state-fields.ts
+  s_f87fd4e7a08936::t_55e0e4e0a3360e 19
+  s_f87fd4e7a08936::t_3374e9f15d5672 97
+  s_f87fd4e7a08936::t_8fea86bf088871 246
+src/main/runtime/orca-runtime-preserved-branch-cleanup.ts
+  s_f87fd4e7a08936::t_257749a65e70fd 129-132
+  s_f87fd4e7a08936::t_f45152aba1c7b6 359-362
+  s_f87fd4e7a08936::t_8903f24020a56e 24
+src/shared/rpc-contract/ai-vault-params.ts
+  s_f87fd4e7a08936::t_485f189213e6eb 70-73
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_f87fd4e7a08936::t_178d1415f9fa23 57,675
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f54e8e857b695a0714bd3440372bcf47c6a0959e",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
