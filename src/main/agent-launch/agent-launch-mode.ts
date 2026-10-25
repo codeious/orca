@@ -25,6 +25,10 @@ import type {
 } from '../../shared/agent-launch-intent'
 import { RUNTIME_CAPABILITIES } from '../../shared/protocol-version'
 import { STRUCTURED_AGENT_RUNTIME_REGISTRATIONS } from '../runtime/structured-agent-runtime-registrations'
+import type {
+  StructuredAgentSessionCreateSupport,
+  UnsupportedAgentVersion
+} from '../native-chat/structured-agent-session-create-support'
 import {
   isNativeChatEnabled,
   resolveStructuredNativeChatSupport,
@@ -48,8 +52,14 @@ export type AgentLaunchModeVocabulary = {
   terminal: string
   /** Per-reason wording a surface states differently. Orchestration names the `--terminal` flag
    *  in its reused-terminal detail, which would be meaningless in a phone's receipt. */
-  detailOverrides?: Partial<Record<Exclude<AgentLaunchModeReason, 'user_default'>, string>>
+  detailOverrides?: Partial<Record<WrappedDowngradeReason, string>>
 }
+
+/** Reasons whose receipt reads as the fixed "Your default is a chat, but ..." sentence. */
+type WrappedDowngradeReason = Exclude<
+  AgentLaunchModeReason,
+  'user_default' | 'agent_version_unsupported'
+>
 
 export const DEFAULT_LAUNCH_VOCABULARY: AgentLaunchModeVocabulary = {
   structured: 'a structured chat session',
@@ -87,7 +97,7 @@ const REGISTERED_STRUCTURED_AGENTS: readonly string[] = STRUCTURED_AGENT_RUNTIME
   ({ definition }) => definition.agent
 )
 
-const DOWNGRADE_DETAIL: Record<Exclude<AgentLaunchModeReason, 'user_default'>, string> = {
+const DOWNGRADE_DETAIL: Record<WrappedDowngradeReason, string> = {
   remote_execution_host: 'this launch runs on a remote execution host',
   reused_terminal: 'it reuses a running terminal agent',
   agent_without_structured_session: 'this agent has no structured session',
@@ -99,10 +109,7 @@ const DOWNGRADE_DETAIL: Record<Exclude<AgentLaunchModeReason, 'user_default'>, s
   structured_unsupported_on_host: 'the execution host cannot create one here'
 }
 
-const BLOCKER_REASON: Record<
-  StructuredNativeChatBlocker,
-  Exclude<AgentLaunchModeReason, 'user_default'>
-> = {
+const BLOCKER_REASON: Record<StructuredNativeChatBlocker, WrappedDowngradeReason> = {
   'reused-terminal': 'reused_terminal',
   'agent-without-structured-session': 'agent_without_structured_session',
   'custom-start-directory': 'tui_launch_command',
@@ -114,10 +121,7 @@ const BLOCKER_REASON: Record<
 }
 
 /** The host's own create-support verdict (`agentSession.createSupport`) in this vocabulary. */
-const HOST_SUPPORT_REASON: Record<
-  'agent' | 'remote' | 'wsl',
-  Exclude<AgentLaunchModeReason, 'user_default'>
-> = {
+const HOST_SUPPORT_REASON: Record<'agent' | 'remote' | 'wsl', WrappedDowngradeReason> = {
   agent: 'structured_unsupported_on_host',
   remote: 'remote_execution_host',
   wsl: 'wsl_execution_runtime'
@@ -210,7 +214,7 @@ async function readStructuredCreateSupport(
   runtime: Pick<OrcaRuntimeService, 'getStructuredAgentSessionCreateSupport'>,
   worktreeId: string,
   agent: TuiAgent | undefined
-): Promise<{ supported: boolean; reason?: 'agent' | 'remote' | 'wsl' } | null> {
+): Promise<StructuredAgentSessionCreateSupport | null> {
   if (!agent || !REGISTERED_STRUCTURED_AGENTS.includes(agent)) {
     return { supported: false, reason: 'agent' }
   }
@@ -227,7 +231,7 @@ async function readStructuredCreateSupport(
  */
 export function downgradeAgentLaunchModeForHost(
   receipt: AgentLaunchModeReceipt,
-  support: { supported: boolean; reason?: 'agent' | 'remote' | 'wsl' } | null,
+  support: StructuredAgentSessionCreateSupport | null,
   vocabulary: AgentLaunchModeVocabulary = DEFAULT_LAUNCH_VOCABULARY
 ): AgentLaunchModeReceipt {
   if (receipt.mode !== 'structured' || support?.supported) {
@@ -236,14 +240,27 @@ export function downgradeAgentLaunchModeForHost(
   if (support === null) {
     return downgraded(BLOCKER_REASON['runtime-capability-unknown'], vocabulary)
   }
+  if (support.reason === 'agent' && support.unsupportedVersion) {
+    return {
+      mode: 'terminal',
+      preferred: 'structured',
+      reason: 'agent_version_unsupported',
+      detail: unsupportedVersionDetail(support.unsupportedVersion)
+    }
+  }
   return downgraded(
     support.reason ? HOST_SUPPORT_REASON[support.reason] : 'structured_unsupported_on_host',
     vocabulary
   )
 }
 
+/** A whole sentence, not a clause: it tells the person what to run, so it is not wrapped. */
+function unsupportedVersionDetail(version: UnsupportedAgentVersion): string {
+  return `${version.agentName} ${version.found} is older than ${version.floor}, the oldest release Orca's chat supports. Run \`${version.updateCommand}\` on this computer.`
+}
+
 function downgraded(
-  reason: Exclude<AgentLaunchModeReason, 'user_default'>,
+  reason: WrappedDowngradeReason,
   vocabulary: AgentLaunchModeVocabulary
 ): AgentLaunchModeReceipt {
   const why = vocabulary.detailOverrides?.[reason] ?? DOWNGRADE_DETAIL[reason]

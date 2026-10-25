@@ -226,6 +226,8 @@ export type AgentLaunchModeReason =
   | 'wsl_execution_runtime'
   | 'codex_on_windows'
   | 'structured_unsupported_on_host'
+  /** The installed agent is older than the oldest release Orca's chat supports; `detail` names both. */
+  | 'agent_version_unsupported'
 
 /** Restates `WorkerStartModeReceipt` in surface-neutral terms so orchestration's receipt and a
  *  mobile or renderer launch report the same vocabulary. */

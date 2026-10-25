@@ -13,6 +13,7 @@ import { executeAgentLaunch, type AgentLaunchExecution } from './agent-launch-ex
 import { AgentLaunchStructuredSessionRefusedError } from './agent-launch-surface-factories'
 import type { AgentLaunchIntent, AgentLaunchResult } from '../../shared/agent-launch-intent'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../shared/constants'
+import type { StructuredAgentSessionCreateSupport } from '../native-chat/structured-agent-session-create-support'
 
 const STRUCTURED_PREFERENCE = {
   experimentalNativeChat: true
@@ -20,7 +21,7 @@ const STRUCTURED_PREFERENCE = {
 
 function harness(options: {
   settings?: Record<string, unknown> | null
-  createSupport?: { supported: boolean; reason?: 'agent' | 'remote' | 'wsl' }
+  createSupport?: StructuredAgentSessionCreateSupport
   createSupportThrows?: boolean
   structuredCreateError?: Error
   deliveredMessageId?: string | null
@@ -188,6 +189,32 @@ describe('a structured launch that creates its own worktree', () => {
     expect(result.receipt).toMatchObject({
       mode: 'terminal',
       reason: 'structured_unsupported_on_host'
+    })
+  })
+
+  it('names the installed release when only its version kept an agent from a chat', async () => {
+    // Pi stands in for any agent; the sentence is built from the facts the host sends.
+    const h = harness({
+      createSupport: {
+        supported: false,
+        reason: 'agent',
+        unsupportedVersion: {
+          agentName: 'Pi',
+          found: '0.80.0',
+          floor: '0.84.0',
+          updateCommand: 'pi update'
+        }
+      }
+    })
+    const result = await h.run({ ...CREATE_INTENT, agent: 'pi' })
+    expect(h.createStructuredSession).not.toHaveBeenCalled()
+    expect(result.outcome).toEqual({ kind: 'terminal', handle: 'term_1' })
+    expect(result.receipt).toEqual({
+      mode: 'terminal',
+      preferred: 'structured',
+      reason: 'agent_version_unsupported',
+      detail:
+        "Pi 0.80.0 is older than 0.84.0, the oldest release Orca's chat supports. Run `pi update` on this computer."
     })
   })
 

@@ -11,6 +11,7 @@ import { getLocalProjectWorktreeGitOptions } from '../project-runtime-git-option
 import type { AgentSessionAttachParams } from '../native-chat/agent-session-wire/structured-agent-session-attach'
 import { resolveTuiAgentLaunchEnv } from '../../shared/tui-agent-launch-defaults'
 import { resolveHostStructuredAgentCreateSupport } from './structured-agent-launch-support'
+import type { StructuredAgentSessionCreateSupport } from '../native-chat/structured-agent-session-create-support'
 import { structuredAgentRuntimeRegistration } from './structured-agent-runtime-registrations'
 import { resolveStructuredLaunchSeedOptions } from '../../shared/native-chat-session-option-defaults'
 import { hasPersistedStructuredAgentSessionStore as hasPersistedStructuredAgentSessionStoreOnDisk } from './structured-agent-session-runtime'
@@ -36,7 +37,7 @@ export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaR
   async getStructuredAgentSessionCreateSupport(
     worktreeSelector: string,
     agent: StructuredAgentId
-  ): Promise<{ supported: boolean; reason?: 'agent' | 'remote' | 'wsl' }> {
+  ): Promise<StructuredAgentSessionCreateSupport> {
     return resolveHostStructuredAgentCreateSupport({
       agent,
       worktreeSelector,
