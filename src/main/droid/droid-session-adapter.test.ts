@@ -128,7 +128,10 @@ const text = (value: string): AgentJournalMessageItem => ({
   blocks: [{ type: 'text', text: value }]
 })
 
-async function setup(launch: Partial<DroidResolvedLaunch> = {}) {
+async function setup(
+  launch: Partial<DroidResolvedLaunch> = {},
+  extraDeps: { realpath?: (path: string) => Promise<string> } = {}
+) {
   const rig = await openProviderTimelineRig({ agent: 'droid', sessionId })
   const connections: FakeConnection[] = []
   const lifecycle = vi.fn(),
@@ -171,7 +174,8 @@ async function setup(launch: Partial<DroidResolvedLaunch> = {}) {
     onLifecycle: lifecycle,
     onSettled: settled,
     onIdle: idle,
-    logger: { warn: vi.fn(), error: vi.fn() }
+    logger: { warn: vi.fn(), error: vi.fn() },
+    ...extraDeps
   })
   cleanups.push(async () => {
     await adapter.closeAll().catch(() => {})
@@ -308,6 +312,62 @@ describe('Droid session start', () => {
     })
     await expect(h.start()).rejects.toThrow()
     expect(h.connections[0]?.closed).toBe(true)
+  })
+
+  describe('the folder a loaded session was recorded in', () => {
+    const previous = {
+      linkId: 'prior',
+      handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-9' },
+      origin: 'created' as const,
+      mintedAtFence: 1,
+      observedAt: 100
+    }
+    const loadReplying = (h: Awaited<ReturnType<typeof setup>>, reply: Record<string, unknown>) =>
+      h.openConnection.mockImplementationOnce((_launch, handlers) => {
+        const connection = new FakeConnection(handlers)
+        connection.replies.set('droid.load_session', () => reply)
+        h.connections.push(connection)
+        return connection
+      })
+
+    it('closes the child when Droid loaded the session from another folder', async () => {
+      const h = await setup({ previous })
+      loadReplying(h, { session: { messages: [] }, cwd: '/somewhere/else' })
+
+      await expect(h.start()).rejects.toThrow(/folder/)
+
+      const [connection] = h.connections
+      expect(connection?.closed).toBe(true)
+      // Only a load: the folder is never moved, and the session is never initialized again.
+      expect(connection?.requests.map(({ method }) => method)).toEqual(['droid.load_session'])
+    })
+
+    it('accepts the workspace when Droid reports the real path behind a symlink', async () => {
+      const h = await setup(
+        { previous, cwd: '/link/folder' },
+        { realpath: async (path) => (path === '/link/folder' ? '/real/folder' : path) }
+      )
+      loadReplying(h, { session: { messages: [] }, cwd: '/real/folder' })
+
+      const { acquired } = await h.start()
+
+      expect(acquired.link).toMatchObject({ handle: { nativeId: 'droid-session-9' } })
+    })
+
+    it('refuses a load that names no folder, since it cannot be compared', async () => {
+      const h = await setup({ previous })
+      loadReplying(h, { session: { messages: [] } })
+
+      await expect(h.start()).rejects.toThrow(/folder/)
+      expect(h.connections[0]?.closed).toBe(true)
+    })
+
+    it('never compares a new session, which Droid starts in the folder it was given', async () => {
+      const h = await setup()
+      const { connection } = await h.start()
+
+      expect(connection.requests.map(({ method }) => method)).toEqual(['droid.initialize_session'])
+    })
   })
 
   it.each([

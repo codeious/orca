@@ -1,4 +1,6 @@
+import { realpath } from 'node:fs/promises'
 import { z } from 'zod'
+import { normalizeRuntimePathForComparison } from '../../shared/cross-platform-path'
 import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import { providerTimelineSink } from '../native-chat/agent-session-timeline/provider-timeline-plan'
 import {
@@ -42,6 +44,8 @@ export type DroidSessionDeps = {
   }) => void
   onIdle: (input: { sessionId: string }) => void
   logger: StructuredAgentSessionLogger
+  /** Resolves a folder to its real path; replaced in tests. */
+  realpath?: (path: string) => Promise<string>
 }
 
 /** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. */
@@ -52,7 +56,9 @@ const START_TIMEOUT_MS = 120_000
 // `initialize_session` names the session beside a `session` that carries only its messages.
 const startedSchema = z.looseObject({
   sessionId: z.string().min(1).optional(),
-  session: z.looseObject({ id: z.string().min(1).optional() }).optional()
+  session: z.looseObject({ id: z.string().min(1).optional() }).optional(),
+  // A load reports the folder the session was recorded in, as a real path.
+  cwd: z.string().min(1).optional()
 })
 
 /** One child owns its transport, turns and timeline, including shutdown retries. */
@@ -144,6 +150,9 @@ export class DroidSession {
     }
     this.refuseUnsupportedProtocol(true)
     const parsed = startedSchema.safeParse(result)
+    if (resumeId) {
+      await this.refuseOtherFolder(parsed.success ? parsed.data.cwd : undefined)
+    }
     // A load answers with the session's content, never its id, so the one asked for is the one held.
     const id = parsed.success
       ? (parsed.data.sessionId ?? parsed.data.session?.id ?? resumeId ?? undefined)
@@ -152,6 +161,23 @@ export class DroidSession {
       throw new Error('Droid did not name its session')
     }
     return id
+  }
+
+  /** A loaded session runs its tools in the folder it was recorded in, wherever this child
+   *  started, so a chat in another workspace would edit a tree the person did not pick. */
+  private async refuseOtherFolder(reported: string | undefined): Promise<void> {
+    if (!reported) {
+      throw new Error('Droid did not report the folder of the session it loaded')
+    }
+    const resolve = this.deps.realpath ?? realpath
+    // Droid reports real paths, so the workspace is resolved too; a folder that is gone keeps its name.
+    const [expected, actual] = await Promise.all([
+      resolve(this.begin.cwd).catch(() => this.begin.cwd),
+      resolve(reported).catch(() => reported)
+    ])
+    if (normalizeRuntimePathForComparison(expected) !== normalizeRuntimePathForComparison(actual)) {
+      throw new Error('Droid loaded the session from another folder than this workspace')
+    }
   }
 
   async close(requested = true): ReturnType<DroidConnection['close']> {
