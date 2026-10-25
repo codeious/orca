@@ -164,6 +164,17 @@ describe('resuming a Droid conversation from history in a chat', () => {
     })
   })
 
+  // The recorded folder is the history's own `session_start.cwd`, so a folder that was deleted
+  // since matches no workspace, and a history that never recorded one matches nothing at all.
+  it.each([null, ''])('is not offered when its history recorded no folder (%j)', (cwd) => {
+    const unrecorded = { ...droidSession, cwd }
+
+    expect(droidResumeInChat({ session: unrecorded, droidHolder: null })).toEqual({
+      available: false,
+      reason: 'workspace'
+    })
+  })
+
   it("is not offered in a paired server's workspace for a conversation recorded here", () => {
     mocks.owner.mockReturnValue('runtime:server-1')
 
@@ -173,7 +184,7 @@ describe('resuming a Droid conversation from history in a chat', () => {
     })
   })
 
-  // The panel and the tab menu both read the row through this composition.
+  // Every history surface reads a row through this composition; only the panel lists Droid rows.
   it('carries the holder through the composed row answer both surfaces read', () => {
     const rowResume = (droidHolder?: 'live' | null) =>
       resolveAiVaultHistoryRowResume({
