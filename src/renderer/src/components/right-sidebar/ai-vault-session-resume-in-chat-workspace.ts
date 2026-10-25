@@ -7,11 +7,12 @@ import { resolveStructuredAgentSessionOwner } from '@/runtime/structured-agent-s
 import { useAppStore } from '@/store'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import { normalizeExecutionHostId } from '../../../../shared/execution-host'
-import { isAgentSessionHandleProvider } from '../../../../shared/agent-session-provider-handle'
 import { STRUCTURED_AGENT_SESSION_RESUME_HISTORY_RUNTIME_CAPABILITY } from '../../../../shared/protocol-version'
 import { resolveAiVaultTargetWorkspacePath } from './ai-vault-session-launch-target'
 import {
+  aiVaultSessionHasResumeInChatBranch,
   resolveAiVaultSessionResumeInChatEligibility,
+  type AiVaultDroidHolder,
   type AiVaultResumeInChatEligibility
 } from './ai-vault-session-resume-in-chat'
 import {
@@ -26,6 +27,8 @@ export function resolveAiVaultSessionResumeInChatForWorkspace(args: {
   activeWorkspaceId: string | null
   targetState: AiVaultSessionResumeTargetState
   settings: AgentSessionStructuredFeasibilityRequest['settings']
+  /** What the owning host said about a Droid terminal holding the row; omitted until it answers. */
+  droidHolder?: AiVaultDroidHolder | null
 }): AiVaultResumeInChatEligibility {
   const targetWorkspaceId = args.resumeState.usesSessionWorktree
     ? args.resumeState.worktreeId
@@ -43,8 +46,9 @@ export function resolveAiVaultSessionResumeInChatForWorkspace(args: {
     session: args.session,
     targetWorkspaceId,
     targetWorkspacePath,
+    droidHolder: args.droidHolder,
     structuredRouteAvailable:
-      isAgentSessionHandleProvider(args.session.agent) &&
+      aiVaultSessionHasResumeInChatBranch(args.session.agent) &&
       targetWorkspaceId !== null &&
       targetOwner !== null &&
       targetOwner === normalizeExecutionHostId(args.session.executionHostId) &&
