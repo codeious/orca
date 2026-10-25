@@ -28,7 +28,7 @@ import { STRUCTURED_AGENT_RUNTIME_REGISTRATIONS } from '../runtime/structured-ag
 import type { StructuredAgentSessionCreateSupport } from '../native-chat/structured-agent-session-create-support'
 import { unsupportedAgentVersionDetail } from '../../shared/unsupported-agent-version'
 import {
-  isNativeChatEnabled,
+  resolveNativeChatLaunchChoice,
   resolveStructuredNativeChatSupport,
   type NativeChatDefaultSettings,
   type StructuredNativeChatBlocker
@@ -56,8 +56,31 @@ export type AgentLaunchModeVocabulary = {
 /** Reasons whose receipt reads as the fixed "Your default is a chat, but ..." sentence. */
 type WrappedDowngradeReason = Exclude<
   AgentLaunchModeReason,
-  'user_default' | 'agent_version_unsupported'
+  'user_default' | 'agent_setting' | 'agent_version_unsupported'
 >
+
+/** The choice a structured receipt stands on; the sentence of a downgrade starts from it. */
+type PreferenceReason = Extract<AgentLaunchModeReason, 'user_default' | 'agent_setting'>
+
+const PREFERENCE_LEAD: Record<PreferenceReason, string> = {
+  user_default: 'Your default is a structured chat session',
+  agent_setting: 'Your launch setting for this agent is Chat'
+}
+
+const PREFERENCE_SOURCE: Record<PreferenceReason, string> = {
+  user_default: 'the default for new agent tabs in your settings',
+  agent_setting: 'the launch setting for this agent in your settings'
+}
+
+/** A structured receipt that is not the agent's own setting stands on the default. */
+function preferenceReasonOf(receipt: AgentLaunchModeReceipt): PreferenceReason {
+  return receipt.reason === 'agent_setting' ? 'agent_setting' : 'user_default'
+}
+
+/** How a downgrade sentence starts for the choice this structured receipt stood on. */
+export function structuredPreferenceLead(receipt: AgentLaunchModeReceipt): string {
+  return PREFERENCE_LEAD[preferenceReasonOf(receipt)]
+}
 
 export const DEFAULT_LAUNCH_VOCABULARY: AgentLaunchModeVocabulary = {
   structured: 'a structured chat session',
@@ -138,18 +161,23 @@ export function decideAgentLaunchMode(args: {
 }): AgentLaunchModeReceipt {
   const { placement, settings } = args
   const vocabulary = args.vocabulary ?? DEFAULT_LAUNCH_VOCABULARY
-  if (args.terminalOnly || !isNativeChatEnabled(settings)) {
+  const choice = resolveNativeChatLaunchChoice(settings, placement.agent)
+  const reason: PreferenceReason =
+    choice.source === 'agent_setting' ? 'agent_setting' : 'user_default'
+  if (args.terminalOnly || !choice.structured) {
+    // A terminal-only caller never reaches the agent's setting, so it reads as the default.
+    const terminalReason = args.terminalOnly ? 'user_default' : reason
     return {
       mode: 'terminal',
       preferred: 'terminal',
-      reason: 'user_default',
-      detail: `Started ${vocabulary.terminal}, the default for new agent tabs in your settings.`
+      reason: terminalReason,
+      detail: `Started ${vocabulary.terminal}, ${PREFERENCE_SOURCE[terminalReason]}.`
     }
   }
   // A worker placed on another runtime starts through federation, which creates terminal agents
   // only; this host cannot answer for that runtime's structured support.
   if (placement.on) {
-    return downgraded('remote_execution_host', vocabulary)
+    return downgraded('remote_execution_host', vocabulary, reason)
   }
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: an unrecognized agent name is handled rather than trusted; the registered-agent check rejects it and the launch downgrades to a terminal.
   const agent = placement.agent as TuiAgent
@@ -171,17 +199,17 @@ export function decideAgentLaunchMode(args: {
     )
   })
   if (!support.supported) {
-    return downgraded(BLOCKER_REASON[support.blocker], vocabulary)
+    return downgraded(BLOCKER_REASON[support.blocker], vocabulary, reason)
   }
   // A chat its caller can neither show nor close is no launch; that caller gets the terminal.
   if (placement.callerRendersStructured === false) {
-    return downgraded(BLOCKER_REASON['client-capability'], vocabulary)
+    return downgraded(BLOCKER_REASON['client-capability'], vocabulary, reason)
   }
   return {
     mode: 'structured',
     preferred: 'structured',
-    reason: 'user_default',
-    detail: `Started ${vocabulary.structured}, the default for new agent tabs in your settings.`
+    reason,
+    detail: `Started ${vocabulary.structured}, ${PREFERENCE_SOURCE[reason]}.`
   }
 }
 
@@ -235,8 +263,9 @@ export function downgradeAgentLaunchModeForHost(
   if (receipt.mode !== 'structured' || support?.supported) {
     return receipt
   }
+  const preference = preferenceReasonOf(receipt)
   if (support === null) {
-    return downgraded(BLOCKER_REASON['runtime-capability-unknown'], vocabulary)
+    return downgraded(BLOCKER_REASON['runtime-capability-unknown'], vocabulary, preference)
   }
   if (support.reason === 'agent' && support.unsupportedVersion) {
     return {
@@ -248,20 +277,22 @@ export function downgradeAgentLaunchModeForHost(
   }
   return downgraded(
     support.reason ? HOST_SUPPORT_REASON[support.reason] : 'structured_unsupported_on_host',
-    vocabulary
+    vocabulary,
+    preference
   )
 }
 
 function downgraded(
   reason: WrappedDowngradeReason,
-  vocabulary: AgentLaunchModeVocabulary
+  vocabulary: AgentLaunchModeVocabulary,
+  preference: PreferenceReason = 'user_default'
 ): AgentLaunchModeReceipt {
   const why = vocabulary.detailOverrides?.[reason] ?? DOWNGRADE_DETAIL[reason]
   return {
     mode: 'terminal',
     preferred: 'structured',
     reason,
-    detail: `Your default is a structured chat session, but ${why}; started ${vocabulary.terminal} instead.`
+    detail: `${PREFERENCE_LEAD[preference]}, but ${why}; started ${vocabulary.terminal} instead.`
   }
 }
 
