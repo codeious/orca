@@ -140,6 +140,7 @@ async function openRig(publishTab: () => Promise<void> = async () => undefined) 
       store,
       resolveWorkspacePath: async () => workspace,
       resolveEnvironment: async () => ({ PATH: '/host/bin', HOME: '/host/home' }),
+      resolveLaunchArgs: () => [],
       resolveCommand: () => '/host/bin/droid',
       readVersion: async () => '0.249.0',
       orcaEnv: {}
