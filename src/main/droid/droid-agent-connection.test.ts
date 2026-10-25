@@ -4,7 +4,17 @@ import type { PipedProcessSpawner } from '@orca/process-host/process-spec'
 import { createFakePipedChild } from '../../shared/__fixtures__/fake-spawned-child'
 import { providerExecutableMissing } from '../provider-process/provider-executable-missing'
 import type { terminateProviderProcessTree } from '../provider-process/provider-process-teardown'
-import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
+import {
+  DROID_STDIN_END_GRACE_MS,
+  DroidAgentConnection,
+  droidProviderClosePolicy,
+  type DroidAgentConnectionOptions
+} from './droid-agent-connection'
+import {
+  PROVIDER_GROUP_REAP_TIMEOUT_MS,
+  PROVIDER_SIGTERM_GRACE_MS,
+  PROVIDER_SUPERVISOR_MAX_STOP_MS
+} from '../provider-process/provider-process-supervisor'
 
 const teardown = vi.hoisted(() =>
   vi.fn<typeof terminateProviderProcessTree>(async () => 'unverifiable')
@@ -83,6 +93,28 @@ describe('the Droid process Orca owns', () => {
     expect(await pending).toEqual({ sessionId: 's-1' })
     expect(connection.protocolVersion).toBe('1.275.0')
     expect(await connection.close()).toEqual({ root: 'exited', tree: null })
+  })
+
+  it('waits out the measured EOF exit before the supervisor kills Droid', () => {
+    expect(DROID_STDIN_END_GRACE_MS).toBeGreaterThanOrEqual(2_000)
+    expect(droidProviderClosePolicy(false).gracefulExitMs).toBe(DROID_STDIN_END_GRACE_MS)
+    expect(droidProviderClosePolicy(true).gracefulExitMs).toBe(PROVIDER_SUPERVISOR_MAX_STOP_MS)
+    expect(PROVIDER_SUPERVISOR_MAX_STOP_MS).toBeGreaterThanOrEqual(
+      DROID_STDIN_END_GRACE_MS + PROVIDER_SIGTERM_GRACE_MS + PROVIDER_GROUP_REAP_TIMEOUT_MS
+    )
+    if (process.platform === 'win32') {
+      return
+    }
+    const { spawn } = fixture()
+    const encoded = spawn.mock.calls[0]?.[0]?.env?.ORCA_PROVIDER_SUPERVISOR_SPEC
+    if (typeof encoded !== 'string') {
+      throw new Error('Droid spawn was not supervised')
+    }
+    const spec: unknown = JSON.parse(Buffer.from(encoded, 'base64').toString())
+    expect(spec).toMatchObject({
+      stdinEndGraceMs: DROID_STDIN_END_GRACE_MS,
+      closeRequest: 'stdin-end'
+    })
   })
 
   it('hands the session notifications Droid volunteers to the handler', async () => {

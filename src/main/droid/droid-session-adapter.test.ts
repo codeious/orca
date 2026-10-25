@@ -23,6 +23,7 @@ import type { DroidAgentConnectionOptions } from './droid-agent-connection'
 import { DroidRpcError } from './droid-rpc-errors'
 import type { DroidConnection } from './droid-session'
 import { DroidSessionAdapter } from './droid-session-adapter'
+import { stopAgentSessionProviderRoot } from '../native-chat/agent-session-wire/structured-agent-session-provider-exit-proof'
 import { buildDroidExecLaunch } from './droid-exec-launch'
 import type { DroidResolvedLaunch } from './droid-structured-launch-resolution'
 
@@ -598,6 +599,16 @@ describe('Droid session end', () => {
         outcome: { state: 'unknown', reason: 'Droid ended before confirming delivery' }
       })
     )
+  })
+
+  it('counts a root that exited on stdin end as gone when its tree was not reaped', async () => {
+    const h = await setup()
+    const { connection } = await h.start()
+    connection.closeResult = { root: 'exited', tree: null }
+
+    await expect(
+      stopAgentSessionProviderRoot(() => h.adapter.closeSession(sessionId))
+    ).resolves.toBe(true)
   })
 
   it('reports a requested close as requested', async () => {
