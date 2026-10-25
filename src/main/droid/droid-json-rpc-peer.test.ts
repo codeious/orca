@@ -293,6 +293,20 @@ describe('a request to Droid', () => {
     await expect(reply).rejects.toBeInstanceOf(DroidRpcError)
   })
 
+  it('tells the caller the id before the frame is written, so an echo that beats the reply can be matched', async () => {
+    const { peer, written } = connect()
+    const ids: { id: string; alreadyWritten: number }[] = []
+
+    void peer.request(
+      'droid.add_user_message',
+      { text: 'hi' },
+      { onId: (id) => ids.push({ id, alreadyWritten: written.length }) }
+    )
+    await vi.waitFor(() => expect(written).toHaveLength(1))
+
+    expect(ids).toEqual([{ id: written[0].id, alreadyWritten: 0 }])
+  })
+
   it('rejects when no answer comes within the time it was given', async () => {
     const { peer } = connect({}, { requestTimeoutMs: 20 })
 

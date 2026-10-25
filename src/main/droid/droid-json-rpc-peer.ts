@@ -96,7 +96,7 @@ export class DroidJsonRpcPeer {
   request(
     method: string,
     params: unknown,
-    options: { timeoutMs?: number | null } = {}
+    options: { timeoutMs?: number | null; onId?: (id: string) => void } = {}
   ): Promise<unknown> {
     if (this.terminalError) {
       return Promise.reject(this.terminalError)
@@ -114,6 +114,8 @@ export class DroidJsonRpcPeer {
     }
     const id = `orca-${this.nextId++}`
     const controller = new AbortController()
+    // Droid echoes the id on the notification that admits the message, possibly before the reply.
+    options.onId?.(id)
     return new Promise((resolve, reject) => {
       const timer =
         timeoutMs === null

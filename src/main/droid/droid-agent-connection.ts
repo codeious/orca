@@ -92,7 +92,7 @@ export class DroidAgentConnection {
   request(
     method: string,
     params: unknown = {},
-    options: { timeoutMs?: number | null } = {}
+    options: { timeoutMs?: number | null; onId?: (id: string) => void } = {}
   ): Promise<unknown> {
     return this.peer.request(method, params, options)
   }
