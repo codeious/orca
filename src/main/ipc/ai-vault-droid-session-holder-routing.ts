@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron'
+import { z } from 'zod'
 import {
   AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT,
   AI_VAULT_DROID_SESSION_HOLDER_CHANNEL,
@@ -59,14 +60,11 @@ export function registerAiVaultDroidSessionHolderHandler(
   )
 }
 
+const HolderRequest = AiVaultDroidSessionHolderParams.extend({ executionHostId: z.string() })
+
 function readRequest(args: unknown): AiVaultDroidSessionHolderArgs | null {
-  if (typeof args !== 'object' || args === null) {
-    return null
-  }
-  const executionHostId: unknown = Reflect.get(args, 'executionHostId')
-  const session = AiVaultDroidSessionHolderParams.safeParse(args)
-  if (typeof executionHostId !== 'string' || !session.success) {
-    return null
-  }
-  return { executionHostId, sessionId: session.data.sessionId }
+  const request = HolderRequest.safeParse(args)
+  return request.success
+    ? { executionHostId: request.data.executionHostId, sessionId: request.data.sessionId }
+    : null
 }

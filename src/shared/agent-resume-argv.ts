@@ -89,14 +89,11 @@ export function getAgentForkArgv(
   if (providerSession.key !== 'session_id') {
     return null
   }
-  switch (agent) {
-    case 'claude':
-      return ['claude', '--resume', providerSession.id, '--fork-session']
-    case 'codex':
-      return ['codex', 'fork', providerSession.id]
-    case 'droid':
-      return ['droid', '--fork', providerSession.id]
-    default:
-      return null
+  if (agent === 'claude') {
+    return ['claude', '--resume', providerSession.id, '--fork-session']
   }
+  if (agent === 'codex') {
+    return ['codex', 'fork', providerSession.id]
+  }
+  return agent === 'droid' ? ['droid', '--fork', providerSession.id] : null
 }

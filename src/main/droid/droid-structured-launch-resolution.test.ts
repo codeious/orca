@@ -72,7 +72,7 @@ async function setup() {
     mintedAtFence: 1,
     observedAt: 100
   })
-  const withRecord = (patch: object) =>
+  const withRecord = (patch: Partial<typeof record>) =>
     vi.spyOn(store, 'getRecord').mockReturnValue({ ...record, ...patch })
   return { store, record, workspace, resolver, resolveCommand, launchArgs, prior, withRecord }
 }
