@@ -5,6 +5,6 @@
   "droid_versions": ["0.238.0", "0.244.0"],
   "platforms": ["darwin", "linux"],
   "recorded_at": "2026-10-17",
-  "note": "Hooks of a real droid with the managed capture prefix, plus the probe's own ps view of that droid (kind droid/tui rows, alive and comm). Covers script runs, /new, a resume in a new process, Ctrl-C, SIGHUP and SIGTERM exits. A '<defunct>' comm is a zombie. Rows are copied unchanged from the research branch. Scanned for emails, home paths, API keys and tokens: none. Session ids are 8-character prefixes or S1/S2 relations. The Linux startTime embeds the kernel boot id of a throwaway container.",
+  "note": "Hooks of a real droid with the managed capture prefix, plus the probe's own ps view of that droid (kind droid/tui rows, alive and comm). Covers script runs, /new, a resume in a new process, Ctrl-C, SIGHUP and SIGTERM exits. A '<defunct>' comm is a zombie. Rows are copied from the research branch, except that the kernel boot id inside each Linux startTime is the nil UUID. Scanned for emails, home paths, API keys and tokens: none. Session ids are 8-character prefixes or S1/S2 relations.",
   "clock": "rows are in the order the probe listener or logger recorded them"
 }
