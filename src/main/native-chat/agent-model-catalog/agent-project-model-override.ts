@@ -7,8 +7,10 @@ import {
   ompSettingsMayPickModel,
   openCodeAgentFileMayPickModel,
   openCodeConfigMayPickModel,
+  droidSettingsMayPickModel,
   piSettingsMayPickModel
 } from './agent-project-model-config-keys'
+import { gitCommonRootDirectories } from './agent-project-git-common-root'
 
 // A listing's default is the account's, but a chat runs in a workspace whose own
 // config can pick another model. These checks only ask whether such config sets a
@@ -66,6 +68,8 @@ type ProjectModelLayers = {
   codeFolders?: readonly string[]
   /** The agent reads every ancestor of the workspace, not only up to its project root. */
   wholeAncestry?: boolean
+  /** A linked worktree nested in its repository still reads config from that repository root. */
+  gitCommonRoot?: boolean
 }
 
 const files = (
@@ -119,6 +123,14 @@ const PROJECT_MODEL_LAYERS: Readonly<Record<string, ProjectModelLayers>> = {
   pi: {
     files: files(['.pi/settings.json'], piSettingsMayPickModel),
     codeFolders: ['.pi/extensions']
+  },
+  // `~/.factory` is the account. A project `.factory` from the git top-level down to the chat counts.
+  droid: {
+    gitCommonRoot: true,
+    files: files(
+      ['.factory/settings.json', '.factory/settings.local.json'],
+      droidSettingsMayPickModel
+    )
   }
 }
 
@@ -228,7 +240,9 @@ export async function workspaceMayOverrideDefaultModel(input: {
   }
   const dirs = layers.wholeAncestry
     ? ancestry(input.workspacePath)
-    : await projectConfigDirectories(input.workspacePath)
+    : layers.gitCommonRoot
+      ? await gitCommonRootDirectories(input.workspacePath)
+      : await projectConfigDirectories(input.workspacePath)
   const results = await Promise.all(
     dirs.map((dir) => directoryMayOverride(dir, layers, input.accountHomePath))
   )
