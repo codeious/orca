@@ -89,13 +89,8 @@ function consumeDroidRecordLine(accumulator: SessionAccumulator, line: string): 
   if (record.type === 'message') {
     consumeDroidMessage(accumulator, record)
   } else if (record.type === 'completion') {
-    accumulator.messageCount++
+    // A completion summarises a turn already recorded as messages; it is not a turn of its own.
     accumulator.totalTokens += tokenTotal(record.usage)
-    addPreviewMessage(accumulator, {
-      role: 'assistant',
-      text: extractString(record.finalText),
-      timestamp: record.timestamp
-    })
   }
 }
 
@@ -134,6 +129,11 @@ function consumeDroidMessage(
 ): void {
   const role = extractString(record.role) ?? extractString(asRecord(record.message)?.role)
   if (role !== 'user' && role !== 'assistant') {
+    return
+  }
+  // Droid's reminders and sign-in notice are stored as user-role messages but are not conversation.
+  const visibility = asRecord(record.message)?.visibility
+  if (visibility === 'llm_only' || visibility === 'user_only') {
     return
   }
   accumulator.messageCount++
