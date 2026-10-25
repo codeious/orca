@@ -72,9 +72,10 @@ export function resolveAiVaultHistoryRowResume(
   args: Parameters<typeof resolveAiVaultHistorySessionResumeState>[0] & {
     targetState: AiVaultSessionResumeTargetState
     settings: AgentSessionStructuredFeasibilityRequest['settings']
+    droidHolder?: AiVaultDroidHolder | null
   }
 ): { resumeState: AiVaultSessionResumeState; resumeInChat: AiVaultResumeInChatEligibility } {
-  const { settings, ...resumeArgs } = args
+  const { settings, droidHolder, ...resumeArgs } = args
   const resumeState = resolveAiVaultHistorySessionResumeState(resumeArgs)
   return {
     resumeState,
@@ -83,7 +84,8 @@ export function resolveAiVaultHistoryRowResume(
       resumeState,
       activeWorkspaceId: args.activeWorktreeId,
       targetState: args.targetState,
-      settings
+      settings,
+      droidHolder
     })
   }
 }

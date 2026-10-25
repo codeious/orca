@@ -21,7 +21,10 @@ vi.mock('@/lib/agent-session-launch-plan', () => ({
   structuredAgentSessionLaunchFeasible: mocks.feasible
 }))
 
-import { resolveAiVaultSessionResumeInChatForWorkspace } from './ai-vault-session-resume-in-chat-workspace'
+import {
+  resolveAiVaultHistoryRowResume,
+  resolveAiVaultSessionResumeInChatForWorkspace
+} from './ai-vault-session-resume-in-chat-workspace'
 
 const PAIRED_WORKSPACE = 'repo-1::/srv/orca'
 
@@ -168,5 +171,32 @@ describe('resuming a Droid conversation from history in a chat', () => {
       available: false,
       reason: 'workspace'
     })
+  })
+
+  // The panel and the tab menu both read the row through this composition.
+  it('carries the holder through the composed row answer both surfaces read', () => {
+    const rowResume = (droidHolder?: 'live' | null) =>
+      resolveAiVaultHistoryRowResume({
+        session: droidSession,
+        worktreeInfo: null,
+        activeWorktreeId: PAIRED_WORKSPACE,
+        worktrees: [],
+        repos: [],
+        targetState: {
+          folderWorkspaces: [],
+          projectGroups: [],
+          repos: [],
+          // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the path lookup reads id and path only.
+          worktreesByRepo: {
+            'repo-1': [{ id: PAIRED_WORKSPACE, path: DROID_WORKSPACE_PATH }]
+          } as never
+        },
+        settings: { experimentalNativeChat: true },
+        droidHolder
+      }).resumeInChat
+
+    expect(rowResume('live')).toEqual({ available: false, reason: 'held' })
+    expect(rowResume(null)).toEqual({ available: true, workspaceId: PAIRED_WORKSPACE })
+    expect(rowResume()).toMatchObject({ available: true, confirmHeldSession: true })
   })
 })
