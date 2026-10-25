@@ -138,9 +138,10 @@ export class DroidHookService {
         getDroidManagedCommand(scriptPath, 'posix'),
         'droid-hook.sh'
       )
-      await writeHooksJsonRemote(sftp, hooksPath, files.hooksFile)
+      // Why: both files are the user's, and the local install keeps a `.bak` of each it replaces.
+      await writeHooksJsonRemote(sftp, hooksPath, files.hooksFile, { backup: true })
       if (settingsChanged) {
-        await writeHooksJsonRemote(sftp, settingsPath, files.settings)
+        await writeHooksJsonRemote(sftp, settingsPath, files.settings, { backup: true })
       }
 
       return {

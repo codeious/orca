@@ -210,6 +210,30 @@ describe('installer-utils-remote', () => {
     expect(fs.modes.get('/home/u/.claude/settings.json')).toBe(0o600)
   })
 
+  it('keeps no backup unless the caller asks for one', async () => {
+    const { sftp, fs } = createFakeSftp()
+    const path = '/home/u/.claude/settings.json'
+    fs.files.set(path, '{"old":true}\n')
+
+    await writeHooksJsonRemote(sftp, path, { next: true })
+    expect(fs.files.has(`${path}.bak`)).toBe(false)
+
+    await writeHooksJsonRemote(sftp, path, { later: true }, { backup: true })
+    expect(fs.files.get(`${path}.bak`)).toBe('{\n  "next": true\n}\n')
+  })
+
+  it('writes the backup as temp + rename, so a symlinked .bak is replaced', async () => {
+    const { sftp, fs } = createFakeSftp({ openSshRename: true })
+    const path = '/home/u/.factory/hooks.json'
+    fs.files.set(path, 'before\n')
+
+    await writeHooksJsonRemote(sftp, path, { a: 1 }, { backup: true })
+
+    // Why: the backup goes down as temp + rename, so a pre-placed `.bak` link is replaced, never followed.
+    expect(fs.openSshRenameCount).toBe(2)
+    expect(fs.files.get(`${path}.bak`)).toBe('before\n')
+  })
+
   it('preserves existing config file mode across atomic replacement', async () => {
     const { sftp, fs } = createFakeSftp()
     const path = '/home/u/.codex/config.toml'

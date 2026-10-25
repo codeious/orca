@@ -42,29 +42,33 @@ export async function readHooksJsonRemote(
 
 /** Atomically write a JSON config to the remote — write to a tmp path then
  *  rename, mirroring the local writeHooksJson contract. The .bak rotation is
- *  intentionally NOT carried over: the remote file is the user's, and a
- *  per-target backup convention belongs alongside the remote installer UI
- *  (out of scope for this commit). */
+ *  opt-in (`backup`): a config the user also edits by hand asks for it, and
+ *  the rest keep the remote file untouched beyond the write itself. */
 export async function writeHooksJsonRemote(
   sftp: SFTPWrapper,
   remotePath: string,
   // Why: mirrors the local writer — the config is only the fallback serialization source.
   config: Record<string, unknown>,
   // Why: mirrors the local writer — a JSONC config supplies text edited in place.
-  options?: { serialized?: string }
+  options?: { serialized?: string; backup?: boolean }
 ): Promise<void> {
   const dir = dirnamePosix(remotePath)
   await mkdirpRemote(sftp, dir)
   const serialized = options?.serialized ?? `${JSON.stringify(config, null, 2)}\n`
-  // Why: skip the write when on-disk content is identical so repeated
-  // install() calls do not bump the file's mtime / inode unnecessarily.
+  let existing: string | undefined
   try {
-    const existing = await readFile(sftp, remotePath)
-    if (existing === serialized) {
-      return
-    }
+    existing = await readFile(sftp, remotePath)
   } catch {
     // ENOENT or read error — fall through to the write below.
+  }
+  // Why: skip the write when on-disk content is identical so repeated
+  // install() calls do not bump the file's mtime / inode unnecessarily, or roll the backup.
+  if (existing === serialized) {
+    return
+  }
+  if (options?.backup && existing !== undefined) {
+    // Why: temp + rename replaces a `.bak` that is a symlink instead of writing through it.
+    await writeTextFileRemoteAtomic(sftp, `${remotePath}.bak`, existing)
   }
   // Why: tmp + rename so a partial network drop mid-write does not leave a
   // truncated settings.json that the agent CLI would refuse to load.

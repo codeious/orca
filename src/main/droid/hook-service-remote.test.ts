@@ -101,6 +101,49 @@ describe('DroidHookService.installRemote', () => {
     expect(fs.files.get(HOOKS_PATH)).toBe(first)
   })
 
+  it('keeps the user hooks.json it replaces as hooks.json.bak', async () => {
+    const original = `${JSON.stringify({ hooks: { Stop: [{ hooks: [{ type: 'command', command: 'mine' }] }] } }, null, 2)}\n`
+    const { sftp, fs } = createAgentHookMemorySftp({ [HOOKS_PATH]: original })
+
+    await new DroidHookService().installRemote(sftp, HOME)
+
+    expect(fs.files.get(`${HOOKS_PATH}.bak`)).toBe(original)
+    expect(fs.files.get(HOOKS_PATH)).not.toBe(original)
+  })
+
+  it('keeps the settings.json it moves an Orca entry out of as settings.json.bak', async () => {
+    const original = `${JSON.stringify(
+      {
+        hooks: {
+          Stop: [
+            { hooks: [{ type: 'command', command: getDroidManagedCommand(SCRIPT_PATH, 'posix') }] }
+          ]
+        }
+      },
+      null,
+      2
+    )}\n`
+    const { sftp, fs } = createAgentHookMemorySftp({ [SETTINGS_PATH]: original })
+
+    await new DroidHookService().installRemote(sftp, HOME)
+
+    expect(fs.files.get(`${SETTINGS_PATH}.bak`)).toBe(original)
+  })
+
+  it('writes no backup on a first install, and none when the tree is already current', async () => {
+    const original = `${JSON.stringify({ hooksDisabled: false }, null, 2)}\n`
+    const fresh = createAgentHookMemorySftp()
+    await new DroidHookService().installRemote(fresh.sftp, HOME)
+    expect(fresh.fs.files.has(`${HOOKS_PATH}.bak`)).toBe(false)
+
+    const existing = createAgentHookMemorySftp({ [HOOKS_PATH]: original })
+    const service = new DroidHookService()
+    await service.installRemote(existing.sftp, HOME)
+    await service.installRemote(existing.sftp, HOME)
+    // Why: the second install changes nothing, so it must not roll the backup onto Orca's own output.
+    expect(existing.fs.files.get(`${HOOKS_PATH}.bak`)).toBe(original)
+  })
+
   it.each(['hooks.json', 'settings.json'])(
     'does not overwrite a malformed remote Factory %s',
     async (fileName) => {
