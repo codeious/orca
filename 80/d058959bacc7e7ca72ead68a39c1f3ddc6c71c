@@ -1,0 +1,57 @@
+src/shared/agent-session-failure-words.ts
+  s_48f3bc0d7f0337::t_875b4390ce516b 30
+  s_48f3bc0d7f0337::t_073617b087f170 175-177
+  s_48f3bc0d7f0337::t_b8a689341b59b1 178
+src/shared/agent-session-release-sentence.ts
+  s_48f3bc0d7f0337::t_7fb4d6da4b9622 1-23
+src/renderer/src/components/native-chat/agent-session-availability-words-text.ts
+  s_48f3bc0d7f0337::t_e45106b7e2c3c6 8,21-22
+  s_48f3bc0d7f0337::t_83dcf3928de505 74-86
+src/shared/agent-session-refusal-details.ts
+  s_48f3bc0d7f0337::t_618a0d7a703cb8 159
+  s_48f3bc0d7f0337::t_e3c98af3bb5a7f 158
+  s_48f3bc0d7f0337::t_4be9259065abe8 160-162
+  s_48f3bc0d7f0337::t_5c9c32bd3ee22d 130-132,163-167,189,265-279,312-314
+src/renderer/src/components/native-chat/agent-session-failure-words-text.test.ts
+  s_48f3bc0d7f0337::t_047d2b29f0e094 216-242
+src/renderer/src/i18n/en-runtime-required.json
+  s_48f3bc0d7f0337::t_4ee6f7fb535130 2838-2839
+src/renderer/src/i18n/locales/en.json
+  s_48f3bc0d7f0337::t_7c30f386fecbbd 18097-18098
+src/renderer/src/i18n/locales/es.json
+  s_48f3bc0d7f0337::t_0c770c55b1a6e1 17817-17818
+src/renderer/src/i18n/locales/fr.json
+  s_48f3bc0d7f0337::t_3a06a429988100 17919-17920
+src/renderer/src/i18n/locales/ja.json
+  s_48f3bc0d7f0337::t_c512a93d5064af 17852-17853
+src/renderer/src/i18n/locales/ko.json
+  s_48f3bc0d7f0337::t_73e42af41fb7af 17852-17853
+src/renderer/src/i18n/locales/zh.json
+  s_48f3bc0d7f0337::t_f8b45619870f59 17831-17832
+src/shared/agent-session-failure-copy.ts
+  s_48f3bc0d7f0337::t_d72827c72e0217 135-138,157-159
+src/shared/agent-session-failure-words.test.ts
+  s_48f3bc0d7f0337::t_abd4ea352dc7e8 11,165-199
+src/shared/agent-session-refusal-notice.test.ts
+  s_48f3bc0d7f0337::t_cc4eb56ab7beeb 363-368,463
+src/shared/agent-session-refusal-reason-words.ts
+  s_48f3bc0d7f0337::t_0e18a6c61534e5 183-186
+src/shared/agent-session-wire-refusals.test.ts
+  s_48f3bc0d7f0337::t_c3088d6799412e 199-233
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "80d058959bacc7e7ca72ead68a39c1f3ddc6c71c",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
