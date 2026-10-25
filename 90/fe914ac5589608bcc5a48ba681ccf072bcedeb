@@ -1,0 +1,19 @@
+docs/adr/0001-structured-droid-sessions-use-stream-jsonrpc.md
+  s_48f15c05ff9afa::t_52a39743198c68 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "90fe914ac5589608bcc5a48ba681ccf072bcedeb",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
