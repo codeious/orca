@@ -1,3 +1,4 @@
+import { JsonlRpcSessionLifecycle } from '../jsonl-rpc/session-lifecycle'
 import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import { providerTimelineSink } from '../native-chat/agent-session-timeline/provider-timeline-plan'
 import {
@@ -65,16 +66,12 @@ export class DroidSession {
   readonly turns: DroidTurns
   readonly prompts: DroidPrompts
   private readonly echoed = new Map<string, string>()
-  requestedClose = false
+  private readonly lifecycle: JsonlRpcSessionLifecycle
   /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
   readonly settings = new DroidReportedSettings()
   /** What a no-pick new session resolved, for the host catalog. Absent when the start listed none. */
   readonly model = new DroidSessionModel()
   readonly options: DroidSessionOptions
-  private publishedExit = false
-  private failedCause?: Error
-  private exitDelivery: Promise<void> = Promise.resolve()
-  private releaseAfterExit?: () => void
 
   constructor(
     readonly input: StructuredAgentSessionAcquireInput,
@@ -100,12 +97,28 @@ export class DroidSession {
       onInputAccepted: (clientMessageId) => {
         const messageId = this.echoed.get(clientMessageId)
         this.echoed.delete(clientMessageId)
-        this.settle(clientMessageId, {
+        this.lifecycle.settle(clientMessageId, {
           state: 'accepted',
           providerIdentity: messageId
             ? { provider: 'droid', messageId }
             : { provider: 'orca', clientMessageId }
         })
+      }
+    })
+    this.lifecycle = new JsonlRpcSessionLifecycle({
+      label: 'Droid',
+      scope: 'droid',
+      sessionId,
+      fence: input.fence,
+      generation,
+      lane: this.lane,
+      connection: () => this.connection,
+      logger: deps.logger,
+      onLifecycle: deps.onLifecycle,
+      onSettled: deps.onSettled,
+      endWork: () => {
+        this.prompts.clear()
+        this.turns.end()
       }
     })
     this.prompts = new DroidPrompts(this.lane)
@@ -120,7 +133,7 @@ export class DroidSession {
       lane: this.lane,
       generation,
       request: (method, params, options) => this.connection.request(method, params, options),
-      settled: (id, outcome) => this.settle(id, outcome),
+      settled: (id, outcome) => this.lifecycle.settle(id, outcome),
       idle: () => deps.onIdle({ sessionId }),
       settings: (report) => this.settings.receive(report),
       rememberEcho: (clientMessageId, messageId) => {
@@ -137,17 +150,7 @@ export class DroidSession {
       onRequest: (method, params, context) => this.prompts.handle(method, params, context),
       onClose: (error) => this.fail(error),
       onDiagnostic: (message) => deps.logger.warn(message, { scope: 'droid-rpc', sessionId }),
-      onExit: (error) => {
-        this.exitDelivery = this.exit(error)
-          .catch((cause: unknown) =>
-            deps.logger.error('Droid exit publication failed', {
-              scope: 'droid-exit',
-              sessionId,
-              error: cause
-            })
-          )
-          .finally(() => this.releaseAfterExit?.())
-      }
+      onExit: (error) => this.lifecycle.observeExit(error)
     })
   }
 
@@ -201,53 +204,20 @@ export class DroidSession {
     return id
   }
 
-  async close(requested = true): ReturnType<DroidConnection['close']> {
-    this.requestedClose ||= requested
-    return this.connection.close()
+  close(requested = true): ReturnType<DroidConnection['close']> {
+    return this.lifecycle.close(requested)
   }
 
   fail(error: Error): void {
-    this.failedCause ??= error
-    this.deps.logger.error('Droid session failed', {
-      scope: 'droid-rpc',
-      sessionId: this.input.identity.sessionId,
-      error
-    })
-    void this.close(false)
-      .then((result) => {
-        if (result.root !== 'exited') {
-          this.deps.logger.warn('Droid process exit is unverifiable', {
-            scope: 'droid-stop',
-            sessionId: this.input.identity.sessionId
-          })
-        }
-      })
-      .catch((cause: unknown) =>
-        this.deps.logger.error('Droid process cleanup failed', {
-          scope: 'droid-stop',
-          sessionId: this.input.identity.sessionId,
-          error: cause
-        })
-      )
+    this.lifecycle.fail(error)
   }
 
   drainObservedExit(): Promise<void> {
-    return this.exitDelivery
+    return this.lifecycle.drainObservedExit()
   }
 
   retire(): Promise<void> {
-    return new Promise((resolve) => {
-      this.releaseAfterExit = () => {
-        this.releaseAfterExit = undefined
-        void this.lane.drained().then(() => {
-          this.lane.dispose()
-          resolve()
-        })
-      }
-      if (this.publishedExit) {
-        void this.exitDelivery.then(() => this.releaseAfterExit?.())
-      }
-    })
+    return this.lifecycle.retire()
   }
 
   /** A release on another protocol major cannot run a chat; with no stamp seen there is no protocol. */
@@ -268,55 +238,5 @@ export class DroidSession {
     } catch (error) {
       this.fail(error instanceof Error ? error : new Error(String(error)))
     }
-  }
-
-  private async exit(error: Error): Promise<void> {
-    if (this.publishedExit) {
-      return
-    }
-    this.publishedExit = true
-    this.prompts.clear()
-    this.turns.end()
-    this.lane.finalize()
-    this.lane.apply([
-      { type: 'session.ended', verdict: { state: 'interrupted', completedAt: Date.now() } }
-    ])
-    this.lane.flush()
-    let timer: ReturnType<typeof setTimeout> | undefined
-    try {
-      await Promise.race([
-        this.lane.drained(),
-        new Promise<void>((resolve) => {
-          timer = setTimeout(() => {
-            this.deps.logger.warn('Droid final timeline did not drain before exit publication', {
-              scope: 'droid-exit-drain',
-              sessionId: this.input.identity.sessionId
-            })
-            resolve()
-          }, 2_000)
-          timer.unref()
-        })
-      ])
-    } finally {
-      clearTimeout(timer)
-    }
-    this.deps.onLifecycle({
-      type: 'ended',
-      sessionId: this.input.identity.sessionId,
-      fence: this.input.fence,
-      acquisitionGeneration: this.generation,
-      observedAt: Date.now(),
-      cause: this.requestedClose ? 'requested-close' : 'unexpected-exit',
-      reason: (this.failedCause ?? error).message
-    })
-  }
-
-  private settle(clientMessageId: string, outcome: AgentSessionDispatchOutcome): void {
-    this.deps.onSettled({
-      sessionId: this.input.identity.sessionId,
-      clientMessageId,
-      fence: this.input.fence,
-      outcome
-    })
   }
 }
