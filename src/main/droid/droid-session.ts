@@ -1,6 +1,3 @@
-import { realpath } from 'node:fs/promises'
-import { z } from 'zod'
-import { normalizeRuntimePathForComparison } from '../../shared/cross-platform-path'
 import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import { providerTimelineSink } from '../native-chat/agent-session-timeline/provider-timeline-plan'
 import {
@@ -12,6 +9,9 @@ import {
 import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-wire/structured-agent-session-logger'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
+import { droidOptionParams, droidSavedOptionPicks } from './droid-model-options'
+import { DroidSessionModel } from './droid-session-model'
+import { refuseSessionFromOtherFolder, startedSchema } from './droid-started-session'
 import { DroidTurns } from './droid-turns'
 import { isSupportedDroidProtocol } from './droid-version-support'
 
@@ -53,20 +53,16 @@ export type DroidSessionBegin = { cwd: string; resumeId: string | null }
 
 export const DROID_MACHINE_ID = 'orca'
 const START_TIMEOUT_MS = 120_000
-// `initialize_session` names the session beside a `session` that carries only its messages.
-const startedSchema = z.looseObject({
-  sessionId: z.string().min(1).optional(),
-  session: z.looseObject({ id: z.string().min(1).optional() }).optional(),
-  // A load reports the folder the session was recorded in, as a real path.
-  cwd: z.string().min(1).optional()
-})
 
 /** One child owns its transport, turns and timeline, including shutdown retries. */
 export class DroidSession {
   readonly connection: DroidConnection
   readonly lane: JsonlRpcTimelineLane
   readonly turns: DroidTurns
+  private readonly echoed = new Map<string, string>()
   requestedClose = false
+  /** What a no-pick new session resolved, for the host catalog. Absent when the start listed none. */
+  readonly model = new DroidSessionModel()
   private publishedExit = false
   private failedCause?: Error
   private exitDelivery: Promise<void> = Promise.resolve()
@@ -93,18 +89,28 @@ export class DroidSession {
       pauseReading: () => this.connection?.pauseReading(),
       resumeReading: () => this.connection?.resumeReading(),
       onFailed: (reason) => this.fail(new Error(reason)),
-      onInputAccepted: (clientMessageId) =>
+      onInputAccepted: (clientMessageId) => {
+        const messageId = this.echoed.get(clientMessageId)
+        this.echoed.delete(clientMessageId)
         this.settle(clientMessageId, {
           state: 'accepted',
-          providerIdentity: { provider: 'orca', clientMessageId }
+          providerIdentity: messageId
+            ? { provider: 'droid', messageId }
+            : { provider: 'orca', clientMessageId }
         })
+      }
     })
     this.turns = new DroidTurns({
       lane: this.lane,
       generation,
       request: (method, params, options) => this.connection.request(method, params, options),
       settled: (id, outcome) => this.settle(id, outcome),
-      idle: () => deps.onIdle({ sessionId })
+      idle: () => deps.onIdle({ sessionId }),
+      rememberEcho: (clientMessageId, messageId) => {
+        this.echoed.set(clientMessageId, messageId)
+      },
+      warn: (message, fields) =>
+        deps.logger.warn(message, { scope: 'droid-steer', sessionId, ...fields })
     })
     this.connection = (
       deps.openConnection ?? ((spec, handlers) => new DroidAgentConnection(spec, handlers))
@@ -130,6 +136,7 @@ export class DroidSession {
   /** Droid's own id for the session this child now holds. Nothing else is sent before it answers. */
   async start(): Promise<string> {
     const { cwd, resumeId } = this.begin
+    const saved = droidSavedOptionPicks(this.input.options)
     let result: unknown
     try {
       result = await (resumeId
@@ -141,7 +148,13 @@ export class DroidSession {
         : this.connection.request(
             'droid.initialize_session',
             // Never a Mission: those spend the person's credits unattended.
-            { machineId: DROID_MACHINE_ID, cwd, interactionMode: 'auto', autonomyLevel: 'off' },
+            {
+              machineId: DROID_MACHINE_ID,
+              cwd,
+              interactionMode: 'auto',
+              autonomyLevel: 'off',
+              ...droidOptionParams(saved)
+            },
             { timeoutMs: START_TIMEOUT_MS }
           ))
     } catch (error) {
@@ -151,7 +164,8 @@ export class DroidSession {
     this.refuseUnsupportedProtocol(true)
     const parsed = startedSchema.safeParse(result)
     if (resumeId) {
-      await this.refuseOtherFolder(parsed.success ? parsed.data.cwd : undefined)
+      const reported = parsed.success ? parsed.data.cwd : undefined
+      await refuseSessionFromOtherFolder(this.begin.cwd, reported, this.deps.realpath)
     }
     // A load answers with the session's content, never its id, so the one asked for is the one held.
     const id = parsed.success
@@ -160,24 +174,34 @@ export class DroidSession {
     if (!id) {
       throw new Error('Droid did not name its session')
     }
+    this.model.capture(result, saved, resumeId === null)
+    if (resumeId) {
+      await this.model.applySaved(
+        (method, params, options) => this.connection.request(method, params, options),
+        saved,
+        (error) =>
+          this.deps.logger.warn('Droid did not take the saved model', {
+            scope: 'droid-options',
+            sessionId: this.input.identity.sessionId,
+            error
+          })
+      )
+    }
     return id
   }
 
-  /** A loaded session runs its tools in the folder it was recorded in, wherever this child
-   *  started, so a chat in another workspace would edit a tree the person did not pick. */
-  private async refuseOtherFolder(reported: string | undefined): Promise<void> {
-    if (!reported) {
-      throw new Error('Droid did not report the folder of the session it loaded')
-    }
-    const resolve = this.deps.realpath ?? realpath
-    // Droid reports real paths, so the workspace is resolved too; a folder that is gone keeps its name.
-    const [expected, actual] = await Promise.all([
-      resolve(this.begin.cwd).catch(() => this.begin.cwd),
-      resolve(reported).catch(() => reported)
-    ])
-    if (normalizeRuntimePathForComparison(expected) !== normalizeRuntimePathForComparison(actual)) {
-      throw new Error('Droid loaded the session from another folder than this workspace')
-    }
+  readOptions(): ReturnType<DroidSessionModel['read']> {
+    return this.model.read((method, params, options) =>
+      this.connection.request(method, params, options)
+    )
+  }
+
+  setOption(key: string, value: string): ReturnType<DroidSessionModel['set']> {
+    return this.model.set(
+      (method, params, options) => this.connection.request(method, params, options),
+      key,
+      value
+    )
   }
 
   async close(requested = true): ReturnType<DroidConnection['close']> {

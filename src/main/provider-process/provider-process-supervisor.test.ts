@@ -4,6 +4,7 @@ import {
   createProviderSpawnSpec,
   POSIX_PROVIDER_SUPERVISOR_SCRIPT,
   PROVIDER_SIGTERM_GRACE_MS,
+  PROVIDER_STDIN_END_GRACE_MAX_MS,
   PROVIDER_STDIN_END_GRACE_MS,
   supervisedPosixLaunch
 } from './provider-process-supervisor'
@@ -116,7 +117,8 @@ describe('structured provider supervision', () => {
       supervisedPosixLaunch(command, {}, { sigtermGraceMs })
 
     expect(stdinEnd(PROVIDER_STDIN_END_GRACE_MS)).not.toThrow()
-    expect(stdinEnd(PROVIDER_STDIN_END_GRACE_MS + 1)).toThrow(RangeError)
+    expect(stdinEnd(PROVIDER_STDIN_END_GRACE_MAX_MS)).not.toThrow()
+    expect(stdinEnd(PROVIDER_STDIN_END_GRACE_MAX_MS + 1)).toThrow(RangeError)
     expect(sigterm(PROVIDER_SIGTERM_GRACE_MS)).not.toThrow()
     expect(sigterm(PROVIDER_SIGTERM_GRACE_MS + 1)).toThrow(RangeError)
   })

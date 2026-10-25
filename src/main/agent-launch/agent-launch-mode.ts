@@ -25,10 +25,8 @@ import type {
 } from '../../shared/agent-launch-intent'
 import { RUNTIME_CAPABILITIES } from '../../shared/protocol-version'
 import { STRUCTURED_AGENT_RUNTIME_REGISTRATIONS } from '../runtime/structured-agent-runtime-registrations'
-import type {
-  StructuredAgentSessionCreateSupport,
-  UnsupportedAgentVersion
-} from '../native-chat/structured-agent-session-create-support'
+import type { StructuredAgentSessionCreateSupport } from '../native-chat/structured-agent-session-create-support'
+import { unsupportedAgentVersionDetail } from '../../shared/unsupported-agent-version'
 import {
   isNativeChatEnabled,
   resolveStructuredNativeChatSupport,
@@ -245,18 +243,13 @@ export function downgradeAgentLaunchModeForHost(
       mode: 'terminal',
       preferred: 'structured',
       reason: 'agent_version_unsupported',
-      detail: unsupportedVersionDetail(support.unsupportedVersion)
+      detail: unsupportedAgentVersionDetail(support.unsupportedVersion)
     }
   }
   return downgraded(
     support.reason ? HOST_SUPPORT_REASON[support.reason] : 'structured_unsupported_on_host',
     vocabulary
   )
-}
-
-/** A whole sentence, not a clause: it tells the person what to run, so it is not wrapped. */
-function unsupportedVersionDetail(version: UnsupportedAgentVersion): string {
-  return `${version.agentName} ${version.found} is older than ${version.floor}, the oldest release Orca's chat supports. Run \`${version.updateCommand}\` on this computer.`
 }
 
 function downgraded(

@@ -23,6 +23,7 @@ import type { DroidAgentConnectionOptions } from './droid-agent-connection'
 import { DroidRpcError } from './droid-rpc-errors'
 import type { DroidConnection } from './droid-session'
 import { DroidSessionAdapter } from './droid-session-adapter'
+import { stopAgentSessionProviderRoot } from '../native-chat/agent-session-wire/structured-agent-session-provider-exit-proof'
 import { buildDroidExecLaunch } from './droid-exec-launch'
 import type { DroidResolvedLaunch } from './droid-structured-launch-resolution'
 
@@ -506,7 +507,7 @@ describe('Droid session turns', () => {
         fence: 7,
         outcome: {
           state: 'accepted',
-          providerIdentity: { provider: 'orca', clientMessageId: 'send-1' }
+          providerIdentity: { provider: 'droid', messageId: 'user-hello' }
         }
       })
     )
@@ -660,6 +661,16 @@ describe('Droid session end', () => {
     )
   })
 
+  it('counts a root that exited on stdin end as gone when its tree was not reaped', async () => {
+    const h = await setup()
+    const { connection } = await h.start()
+    connection.closeResult = { root: 'exited', tree: null }
+
+    await expect(
+      stopAgentSessionProviderRoot(() => h.adapter.closeSession(sessionId))
+    ).resolves.toBe(true)
+  })
+
   it('reports a requested close as requested', async () => {
     const h = await setup()
     await h.start()
@@ -689,12 +700,24 @@ describe('Droid session end', () => {
   })
 })
 
-describe('Droid session options and prompts until they are wired', () => {
-  it('rejects an option pick and a prompt answer without ending the session', async () => {
+describe('Droid session options and prompts', () => {
+  it('sends a model or effort pick and rejects anything else, without ending the session', async () => {
     const h = await setup()
     const { connection } = await h.start()
 
-    const option = h.adapter.setOption({ sessionId, key: 'model', value: 'x', fence: 7 })
+    await expect(
+      h.adapter.setOption({ sessionId, key: 'model', value: 'gpt-6-sol', fence: 7 })
+    ).resolves.toEqual({ model: 'gpt-6-sol' })
+    await expect(
+      h.adapter.setOption({ sessionId, key: 'effort', value: 'high', fence: 7 })
+    ).resolves.toEqual({ effort: 'high' })
+    expect(connection.requests.slice(-2).map(({ method, params }) => ({ method, params }))).toEqual(
+      [
+        { method: 'droid.update_session_settings', params: { modelId: 'gpt-6-sol' } },
+        { method: 'droid.update_session_settings', params: { reasoningEffort: 'high' } }
+      ]
+    )
+    const option = h.adapter.setOption({ sessionId, key: 'planMode', value: 'true', fence: 7 })
     await expect(option).rejects.toSatisfy(isAgentSessionOptionRejectedError)
     await expect(
       h.adapter.answerPrompt({

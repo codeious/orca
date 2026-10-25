@@ -21,11 +21,8 @@ describe('Droid background child lease on the relay', () => {
   beforeEach(() => {
     dir = mkdtempSync(join(tmpdir(), 'relay-droid-lease-'))
     forward = vi.fn<(envelope: AgentHookRelayEnvelope) => void>()
-    // Why shouldAdvanceTime: the hooks are real loopback POSTs, which need the clock to move.
-    vi.useFakeTimers({
-      shouldAdvanceTime: true,
-      toFake: ['setTimeout', 'clearTimeout', 'Date', 'performance']
-    })
+    // Why not shouldAdvanceTime: a clock that follows real time moves the lease deadline under load.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date', 'performance'] })
   })
   afterEach(() => {
     for (const server of servers.splice(0)) {
@@ -43,7 +40,12 @@ describe('Droid background child lease on the relay', () => {
     const post = async (payload: Record<string, unknown>) => {
       const response = await fetch(`http://127.0.0.1:${port}/hook/droid`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Orca-Agent-Hook-Token': token },
+        // Why close: a pooled socket waits on fetch's own timers, which a frozen clock never fires.
+        headers: {
+          'Content-Type': 'application/json',
+          Connection: 'close',
+          'X-Orca-Agent-Hook-Token': token
+        },
         body: JSON.stringify({ paneKey: PANE_KEY, tabId: 'tab-1', worktreeId: 'wt-1', payload })
       })
       expect(response.status).toBe(204)
@@ -90,10 +92,13 @@ describe('Droid background child lease on the relay', () => {
   it('cancels the wakeup when the relay stops', async () => {
     const { server } = await stoppedLeadWithFinishedBackgroundChild()
     const forwarded = forward.mock.calls.length
+    expect(vi.getTimerCount()).toBeGreaterThan(0)
 
     server.stop()
-    await vi.advanceTimersByTimeAsync(DROID_BACKGROUND_CHILD_LEASE_MS * 3)
 
+    // Why: a leftover wakeup would be a silent no-op once stop() clears the caches.
+    expect(vi.getTimerCount()).toBe(0)
+    await vi.advanceTimersByTimeAsync(DROID_BACKGROUND_CHILD_LEASE_MS * 3)
     expect(forward.mock.calls).toHaveLength(forwarded)
   })
 })

@@ -2,6 +2,10 @@ import type { TuiAgent } from '../../../shared/tui-agent'
 import { isDefinitiveAgentSessionCreateRefusal } from '../../../shared/agent-session-definitive-refusal'
 import { parseStructuredLaunchSeedOptions } from '../../../shared/native-chat-session-option-defaults'
 import { hasRuntimeRpcErrorCode } from '../../../shared/runtime-rpc-error-code'
+import {
+  readUnsupportedAgentVersion,
+  type UnsupportedAgentVersion
+} from '../../../shared/unsupported-agent-version'
 import type { RuntimeClientTarget } from '@/runtime/runtime-client-target'
 import { callStructuredAgentSession } from '@/runtime/structured-agent-session-client'
 
@@ -30,7 +34,7 @@ function runtimeErrorCode(error: unknown): string {
  *  An admitting host also names the saved selection create will seed, when it is new enough to. */
 export type StructuredLaunchAdmission =
   | { kind: 'admitted'; seedOptions?: Readonly<Record<string, string>> }
-  | { kind: 'declined' }
+  | { kind: 'declined'; unsupportedVersion?: UnsupportedAgentVersion }
   | { kind: 'unreachable' }
   /** The host still could not resolve the workspace after the retries: not yet, rather than no. */
   | { kind: 'workspace-unresolved' }
@@ -56,9 +60,14 @@ export async function askHostCreateSupport(
         supported: boolean
         reason?: string
         seedOptions?: unknown
+        unsupportedVersion?: unknown
       }>(target, 'agentSession.createSupport', { worktree, agent })
       if (support.supported !== true) {
-        return { kind: 'declined' }
+        const unsupportedVersion =
+          support.reason === 'agent'
+            ? readUnsupportedAgentVersion(support.unsupportedVersion)
+            : null
+        return unsupportedVersion ? { kind: 'declined', unsupportedVersion } : { kind: 'declined' }
       }
       const seedOptions = parseStructuredLaunchSeedOptions(support.seedOptions)
       return seedOptions ? { kind: 'admitted', seedOptions } : { kind: 'admitted' }

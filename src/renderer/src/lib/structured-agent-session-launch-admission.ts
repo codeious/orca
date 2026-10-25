@@ -15,6 +15,8 @@ import {
 import { holdEmptyWorkspaceDefaultSurfaceForLaunch } from '@/lib/empty-workspace-default-surface-claims'
 import { StructuredAgentSessionCreateRefusalError } from '@/lib/structured-agent-session-launch-errors'
 import { structuredAgentLabel } from '@/lib/structured-agent-session-launch-label'
+import { unsupportedAgentVersionDetail } from '../../../shared/unsupported-agent-version'
+import { toastUnsupportedAgentVersionOnce } from '@/lib/unsupported-agent-version-toast'
 import type {
   StructuredAgentLaunchHooks,
   StructuredAgentLaunchSettlement
@@ -188,6 +190,15 @@ export function beginHostAdmittedStructuredLaunch(args: {
         }
       }
       if (admission.kind === 'declined') {
+        // A too-old release is named once on either machine; other refusals are explained only for a server.
+        if (admission.unsupportedVersion) {
+          toastUnsupportedAgentVersionOnce(
+            plan.agent,
+            unsupportedAgentVersionDetail(admission.unsupportedVersion)
+          )
+        } else if (paired) {
+          notifyHostDeclined(plan.agent)
+        }
         if (plan.resumeFrom) {
           resolveDelivery(NOT_DELIVERED)
           return {
@@ -196,10 +207,6 @@ export function beginHostAdmittedStructuredLaunch(args: {
               'structured_agent_session_unsupported'
             )
           }
-        }
-        // The notice explains a server's refusal; on this machine the terminal opening is the answer.
-        if (paired) {
-          notifyHostDeclined(plan.agent)
         }
         const terminal = await args.onHostDeclined(args.target)
         void (

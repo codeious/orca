@@ -20,8 +20,8 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
     approvalEnforcement: 'provider'
   },
   restingOptions: {
-    // No pick reaches Droid until models and modes are wired, so none is taken and then dropped.
-    acceptsKey: () => false,
+    // Model and effort are kept at rest and sent on the next start. Modes are not session options.
+    acceptsKey: (key) => key === 'model' || key === 'effort',
     fallbackModels: () => null,
     effortDefaultsToModel: false
   }

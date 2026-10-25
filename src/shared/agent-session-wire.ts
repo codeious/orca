@@ -397,6 +397,8 @@ export type AgentSessionModelOption = {
   efforts: AgentSessionOptionChoice[]
   /** Provider catalog fact. Absent means the host could not determine support. */
   supportsFastMode?: boolean
+  /** Bring-your-own-key row (`custom:…`). Absent on a provider model. */
+  isCustom?: true
   /** Service tiers the provider lists for this model besides its standard one, each valued by the
    *  provider's own tier id. Absent means unknown; a client that reads it offers one speed choice
    *  (`default` for standard) in place of the Fast toggle. */
