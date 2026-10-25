@@ -20,6 +20,7 @@ import { seedNativeChatAppliedSessionOptions } from '@/components/native-chat/na
 import { callRuntimeRpc, RuntimeRpcCallError } from '@/runtime/runtime-rpc-client'
 import { createAgentSessionOperationId } from '@/runtime/agent-session-operation-id'
 import { isAgentLaunchResult } from '../../../shared/agent-launch-intent'
+import { toastAgentLaunchVersionReceipt } from '@/lib/unsupported-agent-version-toast'
 import { AGENT_LAUNCH_TAB_CLOSED_CODE } from '../../../shared/agent-launch-tab-closed'
 import { makePaneKey } from '../../../shared/stable-pane-id'
 import { isNativeChatEnabled } from '../../../shared/structured-native-chat-launch-route'
@@ -115,7 +116,9 @@ async function settleLaunch(
   releaseHold: () => void
 ): Promise<HostAgentLaunchOutcome> {
   try {
-    return outcomeFromResult(await send)
+    const result = await send
+    toastAgentLaunchVersionReceipt(args.agent, result)
+    return outcomeFromResult(result)
   } catch (error) {
     const code = error instanceof RuntimeRpcCallError ? error.code : undefined
     if (code === AGENT_LAUNCH_TAB_CLOSED_CODE) {

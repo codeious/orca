@@ -1,16 +1,9 @@
 import type { AgentSessionExecutionLocation } from '../../shared/agent-session-record'
 import type { StructuredAgentId } from '../../shared/agent-session-provider-handle'
 import { LOCAL_EXECUTION_HOST_ID } from '../../shared/execution-host'
+import type { UnsupportedAgentVersion } from '../../shared/unsupported-agent-version'
 
-/** An installed release older than the oldest the chat supports. */
-export type UnsupportedAgentVersion = {
-  /** How a sentence names the agent, e.g. "Droid". */
-  agentName: string
-  found: string
-  floor: string
-  /** What the person runs on the computer to update it. */
-  updateCommand: string
-}
+export type { UnsupportedAgentVersion } from '../../shared/unsupported-agent-version'
 
 export type StructuredAgentSessionCreateSupport = {
   supported: boolean

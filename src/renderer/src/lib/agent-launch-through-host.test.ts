@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { toast } from 'sonner'
 import type * as AgentStatusModule from '@/lib/agent-status'
 import { RuntimeRpcCallError } from '@/runtime/runtime-rpc-result'
 import { createTabsSliceMockApi } from '../store/slices/tabs-slice-test-harness'
@@ -35,6 +36,8 @@ vi.mock('@/runtime/runtime-rpc-client', async (importOriginal) => ({
 createTabsSliceMockApi()
 
 const { launchAgentThroughHost } = await import('./agent-launch-through-host')
+const { resetUnsupportedAgentVersionToastsForTests } =
+  await import('./unsupported-agent-version-toast')
 const { agentLaunchPaneSpawnHold, releaseAgentLaunchPaneSpawn } =
   await import('./agent-launch-pane-spawn-hold')
 const { agentLaunchPanePrompt } = await import('./agent-launch-pane-prompt')
@@ -102,6 +105,8 @@ beforeEach(() => {
   store = createTestStore()
   testStore.current = store
   callRuntimeRpc.mockReset()
+  resetUnsupportedAgentVersionToastsForTests()
+  vi.mocked(toast.info).mockClear()
   store.getState().setActiveWorktree(WT)
   store.getState().createUnifiedTab(WT, 'terminal')
 })
@@ -157,6 +162,32 @@ describe('a desktop launch through the host', () => {
     const second = lastParams()
     expect(second.operationId).not.toBe(first.operationId)
     expect(second.paneKey).not.toBe(first.paneKey)
+  })
+
+  it('shows a too-old release once when the host receipt says that is why', async () => {
+    const detail =
+      "Droid 0.230.0 is older than 0.238.0, the oldest release Orca's chat supports. Run `droid update` on this computer."
+    const versioned = (paneKey: string) => ({
+      ...terminalResult(paneKey),
+      receipt: {
+        mode: 'terminal',
+        preferred: 'structured',
+        reason: 'agent_version_unsupported',
+        detail
+      }
+    })
+    callRuntimeRpc.mockImplementation(async () => versioned(lastPaneKey()))
+
+    const first = launch()
+    hostTakesPane(first.tabId)
+    await expect(first.outcome).resolves.toEqual({ kind: 'started' })
+    expect(toast.info).toHaveBeenCalledExactlyOnceWith(detail)
+
+    vi.mocked(toast.info).mockClear()
+    const again = launch()
+    hostTakesPane(again.tabId)
+    await expect(again.outcome).resolves.toEqual({ kind: 'started' })
+    expect(toast.info).not.toHaveBeenCalled()
   })
 
   it('says the agent started only once the host answers, with its pane attached', async () => {
