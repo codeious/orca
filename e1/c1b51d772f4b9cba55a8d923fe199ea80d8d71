@@ -1,0 +1,78 @@
+src/renderer/src/components/settings/agent-launch-mode-copy.test.ts
+  s_7ddff69f1b5110::t_cab035b692f931 1-50
+  s_7ddff69f1b5110::t_5d783ec949ab83 51-58
+src/renderer/src/components/settings/AgentLaunchModeSetting.tsx
+  s_7ddff69f1b5110::t_9029884723de2c 1-35,37-52
+  s_7ddff69f1b5110::t_bd28eeeeb51bdc 36
+src/renderer/src/components/settings/AgentsPane.tsx
+  s_7ddff69f1b5110::t_eb2bf75df618dc 13
+  s_7ddff69f1b5110::t_5b45a5e34d5783 248-251
+src/shared/agent-launch-mode-preference.ts
+  s_7ddff69f1b5110::t_2b588f18f7e24f 25-34
+src/renderer/src/components/settings/agent-launch-mode-control.ts
+  s_7ddff69f1b5110::t_c45dcdf9ee78a5 1-30
+src/renderer/src/components/settings/AgentsPane.launch-mode.test.tsx
+  s_7ddff69f1b5110::t_9ddfd014923728 1-2,4-11,15-92
+  s_7ddff69f1b5110::t_1d76700fafa7cc 3
+  s_7ddff69f1b5110::t_bf7c56ece46755 12-14
+src/renderer/src/components/settings/agents-search.ts
+  s_7ddff69f1b5110::t_173be1dc09e70a 143-146
+  s_7ddff69f1b5110::t_544f5493affbaf 13-16
+  s_f87fd4e7a08936::t_8d3616958a6b52 12,142
+src/renderer/src/components/settings/agent-launch-mode-copy.ts
+  s_7ddff69f1b5110::t_36d50ccf171594 1-94
+src/renderer/src/components/settings/AgentCatalogRow.launch-mode.test.tsx
+  s_7ddff69f1b5110::t_0a1b8070266511 94
+  s_7ddff69f1b5110::t_ca7843e497e8d3 92-93
+  s_7ddff69f1b5110::t_18e75949f877aa 1-15,17-86,89-90,95-110
+  s_7ddff69f1b5110::t_1ce5811e1a999b 16
+  s_7ddff69f1b5110::t_50d35ea387f645 87-88,91
+src/renderer/src/components/settings/agent-launch-mode-control.test.ts
+  s_7ddff69f1b5110::t_b8b2afa94342e0 1-49
+  s_7ddff69f1b5110::t_28c72f1ae9b63f 50-52
+src/main/droid/droid-version-support.test.ts
+  s_7ddff69f1b5110::t_4b987f6c59a85c 2
+  s_7ddff69f1b5110::t_73f35bfc842364 33-37
+src/main/droid/droid-version-support.ts
+  s_7ddff69f1b5110::t_4942b5ded326f3 3,6-7
+src/renderer/src/lib/agent-launch-through-host-agent-setting.test.ts
+  s_7ddff69f1b5110::t_53cd6876e01d61 4
+src/shared/droid-chat-version-floor.ts
+  s_7ddff69f1b5110::t_6259fabec606a6 1-2
+src/shared/agent-launch-mode-preference.test.ts
+  s_7ddff69f1b5110::t_2f5a34f155052d 45-69
+  s_7ddff69f1b5110::t_dcd783d18bdc11 4-5
+src/renderer/src/components/settings/AgentCatalogRow.tsx
+  s_7ddff69f1b5110::t_acbf60234abd18 101-102
+  s_7ddff69f1b5110::t_c176f50f8f0976 12-13
+  s_7ddff69f1b5110::t_e64e23acb8a911 79-80
+  s_7ddff69f1b5110::t_47f7162402fb2f 210-214
+src/renderer/src/store/slices/settings-agent-launch-modes.test.ts
+  s_7ddff69f1b5110::t_5fea1a85287641 18
+src/renderer/src/i18n/locales/en.json
+  s_7ddff69f1b5110::t_5ff0b7ba8158d3 12700-12711
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e1c1b51d772f4b9cba55a8d923fe199ea80d8d71",
+  "prompts": {},
+  "sessions": {
+    "s_7ddff69f1b5110": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "22e4c325-1442-40ad-a7e4-f5dafe0805f6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
