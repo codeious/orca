@@ -49,7 +49,8 @@ export class DroidTurns {
   async submit(
     id: string,
     at: number,
-    params: { text: string }
+    params: { text: string },
+    before?: () => Promise<void>
   ): Promise<AgentSessionDispatchOutcome> {
     if (this.ended) {
       throw new Error('Droid session ended before dispatch')
@@ -65,6 +66,18 @@ export class DroidTurns {
     }
     const send: Send = { id, at, accepted: false }
     this.sends.add(send)
+    if (before) {
+      // Registered first, so a Stop that lands while this waits sees a send in flight.
+      try {
+        await before()
+      } catch (error) {
+        this.forget(send)
+        throw error
+      }
+      if (this.ended) {
+        throw new Error('Droid session ended before dispatch')
+      }
+    }
     try {
       await this.deps.request('droid.add_user_message', params, {
         onId: (requestId) => {

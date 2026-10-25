@@ -146,6 +146,31 @@ describe('a send and the turn it opens', () => {
     })
   })
 
+  it('holds the dispatch while it is revalidated and writes nothing when that refuses', async () => {
+    const gate = Promise.withResolvers<void>()
+    const h = await setup()
+
+    const sent = h.turns.submit('send-1', 100, { text: 'hello' }, () => gate.promise)
+    expect(h.turns.holdsDispatch).toBe(true)
+    gate.reject(new Error('superseded'))
+
+    await expect(sent).rejects.toThrow('superseded')
+    expect(h.turns.holdsDispatch).toBe(false)
+    expect(h.request).not.toHaveBeenCalled()
+  })
+
+  it('writes nothing when the session ends while the dispatch is revalidated', async () => {
+    const gate = Promise.withResolvers<void>()
+    const h = await setup()
+
+    const sent = h.turns.submit('send-1', 100, { text: 'hello' }, () => gate.promise)
+    h.turns.end()
+    gate.resolve()
+
+    await expect(sent).rejects.toThrow('ended before dispatch')
+    expect(h.request).not.toHaveBeenCalled()
+  })
+
   it('opens a turn when Droid leaves idle and settles it when the turn completes', async () => {
     const h = await setup()
     await h.turns.submit('send-1', 100, { text: 'hello' })
