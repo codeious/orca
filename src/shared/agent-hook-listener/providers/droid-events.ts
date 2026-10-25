@@ -78,6 +78,29 @@ function buildDroidStatusPayload(
   })
 }
 
+/**
+ * The pane's row once its background-child lease has run out, for a wakeup with no hook behind it.
+ * The lease is spent here so the stored row stops asking for another wakeup.
+ */
+export function settleDroidLeaseExpiry(
+  state: HookListenerState,
+  paneKey: string
+): ParsedAgentStatusPayload | null {
+  const sessions = state.droidSessionsByPaneKey.get(paneKey)
+  if (!sessions) {
+    return null
+  }
+  sessions.leaseUntil = undefined
+  return buildDroidStatusPayload(state, paneKey, {
+    eventName: undefined,
+    promptText: '',
+    hookPayload: {},
+    ...resolveDroidRowStatus(sessions),
+    sessions,
+    updateLead: false
+  })
+}
+
 export function normalizeDroidEvent(
   state: HookListenerState,
   eventName: unknown,

@@ -84,12 +84,18 @@ export function applyDroidLeadEvent(
   }
 }
 
+/** When the lease on a stopped lead's finished background child runs out; undefined when none runs. */
+export function droidBackgroundChildLeaseDeadline(sessions: DroidPaneSessions): number | undefined {
+  return codexRosterChildWorkLiveness(sessions.roster) === null ? sessions.leaseUntil : undefined
+}
+
 export function resolveDroidRowStatus(
   sessions: DroidPaneSessions,
   now = Date.now()
 ): AgentLeadStatusResolution {
   const live = codexRosterChildWorkLiveness(sessions.roster)
-  const leased = live === null && sessions.leaseUntil !== undefined && sessions.leaseUntil > now
+  const deadline = droidBackgroundChildLeaseDeadline(sessions)
+  const leased = deadline !== undefined && deadline > now
   return foldAgentLeadStatus({
     // Why: a child event with no lead event before it means the lead is mid-turn.
     leadState: sessions.lead?.state ?? 'working',
