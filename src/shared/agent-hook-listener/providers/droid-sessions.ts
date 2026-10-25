@@ -137,6 +137,17 @@ function isForeignSender(
   return owner !== undefined && !(sender && isSameAgentProcess(owner, sender))
 }
 
+/** A hook from the process whose exit the row already recorded is a late one, never a revival. */
+function isFromEndedOwner(
+  previous: AgentHookEventPayload | undefined,
+  sender: AgentProcessIdentity | undefined
+): boolean {
+  const presence = previous?.agentPresence
+  return Boolean(
+    presence?.ended && presence.process && sender && isSameAgentProcess(presence.process, sender)
+  )
+}
+
 function clearExitMarker(state: HookListenerState, paneKey: string): void {
   const sessions = state.droidSessionsByPaneKey.get(paneKey)
   if (sessions) {
@@ -204,6 +215,9 @@ export function admitDroidHook(
   const previous = state.lastStatusByPaneKey.get(paneKey)
   if (isForeignSender(previous, sender)) {
     return previous ? { kind: 'restate' } : SKIP
+  }
+  if (isFromEndedOwner(previous, sender)) {
+    return SKIP
   }
   const sessionId = readString(hookPayload, 'session_id')
   if (!sessionId) {
