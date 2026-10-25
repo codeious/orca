@@ -76,7 +76,10 @@ describe('resolveNativeChatLaunchChoice', () => {
   })
 
   it('leaves every other agent on the switch', () => {
-    const settings = { experimentalNativeChat: true, agentLaunchModes: { droid: 'terminal' } }
+    const settings = {
+      experimentalNativeChat: true,
+      agentLaunchModes: { droid: 'terminal' as const }
+    }
     expect(resolveNativeChatLaunchChoice(settings, 'claude')).toEqual({
       structured: true,
       source: 'switch'

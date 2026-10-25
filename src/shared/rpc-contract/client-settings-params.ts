@@ -7,6 +7,7 @@ import {
   normalizeTuiAgentArgsRecord,
   normalizeTuiAgentEnvRecord
 } from '../tui-agent-launch-defaults'
+import { normalizeAgentLaunchModePreferences } from '../agent-launch-mode-preference'
 import { MACHINE_NAME_MAX_LENGTH } from '../machine-name'
 import { normalizePRBotAuthorOverrides } from '../pr-bot-author-overrides'
 import { WorktreeVisibilityDefaultsUpdate } from './worktree-visibility-defaults-params'
@@ -104,6 +105,10 @@ export const SettingsUpdate = z
     agentDefaultEnv: z
       .unknown()
       .transform((value) => normalizeTuiAgentEnvRecord(value))
+      .optional(),
+    agentLaunchModes: z
+      .unknown()
+      .transform((value) => normalizeAgentLaunchModePreferences(value))
       .optional(),
     defaultTaskSource: TaskProviderParam.optional(),
     visibleTaskProviders: z.array(TaskProviderParam).optional(),
