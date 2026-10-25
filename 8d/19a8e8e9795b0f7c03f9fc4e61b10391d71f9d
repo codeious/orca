@@ -1,0 +1,19 @@
+src/main/agent-hooks/installer-utils-remote.test.ts
+  s_a57587060a50e5::t_8a20af344d19bf 42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8d19a8e8e9795b0f7c03f9fc4e61b10391d71f9d",
+  "prompts": {},
+  "sessions": {
+    "s_a57587060a50e5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fd4afa99-8ef7-4d49-9697-13345392d392",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
