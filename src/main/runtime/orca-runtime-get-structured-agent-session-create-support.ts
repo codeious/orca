@@ -27,11 +27,9 @@ import {
   isLegacyAgentSessionAccountHome,
   type AgentSessionAccountHome
 } from '../../shared/agent-session-account-home'
-import {
-  isAgentSessionHandleProvider,
-  type StructuredAgentId
-} from '../../shared/agent-session-provider-handle'
-import { agentSessionWireProviderHandle } from '../../shared/agent-session-provider-handle-encoding'
+import type { StructuredAgentId } from '../../shared/agent-session-provider-handle'
+import { isStructuredAdoptionAgent } from '../native-chat/structured-agent-session-history-adoption'
+import { adoptedProviderHandle } from '../native-chat/agent-session-wire/structured-agent-session-adopted-handle'
 
 export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaRuntimeWithGetWorktreePs {
   async getStructuredAgentSessionCreateSupport(
@@ -218,9 +216,9 @@ export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaR
         updateCommand
       })
     }
-    // Adopting a conversation reads the agent's own transcript, which only Claude and Codex have
-    // importers for.
-    if (!support.supported || (input.resumeFrom && !isAgentSessionHandleProvider(input.agent))) {
+    // Adopting a conversation reads the agent's own transcript, which only Claude, Codex and Droid
+    // have importers for.
+    if (!support.supported || (input.resumeFrom && !isStructuredAdoptionAgent(input.agent))) {
       throw agentSessionRefusalError('structured_agent_session_unsupported', {
         reason: 'hostUnsupported'
       })
@@ -282,7 +280,7 @@ export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaR
             // `providerHandle` alone must not: `agentSession.ensure` already passes one today
             // without adopting anything.
             adopt: {
-              providerHandle: agentSessionWireProviderHandle({
+              providerHandle: adoptedProviderHandle({
                 transport: definition.handleTransport,
                 agent: definition.agent,
                 nativeId: input.resumeFrom.providerSessionId
