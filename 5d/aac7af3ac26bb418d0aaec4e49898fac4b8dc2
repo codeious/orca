@@ -1,0 +1,21 @@
+config/scripts/vitest-real-agent-home-write-guard.test.ts
+  s_0451622378e9c8::t_7cefefac5f16ba 52-57
+config/scripts/vitest-real-agent-home-write-guard.ts
+  s_0451622378e9c8::t_73c786b9256e7a 23-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5daac7af3ac26bb418d0aaec4e49898fac4b8dc2",
+  "prompts": {},
+  "sessions": {
+    "s_0451622378e9c8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d035f68d-089c-477f-9b20-d144473a213c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
