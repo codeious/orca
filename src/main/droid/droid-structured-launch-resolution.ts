@@ -13,6 +13,7 @@ import { resolveAgentSessionLaunchDirectory } from '../runtime/agent-session-lau
 import type { AgentSessionRecordStore } from '../runtime/agent-session-record-store'
 import { isWindowsProcessStartTimeAvailable } from '../windows/windows-process-table'
 import { DROID_ACCOUNT_HOME_VARIABLE, DROID_HANDLE_TRANSPORT } from './droid-agent-definition'
+import { droidAutonomyLevelFromLaunchArgs, type DroidAutonomyLevel } from './droid-autonomy-level'
 import { readDroidVersion, resolveDroidCommand } from './droid-launch-resolution'
 import { isSupportedDroidVersion, unsupportedDroidRelease } from './droid-version-support'
 
@@ -22,12 +23,16 @@ export type DroidResolvedLaunch = {
   env: Record<string, string>
   /** The Droid session this chat last held; the start loads it rather than creating another. */
   previous: AgentSessionProviderHandleLink | null
+  /** What Agent Permissions asks for now, sent on every start and resume. */
+  autonomyLevel: DroidAutonomyLevel
 }
 
 export type DroidLaunchResolverDeps = {
   store: AgentSessionRecordStore
   resolveWorkspacePath: (id: string) => Promise<string>
   resolveEnvironment: () => Promise<NodeJS.ProcessEnv>
+  /** The saved Droid Arguments, re-read per acquisition; Agent Permissions is the one copy of the level. */
+  resolveLaunchArgs: () => Promise<readonly string[]> | readonly string[]
   /** The user's Droid Command setting, re-read per acquisition; none runs the stock binary. */
   resolveCommandSettings?: () => StructuredAgentCommandSettings
   resolveCommand?: typeof resolveCliCommand
@@ -76,6 +81,7 @@ export function createDroidLaunchResolver(
         env[key] = value
       }
     }
+    const autonomyLevel = droidAutonomyLevelFromLaunchArgs(await deps.resolveLaunchArgs())
     const command = resolveDroidCommand(env, deps.resolveCommandSettings?.(), deps.resolveCommand)
     // Again at every launch: the binary on PATH may have changed since the chat was created.
     const version = await readDroidVersion({ command, cwd, env }, deps.readVersion, deps.orcaEnv)
@@ -87,12 +93,12 @@ export function createDroidLaunchResolver(
           : {}
       )
     }
-    return { command, cwd, env, previous }
+    return { command, cwd, env, previous, autonomyLevel }
   }
 }
 
 export function droidProviderLink(
-  launch: DroidResolvedLaunch,
+  launch: Pick<DroidResolvedLaunch, 'previous'>,
   sessionId: string,
   fence: number,
   linkId: string,

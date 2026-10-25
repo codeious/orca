@@ -10,6 +10,7 @@ import {
 import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-wire/structured-agent-session-logger'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
+import type { DroidStartSettings } from './droid-session-settings'
 import { DroidTurns } from './droid-turns'
 import { isSupportedDroidProtocol } from './droid-version-support'
 
@@ -45,7 +46,7 @@ export type DroidSessionDeps = {
 }
 
 /** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. */
-export type DroidSessionBegin = { cwd: string; resumeId: string | null }
+export type DroidSessionBegin = DroidStartSettings & { cwd: string; resumeId: string | null }
 
 export const DROID_MACHINE_ID = 'orca'
 const START_TIMEOUT_MS = 120_000
@@ -123,7 +124,7 @@ export class DroidSession {
 
   /** Droid's own id for the session this child now holds. Nothing else is sent before it answers. */
   async start(): Promise<string> {
-    const { cwd, resumeId } = this.begin
+    const { cwd, resumeId, autonomyLevel, interactionMode } = this.begin
     let result: unknown
     try {
       result = await (resumeId
@@ -134,8 +135,7 @@ export class DroidSession {
           )
         : this.connection.request(
             'droid.initialize_session',
-            // Never a Mission: those spend the person's credits unattended.
-            { machineId: DROID_MACHINE_ID, cwd, interactionMode: 'auto', autonomyLevel: 'off' },
+            { machineId: DROID_MACHINE_ID, cwd, interactionMode, autonomyLevel },
             { timeoutMs: START_TIMEOUT_MS }
           ))
     } catch (error) {
@@ -150,6 +150,17 @@ export class DroidSession {
       : undefined
     if (!id) {
       throw new Error('Droid did not name its session')
+    }
+    if (resumeId) {
+      if (id !== resumeId) {
+        throw new Error('Droid loaded a different session')
+      }
+      // A load takes no settings, so the level and mode the session stored would otherwise stand.
+      await this.connection.request(
+        'droid.update_session_settings',
+        { autonomyLevel, interactionMode },
+        { timeoutMs: START_TIMEOUT_MS }
+      )
     }
     return id
   }

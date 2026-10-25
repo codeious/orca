@@ -155,6 +155,7 @@ async function setup(launch: Partial<DroidResolvedLaunch> = {}) {
     cwd: '/host/folder',
     env: { PATH: '/host/bin' },
     previous: null,
+    autonomyLevel: 'high',
     ...launch
   }))
   const openConnection = vi.fn(
@@ -178,8 +179,8 @@ async function setup(launch: Partial<DroidResolvedLaunch> = {}) {
     await adapter.drainObservedExits()
     adapter.acknowledgeSessionRelease(sessionId)
   })
-  const start = async () => {
-    const acquired = await adapter.acquire(input)
+  const start = async (options?: Readonly<Record<string, string>>) => {
+    const acquired = await adapter.acquire(options ? { ...input, options } : input)
     const connection = connections[0]
     if (!connection) {
       throw new Error('connection missing')
@@ -224,7 +225,7 @@ describe('Droid session start', () => {
       machineId: expect.any(String),
       cwd: '/host/folder',
       interactionMode: 'auto',
-      autonomyLevel: 'off'
+      autonomyLevel: 'high'
     })
     expect(acquired.link).toMatchObject({
       handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-1' },
@@ -272,23 +273,89 @@ describe('Droid session start', () => {
     expect(JSON.stringify(connection.requests)).not.toContain('mission')
   })
 
+  it.each([
+    ['Manual', 'off'],
+    ['Auto Low', 'low'],
+    ['Auto Medium', 'medium'],
+    ['Yolo', 'high']
+  ] as const)('starts a new session at the %s autonomy level it resolved', async (_name, level) => {
+    const h = await setup({ autonomyLevel: level })
+    const { connection } = await h.start()
+    expect(connection.requests[0]?.params).toMatchObject({ autonomyLevel: level })
+  })
+
+  it.each([
+    ['true', 'spec'],
+    ['false', 'auto']
+  ])('starts a new session with the saved Spec value %s in %s mode', async (saved, mode) => {
+    const h = await setup()
+    const { connection } = await h.start({ planMode: saved })
+    expect(connection.requests[0]?.params).toMatchObject({ interactionMode: mode })
+  })
+
+  it('starts in auto mode when the saved Spec value is not a boolean', async () => {
+    const h = await setup()
+    const { connection } = await h.start({ planMode: 'spec' })
+    expect(connection.requests[0]?.params).toMatchObject({ interactionMode: 'auto' })
+  })
+
+  const heldSession = {
+    linkId: 'prior',
+    handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-9' },
+    origin: 'created' as const,
+    mintedAtFence: 1,
+    observedAt: 100
+  }
+
   it('loads the session the chat last held, and names no folder or mode', async () => {
-    const previous = {
-      linkId: 'prior',
-      handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-9' },
-      origin: 'created' as const,
-      mintedAtFence: 1,
-      observedAt: 100
-    }
-    const h = await setup({ previous })
+    const h = await setup({ previous: heldSession })
     const { acquired, connection } = await h.start()
 
-    expect(connection.requests.map(({ method }) => method)).toEqual(['droid.load_session'])
-    expect(connection.requests[0]?.params).toEqual({ sessionId: 'droid-session-9' })
+    expect(connection.requests[0]).toMatchObject({
+      method: 'droid.load_session',
+      params: { sessionId: 'droid-session-9' }
+    })
     expect(acquired.link).toMatchObject({
       origin: 'resumed',
       handle: { nativeId: 'droid-session-9' }
     })
+  })
+
+  it('re-sends the resolved level and Spec mode after a load, never the stored ones', async () => {
+    const h = await setup({ previous: heldSession, autonomyLevel: 'off' })
+    const { connection } = await h.start({ planMode: 'true' })
+
+    expect(connection.requests.map(({ method }) => method)).toEqual([
+      'droid.load_session',
+      'droid.update_session_settings'
+    ])
+    expect(connection.requests[1]?.params).toEqual({
+      autonomyLevel: 'off',
+      interactionMode: 'spec'
+    })
+  })
+
+  it('re-sends auto mode after a load when the chat saved no Spec', async () => {
+    const h = await setup({ previous: heldSession, autonomyLevel: 'high' })
+    const { connection } = await h.start()
+    expect(connection.requests[1]?.params).toEqual({
+      autonomyLevel: 'high',
+      interactionMode: 'auto'
+    })
+  })
+
+  it('fails the start, and closes the child, when Droid refuses the settings after a load', async () => {
+    const h = await setup({ previous: heldSession })
+    h.openConnection.mockImplementationOnce((_launch, handlers) => {
+      const connection = new FakeConnection(handlers)
+      connection.replies.set('droid.update_session_settings', () => {
+        throw new DroidRpcError(-32603, 'Settings refused')
+      })
+      h.connections.push(connection)
+      return connection
+    })
+    await expect(h.start()).rejects.toThrow()
+    expect(h.connections[0]?.closed).toBe(true)
   })
 
   it('fails the start when Droid loads a different session than it was asked for', async () => {

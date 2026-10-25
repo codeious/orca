@@ -55,10 +55,12 @@ async function setup() {
   const workspace = join(root, 'workspace')
   await mkdir(workspace)
   const resolveCommand = vi.fn((..._input: unknown[]) => '/host/bin/droid')
+  const launchArgs = { current: [] as string[] }
   const resolver = createDroidLaunchResolver({
     store,
     resolveWorkspacePath: async () => workspace,
     resolveEnvironment: async () => ({ PATH: '/host/bin', HOME: '/host/home' }),
+    resolveLaunchArgs: () => launchArgs.current,
     resolveCommand,
     readVersion,
     orcaEnv: {}
@@ -72,7 +74,7 @@ async function setup() {
   })
   const withRecord = (patch: object) =>
     vi.spyOn(store, 'getRecord').mockReturnValue({ ...record, ...patch })
-  return { store, record, workspace, resolver, resolveCommand, prior, withRecord }
+  return { store, record, workspace, resolver, resolveCommand, launchArgs, prior, withRecord }
 }
 
 describe('Droid host launch resolution', () => {
@@ -83,12 +85,36 @@ describe('Droid host launch resolution', () => {
       command: '/host/bin/droid',
       cwd: h.workspace,
       env: { PATH: '/host/bin', HOME: '/host/home' },
-      previous: null
+      previous: null,
+      autonomyLevel: 'off'
     })
     expect(h.resolveCommand).toHaveBeenCalledWith('droid', {
       pathEnv: '/host/bin',
       homePath: '/host/home'
     })
+  })
+
+  it.each([
+    [[], 'off'],
+    [['--auto', 'low'], 'low'],
+    [['--auto=medium'], 'medium'],
+    [['--auto', 'high'], 'high'],
+    [['--skip-permissions-unsafe'], 'high']
+  ] as const)(
+    'reads the autonomy level from the Agent Permissions arguments %j',
+    async (args, level) => {
+      const h = await setup()
+      h.launchArgs.current = [...args]
+      await expect(h.resolver(identity)).resolves.toMatchObject({ autonomyLevel: level })
+    }
+  )
+
+  it('re-reads the Agent Permissions arguments at every launch', async () => {
+    const h = await setup()
+    h.launchArgs.current = ['--auto', 'high']
+    await expect(h.resolver(identity)).resolves.toMatchObject({ autonomyLevel: 'high' })
+    h.launchArgs.current = []
+    await expect(h.resolver(identity)).resolves.toMatchObject({ autonomyLevel: 'off' })
   })
 
   it('never hands the account label, or a home override, to the child', async () => {

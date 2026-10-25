@@ -28,6 +28,7 @@ function createDroidAdapter(context: StructuredAgentAdapterContext): StructuredA
         ...(await context.environment.resolveBaseEnvironment()),
         ...deps.resolveAgentLaunchEnv?.('droid')
       }),
+      resolveLaunchArgs: () => deps.resolveLaunchArgs('droid'),
       ...(deps.resolveAgentCommandSettings
         ? { resolveCommandSettings: deps.resolveAgentCommandSettings }
         : {})

@@ -24,6 +24,11 @@ describe('structured chat configured Arguments', () => {
     expect(structuredAgentConfiguredArgs('claude', {})).toEqual(['--dangerously-skip-permissions'])
   })
 
+  it('reads the Droid setting: Yolo when untouched, none for Manual', () => {
+    expect(structuredAgentConfiguredArgs('droid', {})).toEqual(['--auto', 'high'])
+    expect(structuredAgentConfiguredArgs('droid', { agentDefaultArgs: { droid: '' } })).toEqual([])
+  })
+
   it('preserves Windows paths under the configured shell', () => {
     expect(
       structuredAgentConfiguredArgs(

@@ -19,6 +19,7 @@ import { supportsSupervisedProviderChildLocation } from '../provider-process/sup
 import { buildDroidExecLaunch } from './droid-exec-launch'
 import { prepareDroidPrompt } from './droid-prompt'
 import { DroidSession, type DroidConnection, type DroidSessionDeps } from './droid-session'
+import { droidInteractionModeFromSavedOptions } from './droid-session-settings'
 import { droidProviderLink, type DroidResolvedLaunch } from './droid-structured-launch-resolution'
 
 export type DroidSessionAdapterDeps = DroidSessionDeps & {
@@ -84,7 +85,9 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
       })
       session = new DroidSession(input, randomUUID(), spec, this.deps, {
         cwd: launch.cwd,
-        resumeId: launch.previous?.handle.nativeId ?? null
+        resumeId: launch.previous?.handle.nativeId ?? null,
+        autonomyLevel: launch.autonomyLevel,
+        interactionMode: droidInteractionModeFromSavedOptions(input.options)
       })
       this.sessions.set(id, session)
       this.starts.track(attempt, session.connection)
