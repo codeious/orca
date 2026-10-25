@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   agentLaunchModePreference,
-  normalizeAgentLaunchModePreferences
+  normalizeAgentLaunchModePreferences,
+  withAgentLaunchModePreference
 } from './agent-launch-mode-preference'
 import {
   isNativeChatLaunchable,
@@ -38,6 +39,31 @@ describe('agent launch mode preferences', () => {
     expect(normalizeAgentLaunchModePreferences(null)).toEqual({})
     expect(normalizeAgentLaunchModePreferences('chat')).toEqual({})
     expect(normalizeAgentLaunchModePreferences(['chat'])).toEqual({})
+  })
+})
+
+describe('withAgentLaunchModePreference', () => {
+  it('stores Terminal and Chat for the agent and keeps the other agents', () => {
+    expect(withAgentLaunchModePreference({ claude: 'chat' }, 'droid', 'terminal')).toEqual({
+      claude: 'chat',
+      droid: 'terminal'
+    })
+    expect(withAgentLaunchModePreference({ droid: 'terminal' }, 'droid', 'chat')).toEqual({
+      droid: 'chat'
+    })
+  })
+
+  it('removes the entry for Follow rather than storing it', () => {
+    expect(
+      withAgentLaunchModePreference({ claude: 'chat', droid: 'chat' }, 'droid', 'follow')
+    ).toEqual({ claude: 'chat' })
+    expect(withAgentLaunchModePreference(undefined, 'droid', 'follow')).toEqual({})
+  })
+
+  it('does not change the map it was given', () => {
+    const current = { droid: 'chat' } as const
+    withAgentLaunchModePreference(current, 'droid', 'follow')
+    expect(current).toEqual({ droid: 'chat' })
   })
 })
 

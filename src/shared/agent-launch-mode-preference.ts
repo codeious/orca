@@ -22,6 +22,16 @@ export function normalizeAgentLaunchModePreferences(value: unknown): AgentLaunch
   return normalized
 }
 
+/** The map after `agent` is set to `preference`; Follow removes the entry because it is never stored. */
+export function withAgentLaunchModePreference(
+  current: AgentLaunchModePreferences | undefined,
+  agent: TuiAgent,
+  preference: AgentLaunchModePreference
+): AgentLaunchModePreferences {
+  const { [agent]: _replaced, ...others } = current ?? {}
+  return preference === 'follow' ? others : { ...others, [agent]: preference }
+}
+
 export function agentLaunchModePreference(
   settings: { agentLaunchModes?: AgentLaunchModePreferences } | null | undefined,
   agent: string | undefined

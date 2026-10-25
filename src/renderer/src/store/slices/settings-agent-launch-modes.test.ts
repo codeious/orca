@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createTestStore } from './store-test-helpers'
-import type { AppState } from '../types'
 import { mergeSettings } from '../../web/preload-api/web-preference-normalization'
 import { getDefaultSettings } from '../../../../shared/constants'
 
@@ -16,7 +15,7 @@ beforeEach(() => {
 describe('the renderer settings write of agentLaunchModes', () => {
   it('sends the normalized map over IPC', async () => {
     const store = createTestStore()
-    store.setState({ settings: { notifications: {} } as unknown as AppState['settings'] })
+    store.setState({ settings: getDefaultSettings('~') })
 
     await store.getState().updateSettingsOrThrow({
       // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: a stale caller can hand the store any JSON; the write must drop it.

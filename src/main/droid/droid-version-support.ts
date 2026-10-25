@@ -1,9 +1,10 @@
 import { isStableCliVersionFrom } from '../agent-cli-version-probe'
 import { isPrereleaseAppVersion, isValidAppVersion } from '../../shared/app-version'
+import { DROID_CHAT_VERSION_FLOOR } from '../../shared/droid-chat-version-floor'
 import type { UnsupportedAgentVersion } from '../native-chat/structured-agent-session-create-support'
 
-/** The oldest release whose stream-jsonrpc surface Orca's chat was built against. */
-export const DROID_CHAT_VERSION_FLOOR = '0.238.0'
+// Lives in shared so the settings words name the same release the launch check uses.
+export { DROID_CHAT_VERSION_FLOOR }
 
 /** The wire's major; a different one is a different protocol, whatever the CLI release says. */
 export const DROID_PROTOCOL_MAJOR = 1

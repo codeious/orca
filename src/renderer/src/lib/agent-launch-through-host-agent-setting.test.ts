@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { GlobalSettings } from '../../../shared/global-settings-types'
 
-const settingsRef = vi.hoisted(() => ({
-  current: {} as Partial<GlobalSettings>
-}))
+const settingsRef = vi.hoisted((): { current: Partial<GlobalSettings> } => ({ current: {} }))
 vi.mock('@/store', () => ({
   useAppStore: { getState: () => ({ settings: settingsRef.current }) }
 }))

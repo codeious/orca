@@ -10,6 +10,7 @@ import { AgentCacheTimerSection } from './AgentCacheTimerSection'
 import { AgentRuntimeSetting } from './AgentRuntimeSetting'
 import { CodexTerminalServerIsolationSetting } from './CodexTerminalServerIsolationSetting'
 import { buildCodexSessionSourceHomeControl } from './codex-session-source-home-control'
+import { buildDroidLaunchModeControl } from './agent-launch-mode-control'
 import {
   getAgentGeneratedTabTitlesDescription,
   getAgentGeneratedTabTitlesTitle
@@ -244,6 +245,10 @@ export function AgentsPane({
     sessionSourceHome:
       isDetected && agent.id === 'codex'
         ? buildCodexSessionSourceHomeControl(settings, updateSettings)
+        : undefined,
+    launchMode:
+      isDetected && agent.id === 'droid'
+        ? buildDroidLaunchModeControl(settings, updateSettings)
         : undefined
   })
 
