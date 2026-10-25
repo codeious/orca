@@ -7,7 +7,8 @@ import type {
 } from './native-chat-session-options'
 import {
   decodeStructuredAgentSessionOptionValue,
-  encodeStructuredAgentSessionOptionValue
+  encodeStructuredAgentSessionOptionValue,
+  isStructuredBooleanOptionId
 } from './structured-agent-session-option-codec'
 
 export function resolveNativeChatSessionOptionDefaults(
@@ -39,7 +40,8 @@ export const STRUCTURED_LAUNCH_SEED_OPTION_IDS = [
   'model',
   'effort',
   'fastMode',
-  'serviceTier'
+  'serviceTier',
+  'planMode'
 ] as const
 
 /** Any chosen option set narrowed to what a structured create may seed: the seedable ids only,
@@ -55,7 +57,7 @@ export function narrowStructuredLaunchSeedOptions(
   const seeded: Record<string, string> = {}
   for (const id of STRUCTURED_LAUNCH_SEED_OPTION_IDS) {
     const value = values?.[id]
-    if (id !== 'fastMode' && !(typeof value === 'string' && value.trim())) {
+    if (!isStructuredBooleanOptionId(id) && !(typeof value === 'string' && value.trim())) {
       continue
     }
     if (typeof value === 'string' || typeof value === 'boolean') {

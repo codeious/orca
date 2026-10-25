@@ -1,5 +1,6 @@
 import type { AgentSessionOptionCatalog, CatalogModel } from './agent-session-option-catalog'
 import { discoveredModel } from './structured-agent-session-discovered-model'
+import { withSpecModeOption } from './structured-agent-session-spec-option'
 import {
   buildNativeChatSessionOptionSnapshot,
   resolveEffectiveNativeChatModelId,
@@ -37,7 +38,11 @@ export function structuredAgentSessionOptionCatalog(
       options: seed.unknownModelOptions ?? []
     })
   }
-  return { ...seed, models, defaultModelIsCliDefault: true }
+  return {
+    ...seed,
+    models: withSpecModeOption(models, result.current.planMode !== undefined),
+    defaultModelIsCliDefault: true
+  }
 }
 
 export type StructuredAgentSessionOptionState = {
@@ -125,13 +130,17 @@ export function applyStructuredAgentSessionOptions(
   if (result.current.serviceTier === undefined) {
     clearTrackedSessionOption(state.record, result.current.model ?? null, 'serviceTier')
   }
+  if (result.current.planMode === undefined) {
+    clearTrackedSessionOption(state.record, result.current.model ?? null, 'planMode')
+  }
   applyNativeChatReportedSessionOptions(
     state.record,
     {
       ...(result.current.model ? { model: result.current.model } : {}),
       ...(result.current.effort ? { effort: result.current.effort } : {}),
       ...(result.current.fastMode !== undefined ? { fastMode: result.current.fastMode } : {}),
-      ...(result.current.serviceTier ? { serviceTier: result.current.serviceTier } : {})
+      ...(result.current.serviceTier ? { serviceTier: result.current.serviceTier } : {}),
+      ...(result.current.planMode !== undefined ? { planMode: result.current.planMode } : {})
     },
     result.current.confirmed ?? []
   )
