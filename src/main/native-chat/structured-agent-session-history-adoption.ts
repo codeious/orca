@@ -11,19 +11,10 @@ import {
   adoptedProviderHandle,
   type AdoptedProviderHandle
 } from './agent-session-wire/structured-agent-session-adopted-handle'
-import {
-  isAgentSessionHandleProvider,
-  type StructuredAgentId
-} from '../../shared/agent-session-provider-handle'
+import type { StructuredAgentId } from '../../shared/agent-session-provider-handle'
 import type { AgentSessionLease, AgentSessionRecord } from '../../shared/agent-session-record'
 import { agentSessionLeaseAdmitsWriter } from '../../shared/agent-session-lease-adjudication'
-
-/** Claude and Codex adopt from their transcripts; Droid from its session file. */
-export type StructuredAdoptionAgent = 'claude' | 'codex' | 'droid'
-
-export function isStructuredAdoptionAgent(agent: unknown): agent is StructuredAdoptionAgent {
-  return isAgentSessionHandleProvider(agent) || agent === 'droid'
-}
+import type { StructuredAdoptionAgent } from '../../shared/structured-adoption-agent'
 
 export type StructuredAgentSessionAdoptionOwnership = {
   sessionId: string

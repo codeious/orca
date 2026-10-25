@@ -1,3 +1,4 @@
+import { isDroidSessionId } from '../droid/droid-session-id'
 import { commandWordIndex, splitShellCommandSegments } from './shell-command-segments'
 
 export type ResumeInvocation = {
@@ -79,8 +80,6 @@ const DROID_VALUE_OPTIONS = new Set([
   '--auto'
 ])
 const DROID_OPTIONAL_VALUE_OPTIONS = new Set(['-w', '--worktree'])
-// A session link or free text cannot be compared with an owned id, so it names no session.
-const DROID_SESSION_ID = /^[A-Za-z0-9_-]+$/
 
 function parseDroidInvocation(args: readonly string[]): Pick<ResumeInvocation, 'target'> | null {
   const terminatorIndex = args.indexOf('--')
@@ -178,7 +177,7 @@ function parseDroidResumeSubcommand(
 }
 
 function droidTarget(value: string | null): string | null {
-  return value !== null && DROID_SESSION_ID.test(value) ? value : null
+  return value !== null && isDroidSessionId(value) ? value : null
 }
 
 function nextValue(args: readonly string[], flagIndex: number): string | null {

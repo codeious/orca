@@ -4,11 +4,11 @@ import { useConfirmationDialog } from '@/components/confirmation-dialog-context'
 import { translate } from '@/i18n/i18n'
 import { newAgentLaunchRequestId } from '@/lib/agent-launch-request-id'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
+import { isStructuredAdoptionAgent } from '../../../../shared/structured-adoption-agent'
 import {
   decideAiVaultDroidChatResume,
   notifyAiVaultDroidSessionHeld
 } from './ai-vault-droid-session-holder-check'
-import { aiVaultSessionHasResumeInChatBranch } from './ai-vault-session-resume-in-chat'
 import { resumeAiVaultSessionInNewChat } from './ai-vault-session-resume-in-chat-launch'
 
 /** "Resume in New Native Chat" for a history row, shared by the Session History panel and the tab
@@ -20,7 +20,7 @@ export function useAiVaultResumeInNewChatAction(
   return useCallback(
     (session, targetWorktreeId) => {
       const { agent } = session
-      if (!aiVaultSessionHasResumeInChatBranch(agent)) {
+      if (!isStructuredAdoptionAgent(agent)) {
         return
       }
       const worktreeId = targetWorktreeId ?? fallbackWorktreeId

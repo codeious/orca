@@ -8,10 +8,7 @@ import { isAntigravityReferenceSession } from '../../../../shared/antigravity-se
 import { isWslStoredAiVaultSessionFile } from '@/lib/ai-vault-resume-target'
 import { normalizeRuntimePathForComparison } from '../../../../shared/cross-platform-path'
 import { LOCAL_EXECUTION_HOST_ID } from '../../../../shared/execution-host'
-import {
-  isAgentSessionHandleProvider,
-  type AgentSessionHandleProvider
-} from '../../../../shared/agent-session-provider-handle'
+import { isStructuredAdoptionAgent } from '../../../../shared/structured-adoption-agent'
 import type { AiVaultDroidSessionHolderVerdict } from '../../../../shared/ai-vault-droid-session-holder'
 import type { AiVaultOriginalPaneTarget } from './ai-vault-original-pane'
 import {
@@ -46,9 +43,6 @@ export type AiVaultResumeInChatEligibility =
  *  chat; `unverifiable` asks first. A process proven exited is not a holder, so it is not here. */
 export type AiVaultDroidHolder = AiVaultDroidSessionHolderVerdict
 
-/** The agents a history row can resume into a chat: the provider-handle agents, plus Droid. */
-export type AiVaultResumeInChatAgent = AgentSessionHandleProvider | 'droid'
-
 /**
  * Claude and Droid do not have the same freedom about *where* a conversation may be resumed as
  * Codex does.
@@ -65,14 +59,6 @@ export function aiVaultSessionResumeInChatWorkspaceMatters(
   agent: AiVaultSession['agent']
 ): boolean {
   return agent === 'claude' || agent === 'droid'
-}
-
-/** Droid is not a provider-handle agent (`isAgentSessionHandleProvider` stays Claude and Codex),
- *  so its chat resume is its own branch rather than a widening of that guard. */
-export function aiVaultSessionHasResumeInChatBranch(
-  agent: AiVaultSession['agent']
-): agent is AiVaultResumeInChatAgent {
-  return isAgentSessionHandleProvider(agent) || agent === 'droid'
 }
 
 /**
@@ -110,10 +96,7 @@ export function resolveAiVaultSessionResumeInChatEligibility(args: {
   droidHolder?: AiVaultDroidHolder | null
 }): AiVaultResumeInChatEligibility {
   const { session } = args
-  if (
-    isAntigravityReferenceSession(session) ||
-    !aiVaultSessionHasResumeInChatBranch(session.agent)
-  ) {
+  if (isAntigravityReferenceSession(session) || !isStructuredAdoptionAgent(session.agent)) {
     return { available: false, reason: 'agent' }
   }
   // An already-adopted row reopens its own chat instead; offering a second resume of it would ask

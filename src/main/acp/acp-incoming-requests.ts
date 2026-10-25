@@ -1,4 +1,9 @@
-import { AcpRpcError } from './acp-errors'
+import {
+  ACP_REQUEST_CANCELLED,
+  AcpRpcError,
+  JSON_RPC_INTERNAL_ERROR,
+  JSON_RPC_METHOD_NOT_FOUND
+} from './acp-errors'
 import type { AcpJsonRpcMessage, AcpPeerHandlers } from './acp-json-rpc-peer'
 import type { AcpPeerDialect } from './acp-peer-dialect'
 
@@ -39,7 +44,7 @@ export class AcpIncomingRequests {
     for (const request of this.open.values()) {
       if (!request.cancelled) {
         request.cancelled = true
-        request.controller.abort(new AcpRpcError(-32800, 'Request cancelled'))
+        request.controller.abort(new AcpRpcError(ACP_REQUEST_CANCELLED, 'Request cancelled'))
       }
     }
   }
@@ -71,7 +76,10 @@ export class AcpIncomingRequests {
         throw controller.signal.reason
       }
       if (!this.handler) {
-        throw new AcpRpcError(-32601, `Unknown ${this.dialect.label} client method: ${method}`)
+        throw new AcpRpcError(
+          JSON_RPC_METHOD_NOT_FOUND,
+          `Unknown ${this.dialect.label} client method: ${method}`
+        )
       }
       return this.handler(method, params, { id, signal: controller.signal })
     }
@@ -98,10 +106,13 @@ export class AcpIncomingRequests {
         await this.sendError(
           id,
           request.cancelled
-            ? new AcpRpcError(-32800, 'Request cancelled')
+            ? new AcpRpcError(ACP_REQUEST_CANCELLED, 'Request cancelled')
             : error instanceof AcpRpcError
               ? error
-              : new AcpRpcError(-32603, error instanceof Error ? error.message : String(error))
+              : new AcpRpcError(
+                  JSON_RPC_INTERNAL_ERROR,
+                  error instanceof Error ? error.message : String(error)
+                )
         )
       })
       .finally(() => {

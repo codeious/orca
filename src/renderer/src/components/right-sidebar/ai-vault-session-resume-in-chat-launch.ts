@@ -12,7 +12,7 @@ import {
   activateAndRevealWorktree
 } from '@/lib/worktree-activation'
 import { beginStructuredAgentSessionProvisionalLaunch } from '@/lib/structured-agent-session-provisional-tab'
-import type { AiVaultResumeInChatAgent } from './ai-vault-session-resume-in-chat'
+import type { StructuredAdoptionAgent } from '../../../../shared/structured-adoption-agent'
 
 export function activateAiVaultResumeWorkspace(workspaceId: string): boolean {
   const workspaceScope = parseWorkspaceKey(workspaceId)
@@ -28,7 +28,7 @@ export function activateAiVaultResumeWorkspace(workspaceId: string): boolean {
  *  would hide the refusal the user needs to see. */
 export async function resumeAiVaultSessionInNewChat(
   session: AiVaultSession,
-  agent: AiVaultResumeInChatAgent,
+  agent: StructuredAdoptionAgent,
   worktreeId: string,
   requestId: AgentLaunchRequestId
 ): Promise<void> {

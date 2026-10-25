@@ -4,6 +4,7 @@
 // commit and Droid hears exactly one answer.
 
 import type { AgentSessionPromptResponse } from '../../shared/agent-session-question-answer'
+import { JSON_RPC_METHOD_NOT_FOUND } from '../acp/acp-errors'
 import type { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import {
   AgentSessionPromptAnswerRejectedError,
@@ -13,7 +14,7 @@ import type { DroidRequestContext } from './droid-json-rpc-peer'
 import { droidPermissionPresentation } from './droid-permission-requests'
 import type { DroidPromptPresentation } from './droid-prompt-presentation'
 import { droidQuestionPresentation } from './droid-question-requests'
-import { DroidRpcError, JSON_RPC_METHOD_NOT_FOUND } from './droid-rpc-errors'
+import { DroidRpcError } from './droid-rpc-errors'
 
 const PRESENTERS = new Map<string, (params: unknown) => DroidPromptPresentation>([
   ['droid.request_permission', droidPermissionPresentation],

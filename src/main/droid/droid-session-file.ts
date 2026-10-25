@@ -1,7 +1,7 @@
 import { readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
+import { isDroidSessionId } from './droid-session-id'
 
-const SESSION_ID = /^[A-Za-z0-9_-]+$/
 // The same two roots the vault scanner lists Droid sessions from.
 const SESSION_ROOTS = ['sessions', 'projects'] as const
 
@@ -13,7 +13,7 @@ export async function findDroidSessionFile(
   accountHomePath: string,
   sessionId: string
 ): Promise<string | null> {
-  if (!SESSION_ID.test(sessionId)) {
+  if (!isDroidSessionId(sessionId)) {
     return null
   }
   for (const root of SESSION_ROOTS) {

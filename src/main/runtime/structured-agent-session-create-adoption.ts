@@ -10,9 +10,9 @@ import {
   findCommittedStructuredAgentSessionAdoptionReplay,
   findConflictingStructuredAdoption,
   resolveStructuredAgentSessionAdoption,
-  structuredAdoptionConflictError,
-  type StructuredAdoptionAgent
+  structuredAdoptionConflictError
 } from '../native-chat/structured-agent-session-history-adoption'
+import type { StructuredAdoptionAgent } from '../../shared/structured-adoption-agent'
 import { findDroidSessionFile } from '../droid/droid-session-file'
 import { resolveSessionFilePath } from '../native-chat/session-file-resolver'
 import { configuredAdditionalCodexHomePaths } from '../ai-vault/cached-session-list'

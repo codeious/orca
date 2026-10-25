@@ -4,12 +4,13 @@ import {
   isValidAgentSessionQuestionAnswers,
   legacyAgentSessionQuestionAnswers
 } from '../../shared/agent-session-question-answer'
+import { JSON_RPC_INVALID_PARAMS } from '../acp/acp-errors'
 import {
   boundJournalPromptBody,
   MAX_JOURNAL_GROUPED_PROMPT_QUESTIONS
 } from '../native-chat/agent-session-journal/journal-prompt-body-bounds'
 import { pendingDroidResolution, type DroidPromptPresentation } from './droid-prompt-presentation'
-import { DroidRpcError, JSON_RPC_INVALID_PARAMS } from './droid-rpc-errors'
+import { DroidRpcError } from './droid-rpc-errors'
 
 // Shaped after the SDK's AskUser schema; no recording of Droid asking one exists yet.
 const requestSchema = z.looseObject({

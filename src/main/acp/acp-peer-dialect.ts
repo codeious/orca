@@ -4,7 +4,8 @@ import {
   AcpConnectionClosedError,
   AcpInvalidResponseError,
   AcpRequestTimeoutError,
-  AcpRpcError
+  AcpRpcError,
+  JSON_RPC_INTERNAL_ERROR
 } from './acp-errors'
 import { settleOversizedAcpLine, type AcpOversizedLineTarget } from './acp-oversized-lines'
 import {
@@ -56,6 +57,7 @@ export const acpPeerDialect: AcpPeerDialect = {
     remote: (code, message, data) => new AcpAgentError(code, message, data),
     invalidResponse: (message, raw) => new AcpInvalidResponseError(message, raw)
   },
-  overCapacity: () => new AcpRpcError(-32603, 'ACP incoming request capacity exceeded'),
+  overCapacity: () =>
+    new AcpRpcError(JSON_RPC_INTERNAL_ERROR, 'ACP incoming request capacity exceeded'),
   onOversizedLine: settleOversizedAcpLine
 }

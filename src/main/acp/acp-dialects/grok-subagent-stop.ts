@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { JSON_RPC_INVALID_PARAMS } from '../acp-errors'
 import type { AcpDialect } from './acp-dialect'
 import { grokSubagentNotification } from './grok-subagents'
 
@@ -14,7 +15,7 @@ const response = z.object({
 export const grokSubagentStop: NonNullable<AcpDialect['subagentStop']> = {
   probe: { method: '_x.ai/subagent/cancel', params: {} },
   recognizesProbeError: (error) =>
-    error.code === -32602 &&
+    error.code === JSON_RPC_INVALID_PARAMS &&
     typeof error.data === 'string' &&
     error.data.includes('missing field `subagentId`'),
   request: (sessionId, id) => ({
