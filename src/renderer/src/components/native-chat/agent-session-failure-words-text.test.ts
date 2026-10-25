@@ -213,6 +213,33 @@ describe('desktop words for a failure fact', () => {
     )
   })
 
+  it('fills the release, the floor and the update command into a translated version refusal', async () => {
+    const sentence = (details: { version?: string; floor?: string; updateCommand?: string }) =>
+      agentSessionFailureSentence(
+        {
+          kind: 'restartFailed',
+          refusal: {
+            code: 'structured_agent_session_unsupported',
+            details: { reason: 'versionUnsupported', ...details }
+          }
+        },
+        'row',
+        { agentName: 'Droid' },
+        sayAgentSessionFailureTranslated
+      )
+    const old = { version: '0.230.0', floor: '0.238.0', updateCommand: 'droid update' }
+    await i18n.changeLanguage('fr')
+    expect(sentence(old)).toBe(
+      'Droid 0.230.0 est antérieur à la version 0.238.0, la plus ancienne que prend en charge le chat d’Orca. Exécutez `droid update` sur cet ordinateur, puis réessayez.'
+    )
+    expect(sentence({})).toBe(
+      'Cette version de Droid n’est pas encore prise en charge par le chat d’Orca. Ouvrez Droid dans un terminal.'
+    )
+    await i18n.changeLanguage('ja')
+    expect(sentence(old)).toContain('`droid update`')
+    expect(sentence(old)).toContain('0.238.0')
+  })
+
   it("says a refused command and a refused Stop in the reader's language", async () => {
     await i18n.changeLanguage('fr')
     const sentence = (fact: AgentSessionFailureFact) =>

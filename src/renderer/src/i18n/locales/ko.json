@@ -17849,6 +17849,8 @@
         "providerRetryNumberOf": "{{maxRetries}}회 중 {{attempt}}번째 재시도입니다.",
         "providerRetryLastError": "마지막 오류: {{detail}}.",
         "previousExitUnverifiable": "이전에 실행된 {{agent}}을(를) 중지하지 못했습니다.",
+        "agentVersionBelowFloor": "{{agent}} {{found}}은(는) Orca 채팅이 지원하는 가장 오래된 버전인 {{floor}}보다 이전 버전입니다. 이 컴퓨터에서 `{{updateCommand}}`을(를) 실행한 다음 다시 시도하세요.",
+        "agentProtocolUnsupported": "이 {{agent}} 버전은 아직 Orca 채팅에서 지원되지 않습니다. 터미널에서 {{agent}}을(를) 여세요.",
         "sessionNotRestored": "{{agent}}이(가) 이전 세션을 다시 열 수 없어 이 채팅은 새 세션에서 계속됩니다. {{agent}}은(는) 이전 메시지를 기억하지 않습니다.",
         "agentCommandNotSignedIn": "이 채팅을 실행하는 컴퓨터에서 `{{loginCommand}}`으로 {{agent}}에 로그인하세요.",
         "interactiveAgentNotSignedIn": "이 채팅을 실행하는 컴퓨터에서 `{{loginCommand}}`을 실행하고 `{{slashCommand}}`을 사용해 {{agent}}에 로그인하세요.",

@@ -17828,6 +17828,8 @@
         "providerRetryNumberOf": "第 {{attempt}} 次重试，共 {{maxRetries}} 次。",
         "providerRetryLastError": "上次错误：{{detail}}。",
         "previousExitUnverifiable": "无法停止之前的 {{agent}}。",
+        "agentVersionBelowFloor": "{{agent}} {{found}} 低于 {{floor}}，即 Orca 聊天支持的最低版本。请在这台电脑上运行 `{{updateCommand}}`，然后重试。",
+        "agentProtocolUnsupported": "Orca 聊天暂不支持此版本的 {{agent}}。请在终端中打开 {{agent}}。",
         "sessionNotRestored": "{{agent}} 无法重新打开之前的会话，因此此聊天将在新会话中继续。{{agent}} 不记得之前的消息。",
         "agentCommandNotSignedIn": "请在运行此聊天的电脑上使用 `{{loginCommand}}` 登录 {{agent}}。",
         "interactiveAgentNotSignedIn": "请在运行此聊天的电脑上启动 `{{loginCommand}}` 并使用 `{{slashCommand}}` 登录 {{agent}}。",

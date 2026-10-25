@@ -360,6 +360,12 @@ describe('the notice for every reason a host names', () => {
         expect(parts, cell).toEqual(['cannotRunHere', NOT_DONE[write]])
         continue
       }
+      // The release is named by the start failure the chat records; a write meeting the bare
+      // refusal can only say the agent can't run here.
+      if (failure.details?.reason === 'versionUnsupported') {
+        expect(parts, cell).toEqual(['cannotRunHere', NOT_DONE[write]])
+        continue
+      }
       expect(parts, cell).toEqual(
         write === 'read-history' ? ['notDoneReadHistory'] : ['notAvailable']
       )
@@ -454,6 +460,7 @@ describe('the notice for every reason a host names', () => {
       const unsupported =
         failure.code === 'structured_agent_session_unsupported' &&
         failure.details?.reason !== 'hostUnsupported' &&
+        failure.details?.reason !== 'versionUnsupported' &&
         write !== 'read-history'
       const saysNotDone =
         write === 'read-history' && failure.code === 'agent_session_journal_unreadable'
