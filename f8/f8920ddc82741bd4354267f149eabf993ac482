@@ -1,0 +1,22 @@
+docs/specs/droid-first-class.md
+  s_a57587060a50e5::t_07d74350a4f898 270
+  s_a57587060a50e5::t_ef8ca7ff4b13eb 260
+  s_a57587060a50e5::t_2389c50ad64a45 164
+  s_a57587060a50e5::t_1ccf96ae7bddd1 480
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f8f8920ddc82741bd4354267f149eabf993ac482",
+  "prompts": {},
+  "sessions": {
+    "s_a57587060a50e5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fd4afa99-8ef7-4d49-9697-13345392d392",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
