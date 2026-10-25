@@ -60,6 +60,7 @@ export class DroidSession {
   readonly connection: DroidConnection
   readonly lane: JsonlRpcTimelineLane
   readonly turns: DroidTurns
+  private readonly echoed = new Map<string, string>()
   requestedClose = false
   private publishedExit = false
   private failedCause?: Error
@@ -87,18 +88,28 @@ export class DroidSession {
       pauseReading: () => this.connection?.pauseReading(),
       resumeReading: () => this.connection?.resumeReading(),
       onFailed: (reason) => this.fail(new Error(reason)),
-      onInputAccepted: (clientMessageId) =>
+      onInputAccepted: (clientMessageId) => {
+        const messageId = this.echoed.get(clientMessageId)
+        this.echoed.delete(clientMessageId)
         this.settle(clientMessageId, {
           state: 'accepted',
-          providerIdentity: { provider: 'orca', clientMessageId }
+          providerIdentity: messageId
+            ? { provider: 'droid', messageId }
+            : { provider: 'orca', clientMessageId }
         })
+      }
     })
     this.turns = new DroidTurns({
       lane: this.lane,
       generation,
       request: (method, params, options) => this.connection.request(method, params, options),
       settled: (id, outcome) => this.settle(id, outcome),
-      idle: () => deps.onIdle({ sessionId })
+      idle: () => deps.onIdle({ sessionId }),
+      rememberEcho: (clientMessageId, messageId) => {
+        this.echoed.set(clientMessageId, messageId)
+      },
+      warn: (message, fields) =>
+        deps.logger.warn(message, { scope: 'droid-steer', sessionId, ...fields })
     })
     this.connection = (
       deps.openConnection ?? ((spec, handlers) => new DroidAgentConnection(spec, handlers))

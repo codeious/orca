@@ -76,6 +76,8 @@ export type AgentJournalItemIdentity =
   | { provider: 'claude'; sessionId: string; uuid: string }
   /** A submission Orca minted before any provider echo existed. */
   | { provider: 'orca'; clientMessageId: string }
+  /** The user message Droid echoed for a send. The id is Droid's, stable in its transcript. */
+  | { provider: 'droid'; messageId: string }
   /** Bridge-era transcript record with no provider-stable identity. */
   | { provider: 'legacy'; agent: AgentType; sessionId: string; recordId: string }
 
