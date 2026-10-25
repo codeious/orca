@@ -1,6 +1,7 @@
 import { agentSessionFailureFact, providerDiagnostic } from '../../shared/agent-session-failure'
 import { agentSessionFailureWords } from '../../shared/agent-session-failure-words'
 import type { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
+import { DISPATCH_DOUBT_PROVIDER_ENDED_UNANSWERED } from '../native-chat/agent-session-journal/journal-dispatch-doubt-reasons'
 import type { AgentSessionDispatchOutcome } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { DroidMessages } from './droid-messages'
 import { DroidRpcError } from './droid-rpc-errors'
@@ -18,6 +19,9 @@ export type DroidTurnDeps = {
   ) => Promise<unknown>
   settled: (id: string, outcome: AgentSessionDispatchOutcome) => void
   idle: () => void
+  /** The echo's message id, recorded before the timeline admits the send. */
+  rememberEcho?: (clientMessageId: string, messageId: string) => void
+  warn?: (message: string, fields: { requestId: string }) => void
 }
 
 type Send = { id: string; at: number; requestId?: string; accepted: boolean }
@@ -79,12 +83,16 @@ export class DroidTurns {
       }
     }
     try {
-      await this.deps.request('droid.add_user_message', params, {
-        onId: (requestId) => {
-          send.requestId = requestId
-          this.byRequest.set(requestId, send)
+      await this.deps.request(
+        'droid.add_user_message',
+        this.working ? { ...params, queuePlacement: 'end_of_turn' } : params,
+        {
+          onId: (requestId) => {
+            send.requestId = requestId
+            this.byRequest.set(requestId, send)
+          }
         }
-      })
+      )
       return { state: 'admitted' }
     } catch (error) {
       if (send.accepted) {
@@ -120,6 +128,9 @@ export class DroidTurns {
       case 'create_message':
         this.message(notification)
         return
+      case 'queued_messages_discarded':
+        this.discard(notification)
+        return
       case 'assistant_text_delta':
       case 'thinking_text_delta':
         lane.apply(this.messages.delta(notification))
@@ -151,16 +162,7 @@ export class DroidTurns {
 
   end(): void {
     this.ended = true
-    for (const send of this.sends) {
-      if (!send.accepted) {
-        this.deps.settled(send.id, {
-          state: 'unknown',
-          reason: 'Droid ended before confirming delivery'
-        })
-      }
-    }
-    this.sends.clear()
-    this.byRequest.clear()
+    this.releaseUnanswered('Droid ended before confirming delivery')
   }
 
   private message(notification: Extract<DroidNotification, { type: 'create_message' }>): void {
@@ -174,13 +176,33 @@ export class DroidTurns {
     }
     const send = message.role === 'user' && requestId ? this.byRequest.get(requestId) : undefined
     if (send) {
-      this.accept(send)
+      this.accept(send, message.id)
     }
   }
 
-  private accept(send: Send): void {
+  /** The frame's text is ignored: nothing returns to the composer, and a second notice changes nothing. */
+  private discard(
+    notification: Extract<DroidNotification, { type: 'queued_messages_discarded' }>
+  ): void {
+    const { requestId } = notification
+    const send = requestId ? this.byRequest.get(requestId) : undefined
+    if (!send) {
+      this.deps.warn?.('Droid discarded a message that was not waiting', {
+        requestId: requestId ?? ''
+      })
+      return
+    }
+    this.forget(send)
+    this.deps.settled(send.id, {
+      state: 'rejected',
+      ...agentSessionFailureWords(agentSessionFailureFact('cancelled'), { surface: 'rejection' })
+    })
+  }
+
+  private accept(send: Send, messageId: string): void {
     send.accepted = true
     this.forget(send)
+    this.deps.rememberEcho?.(send.id, messageId)
     this.open(Date.now())
     this.deps.lane.apply([
       { type: 'input.accepted', clientMessageId: send.id, requestedAt: send.at }
@@ -235,6 +257,17 @@ export class DroidTurns {
     this.deps.lane.apply(events)
     this.active = undefined
     this.lastError = undefined
+    // No echo and no discard is doubt, never a withdrawal.
+    this.releaseUnanswered(DISPATCH_DOUBT_PROVIDER_ENDED_UNANSWERED)
     this.deps.idle()
+  }
+
+  private releaseUnanswered(reason: string): void {
+    for (const send of this.sends) {
+      if (!send.accepted) {
+        this.deps.settled(send.id, { state: 'unknown', reason })
+      }
+      this.forget(send)
+    }
   }
 }

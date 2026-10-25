@@ -111,6 +111,16 @@ describe('claude identity', () => {
   })
 })
 
+describe('droid identity', () => {
+  it('keys the echoed user message on the id Droid assigned', () => {
+    const identity: AgentJournalItemIdentity = { provider: 'droid', messageId: '<id-1>' }
+    const key = agentJournalItemKey(identity)
+    expect(key.startsWith('droid:')).toBe(true)
+    expect(parseAgentJournalItemKey(key)).toEqual(identity)
+    expect(key).not.toBe(agentJournalItemKey({ provider: 'orca', clientMessageId: '<id-1>' }))
+  })
+})
+
 describe('key encoding', () => {
   it('cannot be collided by a separator inside an id', () => {
     const a = agentJournalItemKey({

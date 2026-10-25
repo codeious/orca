@@ -50,6 +50,11 @@ const handledSchema = z.discriminatedUnion('type', [
     type: z.literal('agent_turn_completed'),
     reason: z.string(),
     turnId: z.string().optional()
+  }),
+  z.looseObject({
+    type: z.literal('queued_messages_discarded'),
+    requestId: z.string().optional(),
+    text: z.string().optional()
   })
 ])
 const HANDLED_TYPES = new Set<string>(handledSchema.options.map((arm) => arm.shape.type.value))
