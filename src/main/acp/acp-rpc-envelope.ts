@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { AcpAgentError, AcpInvalidResponseError } from './acp-errors'
+import type { AcpPeerDialect } from './acp-peer-dialect'
 
 const idSchema = z.union([z.string(), z.number(), z.null()])
 const errorSchema = z.object({
@@ -16,24 +16,29 @@ export const acpRpcEnvelopeSchema = z.looseObject({
   error: z.unknown().optional()
 })
 export type AcpJsonRpcMessage = z.infer<typeof acpRpcEnvelopeSchema>
-
-export function invalidAcpResponseEnvelope(raw: unknown): () => Error {
-  return () => new AcpInvalidResponseError('Invalid ACP response envelope', raw)
+/** What the peer reads off any inbound frame, whichever dialect's envelope it came in. */
+export type AcpInboundFrame = {
+  id?: string | number | null
+  method?: string
+  params?: unknown
+  result?: unknown
+  error?: unknown
 }
 
 export function settleAcpResponse(
-  frame: AcpJsonRpcMessage,
+  frame: AcpInboundFrame,
   pending: { resolve: (value: unknown) => void; reject: (error: Error) => void },
-  diagnose: (message: string) => void
+  diagnose: (message: string) => void,
+  { label, errors }: Pick<AcpPeerDialect, 'label' | 'errors'>
 ): void {
   if ('error' in frame) {
     const parsed = errorSchema.safeParse(frame.error)
     if (!parsed.success) {
-      diagnose('Invalid ACP error response')
-      pending.reject(new AcpInvalidResponseError('Invalid ACP error response', frame.error))
+      diagnose(`Invalid ${label} error response`)
+      pending.reject(errors.invalidResponse(`Invalid ${label} error response`, frame.error))
     } else {
       const error = parsed.data
-      pending.reject(new AcpAgentError(error.code, error.message, error.data))
+      pending.reject(errors.remote(error.code, error.message, error.data))
     }
   } else {
     pending.resolve(frame.result)

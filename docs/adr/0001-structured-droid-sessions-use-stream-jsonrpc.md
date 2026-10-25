@@ -16,5 +16,5 @@ Orca drives a structured Droid session over Droid's `stream-jsonrpc` protocol (`
 
 ## Consequences
 
-- Orca's JSON-RPC peer needs a hook for Droid's extra message fields (`type`, `factoryApiVersion`, `factoryProtocolVersion`). Factory's raw JSON-RPC doc example, which leaves those fields out, is rejected by Droid 0.238.0.
+- Orca's JSON-RPC peer (`AcpJsonRpcPeer`) takes a dialect (`src/main/acp/acp-peer-dialect.ts`): it mints request ids, shapes each frame written, reads each inbound record, and names the errors the peer raises. Droid's dialect (`src/main/droid/droid-json-rpc-peer.ts`) is the second one. It uses string ids and adds `type`, `factoryApiVersion`, and `factoryProtocolVersion` to every frame. Factory's raw JSON-RPC doc example, which leaves those fields out, is rejected by Droid 0.238.0.
 - The minimum Droid version is the release that Orca's captured fixtures and real-CLI test pass against (0.238.0 when this was decided), and it is raised deliberately. An older Droid opens a Droid terminal session instead.
