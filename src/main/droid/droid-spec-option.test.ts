@@ -4,9 +4,10 @@ import {
   DROID_RIG_SESSION,
   runDroidRigCleanups,
   setupDroidAdapter,
+  type DroidAdapterRig,
   type FakeConnection
 } from './droid-adapter-rig.test-support'
-import { DROID_AGENT } from './droid-agent-definition'
+import { DROID_AGENT, DROID_HANDLE_TRANSPORT } from './droid-agent-definition'
 import { readDroidExchanges, replayExchange } from './droid-recording.test-support'
 import { DroidRpcError } from './droid-rpc-errors'
 
@@ -15,6 +16,27 @@ afterEach(runDroidRigCleanups)
 const FENCE = 7
 const MAIN = '<custom-model-1>'
 const SPEC = '<custom-model-2>'
+
+const heldSession = {
+  linkId: 'prior',
+  handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-9' },
+  origin: 'created' as const,
+  mintedAtFence: 1,
+  observedAt: 100
+}
+
+async function startInSpecFromRecording() {
+  const recorded = await readDroidExchanges('spec-plan-approval-off')
+  const h = await setupDroidAdapter({ autonomyLevel: 'off' }, (connection: FakeConnection) => {
+    connection.replies.set('droid.initialize_session', replayExchange(connection, recorded, 'r1'))
+    connection.replies.set(
+      'droid.update_session_settings',
+      replayExchange(connection, recorded, 'r2')
+    )
+  })
+  const started = await h.start()
+  return { ...h, ...started }
+}
 
 async function startFromRecording(updates: string[] = []) {
   const acks = await readDroidExchanges('update-settings-acks')
@@ -141,5 +163,105 @@ describe('Droid Spec option', () => {
   it('keeps a Spec pick made while the chat is at rest, and no other key', () => {
     expect(DROID_AGENT.restingOptions.acceptsKey('planMode')).toBe(true)
     expect(DROID_AGENT.restingOptions.acceptsKey('fastMode')).toBe(false)
+  })
+})
+
+describe('Droid model and effort picks while Spec is on', () => {
+  const pick = (h: { adapter: DroidAdapterRig['adapter'] }) => ({
+    model: (value: string) =>
+      h.adapter.setOption({ sessionId: DROID_RIG_SESSION, key: 'model', value, fence: FENCE }),
+    effort: (value: string) =>
+      h.adapter.setOption({ sessionId: DROID_RIG_SESSION, key: 'effort', value, fence: FENCE })
+  })
+
+  it('sends a model and an effort pick under the Spec keys Droid itself writes, not the main ones', async () => {
+    const h = await startInSpecFromRecording()
+
+    await expect(pick(h).model(MAIN)).resolves.toEqual({ model: MAIN })
+    await expect(pick(h).effort('low')).resolves.toEqual({ effort: 'low' })
+
+    expect(h.connection.requests.slice(-2).map(({ params }) => params)).toEqual([
+      { specModeModelId: MAIN },
+      { specModeReasoningEffort: 'low' }
+    ])
+    await expect(
+      h.adapter.readOptions({ sessionId: DROID_RIG_SESSION, fence: FENCE })
+    ).resolves.toMatchObject({ current: { planMode: true, model: MAIN, effort: 'low' } })
+  })
+
+  it('shows the main model and effort again when Spec is turned off after a Spec pick', async () => {
+    const held: Record<string, unknown> = {
+      modelId: 'main',
+      reasoningEffort: 'low',
+      interactionMode: 'spec',
+      specModeModelId: 'spec-1',
+      specModeReasoningEffort: 'high'
+    }
+    const h = await setupDroidAdapter({ autonomyLevel: 'off' }, (connection: FakeConnection) => {
+      connection.replies.set('droid.initialize_session', () => ({
+        sessionId: 's-1',
+        settings: held,
+        availableModels: [{ id: 'main' }, { id: 'spec-1' }, { id: 'spec-2' }]
+      }))
+      // Droid applies what it is sent and reports the whole of what it holds against the request.
+      connection.replies.set('droid.update_session_settings', (params) => {
+        Object.assign(held, params)
+        connection.notify({
+          type: 'settings_updated',
+          requestId: connection.lastId,
+          settings: held
+        })
+        return {}
+      })
+    })
+    await h.start()
+
+    await pick(h).model('spec-2')
+    await pick(h).effort('xhigh')
+
+    await expect(
+      h.adapter.setOption({
+        sessionId: DROID_RIG_SESSION,
+        key: 'planMode',
+        value: 'false',
+        fence: FENCE
+      })
+    ).resolves.toEqual({ planMode: 'false', model: 'main', effort: 'low' })
+  })
+})
+
+describe('Droid saved picks on a resume', () => {
+  const resumed = async (options: Record<string, string>) => {
+    const h = await setupDroidAdapter({ previous: heldSession, autonomyLevel: 'off' })
+    const { connection } = await h.start(options)
+    return connection.requests.map(({ method, params }) => ({ method, params }))
+  }
+
+  it('applies the saved model and effort to the Spec model when the chat resumes in Spec', async () => {
+    await expect(resumed({ planMode: 'true', model: 'spec-2', effort: 'low' })).resolves.toEqual([
+      { method: 'droid.load_session', params: { sessionId: 'droid-session-9' } },
+      {
+        method: 'droid.update_session_settings',
+        params: { autonomyLevel: 'off', interactionMode: 'spec' }
+      },
+      {
+        method: 'droid.update_session_settings',
+        params: { specModeModelId: 'spec-2', specModeReasoningEffort: 'low' }
+      }
+    ])
+  })
+
+  it('applies the saved model and effort to the main model when the chat resumes in auto', async () => {
+    await expect(resumed({ model: 'main-2', effort: 'low' })).resolves.toEqual([
+      { method: 'droid.load_session', params: { sessionId: 'droid-session-9' } },
+      {
+        method: 'droid.update_session_settings',
+        params: { autonomyLevel: 'off', interactionMode: 'auto' }
+      },
+      {
+        method: 'droid.update_session_settings',
+        params: { modelId: 'main-2', reasoningEffort: 'low' }
+      }
+    ])
   })
 })

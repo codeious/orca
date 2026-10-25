@@ -19,6 +19,11 @@ type Request = (
   options?: { timeoutMs?: number | null; onId?: (id: string) => void }
 ) => Promise<unknown>
 
+/** The mode Droid reports, else the one the start pinned. */
+function specIsOn(settings: DroidSettings, requested: DroidInteractionMode): boolean {
+  return (settings.interactionMode ?? requested) === 'spec'
+}
+
 /**
  * Spec runs its own model and effort, so the model and effort a person sees follow the mode; where
  * Droid names none for Spec it runs the main ones, as the picks already held say, else as Droid
@@ -29,7 +34,7 @@ function droidCurrentOptions(
   requested: DroidInteractionMode,
   held: AgentSessionOptionsResult['current'] = {}
 ): DroidCurrentOptions {
-  const spec = (settings.interactionMode ?? requested) === 'spec'
+  const spec = specIsOn(settings, requested)
   const specModel = spec ? settings.specModeModelId : undefined
   const specEffort = spec ? settings.specModeReasoningEffort : undefined
   const model = specModel ?? held.model ?? settings.modelId
@@ -72,7 +77,8 @@ export class DroidSessionOptions {
   }
 
   set(key: string, value: string): ReturnType<DroidSessionModel['set']> {
-    return this.deps.model.set(this.deps.request, key, value)
+    const { request, settings, model, requested } = this.deps
+    return model.set(request, key, value, specIsOn(settings.current, requested))
   }
 
   /**
@@ -106,7 +112,9 @@ export class DroidSessionOptions {
     warn: (error: unknown) => void
   ): Promise<DroidSettings['autonomyLevel']> {
     const reported = await this.update(wanted)
-    await this.deps.model.applySaved(this.deps.request, saved, warn)
+    // Droid took the update, so the mode it pinned stands even if it reported nothing back.
+    const spec = specIsOn(reported ?? {}, wanted.interactionMode)
+    await this.deps.model.applySaved(this.deps.request, saved, spec, warn)
     return reported?.autonomyLevel
   }
 

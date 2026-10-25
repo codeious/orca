@@ -117,13 +117,20 @@ export function droidSavedOptionPicks(
   }
 }
 
-export function droidOptionParams(saved: DroidSavedPicks): {
-  modelId?: string
-  reasoningEffort?: string
-} {
+type DroidOptionParams = Partial<
+  Record<'modelId' | 'reasoningEffort' | 'specModeModelId' | 'specModeReasoningEffort', string>
+>
+
+/** Spec runs its own model and effort, so a pick made while it is on must not move the main ones. */
+export function droidOptionParams(
+  picks: Pick<DroidSavedPicks, 'model' | 'effort'>,
+  spec = false
+): DroidOptionParams {
   return {
-    ...(saved.model ? { modelId: saved.model } : {}),
-    ...(saved.effort ? { reasoningEffort: saved.effort } : {})
+    ...(picks.model ? { [spec ? 'specModeModelId' : 'modelId']: picks.model } : {}),
+    ...(picks.effort
+      ? { [spec ? 'specModeReasoningEffort' : 'reasoningEffort']: picks.effort }
+      : {})
   }
 }
 

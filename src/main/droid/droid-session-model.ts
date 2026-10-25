@@ -51,16 +51,24 @@ export class DroidSessionModel {
     return withLiveCatalogListing(this.reported)
   }
 
-  async set(request: Ask, key: string, value: string): Promise<Readonly<Record<string, string>>> {
+  /** `spec` sends the pick under Droid's Spec keys; what is held here stays the main model's. */
+  async set(
+    request: Ask,
+    key: string,
+    value: string,
+    spec: boolean
+  ): Promise<Readonly<Record<string, string>>> {
     if (key !== 'model' && key !== 'effort') {
       throw new Error(`Droid has no session option named ${key}`)
     }
     await request(
       'droid.update_session_settings',
-      key === 'model' ? { modelId: value } : { reasoningEffort: value },
+      droidOptionParams(key === 'model' ? { model: value } : { effort: value }, spec),
       { timeoutMs: 15_000 }
     )
-    this.reported = droidOptionsAfterPick(this.reported, key, value)
+    if (!spec) {
+      this.reported = droidOptionsAfterPick(this.reported, key, value)
+    }
     return { [key]: value }
   }
 
@@ -68,16 +76,21 @@ export class DroidSessionModel {
   async applySaved(
     request: Ask,
     saved: DroidSavedPicks,
+    spec: boolean,
     warn: (error: unknown) => void
   ): Promise<void> {
-    const params = droidOptionParams(saved)
-    if (!params.modelId && !params.reasoningEffort) {
+    if (!saved.model && !saved.effort) {
       return
     }
     try {
-      await request('droid.update_session_settings', params, { timeoutMs: 15_000 })
+      await request('droid.update_session_settings', droidOptionParams(saved, spec), {
+        timeoutMs: 15_000
+      })
     } catch (error) {
       warn(error)
+      return
+    }
+    if (spec) {
       return
     }
     if (saved.model) {
