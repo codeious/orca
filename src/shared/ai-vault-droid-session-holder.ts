@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import type { AgentProcessVerdict } from './agent-process-presence'
-import type { AiVaultSession } from './ai-vault-types'
 
 /** What a terminal pane's process says about a Droid session. A process proven exited holds
  *  nothing, so `exited` is not an answer here. */
@@ -9,7 +8,9 @@ export type AiVaultDroidSessionHolderVerdict = Exclude<AgentProcessVerdict, 'exi
 /** `null` is the one answer that frees the session: the host knows of no pane holding it. */
 export type AiVaultDroidSessionHolder = AiVaultDroidSessionHolderVerdict | null
 
-export type AiVaultDroidSessionHolderArgs = Pick<AiVaultSession, 'executionHostId'> & {
+// The host id is a plain string: it arrives unvalidated and is parsed where it routes.
+export type AiVaultDroidSessionHolderArgs = {
+  executionHostId: string
   sessionId: string
 }
 
