@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import type { AgentProcessVerdict } from './agent-process-presence'
 
+export const AI_VAULT_DROID_SESSION_HOLDER_CHANNEL = 'aiVault:droidSessionHolder'
+
 /** What a terminal pane's process says about a Droid session. A process proven exited holds
  *  nothing, so `exited` is not an answer here. */
 export type AiVaultDroidSessionHolderVerdict = Exclude<AgentProcessVerdict, 'exited'>

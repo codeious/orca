@@ -23,6 +23,10 @@ import type {
   AiVaultPrepareSessionResumeArgs,
   AiVaultPrepareSessionResumeResult
 } from '../../shared/ai-vault-resume-preparation'
+import type {
+  AiVaultDroidSessionHolder,
+  AiVaultDroidSessionHolderArgs
+} from '../../shared/ai-vault-droid-session-holder'
 import type { ExecutionHostId, ExecutionHostScope } from '../../shared/execution-host'
 
 export type AiVaultApi = {
@@ -50,6 +54,11 @@ export type AiVaultApi = {
   prepareSessionResume: (
     args: AiVaultPrepareSessionResumeArgs
   ) => Promise<AiVaultPrepareSessionResumeResult>
+  /**
+   * Asks the host that owns the session whether a terminal pane still holds it. `null` is the
+   * only answer that frees it; a host that cannot be asked answers `unverifiable`, never `null`.
+   */
+  droidSessionHolder: (args: AiVaultDroidSessionHolderArgs) => Promise<AiVaultDroidSessionHolder>
   /** Lists the Task subagent transcripts of one session, on demand. */
   listSubagentSessions: (args: AiVaultSubagentListArgs) => Promise<AiVaultSubagentListResult>
   /** Full first user prompt for copy/reuse (re-parses one transcript). */

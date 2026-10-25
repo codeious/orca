@@ -1,14 +1,13 @@
 import { ipcMain } from 'electron'
 import {
   AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL,
+  AI_VAULT_DROID_SESSION_HOLDER_CHANNEL,
   type AiVaultDroidSessionHolder,
   type AiVaultDroidSessionHolderArgs,
   type AiVaultDroidSessionHolderResult
 } from '../../shared/ai-vault-droid-session-holder'
 import { parseRoutableExecutionHostId } from '../../shared/execution-host'
 import { AiVaultDroidSessionHolderParams } from '../../shared/rpc-contract/ai-vault-params'
-
-export const AI_VAULT_DROID_SESSION_HOLDER_CHANNEL = 'aiVault:droidSessionHolder'
 
 export type AiVaultDroidSessionHolderReaders = {
   readLocal?: (sessionId: string) => Promise<AiVaultDroidSessionHolder>

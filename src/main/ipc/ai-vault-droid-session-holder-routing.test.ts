@@ -1,13 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { AI_VAULT_DROID_SESSION_HOLDER_CHANNEL } from '../../shared/ai-vault-droid-session-holder'
 
 const ipcHandle = vi.hoisted(() => vi.fn())
 vi.mock('electron', () => ({ ipcMain: { handle: ipcHandle } }))
 
-const {
-  AI_VAULT_DROID_SESSION_HOLDER_CHANNEL,
-  registerAiVaultDroidSessionHolderHandler,
-  resolveAiVaultDroidSessionHolderByHost
-} = await import('./ai-vault-droid-session-holder-routing')
+const { registerAiVaultDroidSessionHolderHandler, resolveAiVaultDroidSessionHolderByHost } =
+  await import('./ai-vault-droid-session-holder-routing')
 
 const SESSION = 'droid-session'
 
