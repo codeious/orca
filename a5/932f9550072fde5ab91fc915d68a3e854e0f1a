@@ -1,0 +1,36 @@
+src/main/agent-hooks/installer-utils-remote.test.ts
+  s_a57587060a50e5::t_94e50478a19ff2 44-47
+  s_a57587060a50e5::t_0a02bf6fd708bc 230-242
+  s_a57587060a50e5::t_7b6d0ef64e4479 23
+src/main/droid/hook-service.ts
+  s_a57587060a50e5::t_29e8f91a1ed890 141
+src/main/agent-hooks/installer-utils-remote.ts
+  s_a57587060a50e5::t_36d03d84c0a240 59-62,71
+  s_a57587060a50e5::t_6a79b16b571b87 58,63-64
+docs/adr/0003-droid-launch-mode-is-a-per-agent-setting.md
+  s_a57587060a50e5::t_dbe2f1dcfa9ab9 22
+  s_a57587060a50e5::t_8a0767c673617b 19
+  s_a57587060a50e5::t_2a521d57827486 7,14
+docs/specs/droid-first-class.md
+  s_a57587060a50e5::t_70cf942bf20544 45
+  s_a57587060a50e5::t_f94f8e081183e5 265
+  s_a57587060a50e5::t_5839a492547a47 48
+  s_a57587060a50e5::t_4b31a0cd14d4cb 443
+  s_a57587060a50e5::t_16ec68231715ad 440-442,444-450
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a5932f9550072fde5ab91fc915d68a3e854e0f1a",
+  "prompts": {},
+  "sessions": {
+    "s_a57587060a50e5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fd4afa99-8ef7-4d49-9697-13345392d392",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
