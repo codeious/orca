@@ -87,7 +87,7 @@ export class DroidTurns {
     try {
       await this.deps.request(
         'droid.add_user_message',
-        this.working ? { ...params, queuePlacement: 'end_of_turn' } : params,
+        this.turnInFlight(send) ? { ...params, queuePlacement: 'end_of_turn' } : params,
         {
           onId: (requestId) => {
             send.requestId = requestId
@@ -171,6 +171,14 @@ export class DroidTurns {
   end(): void {
     this.ended = true
     this.releaseUnanswered('Droid ended before confirming delivery')
+  }
+
+  /** A message already sent and not yet echoed means a turn is starting, though no frame says so yet. */
+  private turnInFlight(self: Send): boolean {
+    return (
+      this.working ||
+      [...this.sends].some((other) => other !== self && other.requestId !== undefined)
+    )
   }
 
   private message(notification: Extract<DroidNotification, { type: 'create_message' }>): void {

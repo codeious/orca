@@ -376,4 +376,29 @@ describe('a steer sent while Droid is working', () => {
     expect(h.warn).toHaveBeenCalledTimes(2)
     expect(JSON.stringify(await h.rig.rows())).not.toContain('gone')
   })
+
+  it('places a message sent before Droid has echoed the first one at the end of the turn', async () => {
+    const h = await setup()
+    await h.adapter.dispatch({ sessionId, clientMessageId: 'prompt-1', body: text('hello'), fence })
+    await h.adapter.dispatch({ sessionId, clientMessageId: 'steer-1', body: text('later'), fence })
+
+    expect(h.connection.requests.slice(1).map(({ params }) => params)).toEqual([
+      { text: 'hello' },
+      { text: 'later', queuePlacement: 'end_of_turn' }
+    ])
+  })
+
+  it('sends a message with no placement once the earlier turn has ended', async () => {
+    const h = await setup()
+    await h.adapter.dispatch({ sessionId, clientMessageId: 'prompt-1', body: text('hello'), fence })
+    h.connection.notify({
+      type: 'create_message',
+      message: { id: 'msg-hello', role: 'user', content: [{ type: 'text', text: 'hello' }] },
+      requestId: h.connection.lastId
+    })
+    h.connection.notify({ type: 'agent_turn_completed', reason: 'completed', turnId: 't' })
+    await h.adapter.dispatch({ sessionId, clientMessageId: 'prompt-2', body: text('next'), fence })
+
+    expect(h.connection.requests.at(-1)?.params).toEqual({ text: 'next' })
+  })
 })
