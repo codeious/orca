@@ -1,4 +1,4 @@
-import { droidExitMarker } from '../shared/agent-hook-listener/providers/droid-sessions'
+import { watchDroidExit } from '../shared/agent-hook-listener/providers/droid-sessions'
 import type { AgentHookEventPayload } from '../shared/agent-hook-listener/listener-event'
 import type { HookListenerState } from '../shared/agent-hook-listener/listener-state'
 import { AgentProcessExitWatch } from '../shared/agent-process-exit-watch'
@@ -68,16 +68,8 @@ export class RelayAgentPresence {
     return this.probe(paneKey).then(() => undefined)
   }
 
-  /** A Droid SessionEnd is no proof of exit, so ask the process until it answers or the window closes. */
   watchDroidExit(paneKey: string): void {
-    const { state } = this.host
-    const marker = droidExitMarker(state, paneKey)
-    if (marker) {
-      this.exitWatch.start(paneKey, {
-        isCurrent: () => droidExitMarker(state, paneKey) === marker,
-        probe: () => this.probe(paneKey)
-      })
-    }
+    watchDroidExit(this.host.state, this.exitWatch, paneKey, () => this.probe(paneKey))
   }
 
   stop(): void {

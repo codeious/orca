@@ -5,7 +5,7 @@ import {
 } from '../../../shared/agent-process-presence'
 import { probeAgentProcessPresence } from '../../../shared/agent-process-presence-probe'
 import { AgentProcessExitWatch } from '../../../shared/agent-process-exit-watch'
-import { droidExitMarker } from '../../../shared/agent-hook-listener/providers/droid-sessions'
+import { watchDroidExit } from '../../../shared/agent-hook-listener/providers/droid-sessions'
 import type {
   AiVaultDroidHoldingPane,
   AiVaultDroidSessionHolderResult
@@ -27,24 +27,15 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
       void this.checkAgentPresence(row.paneKey)
     }
     if (event.source === 'droid' && event.hookEventName === 'SessionEnd') {
-      this.watchDroidExit(row.paneKey)
+      watchDroidExit(this.state, this.exitWatch, row.paneKey, () =>
+        this.checkAgentPresence(row.paneKey)
+      )
     }
   }
 
   stop(): void {
     this.exitWatch.stopAll()
     super.stop()
-  }
-
-  /** A Droid SessionEnd is no proof of exit, so ask the process until it answers or the window closes. */
-  private watchDroidExit(paneKey: string): void {
-    const marker = droidExitMarker(this.state, paneKey)
-    if (marker) {
-      this.exitWatch.start(paneKey, {
-        isCurrent: () => droidExitMarker(this.state, paneKey) === marker,
-        probe: () => this.checkAgentPresence(paneKey)
-      })
-    }
   }
 
   /** Whether this pane's owner carries a process identity that its execution host can check. */

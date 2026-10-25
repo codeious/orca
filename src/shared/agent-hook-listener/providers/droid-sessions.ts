@@ -1,3 +1,4 @@
+import type { AgentExitWatchHost, AgentProcessExitWatch } from '../../agent-process-exit-watch'
 import { isSameAgentProcess, type AgentProcessIdentity } from '../../agent-process-presence'
 import type { AgentMainAgentStatus, ParsedAgentStatusPayload } from '../../agent-status-types'
 import type { CodexSubagentRoster } from '../../codex-subagent-roster'
@@ -32,6 +33,22 @@ export type DroidPaneSessions = {
 /** The marker an exit watch holds; it goes stale when the lead speaks again or the pane is cleared. */
 export function droidExitMarker(state: HookListenerState, paneKey: string): object | undefined {
   return state.droidSessionsByPaneKey.get(paneKey)?.exitMarker
+}
+
+/** A Droid SessionEnd is no proof of exit, so ask the process until it answers or the window closes. */
+export function watchDroidExit(
+  state: HookListenerState,
+  exitWatch: AgentProcessExitWatch,
+  paneKey: string,
+  probe: AgentExitWatchHost['probe']
+): void {
+  const marker = droidExitMarker(state, paneKey)
+  if (marker) {
+    exitWatch.start(paneKey, {
+      isCurrent: () => droidExitMarker(state, paneKey) === marker,
+      probe
+    })
+  }
 }
 
 export type DroidHookAdmission =
