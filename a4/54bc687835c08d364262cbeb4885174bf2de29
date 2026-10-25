@@ -1,0 +1,30 @@
+src/main/droid/droid-session-adapter.test.ts
+  s_48f3bc0d7f0337::t_f4d22bae9d5cc9 16-17
+  s_48f3bc0d7f0337::t_38bfe1d5fc81d2 343-359
+src/main/droid/droid-agent-connection.test.ts
+  s_48f3bc0d7f0337::t_05db9d9ec61a46 191-230
+  s_48f3bc0d7f0337::t_bbc4792e1685be 5
+  s_48f3bc0d7f0337::t_344be63aaa5178 231-232
+src/main/droid/droid-agent-connection.ts
+  s_48f3bc0d7f0337::t_1021cb88a26d20 9
+  s_48f3bc0d7f0337::t_3f09ab1e29767d 143-148,153-158
+src/main/droid/droid-runtime-registration.test.ts
+  s_48f3bc0d7f0337::t_17f5f1966bcac5 146-157
+  s_48f3bc0d7f0337::t_64e38d52c3e888 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a454bc687835c08d364262cbeb4885174bf2de29",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
