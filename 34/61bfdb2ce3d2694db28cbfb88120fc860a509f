@@ -1,0 +1,49 @@
+src/main/jsonl-rpc/session-lifecycle.test.ts
+  s_48f15c05ff9afa::t_d7ef3e32e0abc5 75,82
+  s_48f15c05ff9afa::t_661b122b3d8850 1-5,14-15,19-50,56-73,99-103,105-112,114-128,130-139,143-144,146-148,150-153,155-166,168-175,185-203,205-207,209-210,215-223,225-237,239-241,251-254,256-263,268,270-274,276-278
+  s_48f15c05ff9afa::t_ce61c382cdcdb0 74,76-81,83-98
+  s_48f15c05ff9afa::t_fd95491f89d2e3 6-13,16-18,51-55,104,113,129,140-142,145,149,154,167,176-184,204,208,211-214,224,238,242-250,255,264-267,269,275
+src/main/pi/rpc-session.ts
+  s_48f15c05ff9afa::t_7b628e743d4cae 150
+  s_48f15c05ff9afa::t_f74b9d6ab2ccab 121
+  s_48f15c05ff9afa::t_c82ce8acd94447 94,99-114
+  s_48f15c05ff9afa::t_87ea51778ee13b 12
+  s_48f15c05ff9afa::t_0a695942cdbad2 70
+  s_0451622378e9c8::t_9a1f4a7ba46d5c 115,208-209,213,217,221
+src/main/jsonl-rpc/session-lifecycle.ts
+  s_48f15c05ff9afa::t_81f8ac7b5e004d 1-43,45-150
+  s_48f15c05ff9afa::t_bb7af66be2e375 44
+  s_f87fd4e7a08936::t_934fa4be12784b 151-152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3461bfdb2ce3d2694db28cbfb88120fc860a509f",
+  "prompts": {},
+  "sessions": {
+    "s_0451622378e9c8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d035f68d-089c-477f-9b20-d144473a213c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

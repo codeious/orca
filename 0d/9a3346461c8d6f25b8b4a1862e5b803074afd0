@@ -1,0 +1,26 @@
+src/main/droid/droid-prompt.ts
+  s_48f15c05ff9afa::t_66984e24501913 6,9
+src/main/droid/droid-peer-limits.test.ts
+  s_48f15c05ff9afa::t_8fdb4970ded785 1-21
+src/main/droid/droid-agent-connection.ts
+  s_48f15c05ff9afa::t_e3b35a4eca60f3 21
+  s_48f15c05ff9afa::t_3f322368d54ce8 61-65
+src/main/droid/droid-peer-limits.ts
+  s_48f15c05ff9afa::t_252979f2142213 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0d9a3346461c8d6f25b8b4a1862e5b803074afd0",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
