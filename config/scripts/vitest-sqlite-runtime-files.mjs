@@ -17,6 +17,7 @@ export const SQLITE_RUNTIME_INCLUDE = [
   'src/main/acp/acp-structured-session-adapter.test.ts',
   'src/main/pi/rpc-turn-races.test.ts',
   'src/main/droid/droid-turns.test.ts',
+  'src/main/droid/droid-structured-launch-resolution.test.ts',
   'src/main/acp/acp-structured-child-session-end.test.ts',
   'src/main/acp/acp-structured-child-stop.test.ts',
   'src/main/acp/acp-structured-child-work-admission.test.ts',

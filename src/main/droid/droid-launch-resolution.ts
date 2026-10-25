@@ -40,6 +40,19 @@ export function droidVersionSupported(
   )
 }
 
+/** What `droid --version` prints under the launch's environment; null when it can't be read. */
+export function readDroidVersion(
+  launch: DroidLaunchTarget,
+  read: typeof readAgentCliVersion = readAgentCliVersion,
+  orcaEnv: NodeJS.ProcessEnv = process.env
+): Promise<string | null> {
+  return read({
+    program: launch.command,
+    cwd: launch.cwd,
+    env: { ...launch.env, ...droidKeyringEnvironment(orcaEnv) }
+  })
+}
+
 /** The installed release when its age alone is why the chat can't run; null when it can't be read
  *  or is not simply older, since a missing binary is the launch's refusal to state. */
 export async function droidUnsupportedVersion(
@@ -47,10 +60,6 @@ export async function droidUnsupportedVersion(
   read: typeof readAgentCliVersion = readAgentCliVersion,
   orcaEnv: NodeJS.ProcessEnv = process.env
 ): Promise<UnsupportedAgentVersion | null> {
-  const version = await read({
-    program: launch.command,
-    cwd: launch.cwd,
-    env: { ...launch.env, ...droidKeyringEnvironment(orcaEnv) }
-  })
+  const version = await readDroidVersion(launch, read, orcaEnv)
   return version === null ? null : unsupportedDroidRelease(version)
 }
