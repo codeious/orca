@@ -282,6 +282,7 @@ async function startOrcadRuntime(
       readChildWork: (subject) => agentHookServer.getStructuredChildWorkViews(subject)
     },
     checkHookAgentPresence: (paneKey) => agentHookServer.checkAgentPresence(paneKey),
+    droidSessionHolder: (sessionId) => agentHookServer.droidSessionHolder(sessionId),
     reconcileAgentStatusForEndedProcess: (paneKeys) =>
       agentHookServer.reconcileEndedProcessForPaneKeys(paneKeys),
     dropAgentStatusForRemovedWorktree: (worktreeId, host) =>

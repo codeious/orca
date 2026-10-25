@@ -21,6 +21,7 @@ import type {
   AiVaultPrepareSessionResumeArgs,
   AiVaultPrepareSessionResumeResult
 } from '../../shared/ai-vault-resume-preparation'
+import type { AiVaultDroidSessionHolder } from '../../shared/ai-vault-droid-session-holder'
 import type { AgentSessionClaimSigner } from './agent-session-claim-identity'
 import type { AgentStatus } from '../../shared/agent-detection'
 import { RuntimeLegacyWorkerTerminalRecoveryPersistence } from './runtime-legacy-worker-terminal-recovery-persistence'
@@ -123,6 +124,10 @@ export class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeWithTermin
 
   protected readonly checkHookAgentPresenceFn:
     | ((paneKey: string) => Promise<'live' | 'unverifiable' | 'exited' | null>)
+    | null
+
+  protected readonly droidSessionHolderFn:
+    | ((sessionId: string) => Promise<AiVaultDroidSessionHolder>)
     | null
 
   protected readonly reconcileAgentStatusForEndedProcessFn:
@@ -351,7 +356,10 @@ export class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeWithTermin
       this.workspaceSessionWorktreeHasRuntimeOwnedPtyCandidate(session, worktreeId, tabs)
   })
 
-  protected readonly aiVault = new RuntimeAiVaultCommands(() => this.prepareAiVaultSessionResumeFn)
+  protected readonly aiVault = new RuntimeAiVaultCommands(
+    () => this.prepareAiVaultSessionResumeFn,
+    () => this.droidSessionHolderFn
+  )
 
   protected readonly claudeAgentTeams = new ClaudeAgentTeamsService()
 
