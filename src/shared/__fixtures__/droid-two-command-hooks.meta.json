@@ -1,0 +1,10 @@
+{
+  "source_scenario": "session-replacement-two-commands",
+  "source_branch": "research/droid-session-replacement",
+  "source_commit": "0f495ba481",
+  "droid_versions": ["0.244.0"],
+  "platforms": ["darwin"],
+  "recorded_at": "2026-10-20",
+  "note": "Two SessionStart commands in one group, the slow one (15 s) listed first, on /tree. Both post, so a start for the same session id arrives twice. Rows with cmd fast or slow. Session ids are S1/S2 relations and the process is P1; the replay assigns a synthetic pid per process. No prompt, path, pid or key is in the rows.",
+  "clock": "rows are in the order the probe listener or logger recorded them"
+}
