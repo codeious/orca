@@ -213,6 +213,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
     "@electron/rebuild": "^4.2.0",
+    "@factory/droid-sdk": "0.10.0",
     "@monaco-editor/react": "^4.7.0",
     "@oxlint/plugins": "1.86.0",
     "@playwright/test": "^1.63.0",

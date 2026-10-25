@@ -20,7 +20,8 @@ const AGENT_HOME_ENTRIES = [
   '.cursor',
   '.copilot',
   '.gemini',
-  '.qoder'
+  '.qoder',
+  '.factory'
 ]
 // Why a bare prefix: Claude's config file and its atomic-write temp siblings sit beside `~/.claude`.
 const AGENT_HOME_FILE_PREFIXES = ['.claude.json']

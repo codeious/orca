@@ -13,7 +13,7 @@ import {
   AgentSessionPromptUnavailableError
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import type { AcpRequestPresentation } from './acp-dialects/acp-dialect'
-import { AcpRpcError } from './acp-errors'
+import { AcpRpcError, JSON_RPC_INTERNAL_ERROR, JSON_RPC_METHOD_NOT_FOUND } from './acp-errors'
 import type { AcpRequestContext } from './acp-json-rpc-peer'
 import type { AcpStructuredLane } from './acp-structured-lane'
 
@@ -48,7 +48,10 @@ export class AcpStructuredPrompts {
   handle(method: string, params: unknown, context: AcpRequestContext): Promise<unknown> {
     const lane = this.lane()
     if (!lane || context.id === null) {
-      throw new AcpRpcError(-32603, 'ACP request arrived with no session to show it')
+      throw new AcpRpcError(
+        JSON_RPC_INTERNAL_ERROR,
+        'ACP request arrived with no session to show it'
+      )
     }
     const translated = lane.translator.request(method, params, context.id)
     if (translated.settled) {
@@ -66,7 +69,7 @@ export class AcpStructuredPrompts {
     lane.apply(translated.events)
     const opened = translated.events.find((event) => event.type === 'request.open')
     if (!translated.presentation || opened?.type !== 'request.open') {
-      throw new AcpRpcError(-32601, `Unsupported ACP client method: ${method}`)
+      throw new AcpRpcError(JSON_RPC_METHOD_NOT_FOUND, `Unsupported ACP client method: ${method}`)
     }
     const key = opened.request
     const presentation = translated.presentation

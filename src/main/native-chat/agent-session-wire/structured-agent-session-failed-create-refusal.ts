@@ -46,7 +46,35 @@ function failedAcquisitionWireRefusal(
   error: unknown
 ): AgentSessionWireRefusal {
   const code = 'agent_session_operation_invalid'
-  const refusal = details ? refuse(code, details, code) : refuseUnclassified(code, code)
+  return wordedStartRefusal(
+    details ? refuse(code, details, code) : refuseUnclassified(code, code),
+    wording,
+    error
+  )
+}
+
+/** A start refused over the installed agent's release keeps its own code: it is not one the
+ *  `agent_session_operation_invalid` family says, and no update to the chat retries it. */
+function releaseStartRefusal(
+  error: unknown,
+  wording: FailedAcquisitionWording
+): AgentSessionWireRefusal | null {
+  if (!isAgentSessionPreSpawnError(error) || !error.releaseFacts) {
+    return null
+  }
+  const code = 'structured_agent_session_unsupported'
+  return wordedStartRefusal(
+    refuse(code, { reason: 'versionUnsupported', ...error.releaseFacts }, code),
+    wording,
+    error
+  )
+}
+
+function wordedStartRefusal(
+  refusal: AgentSessionWireRefusal,
+  wording: FailedAcquisitionWording,
+  error: unknown
+): AgentSessionWireRefusal {
   const { reason } = structuredAgentSessionStartFailure(
     {
       refusal,
@@ -74,6 +102,18 @@ export function failedAcquisitionSettlement(
       message: error.message
     }
     return { exitProof: 'unproven', outcome: { status: 'failed', ...outcome } }
+  }
+  const release = releaseStartRefusal(error, wording)
+  if (release) {
+    return {
+      exitProof: 'processless',
+      outcome: {
+        status: 'failed',
+        code: release.code,
+        ...(release.details ? { details: release.details } : {}),
+        message: release.message
+      }
+    }
   }
   const exitProof = isAgentSessionPreSpawnError(error)
     ? 'processless'
@@ -138,6 +178,10 @@ export function failedAcquisitionRefusal(
   error: unknown,
   wording: FailedAcquisitionWording
 ): { ok: false; refusal: AgentSessionWireRefusal } | null {
+  const release = releaseStartRefusal(error, wording)
+  if (release) {
+    return { ok: false, refusal: release }
+  }
   // A proven exit is a settled failure, answered in the shape its ledger row replays.
   if (
     error instanceof AgentSessionAcquisitionRefusal ||

@@ -14,7 +14,7 @@ import {
 } from './agent-hook-listener/listener-state'
 import { cacheRelayLegacyAgentStatus } from './agent-status-legacy-relay-cache'
 import { markClaudeLeadTurnInterrupted } from './agent-hook-listener/providers/claude-roster-state'
-import { ClaudeOwedNotificationExpiryTimers } from './claude-owed-notification-expiry-timers'
+import { AgentLeaseExpiryTimers } from './agent-lease-expiry-timers'
 import { CLAUDE_OWED_TASK_NOTIFICATION_LEASE_MS } from './claude-owed-task-notifications'
 import { makePaneKey } from './stable-pane-id'
 
@@ -337,7 +337,7 @@ describe('Claude owed task notifications that never arrive', () => {
     const restated: AgentHookEventPayload[] = []
     const store = (row: AgentHookEventPayload) =>
       cacheRelayLegacyAgentStatus(state, row, 16, (paneKey) => clearPaneCacheState(state, paneKey))
-    const timers = new ClaudeOwedNotificationExpiryTimers(state)
+    const timers = new AgentLeaseExpiryTimers(state)
     const publish = (row: AgentHookEventPayload) => {
       restated.push(row)
       store(row)

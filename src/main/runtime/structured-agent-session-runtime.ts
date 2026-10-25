@@ -11,6 +11,7 @@
 // structured request with the refusal that says why.
 
 import type { AgentSessionAccountKind } from '../../shared/agent-session-availability'
+import type { DroidSessionDeps } from '../droid/droid-session'
 import type { PiRpcSessionDeps } from '../pi/rpc-session'
 import type { PermissionMode } from '@anthropic-ai/claude-agent-sdk'
 import { existsSync } from 'node:fs'
@@ -102,6 +103,7 @@ export type StructuredAgentSessionRuntimeDeps = {
   resolveCodexCommand?: (options?: { pathEnv?: string | null; homePath?: string }) => string
   resolveClaudeCommand?: () => string
   openPiConnection?: PiRpcSessionDeps['openConnection']
+  openDroidConnection?: DroidSessionDeps['openConnection']
   /** Which version-gated flags a Claude CLI takes; absent never passes one. */
   claudeCliFlags?: ClaudeCliFlagSupport
   /** Gives each chat a visuals folder and the skill that teaches it, and sweeps folders whose chat

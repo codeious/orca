@@ -8,6 +8,7 @@ import {
   type AgentSessionFailureKind,
   type SubmissionRejectionKind
 } from './agent-session-failure'
+import type { AgentSessionRefusalDetails } from './agent-session-refusal-details'
 import {
   agentSessionFailureSentence,
   agentSessionFailureWords,
@@ -159,6 +160,41 @@ describe('the words written beside a failure fact', () => {
         { agentName: 'Codex' }
       )
     ).toBe("Codex couldn't start. Start a new chat to continue.")
+  })
+
+  it('says a release the chat cannot run in its own words, with the release when it is too old', () => {
+    const refused = (
+      kind: 'startFailed' | 'restartFailed',
+      details: AgentSessionRefusalDetails<'structured_agent_session_unsupported'>,
+      context: { agentName?: string; retryControl?: boolean } = { agentName: 'Droid' }
+    ) =>
+      agentSessionFailureSentence(
+        { kind, refusal: { code: 'structured_agent_session_unsupported', details } },
+        'rejection',
+        context
+      )
+    const old = {
+      reason: 'versionUnsupported',
+      version: '0.230.0',
+      floor: '0.238.0',
+      updateCommand: 'droid update'
+    } as const
+    for (const kind of ['startFailed', 'restartFailed'] as const) {
+      expect(refused(kind, old)).toBe(
+        "Droid 0.230.0 is older than 0.238.0, the oldest release Orca's chat supports. Run `droid update` on this computer, then retry."
+      )
+      expect(refused(kind, old, { agentName: 'Droid', retryControl: true })).toBe(
+        "Droid 0.230.0 is older than 0.238.0, the oldest release Orca's chat supports. Run `droid update` on this computer, then retry."
+      )
+      // No release named: it is the wire, not the age, so updating is not the step.
+      expect(refused(kind, { reason: 'versionUnsupported' })).toBe(
+        "This Droid release isn't supported in Orca's chat yet. Open Droid in a terminal."
+      )
+    }
+    // Facts without the reason that makes them mean this are not read as it.
+    expect(refused('startFailed', { reason: 'hostUnsupported', version: '0.230.0' })).toBe(
+      "Droid couldn't start. Start a new chat to continue."
+    )
   })
 
   it('says a start refused beside a process Orca could not stop in its own words', () => {

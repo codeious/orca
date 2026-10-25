@@ -28,6 +28,7 @@ import type { CtrlTabOrderMode } from './tab-types'
 import type { TerminalColorOverrides } from './terminal-color-overrides'
 import type { TerminalQuickCommand } from './terminal-quick-command-types'
 import type { TuiAgent } from './tui-agent'
+import type { AgentLaunchModePreferences } from './agent-launch-mode-preference'
 import type { ZcodePlanSite } from './zcode-plan-sites'
 import type {
   AgentDashboardMode,
@@ -218,6 +219,8 @@ export type GlobalSettings = NativeChatGlobalSettings & {
   terminalUrlMiddleClickBehavior?: 'open' | 'actions' | 'none'
   /** New supported agent launches use structured Chat UI; off defaults to terminal UI. */
   experimentalNativeChat?: boolean
+  /** Per-agent launch mode that overrides the Chat UI switch; a missing agent follows the switch. */
+  agentLaunchModes?: AgentLaunchModePreferences
   /** Opt-in: resume working structured chats automatically on the next launch. Off still offers
    *  the list, so the user sees exactly what would run before anything spends tokens. */
   nativeChatResumeWorkOnRestart?: boolean

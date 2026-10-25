@@ -8,7 +8,9 @@ import { isAntigravityReferenceSession } from '../../../../shared/antigravity-se
 import { isWslStoredAiVaultSessionFile } from '@/lib/ai-vault-resume-target'
 import { normalizeRuntimePathForComparison } from '../../../../shared/cross-platform-path'
 import { LOCAL_EXECUTION_HOST_ID } from '../../../../shared/execution-host'
-import { isAgentSessionHandleProvider } from '../../../../shared/agent-session-provider-handle'
+import { isStructuredAdoptionAgent } from '../../../../shared/structured-adoption-agent'
+import type { AiVaultDroidSessionHolderVerdict } from '../../../../shared/ai-vault-droid-session-holder'
+import type { AiVaultOriginalPaneTarget } from './ai-vault-original-pane'
 import {
   isAiVaultSessionResumableContent,
   type AiVaultSession
@@ -20,23 +22,43 @@ export type AiVaultResumeInChatBlockedReason =
   | 'empty'
   | 'already-structured'
   | 'workspace'
+  | 'held'
 
 export type AiVaultResumeInChatEligibility =
-  | { available: true; workspaceId: string }
-  | { available: false; reason: AiVaultResumeInChatBlockedReason }
+  | {
+      available: true
+      workspaceId: string
+      /** The session may still be open in a terminal Orca cannot confirm is gone. */
+      confirmHeldSession?: true
+    }
+  | { available: false; reason: Exclude<AiVaultResumeInChatBlockedReason, 'held'> }
+  | {
+      available: false
+      reason: 'held'
+      /** The open terminal the host says holds the session, when this window can open it. */
+      openTerminal?: AiVaultOriginalPaneTarget
+    }
+
+/** What a Droid terminal pane's row says about the process holding a session. `live` blocks the
+ *  chat; `unverifiable` asks first. A process proven exited is not a holder, so it is not here. */
+export type AiVaultDroidHolder = AiVaultDroidSessionHolderVerdict
 
 /**
- * Claude and Codex do not have the same freedom about *where* a conversation may be resumed.
+ * Claude and Droid do not have the same freedom about *where* a conversation may be resumed as
+ * Codex does.
  *
  * Codex is handed the rollout file and a cwd, so it can resume into any workspace. Claude's SDK
  * stores transcripts under a project key derived from the launch cwd, so resuming from a workspace
  * other than the one the conversation was recorded in looks in a directory the transcript is not in.
  * That is a resume that silently yields nothing, which is worse than a disabled affordance.
+ *
+ * Droid loads from any folder but runs a loaded session's tools in the folder it was recorded in,
+ * so a chat opened elsewhere would edit a tree the person did not pick.
  */
 export function aiVaultSessionResumeInChatWorkspaceMatters(
   agent: AiVaultSession['agent']
 ): boolean {
-  return agent === 'claude'
+  return agent === 'claude' || agent === 'droid'
 }
 
 /**
@@ -69,9 +91,12 @@ export function resolveAiVaultSessionResumeInChatEligibility(args: {
    *  not apply. Reused rather than re-derived: it already encodes host capability, platform refusals
    *  and the WSL/repair refusal, and a second copy of those conditions would drift from it. */
   structuredRouteAvailable: boolean
+  /** Who holds a Droid session in a terminal pane; read for Droid rows only. `null` is the host's
+   *  proof that nobody does; omitted means nobody was asked, which is cannot-tell, never free. */
+  droidHolder?: AiVaultDroidHolder | null
 }): AiVaultResumeInChatEligibility {
   const { session } = args
-  if (isAntigravityReferenceSession(session) || !isAgentSessionHandleProvider(session.agent)) {
+  if (isAntigravityReferenceSession(session) || !isStructuredAdoptionAgent(session.agent)) {
     return { available: false, reason: 'agent' }
   }
   // An already-adopted row reopens its own chat instead; offering a second resume of it would ask
@@ -97,5 +122,18 @@ export function resolveAiVaultSessionResumeInChatEligibility(args: {
   ) {
     return { available: false, reason: 'workspace' }
   }
-  return { available: true, workspaceId: args.targetWorkspaceId }
+  const droidHolder =
+    session.agent !== 'droid'
+      ? null
+      : args.droidHolder === undefined
+        ? 'unverifiable'
+        : args.droidHolder
+  if (droidHolder === 'live') {
+    return { available: false, reason: 'held' }
+  }
+  return {
+    available: true,
+    workspaceId: args.targetWorkspaceId,
+    ...(droidHolder === 'unverifiable' ? { confirmHeldSession: true as const } : {})
+  }
 }

@@ -115,7 +115,8 @@ async function firstAnswerAndReplay(thrown: AgentSessionPreSpawnError) {
   return {
     first:
       first instanceof Error ? mapRuntimeError('req-1', { runtimeId: 'runtime-1' }, first) : first,
-    replay: await performAttach(input)
+    replay: await performAttach(input),
+    ledger: store.getOperationRow('client-1', OPERATION)?.outcome
   }
 }
 
@@ -230,6 +231,40 @@ describe('a create that fails before any process spawns', () => {
       })
     )
   })
+
+  it.each([
+    ['too old', { version: '0.230.0', floor: '0.238.0', updateCommand: 'droid update' }],
+    ['a protocol the chat does not speak', {}]
+  ])(
+    'answers a release the chat cannot run with its own code and facts, first and on replay: %s',
+    async (_, facts) => {
+      vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+      const { first, replay, ledger } = await firstAnswerAndReplay(
+        AgentSessionPreSpawnError.unsupportedRelease(facts)
+      )
+
+      // The row's words are what a replay reads, so the first answer must carry the same.
+      const settledMessage = ledger?.status === 'failed' ? ledger.message : undefined
+      expect(settledMessage).toMatch(/^(Claude|This Claude)/)
+      // A refusal result, not a thrown fault: the code it carries is not operation_invalid.
+      const refused = {
+        ok: false,
+        refusal: {
+          code: 'structured_agent_session_unsupported',
+          details: { reason: 'versionUnsupported', ...facts },
+          message: settledMessage
+        }
+      }
+      expect(first).toMatchObject(refused)
+      expect(replay).toMatchObject(refused)
+      expect(ledger).toMatchObject({
+        status: 'failed',
+        code: 'structured_agent_session_unsupported',
+        details: { reason: 'versionUnsupported', ...facts }
+      })
+    }
+  )
 
   it('keeps a message that is itself a code, and the wire code it maps to', async () => {
     const { first } = await firstAnswerAndReplay(

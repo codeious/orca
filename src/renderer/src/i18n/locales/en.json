@@ -12697,6 +12697,18 @@
           "unavailable": "{{value0}} (unavailable)",
           "description": "Accounts, detected agents and terminal options below are for this host.",
           "unavailableNotice": "This server is no longer saved, so nothing can be shown for it. Choose another host at the top of Settings."
+        },
+        "agent-launch-mode-copy": {
+          "title": "Launch mode",
+          "description": "Choose whether new Droid sessions open in the terminal or in Chat UI.",
+          "terminal": "Terminal",
+          "chat": "Chat UI",
+          "follow": "Follow Chat UI switch",
+          "resultTerminal": "New Droid sessions open in the terminal, whatever the Chat UI switch says.",
+          "resultChat": "New Droid sessions open in Chat UI, whatever the Chat UI switch says.",
+          "resultFollowOn": "New Droid sessions open in Chat UI, because the Chat UI switch in Experimental is on.",
+          "resultFollowOff": "New Droid sessions open in the terminal, because the Chat UI switch in Experimental is off.",
+          "fallbackNote": "Droid always opens in the terminal on WSL and SSH workspaces, and when it is older than {{value0}}."
         }
       },
       "right": {
@@ -13910,6 +13922,7 @@
             "resumeInChatConflict": "Another chat is already holding this conversation.",
             "resumeInChatTranscriptMissing": "This conversation's history could not be loaded, so it cannot be resumed in chat.",
             "resumeInChatFailed": "Could not resume this session in a new chat.",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead.",
             "resumeInNewCliUnavailable": "This session cannot be opened in the CLI.",
             "resumeInNewCliHostTooOld": "Update Orca on the host that runs this chat to resume it in a new CLI."
           },
@@ -14050,7 +14063,13 @@
             "resumeInNewNativeChat": "Resume in New Native Chat",
             "resumeInNewCli": "Resume in New CLI",
             "resumeInNewCliTooltipFork": "Forks this conversation into a new CLI session.",
-            "resumeInNewCliTooltipChat": "The native chat stays as it is."
+            "resumeInNewCliTooltipChat": "The native chat stays as it is.",
+            "openTerminal": "Open terminal"
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           },
           "AiVaultSessionDeleteDialog": {
             "title": "Delete this session?",
@@ -18094,6 +18113,8 @@
         "providerRetryNumberOf": "Retry {{attempt}} of {{maxRetries}}.",
         "providerRetryLastError": "Last error: {{detail}}.",
         "previousExitUnverifiable": "Couldn't stop {{agent}} from before.",
+        "agentVersionBelowFloor": "{{agent}} {{found}} is older than {{floor}}, the oldest release Orca's chat supports. Run `{{updateCommand}}` on this computer, then retry.",
+        "agentProtocolUnsupported": "This {{agent}} release isn't supported in Orca's chat yet. Open {{agent}} in a terminal.",
         "sessionNotRestored": "{{agent}} couldn't reopen its earlier session, so this chat continues in a new one. {{agent}} doesn't remember the earlier messages.",
         "argumentsUnsupportedOption": "Saved Arguments contain an unsupported option ({{option}}).",
         "argumentsMissingValue": "Saved Arguments need a value for {{option}}.",

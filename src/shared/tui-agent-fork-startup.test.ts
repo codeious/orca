@@ -5,7 +5,24 @@ import { buildAgentResumeStartupPlan } from './tui-agent-startup'
 const SESSION = { key: 'session_id', id: 's1' } as const
 
 describe('agent fork startup', () => {
-  it('forks Claude and Codex and nothing else', () => {
+  it('forks Droid by the id it recorded', () => {
+    expect(getAgentForkArgv('droid', SESSION)).toEqual(['droid', '--fork', 's1'])
+    expect(getAgentForkArgv('droid', { key: 'conversation_id', id: 's1' })).toBeNull()
+  })
+
+  it('builds a Droid fork plan that never carries the resume flag', () => {
+    const plan = buildAgentResumeStartupPlan({
+      agent: 'droid',
+      providerSession: SESSION,
+      cmdOverrides: {},
+      platform: 'darwin',
+      fork: true
+    })
+
+    expect(plan?.launchCommand).toBe("droid '--fork' 's1'")
+  })
+
+  it('forks Claude and Codex, and no agent without a fork', () => {
     expect(getAgentForkArgv('claude', SESSION)).toEqual([
       'claude',
       '--resume',

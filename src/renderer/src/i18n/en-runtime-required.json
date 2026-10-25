@@ -2835,6 +2835,8 @@
         "agentCommandNotRunnable": "{{agent}}'s Command in Settings → Agents must be a program path or name Orca can find, with no arguments or variables. Change it or reset it.",
         "agentCommandNotSignedIn": "Sign in to {{agent}} with `{{loginCommand}}` on the computer running this chat.",
         "agentNotSignedIn": "Sign in to {{agent}}.",
+        "agentProtocolUnsupported": "This {{agent}} release isn't supported in Orca's chat yet. Open {{agent}} in a terminal.",
+        "agentVersionBelowFloor": "{{agent}} {{found}} is older than {{floor}}, the oldest release Orca's chat supports. Run `{{updateCommand}}` on this computer, then retry.",
         "answerUnconfirmed": "Your answer was recorded but the agent did not confirm it.",
         "argumentsMissingValue": "Saved Arguments need a value for {{option}}.",
         "argumentsMultipleValues": "Saved Arguments give {{option}} more than one value.",

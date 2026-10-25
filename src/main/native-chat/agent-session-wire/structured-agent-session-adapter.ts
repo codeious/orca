@@ -120,37 +120,12 @@ export type AgentSessionAcquisition = {
   catalogListing?: AgentModelCatalogLiveListing
 }
 
-/** A refusal before spawn that a person can act on; the site that refused names it. */
-export type AgentSessionPreSpawnReason = Extract<
-  AgentSessionRefusalReason<'agent_session_operation_invalid'>,
-  | 'managedAccountEnvOverride'
-  | 'accountSwitchInProgress'
-  | 'managedAccountUnsupported'
-  | 'launchFolderMissing'
-  | 'historyInOtherAccount'
-  | 'claudeAccountFolderMissing'
-  | 'claudeAccountSetupFailed'
-  | 'agentCommandNotRunnable'
->
-
-/** Acquisition failed with first-hand proof that no provider process existed. */
-export class AgentSessionPreSpawnError extends Error {
-  /** Absent: Orca's own reason, which only the log reads. A wrapped pre-spawn error keeps its. */
-  readonly reason: AgentSessionPreSpawnReason | undefined
-
-  constructor(
-    cause: unknown,
-    options: { reason?: AgentSessionPreSpawnReason; message?: string } = {}
-  ) {
-    super(options.message ?? (cause instanceof Error ? cause.message : String(cause)), { cause })
-    this.name = 'AgentSessionPreSpawnError'
-    this.reason = options.reason ?? (isAgentSessionPreSpawnError(cause) ? cause.reason : undefined)
-  }
-}
-
-export function isAgentSessionPreSpawnError(error: unknown): error is AgentSessionPreSpawnError {
-  return error instanceof Error && error.name === 'AgentSessionPreSpawnError'
-}
+// Adapters throw it from here with the rest of the adapter contract.
+export {
+  AgentSessionPreSpawnError,
+  isAgentSessionPreSpawnError,
+  type AgentSessionPreSpawnReason
+} from './structured-agent-session-pre-spawn-error'
 
 /** A conversation command the host handed to a provider child: the running turn it opened for it,
  *  which the child's translator ends, and where the command's own result row goes. */

@@ -73,6 +73,21 @@ describe('AI Vault fork into the CLI', () => {
     expect(startup).not.toHaveProperty('providerSession')
   })
 
+  it('forks Droid in the recorded folder, never resuming the chat-owned session', () => {
+    const startup = buildAiVaultForkStartupForWorktree({
+      state: makeState(),
+      worktreeId: 'repo-1::worktree-1',
+      session: { agent: 'droid', sessionId: SESSION_ID, cwd: '/Users/ada/repo', codexHome: null }
+    })
+
+    expect(startup).toMatchObject({
+      // Droid's default launch argument rides ahead of the fork, as it does on a resume.
+      command: `droid '--auto' 'high' '--fork' '${SESSION_ID}'`,
+      cwd: '/Users/ada/repo'
+    })
+    expect(startup).not.toHaveProperty('providerSession')
+  })
+
   it('returns null for an agent that cannot fork instead of a plain resume', () => {
     expect(
       buildAiVaultForkStartupForWorktree({

@@ -49,6 +49,7 @@ export function normalizeProviderEvent(input: {
   envelope: Record<string, unknown>
   extractedPrompt: ExtractedPromptText
   previousOpenCodeMainAgent?: AgentMainAgentStatus
+  droidAdmission?: Parameters<typeof normalizeDroidEvent>[5]
 }): ProviderDispatchResult {
   const { state, source, eventName, promptText, paneKey, hookPayload, envelope, extractedPrompt } =
     input
@@ -126,7 +127,14 @@ export function normalizeProviderEvent(input: {
       )
       break
     case 'droid':
-      payload = normalizeDroidEvent(state, eventName, promptText, paneKey, hookPayload)
+      payload = normalizeDroidEvent(
+        state,
+        eventName,
+        promptText,
+        paneKey,
+        hookPayload,
+        input.droidAdmission
+      )
       break
     case 'command-code': {
       const transcriptPrompt = readLastCommandCodeUserPromptEntryFromTranscript(
@@ -213,5 +221,10 @@ export function normalizeProviderEvent(input: {
       payload = normalizeKiroEvent(state, eventName, promptText, paneKey, hookPayload)
   }
 
-  return { payload, resolvedPromptText, promptInteractionKey, hasTranscriptPromptEvidence }
+  return {
+    payload,
+    resolvedPromptText,
+    promptInteractionKey,
+    hasTranscriptPromptEvidence
+  }
 }

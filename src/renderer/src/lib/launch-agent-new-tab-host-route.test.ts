@@ -3,7 +3,7 @@ import type { HostAgentLaunchOutcome } from './agent-launch-through-host'
 
 const host = vi.hoisted(() => ({
   launchAgentThroughHost: vi.fn(),
-  windowMakesHostLaunchTab: vi.fn(() => true)
+  windowMakesHostLaunchTab: vi.fn((_agent?: string) => true)
 }))
 vi.mock('@/lib/agent-launch-through-host', () => host)
 const pasteAgentLaunchPromptOnceReady = vi.hoisted(() =>
@@ -97,22 +97,28 @@ describe('an AI button launched through the host', () => {
 })
 
 describe('which new agent tabs start through the host', () => {
+  const pasted = {
+    agent: 'claude',
+    promptDelivery: 'submit-after-ready',
+    pastesPrompt: true
+  } as const
+
   it('an AI button whose prompt is pasted once ready, in a terminal this window makes', () => {
-    expect(
-      newTabPromptLaunchesThroughHost({ promptDelivery: 'submit-after-ready', pastesPrompt: true })
-    ).toBe(true)
+    expect(newTabPromptLaunchesThroughHost(pasted)).toBe(true)
   })
 
   it('never a typed prompt, nor a launch the host could turn into a chat', () => {
-    expect(
-      newTabPromptLaunchesThroughHost({ promptDelivery: 'auto-submit', pastesPrompt: true })
-    ).toBe(false)
-    expect(newTabPromptLaunchesThroughHost({ promptDelivery: 'draft', pastesPrompt: true })).toBe(
+    expect(newTabPromptLaunchesThroughHost({ ...pasted, promptDelivery: 'auto-submit' })).toBe(
       false
     )
+    expect(newTabPromptLaunchesThroughHost({ ...pasted, promptDelivery: 'draft' })).toBe(false)
     host.windowMakesHostLaunchTab.mockReturnValue(false)
-    expect(
-      newTabPromptLaunchesThroughHost({ promptDelivery: 'submit-after-ready', pastesPrompt: true })
-    ).toBe(false)
+    expect(newTabPromptLaunchesThroughHost(pasted)).toBe(false)
+  })
+
+  it('asks about the launching agent, since each agent can be set to Chat', () => {
+    newTabPromptLaunchesThroughHost({ ...pasted, agent: 'droid' })
+
+    expect(host.windowMakesHostLaunchTab).toHaveBeenLastCalledWith('droid')
   })
 })

@@ -42,4 +42,25 @@ describe("the host's sign-in and CLI verdict", () => {
       )
     )
   })
+
+  it.each(['pi', 'droid'])(
+    'tells %s to sign in from its own prompt, not a login command',
+    (agent) => {
+      expect(agentSessionSignInCopyId(agent)).toBe('interactiveAgentNotSignedIn')
+    }
+  )
+
+  it('names the command that starts Droid and the one it signs in with', () => {
+    expect(
+      agentSessionFailureSentence({ kind: 'notSignedIn' }, 'rejection', { agentName: 'Droid' })
+    ).toBe(
+      [
+        AGENT_SESSION_FAILURE_COPY.interactiveAgentNotSignedIn
+          .replace('{{agent}}', 'Droid')
+          .replace('{{loginCommand}}', 'droid')
+          .replace('{{slashCommand}}', '/login'),
+        AGENT_SESSION_FAILURE_COPY.thenSendAgain
+      ].join(' ')
+    )
+  })
 })

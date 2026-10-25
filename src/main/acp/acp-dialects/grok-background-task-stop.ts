@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { JSON_RPC_METHOD_NOT_FOUND } from '../acp-errors'
 import type { AcpDialect } from './acp-dialect'
 
 const response = z.union([
@@ -15,7 +16,7 @@ const response = z.union([
 
 export const grokBackgroundTaskStop: NonNullable<AcpDialect['backgroundTaskStop']> = {
   probe: { method: '_x.ai/task/kill', params: {} },
-  lacksRoute: (error) => error.code === -32601,
+  lacksRoute: (error) => error.code === JSON_RPC_METHOD_NOT_FOUND,
   // `source` is left to Grok's default: its own per-task UI kill.
   request: (sessionId, taskId) => ({ method: '_x.ai/task/kill', params: { sessionId, taskId } }),
   response: (value, taskId) => {

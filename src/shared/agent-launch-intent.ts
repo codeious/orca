@@ -211,10 +211,12 @@ export type AgentLaunchResult = {
 
 export type AgentLaunchMode = 'structured' | 'terminal'
 
-/** Why a launch ran in the mode it did. `user_default` is the preference being honoured; every
- *  other member is a reason the preference could not be applied to this launch. */
+/** Why a launch ran in the mode it did. `user_default` and `agent_setting` are the preference being
+ *  honoured; every other member is a reason the preference could not be applied to this launch. */
 export type AgentLaunchModeReason =
   | 'user_default'
+  /** The agent's own launch setting decided, not the Chat UI switch. */
+  | 'agent_setting'
   | 'remote_execution_host'
   | 'reused_terminal'
   | 'agent_without_structured_session'
@@ -226,6 +228,8 @@ export type AgentLaunchModeReason =
   | 'wsl_execution_runtime'
   | 'codex_on_windows'
   | 'structured_unsupported_on_host'
+  /** The installed agent is older than the oldest release Orca's chat supports; `detail` names both. */
+  | 'agent_version_unsupported'
 
 /** Restates `WorkerStartModeReceipt` in surface-neutral terms so orchestration's receipt and a
  *  mobile or renderer launch report the same vocabulary. */

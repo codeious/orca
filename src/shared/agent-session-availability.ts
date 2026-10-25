@@ -36,7 +36,7 @@ export function agentSessionSignInCopyId(provider: string, account?: AgentSessio
       ? account === 'managed'
         ? 'codexManagedNotSignedIn'
         : 'codexSystemNotSignedIn'
-      : signIn?.agent === 'pi'
+      : signIn && 'slashCommand' in signIn
         ? 'interactiveAgentNotSignedIn'
         : signIn?.loginCommand.length
           ? 'agentCommandNotSignedIn'

@@ -22,6 +22,7 @@ import {
   type AgentLaunchPrompt,
   type AgentLaunchResult
 } from '../../../src/shared/agent-launch-intent'
+import { unsupportedAgentVersionReceiptDetail } from '../../../src/shared/unsupported-agent-version'
 import {
   AGENT_LAUNCH_REPLAY_REQUIRED_RUNTIME_CAPABILITY,
   AGENT_LAUNCH_RUNTIME_CAPABILITY
@@ -118,7 +119,7 @@ export function readAgentLaunchCreateOutcome(result: unknown): AgentLaunchCreate
   }
   // v2 guarantees that an incomplete create is reported at the top level, the same place
   // `worktree.create` puts it, so nothing here branches on which surface the host built.
-  const warning = readTrimmedWarning(result)
+  const warning = readTrimmedWarning(result) || unsupportedAgentVersionReceiptDetail(result) || ''
   return { worktreeId, ...(warning ? { warning } : {}) }
 }
 

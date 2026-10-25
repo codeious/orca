@@ -5,7 +5,7 @@ import {
   type AgentSessionWireRefusal
 } from '../../../shared/agent-session-wire'
 import type { AgentSessionRecord } from '../../../shared/agent-session-record'
-import { agentSessionProviderHandleFromWire } from '../../../shared/agent-session-provider-handle-encoding'
+import { agentSessionProviderHandleFromAdopted } from './structured-agent-session-adopted-handle'
 import type { AgentSessionAttachParams, AttachedJournal } from './structured-agent-session-attach'
 import type { JournalReplacementItem } from '../agent-session-journal/journal-epoch-replacement'
 import {
@@ -50,7 +50,7 @@ async function readAdoptedTranscript(
   }
   const prepared = await prepareLegacyTranscriptImport({
     agent: params.agent,
-    sessionId: agentSessionProviderHandleFromWire(adopt.providerHandle).nativeId,
+    sessionId: agentSessionProviderHandleFromAdopted(adopt.providerHandle).nativeId,
     options: { filePath: adopt.transcriptPath }
   })
   if (!prepared.ok) {
@@ -110,7 +110,7 @@ async function applyAdoptedTranscript(
   const imported = await importLegacyTranscriptIntoJournal({
     journal: attached.journal,
     agent: params.agent,
-    sessionId: agentSessionProviderHandleFromWire(adopt.providerHandle).nativeId,
+    sessionId: agentSessionProviderHandleFromAdopted(adopt.providerHandle).nativeId,
     fence: record.lease.runtimeFence,
     options: { filePath: adopt.transcriptPath }
   })

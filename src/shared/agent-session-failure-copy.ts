@@ -132,6 +132,10 @@ export const AGENT_SESSION_FAILURE_COPY = {
   providerRetryNumberOf: 'Retry {{attempt}} of {{maxRetries}}.',
   providerRetryLastError: 'Last error: {{detail}}.',
   previousExitUnverifiable: "Couldn't stop {{agent}} from before.",
+  agentVersionBelowFloor:
+    "{{agent}} {{found}} is older than {{floor}}, the oldest release Orca's chat supports. Run `{{updateCommand}}` on this computer, then retry.",
+  agentProtocolUnsupported:
+    "This {{agent}} release isn't supported in Orca's chat yet. Open {{agent}} in a terminal.",
   sessionNotRestored:
     "{{agent}} couldn't reopen its earlier session, so this chat continues in a new one. {{agent}} doesn't remember the earlier messages."
 } as const
@@ -150,6 +154,9 @@ export type AgentSessionFailureCopyValues = {
   size?: string
   attempt?: string
   maxRetries?: string
+  found?: string
+  floor?: string
+  updateCommand?: string
 }
 
 /** One piece in the reader's language, placeholders filled. */

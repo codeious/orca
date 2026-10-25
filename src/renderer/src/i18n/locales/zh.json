@@ -13644,6 +13644,7 @@
             "resumeInChatConflict": "另一个聊天室已经在进行此对话。",
             "resumeInChatTranscriptMissing": "无法加载此对话的历史记录，因此无法在聊天中恢复。",
             "resumeInChatFailed": "无法在新聊天中恢复此会话。",
+            "resumeInChatHeld": "终端仍在运行此对话。请改为打开该终端。",
             "resumeInNewCliUnavailable": "无法在 CLI 中打开此会话。",
             "resumeInNewCliHostTooOld": "请更新运行此聊天的主机上的 Orca，才能在新的 CLI 中恢复它。"
           },
@@ -13784,7 +13785,13 @@
             "resumeInNewNativeChat": "在新的本机聊天中恢复",
             "resumeInNewCli": "在新的 CLI 中恢复",
             "resumeInNewCliTooltipFork": "将此对话派生到新的 CLI 会话中。",
-            "resumeInNewCliTooltipChat": "本机聊天保持不变。"
+            "resumeInNewCliTooltipChat": "本机聊天保持不变。",
+            "openTerminal": "打开终端"
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "在新聊天中恢复？",
+            "description": "Orca 无法确定是否仍有终端在运行此对话。如果有，两者会写入同一份历史记录，并将其拆成两份。",
+            "confirm": "仍然恢复"
           },
           "AiVaultSessionDeleteDialog": {
             "title": "要删除此会话吗？",
@@ -17828,6 +17835,8 @@
         "providerRetryNumberOf": "第 {{attempt}} 次重试，共 {{maxRetries}} 次。",
         "providerRetryLastError": "上次错误：{{detail}}。",
         "previousExitUnverifiable": "无法停止之前的 {{agent}}。",
+        "agentVersionBelowFloor": "{{agent}} {{found}} 低于 {{floor}}，即 Orca 聊天支持的最低版本。请在这台电脑上运行 `{{updateCommand}}`，然后重试。",
+        "agentProtocolUnsupported": "Orca 聊天暂不支持此版本的 {{agent}}。请在终端中打开 {{agent}}。",
         "sessionNotRestored": "{{agent}} 无法重新打开之前的会话，因此此聊天将在新会话中继续。{{agent}} 不记得之前的消息。",
         "agentCommandNotSignedIn": "请在运行此聊天的电脑上使用 `{{loginCommand}}` 登录 {{agent}}。",
         "interactiveAgentNotSignedIn": "请在运行此聊天的电脑上启动 `{{loginCommand}}` 并使用 `{{slashCommand}}` 登录 {{agent}}。",

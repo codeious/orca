@@ -10,6 +10,11 @@ import {
   getAgentGeneratedTabTitlesTitle
 } from './agent-generated-tab-title-copy'
 import {
+  getAgentLaunchModeDescription,
+  getAgentLaunchModeSearchKeywords,
+  getAgentLaunchModeTitle
+} from './agent-launch-mode-copy'
+import {
   getAgentStatusHooksDescription,
   getAgentStatusHooksSearchKeywords,
   getAgentStatusHooksTitle
@@ -133,6 +138,11 @@ const getAllAgentsPaneSearchEntries = createLocalizedCatalog(() => [
     id: CODEX_TERMINAL_SERVER_ISOLATION_SEARCH_ENTRY_ID,
     description: getCodexTerminalServerIsolationDescription(),
     keywords: getCodexTerminalServerIsolationSearchKeywords()
+  },
+  {
+    title: getAgentLaunchModeTitle(),
+    description: getAgentLaunchModeDescription(),
+    keywords: getAgentLaunchModeSearchKeywords()
   },
   {
     title: getAgentGeneratedTabTitlesTitle(),

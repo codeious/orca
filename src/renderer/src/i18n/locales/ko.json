@@ -13630,6 +13630,7 @@
             "resumeInChatConflict": "다른 채팅에서 이미 이 대화를 진행 중입니다.",
             "resumeInChatTranscriptMissing": "이 대화 기록을 로드할 수 없어 채팅에서 재개할 수 없습니다.",
             "resumeInChatFailed": "새 채팅에서 이 세션을 재개할 수 없습니다.",
+            "resumeInChatHeld": "터미널에서 이 대화가 아직 실행 중입니다. 대신 해당 터미널을 여세요.",
             "resumeInNewCliUnavailable": "이 세션은 CLI에서 열 수 없습니다.",
             "resumeInNewCliHostTooOld": "이 채팅을 새 CLI에서 재개하려면 채팅을 실행하는 호스트의 Orca를 업데이트하세요."
           },
@@ -13770,7 +13771,13 @@
             "resumeInNewNativeChat": "새 기본 채팅에서 재개",
             "resumeInNewCli": "새 CLI에서 재개",
             "resumeInNewCliTooltipFork": "이 대화를 새 CLI 세션으로 포크합니다.",
-            "resumeInNewCliTooltipChat": "기본 채팅은 그대로 유지됩니다."
+            "resumeInNewCliTooltipChat": "기본 채팅은 그대로 유지됩니다.",
+            "openTerminal": "터미널 열기"
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "새 채팅에서 재개할까요?",
+            "description": "이 대화가 터미널에서 아직 실행 중인지 Orca가 알 수 없습니다. 실행 중이라면 둘 다 같은 기록에 쓰게 되어 기록이 둘로 갈라집니다.",
+            "confirm": "그래도 재개"
           },
           "AiVaultSessionDeleteDialog": {
             "title": "이 세션을 삭제할까요?",
@@ -17849,6 +17856,8 @@
         "providerRetryNumberOf": "{{maxRetries}}회 중 {{attempt}}번째 재시도입니다.",
         "providerRetryLastError": "마지막 오류: {{detail}}.",
         "previousExitUnverifiable": "이전에 실행된 {{agent}}을(를) 중지하지 못했습니다.",
+        "agentVersionBelowFloor": "{{agent}} {{found}}은(는) Orca 채팅이 지원하는 가장 오래된 버전인 {{floor}}보다 이전 버전입니다. 이 컴퓨터에서 `{{updateCommand}}`을(를) 실행한 다음 다시 시도하세요.",
+        "agentProtocolUnsupported": "이 {{agent}} 버전은 아직 Orca 채팅에서 지원되지 않습니다. 터미널에서 {{agent}}을(를) 여세요.",
         "sessionNotRestored": "{{agent}}이(가) 이전 세션을 다시 열 수 없어 이 채팅은 새 세션에서 계속됩니다. {{agent}}은(는) 이전 메시지를 기억하지 않습니다.",
         "agentCommandNotSignedIn": "이 채팅을 실행하는 컴퓨터에서 `{{loginCommand}}`으로 {{agent}}에 로그인하세요.",
         "interactiveAgentNotSignedIn": "이 채팅을 실행하는 컴퓨터에서 `{{loginCommand}}`을 실행하고 `{{slashCommand}}`을 사용해 {{agent}}에 로그인하세요.",

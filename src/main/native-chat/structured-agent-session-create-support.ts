@@ -1,26 +1,37 @@
 import type { AgentSessionExecutionLocation } from '../../shared/agent-session-record'
 import type { StructuredAgentId } from '../../shared/agent-session-provider-handle'
 import { LOCAL_EXECUTION_HOST_ID } from '../../shared/execution-host'
+import type { UnsupportedAgentVersion } from '../../shared/unsupported-agent-version'
+
+export type { UnsupportedAgentVersion } from '../../shared/unsupported-agent-version'
 
 export type StructuredAgentSessionCreateSupport = {
   supported: boolean
   reason?: 'agent' | 'remote' | 'wsl'
+  /** With `reason: 'agent'`, when the installed release alone is why. A reader that does not know
+   *  it still reads the reason; this only adds the release to the words. */
+  unsupportedVersion?: UnsupportedAgentVersion
 }
 
 /** The create-support verdict: the adapter's location answer, with the reason a refusal names. */
 export function resolveStructuredAgentSessionCreateSupport(input: {
   location: AgentSessionExecutionLocation
   adapterSupportsCreate: boolean
+  unsupportedVersion?: UnsupportedAgentVersion
 }): StructuredAgentSessionCreateSupport {
   if (!input.adapterSupportsCreate) {
+    const reason =
+      input.location.executionHostId !== LOCAL_EXECUTION_HOST_ID
+        ? 'remote'
+        : input.location.wslDistro
+          ? 'wsl'
+          : 'agent'
     return {
       supported: false,
-      reason:
-        input.location.executionHostId !== LOCAL_EXECUTION_HOST_ID
-          ? 'remote'
-          : input.location.wslDistro
-            ? 'wsl'
-            : 'agent'
+      reason,
+      ...(reason === 'agent' && input.unsupportedVersion
+        ? { unsupportedVersion: input.unsupportedVersion }
+        : {})
     }
   }
   return { supported: true }

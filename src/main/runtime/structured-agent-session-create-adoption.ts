@@ -12,6 +12,8 @@ import {
   resolveStructuredAgentSessionAdoption,
   structuredAdoptionConflictError
 } from '../native-chat/structured-agent-session-history-adoption'
+import type { StructuredAdoptionAgent } from '../../shared/structured-adoption-agent'
+import { findDroidSessionFile } from '../droid/droid-session-file'
 import { resolveSessionFilePath } from '../native-chat/session-file-resolver'
 import { configuredAdditionalCodexHomePaths } from '../ai-vault/cached-session-list'
 import { getOrcaManagedCodexHomePath, getSystemCodexHomePath } from '../codex/codex-home-paths'
@@ -23,7 +25,7 @@ type AdoptionSettings = {
 export function resolveCommittedStructuredAgentSessionAdoptionIntent(input: {
   host: StructuredAgentSessionHost | null
   envelope: { sessionId: string; clientOperationId: string }
-  agent: 'claude' | 'codex'
+  agent: StructuredAdoptionAgent
   callerKey?: string
   resumeFrom?: { providerSessionId: string }
   location: AgentSessionExecutionLocation
@@ -64,7 +66,7 @@ export function resolveCommittedStructuredAgentSessionAdoptionIntent(input: {
 export async function resolveStructuredAgentSessionAdoptionForCreate(input: {
   host: StructuredAgentSessionHost | null
   settings: AdoptionSettings
-  agent: 'claude' | 'codex'
+  agent: StructuredAdoptionAgent
   providerSessionId: string
   selfSessionId: string
   selectedAccountHomePath: string
@@ -85,22 +87,28 @@ export async function resolveStructuredAgentSessionAdoptionForCreate(input: {
     providerSessionId: input.providerSessionId,
     candidateAccountHomes: structuredAdoptionAccountHomeCandidates(input),
     resolveTranscript: async ({ agent, providerSessionId, accountHomePath }) =>
-      resolveSessionFilePath(
-        agent,
-        providerSessionId,
-        agent === 'claude'
-          ? { claudeProjectsDir: join(accountHomePath, 'projects') }
-          : { codexSessionsDirs: [join(accountHomePath, 'sessions')] }
-      )
+      agent === 'droid'
+        ? findDroidSessionFile(accountHomePath, providerSessionId)
+        : resolveSessionFilePath(
+            agent,
+            providerSessionId,
+            agent === 'claude'
+              ? { claudeProjectsDir: join(accountHomePath, 'projects') }
+              : { codexSessionsDirs: [join(accountHomePath, 'sessions')] }
+          )
   })
 }
 
 /** Recognised adoption homes, most-preferred first. */
 function structuredAdoptionAccountHomeCandidates(input: {
   settings: AdoptionSettings
-  agent: 'claude' | 'codex'
+  agent: StructuredAdoptionAgent
   selectedAccountHomePath: string
 }): string[] {
+  // Droid reads one account, the one its launch pins.
+  if (input.agent === 'droid') {
+    return [input.selectedAccountHomePath]
+  }
   if (input.agent === 'claude') {
     return [
       input.selectedAccountHomePath,

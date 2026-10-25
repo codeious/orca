@@ -180,7 +180,10 @@ const REASON_WORDS = {
   structured_agent_session_unsupported: {
     clientCapabilityMissing: causeWords('notAvailable', 'hostFinding'),
     hostDisabled: causeWords('notAvailable', 'hostFinding'),
-    hostUnsupported: causeWords('cannotRunHere', 'hostFinding')
+    hostUnsupported: causeWords('cannotRunHere', 'hostFinding'),
+    // A chat that fails to start with it words the release in its own start failure; a write
+    // meeting the bare refusal can only say the agent can't run here.
+    versionUnsupported: causeWords('cannotRunHere', 'hostFinding')
   },
   agent_session_owner_restart_failed: {}
 } satisfies {

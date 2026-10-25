@@ -4,6 +4,7 @@ import {
   isPiCompatibleAgentType
 } from '../../../../shared/pi-agent-kind'
 import { applyTerminalGitCredentialPromptGuard } from '../../terminal-git-credential-guard'
+import { applyDroidTerminalEnvironment } from '../../../droid/droid-environment'
 import { ensureOpenCodeStartupPromptForLaunch } from '../../../opencode/opencode-startup-prompt-installer'
 import { mimoCodeHookService } from '../../../mimo/hook-service'
 import { agentHookServer } from '../../../agent-hooks/server'
@@ -57,6 +58,12 @@ export function buildPtyHostEnv(
   const piAgentKind = explicitPiAgentKind ?? 'pi'
   const hasLaunchCommand =
     typeof launchCommandHint === 'string' && launchCommandHint.trim().length > 0
+
+  applyDroidTerminalEnvironment(baseEnv, {
+    ...(opts.launchAgent ? { launchAgent: opts.launchAgent } : {}),
+    ...(launchCommandHint ? { launchCommand: launchCommandHint } : {}),
+    ...(opts.isWsl ? { isWsl: true } : {})
+  })
 
   // Why: unattended agents must fail instead of looping on OS credential prompts; user terminals keep normal Git behavior.
   applyTerminalGitCredentialPromptGuard(baseEnv, {
