@@ -49,9 +49,10 @@ export type DroidSessionBegin = { cwd: string; resumeId: string | null }
 
 export const DROID_MACHINE_ID = 'orca'
 const START_TIMEOUT_MS = 120_000
+// `initialize_session` names the session beside a `session` that carries only its messages.
 const startedSchema = z.looseObject({
   sessionId: z.string().min(1).optional(),
-  session: z.looseObject({ id: z.string().min(1) }).optional()
+  session: z.looseObject({ id: z.string().min(1).optional() }).optional()
 })
 
 /** One child owns its transport, turns and timeline, including shutdown retries. */
@@ -143,7 +144,10 @@ export class DroidSession {
     }
     this.refuseUnsupportedProtocol(true)
     const parsed = startedSchema.safeParse(result)
-    const id = parsed.success ? (parsed.data.sessionId ?? parsed.data.session?.id) : undefined
+    // A load answers with the session's content, never its id, so the one asked for is the one held.
+    const id = parsed.success
+      ? (parsed.data.sessionId ?? parsed.data.session?.id ?? resumeId ?? undefined)
+      : undefined
     if (!id) {
       throw new Error('Droid did not name its session')
     }

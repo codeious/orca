@@ -72,7 +72,8 @@ class FakeConnection implements DroidConnection {
       return { sessionId: 'droid-session-1' }
     }
     if (method === 'droid.load_session') {
-      return { session: { id: Reflect.get(Object(params), 'sessionId') } }
+      // A real Droid answers a load with the session's content and folder, never its id.
+      return { session: { messages: [], title: 'loaded' }, hostId: 'host-1', cwd: '/host/folder' }
     }
     return {}
   }
@@ -231,6 +232,38 @@ describe('Droid session start', () => {
       mintedAtFence: 7
     })
     expect(acquired.process).toMatchObject({ pid: 4123, spawnToken: 'spawn-token' })
+  })
+
+  it('names the session from the shape a real Droid answers with', async () => {
+    const h = await setup()
+    h.openConnection.mockImplementationOnce((_launch, handlers) => {
+      const connection = new FakeConnection(handlers)
+      connection.replies.set('droid.initialize_session', () => ({
+        sessionId: 'droid-session-real',
+        hostId: 'host-1',
+        session: { messages: [] },
+        settings: { interactionMode: 'auto' }
+      }))
+      h.connections.push(connection)
+      return connection
+    })
+
+    const { acquired } = await h.start()
+
+    expect(acquired.link).toMatchObject({ handle: { nativeId: 'droid-session-real' } })
+  })
+
+  it('refuses a new session whose answer names no session', async () => {
+    const h = await setup()
+    h.openConnection.mockImplementationOnce((_launch, handlers) => {
+      const connection = new FakeConnection(handlers)
+      connection.replies.set('droid.initialize_session', () => ({ session: { messages: [] } }))
+      h.connections.push(connection)
+      return connection
+    })
+
+    await expect(h.start()).rejects.toThrow('Droid did not name its session')
+    expect(h.connections[0]?.closed).toBe(true)
   })
 
   it('never starts a Mission', async () => {
