@@ -55,7 +55,7 @@ async function setup() {
   const workspace = join(root, 'workspace')
   await mkdir(workspace)
   const resolveCommand = vi.fn((..._input: unknown[]) => '/host/bin/droid')
-  const launchArgs = { current: [] as string[] }
+  const launchArgs: { current: string[] } = { current: [] }
   const resolver = createDroidLaunchResolver({
     store,
     resolveWorkspacePath: async () => workspace,
