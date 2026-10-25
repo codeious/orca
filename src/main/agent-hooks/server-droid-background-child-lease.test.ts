@@ -14,11 +14,8 @@ const CHILD = 'child-session'
 const servers: AgentHookServer[] = []
 
 beforeEach(() => {
-  // Why shouldAdvanceTime: the hooks are real loopback POSTs, which need the clock to move.
-  vi.useFakeTimers({
-    shouldAdvanceTime: true,
-    toFake: ['setTimeout', 'clearTimeout', 'Date', 'performance']
-  })
+  // Why not shouldAdvanceTime: a clock that follows real time moves the lease deadline under load.
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date', 'performance'] })
 })
 
 afterEach(() => {
@@ -105,10 +102,13 @@ describe('Droid background child lease on the hook server', () => {
   it('cancels the wakeup when the server stops', async () => {
     const { server, states } = await stoppedLeadWithFinishedBackgroundChild()
     const published = states.length
+    expect(vi.getTimerCount()).toBeGreaterThan(0)
 
     server.stop()
-    await vi.advanceTimersByTimeAsync(DROID_BACKGROUND_CHILD_LEASE_MS * 3)
 
+    // Why: a leftover wakeup would be a silent no-op once stop() clears the caches.
+    expect(vi.getTimerCount()).toBe(0)
+    await vi.advanceTimersByTimeAsync(DROID_BACKGROUND_CHILD_LEASE_MS * 3)
     expect(states).toHaveLength(published)
   })
 })
