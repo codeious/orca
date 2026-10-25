@@ -79,7 +79,13 @@ async function droid(
   const { port, token } = server.getCoordinates()
   const response = await fetch(`http://127.0.0.1:${port}/hook/droid`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Orca-Agent-Hook-Token': token },
+    headers: {
+      'Content-Type': 'application/json',
+      // Why: Node 24's fetch arms its keep-alive and connect timers on the faked clock, which
+      // would be counted as a leak of the relay's own.
+      Connection: 'close',
+      'X-Orca-Agent-Hook-Token': token
+    },
     body: JSON.stringify({
       paneKey,
       tabId: 'tab-1',
