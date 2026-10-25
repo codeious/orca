@@ -1,0 +1,21 @@
+package.json
+  s_48f3bc0d7f0337::t_5380701aa9c251 216
+pnpm-lock.yaml
+  s_48f3bc0d7f0337::t_fd6aa2c6184320 283-285,1316-1319,5798-5802,5903-5908,7791-7795,8655-8671,8933,8955,9088,11312,13124-13127,13215-13220,15602-15603
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2e623806d820f558f4b9944b0a8009c97353242a",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
