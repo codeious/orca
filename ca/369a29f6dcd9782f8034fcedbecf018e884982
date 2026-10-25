@@ -1,0 +1,35 @@
+src/main/pi/rpc-launch.ts
+  s_48f15c05ff9afa::t_aabcf2aaedbd84 2
+  s_48f15c05ff9afa::t_6bbf9385116dee 76
+src/main/runtime/structured-session-child-launch-env.ts
+  s_48f15c05ff9afa::t_c1d4b0f1aaf58a 3-37
+  s_48f15c05ff9afa::t_bfc8268d14bc28 1-2
+src/main/runtime/structured-child-pane-env-scrub.ts
+  s_48f15c05ff9afa::t_c56278a627c7e1 1-17
+src/main/runtime/structured-session-child-launch-env.test.ts
+  s_48f15c05ff9afa::t_dc9c849390e9d1 1,7,10-16,19-22,24-32,34,44-60,62-106
+  s_48f15c05ff9afa::t_025b8913d6c606 8-9
+  s_48f15c05ff9afa::t_cedbb83b77cdd2 33
+src/main/droid/droid-exec-launch.ts
+  s_48f15c05ff9afa::t_547a3fd77c094a 2
+  s_48f15c05ff9afa::t_0cfb50a6b332d5 26,32-33
+src/main/acp/acp-launch-specs.ts
+  s_48f15c05ff9afa::t_ec03bc918997be 5
+  s_48f15c05ff9afa::t_26171443de79bf 201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ca369a29f6dcd9782f8034fcedbecf018e884982",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
