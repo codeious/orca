@@ -67,8 +67,8 @@ export function FloatingTerminalWindowControls({
     }
     // Why: the shared launcher owns the startup plan, the route and the tab identity, so this
     // button stays one more caller of it rather than a second copy of new-agent-tab startup.
-    // Floating resolves the terminal-backed lane: a chat view over a PTY when the chat default is
-    // on, never a structured session.
+    // Floating routes like any workspace: a structured session when the agent's setting or the
+    // Chat UI switch says chat, a terminal otherwise.
     const result = launchAgentInNewTab({
       requestId: newAgentLaunchRequestId(),
       agent: defaultAgent,

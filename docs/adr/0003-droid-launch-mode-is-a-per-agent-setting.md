@@ -20,5 +20,6 @@ Whether a new Droid launch opens as a structured Droid session or a Droid termin
 - The feasibility rules are unchanged. SSH, WSL, a Droid below the version floor, a host that is not ready, a custom start directory, or a reused terminal still give a Droid terminal session, and the launch receipt records why.
 - The receipt reason `user_default` says "the default for new agent tabs in your settings". It needs a sibling reason that names the per-agent setting, so a downgrade message points at the setting the user actually changed.
 - Older peers ignore the new field. An older host has no Droid registration, so it keeps opening a Droid terminal session.
-- Explicit chat requests ("Resume in new chat") and the floating terminal ignore the setting, as they already ignore the switch.
+- Explicit chat requests ("Resume in new chat") ignore the setting, as they already ignore the switch.
+- The floating terminal follows the setting as it follows the switch, like any workspace. The first draft said it ignores both; the code already routes it through the same launch decision, and a special case for Droid alone would split one agent from the rest.
 - Running and sleeping Droid terminal sessions are never converted. With the default value, only users who already have the switch on see a change: their new Droid launches become structured once Droid meets the version floor.

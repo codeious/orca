@@ -45,9 +45,9 @@ A per-agent launch setting decides whether a new Droid launch opens as a structu
 - **Reach.** It enters through the shared launch-route policy, so the renderer tab, mobile create, CLI create, and orchestration worker all honour it.
 - **Feasibility is unchanged.** SSH, WSL, a Droid below the Droid floor, a host that is not ready, a custom start directory, or a reused terminal always give a Droid terminal session. The launch receipt records why.
 - **Receipt reasons.** `user_default` keeps its meaning. A sibling reason names the per-agent setting. `agent_version_unsupported` (section 5.2) covers a Droid below the floor.
-- **Ignored by:** the floating terminal, explicit chat requests ("Resume in new chat"), automations (`terminalOnly`), and Start Mission.
+- **Ignored by:** explicit chat requests ("Resume in new chat"), automations (`terminalOnly`), and Start Mission. The floating terminal does not ignore it: it routes like any workspace, so it follows the setting as it follows the Chat UI switch.
 - **Migration.** Nothing is converted. Running and sleeping Droid terminal sessions stay terminals. With the default value, only users who already have the switch on see a change: new Droid launches become structured once Droid meets the floor.
-- **Open:** where the setting appears in desktop and mobile settings, and its wording (section 16).
+- **Placement and wording (decided in #50).** A Select labelled "Launch mode" in the expanded fields of Droid's row in Settings > Agents, first among them. Its options are "Follow Chat UI switch", "Terminal", and "Chat UI". One sentence under it says what a new Droid session does now and why. A second says Droid always opens in the terminal on WSL and SSH workspaces and when it is older than the Droid floor. The control is always enabled, because the global setting cannot know the workspace host or the Droid version. Mobile has no control in the first release: a phone launch follows the computer's setting.
 
 ## 4. Hosts for structured Droid sessions
 
@@ -265,7 +265,7 @@ Droid takes no lock. A second process loads a held session without error and app
 **Guard grammar.** The vault lookup, `findOwnership`, `findResumeOwnership`, and the resume parser become a per-provider table (`src/main/ai-vault/structured-session-ownership.ts`). Run blast-radius first. For Droid:
 
 - Refused while a chat owns the id: `-r <id>`, `--resume <id>`, `droid resume <id>`, `droid exec -s <id>`, `droid exec --session-id <id>`.
-- Treated as target-less and refused while any Droid chat is live: `--resume` with no id, `--last`, `droid resume` with no id, a session link as the target.
+- Treated as target-less and refused while any Droid chat exists on this host, closed or not, as for Claude and Codex (a released lease without proof of exit reads `unverifiable`, never as gone): `--resume` with no id, `--last`, `droid resume` with no id, a session link as the target.
 - Always allowed: `--fork`.
 - Flags were read from `droid --help`, `droid resume --help`, and `droid exec --help` on 0.244.0, then re-checked on 0.238.0 and 0.249.0: the grammar is the same. Inside `droid exec`, `-r` is the reasoning effort, not resume, so only the root command reads it as resume.
 
@@ -493,7 +493,7 @@ A Mission spends credits, so these are done by hand and repeated when a version 
 These look like real decisions. The user chose to compile the spec first.
 
 1. **Mission credits.** The detail message carries no `credits`, and the panel's credit number is a placeholder. On disk each session's `.settings.json` holds its own credit count, so a Mission's total is the sum over its sessions, subagents included. An optional `credits` field can be added later without a new capability name. Decide before slice 9 ships the facts section. Elapsed time is decided: clients compute it from `startedAt` and `updatedAt`.
-2. **Droid launch setting placement and wording** in desktop and mobile settings. Decide before slice 6.
+2. **Droid launch setting placement and wording.** Decided in #50; see section 3.
 3. **Wording** of the Droid automation editor note and of the signed-out failure message. Left to the build by #46 and #48.
 4. **The row field** that marks a Droid pane as holding an owned Mission, for session reuse. Left to the build by #46.
 
