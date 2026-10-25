@@ -5,6 +5,7 @@ export const AGENT_SESSION_SIGN_IN = [
   { agent: 'codex', loginCommand: ['codex', 'login'] },
   { agent: 'grok', loginCommand: ['grok', 'login'] },
   { agent: 'opencode', loginCommand: ['opencode', 'auth', 'login'] },
+  { agent: 'droid', loginCommand: ['droid'], slashCommand: '/login' },
   { agent: 'pi', loginCommand: ['pi'], slashCommand: '/login' },
   { agent: 'omp', loginCommand: [] }
 ] as const
