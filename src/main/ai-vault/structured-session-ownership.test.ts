@@ -199,6 +199,28 @@ describe('structured AI Vault ownership', () => {
     ).rejects.toThrow('agent_session_conflict')
   })
 
+  // The vault builds `cd '<cwd>' && <agent> --resume`; a folder named after an agent is not that agent.
+  it.each([
+    { provider: 'claude' as const, folder: 'droid', command: `claude --resume '${DROID_SESSION}'` },
+    { provider: 'claude' as const, folder: 'codex', command: `claude --resume '${DROID_SESSION}'` },
+    { provider: 'codex' as const, folder: 'droid', command: `codex resume '${DROID_SESSION}'` },
+    { provider: 'codex' as const, folder: 'claude', command: `codex resume '${DROID_SESSION}'` },
+    { provider: 'droid' as const, folder: 'claude', command: `droid --resume '${DROID_SESSION}'` },
+    { provider: 'droid' as const, folder: 'codex', command: `droid --resume '${DROID_SESSION}'` }
+  ])(
+    'refuses a $provider resume of the owned session from a folder named $folder',
+    async ({ provider, folder, command }) => {
+      installOwnership({ provider, providerSessionId: DROID_SESSION })
+
+      await expect(
+        assertLegacyAiVaultResumeCommandAllowed(
+          `cd '/home/me/${folder}' && ${command}`,
+          async () => undefined
+        )
+      ).rejects.toThrow('agent_session_conflict')
+    }
+  )
+
   describe('Droid chats', () => {
     it('shows a Droid chat session once, as the chat-owned row', () => {
       installOwnership({ provider: 'droid', providerSessionId: DROID_SESSION })

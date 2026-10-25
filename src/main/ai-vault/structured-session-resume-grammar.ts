@@ -1,3 +1,5 @@
+import { commandWordIndex, splitShellCommandSegments } from './shell-command-segments'
+
 export type ResumeInvocation = {
   provider: string
   /** The session id the command names. Null when it may pick any session of the provider. */
@@ -172,13 +174,15 @@ export function parseResumeInvocation(command: string): ResumeInvocation | null 
   // Keep this deliberately conservative: shell quoting is normalized only
   // enough to identify executable/flag tokens; an unrecognized shape is not
   // treated as proof that a different session is being resumed.
-  const tokens = command.match(/"[^"\\]*(?:\\.[^"\\]*)*"|'[^']*'|[^\s]+/g) ?? []
-  const normalized = tokens.map((token) => token.replace(/^['"]|['"]$/g, ''))
-  for (const [index, token] of normalized.entries()) {
-    const grammar = GRAMMARS.find((candidate) => candidate.executable.test(token))
-    if (grammar) {
-      const parsed = grammar.parse(normalized.slice(index + 1))
-      return parsed ? { provider: grammar.provider, ...parsed } : null
+  for (const words of splitShellCommandSegments(command)) {
+    const index = commandWordIndex(words)
+    const grammar =
+      index === -1
+        ? undefined
+        : GRAMMARS.find((candidate) => candidate.executable.test(words[index]!))
+    const parsed = grammar?.parse(words.slice(index + 1))
+    if (grammar && parsed) {
+      return { provider: grammar.provider, ...parsed }
     }
   }
   return null
