@@ -14,7 +14,7 @@ import {
   userPrompt,
   type DroidHookDriver
 } from './agent-hook-listener-droid-driver'
-import { DROID_BACKGROUND_CHILD_LEASE_MS } from './agent-hook-listener/providers/droid-sessions'
+import { DROID_BACKGROUND_CHILD_LEASE_MS } from './agent-hook-listener/providers/droid-session-status'
 import { isAgentStatusHeldOpenByChildWork } from './agent-lead-status-fold'
 
 let driver: DroidHookDriver

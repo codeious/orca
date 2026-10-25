@@ -49,6 +49,8 @@ describe('Droid process identity and SessionEnd', () => {
       expect(event?.agentPresence?.process).toEqual(DROID_OWNER)
       expect(event?.payload.state).toBe('working')
       expect(driver.row()?.agentPresence?.ended).toBeUndefined()
+      // The row is what the host retains for resume if the exit is confirmed.
+      expect(driver.row()?.providerSession?.id).toBe(LEAD_ID)
     }
   )
 
@@ -111,6 +113,8 @@ describe('Droid lead session', () => {
     expect(foreign?.payload.state).toBe('working')
     expect(driver.state.lastPromptByPaneKey.get(PANE_KEY)).toBe('ship it')
     expect(driver.row()?.agentPresence?.process).toEqual(DROID_OWNER)
+    // Another process's session id never becomes the pane's resume identity.
+    expect(foreign?.providerSession?.id).toBe(LEAD_ID)
     expect(driver.hook(userPrompt(LEAD_ID, 'still lead'))?.payload.prompt).toBe('still lead')
   })
 

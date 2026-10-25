@@ -1,22 +1,10 @@
 import { isSameAgentProcess, type AgentProcessIdentity } from '../../agent-process-presence'
-import { continueMainAgentStatus, foldAgentLeadStatus } from '../../agent-lead-status-fold'
-import type { AgentLeadStatusResolution } from '../../agent-lead-status-fold'
-import type {
-  AgentMainAgentStatus,
-  AgentStatusState,
-  ParsedAgentStatusPayload
-} from '../../agent-status-types'
-import {
-  codexRosterChildWorkLiveness,
-  upsertCodexSubagent,
-  type CodexSubagentRoster
-} from '../../codex-subagent-roster'
+import type { AgentMainAgentStatus, ParsedAgentStatusPayload } from '../../agent-status-types'
+import type { CodexSubagentRoster } from '../../codex-subagent-roster'
 import type { AgentHookEventPayload } from '../listener-event'
 import { clearPaneTurnCacheState, type HookListenerState } from '../listener-state'
 import { readString } from '../tool-input-preview'
 
-/** How long a row stays working after a background child's Stop, waiting for the lead to wake. */
-export const DROID_BACKGROUND_CHILD_LEASE_MS = 10_000
 const MAX_TRACKED_SESSIONS = 256
 
 type DroidChild = {
@@ -37,6 +25,13 @@ export type DroidPaneSessions = {
   /** The children on show: working or waiting. */
   roster: CodexSubagentRoster
   leaseUntil?: number
+  /** Set when the lead's SessionEnd starts an exit watch; any later lead hook clears it. */
+  exitMarker?: object
+}
+
+/** The marker an exit watch holds; it goes stale when the lead speaks again or the pane is cleared. */
+export function droidExitMarker(state: HookListenerState, paneKey: string): object | undefined {
+  return state.droidSessionsByPaneKey.get(paneKey)?.exitMarker
 }
 
 export type DroidHookAdmission =
@@ -119,6 +114,13 @@ function isForeignSender(
   return owner !== undefined && !(sender && isSameAgentProcess(owner, sender))
 }
 
+function clearExitMarker(state: HookListenerState, paneKey: string): void {
+  const sessions = state.droidSessionsByPaneKey.get(paneKey)
+  if (sessions) {
+    sessions.exitMarker = undefined
+  }
+}
+
 function restoredSessions(
   state: HookListenerState,
   paneKey: string,
@@ -153,6 +155,7 @@ function admitStart(
     }
     return SKIP
   }
+  clearExitMarker(state, paneKey)
   // Why: without a captured identity a repeat of the lead's id can be a relaunch of the same session.
   if (sessions?.leadId === sessionId && sender) {
     return SKIP
@@ -180,6 +183,7 @@ export function admitDroidHook(
   }
   const sessionId = readString(hookPayload, 'session_id')
   if (!sessionId) {
+    clearExitMarker(state, paneKey)
     return { kind: 'lead' }
   }
   const sessions =
@@ -196,8 +200,13 @@ export function admitDroidHook(
   }
   if (sessionId === sessions.leadId) {
     if (eventName === 'SessionEnd') {
-      return sender && previous ? { kind: 'restate', sessionEnd: true } : SKIP
+      if (!sender || !previous) {
+        return SKIP
+      }
+      sessions.exitMarker = {}
+      return { kind: 'restate', sessionEnd: true }
     }
+    sessions.exitMarker = undefined
     return { kind: 'lead', sessions }
   }
   return sessions.children.has(sessionId) ? { kind: 'child', sessions, sessionId } : SKIP
@@ -211,7 +220,10 @@ export function admitDroidHook(
 export function restatedDroidEvent(
   previous: AgentHookEventPayload | undefined,
   admission: Extract<DroidHookAdmission, { kind: 'skip' | 'restate' }>,
-  base: Pick<AgentHookEventPayload, 'launchToken' | 'tabId' | 'worktreeId' | 'agentPresence'>
+  base: Pick<
+    AgentHookEventPayload,
+    'launchToken' | 'tabId' | 'worktreeId' | 'agentPresence' | 'providerSession'
+  >
 ): AgentHookEventPayload | null {
   if (!previous || admission.kind === 'skip') {
     return null
@@ -230,6 +242,9 @@ export function restatedDroidEvent(
     paneKey: previous.paneKey,
     source: 'droid',
     connectionId: null,
+    // Why: the restated row is the one the host keeps for resume, so it must name the lead the pane
+    // holds: the replacement's own id once the lead changed, never the sender's.
+    providerSession: admission.settled ? base.providerSession : previous.providerSession,
     ...(admission.sessionEnd ? { hookEventName: 'SessionEnd' } : {}),
     payload
   }
@@ -239,98 +254,9 @@ export function restatedDroidEvent(
  * A child event restates the lead's id as the pane's resume identity: the host keeps a prior one
  * across child events for Codex only, so omitting it would erase the pane's.
  */
-export function droidChildResumeSession(admission: DroidHookAdmission | undefined) {
-  return admission?.kind === 'child'
-    ? { key: 'session_id' as const, id: admission.sessions.leadId }
-    : undefined
-}
-
-export type DroidNotification = 'permission' | 'idle' | undefined
-
-function showChild(sessions: DroidPaneSessions, id: string, state: 'working' | 'waiting'): void {
-  upsertCodexSubagent(
-    sessions.roster,
-    id,
-    { agentType: 'droid', description: `Droid agent ${id.slice(0, 8)}`, state },
-    Date.now()
-  )
-}
-
-/** Applies a child's event to its snapshot. True when the row has something new to say. */
-export function applyDroidChildEvent(
-  sessions: DroidPaneSessions,
-  id: string,
-  eventName: unknown,
-  notification: DroidNotification
-): boolean {
-  if (
-    eventName === 'UserPromptSubmit' ||
-    eventName === 'PreToolUse' ||
-    eventName === 'PostToolUse'
-  ) {
-    showChild(sessions, id, 'working')
-    return true
-  }
-  if (eventName === 'Notification' && notification === 'permission') {
-    showChild(sessions, id, 'waiting')
-    return true
-  }
-  if (eventName === 'Notification' && notification === 'idle') {
-    return sessions.roster.delete(id)
-  }
-  if (eventName !== 'Stop' && eventName !== 'SessionEnd') {
-    return false
-  }
-  const outlivedStop = sessions.children.get(id)?.outlivedStop === true
-  const shown = sessions.roster.delete(id)
-  sessions.children.delete(id)
-  sessions.finished.add(id)
-  if (
-    outlivedStop &&
-    sessions.lead?.state === 'done' &&
-    !codexRosterChildWorkLiveness(sessions.roster)
-  ) {
-    sessions.leaseUntil = Date.now() + DROID_BACKGROUND_CHILD_LEASE_MS
-    return true
-  }
-  return shown
-}
-
-/** Moves the lead's own state, and decides which children a Stop or an idle prompt leaves behind. */
-export function applyDroidLeadEvent(
-  sessions: DroidPaneSessions,
-  event: {
-    eventName: unknown
-    stateName: AgentStatusState
-    notification: DroidNotification
-  }
-): void {
-  sessions.lead = continueMainAgentStatus(sessions.lead, { state: event.stateName }, Date.now())
-  sessions.leaseUntil = undefined
-  if (event.eventName === 'Stop') {
-    for (const child of sessions.children.values()) {
-      child.outlivedStop = true
-    }
-  }
-  if (event.eventName === 'Notification' && event.notification === 'idle') {
-    for (const [id, child] of sessions.children) {
-      if (!child.outlivedStop) {
-        sessions.roster.delete(id)
-        sessions.children.delete(id)
-      }
-    }
-  }
-}
-
-export function resolveDroidRowStatus(
-  sessions: DroidPaneSessions,
-  now = Date.now()
-): AgentLeadStatusResolution {
-  const live = codexRosterChildWorkLiveness(sessions.roster)
-  const leased = live === null && sessions.leaseUntil !== undefined && sessions.leaseUntil > now
-  return foldAgentLeadStatus({
-    // Why: a child event with no lead event before it means the lead is mid-turn.
-    leadState: sessions.lead?.state ?? 'working',
-    childWorkLiveness: leased ? 'working' : live
-  })
+export function droidRowProviderSession(
+  admission: DroidHookAdmission | undefined,
+  own: AgentHookEventPayload['providerSession'] | null
+): AgentHookEventPayload['providerSession'] | null {
+  return admission?.kind === 'child' ? { key: 'session_id', id: admission.sessions.leadId } : own
 }

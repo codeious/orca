@@ -14,10 +14,9 @@ import {
   applyDroidChildEvent,
   applyDroidLeadEvent,
   resolveDroidRowStatus,
-  type DroidHookAdmission,
-  type DroidNotification,
-  type DroidPaneSessions
-} from './droid-sessions'
+  type DroidNotification
+} from './droid-session-status'
+import type { DroidHookAdmission, DroidPaneSessions } from './droid-sessions'
 import {
   isDroidAskUserTool,
   isDroidHighRiskToolUse,

@@ -28,7 +28,7 @@ import {
 import { claudeRowHasUnlistedLiveWork } from './agent-hook-listener/providers/claude-pane-hold-evidence'
 import {
   admitDroidHook,
-  droidChildResumeSession,
+  droidRowProviderSession,
   restatedDroidEvent
 } from './agent-hook-listener/providers/droid-sessions'
 import { readString } from './agent-hook-listener/tool-input-preview'
@@ -198,10 +198,9 @@ export function normalizeHookPayload(
   }
 
   // Why: presence needs the agent's own process; without it the hook cannot speak for liveness.
-  const agentProcess =
-    source === 'claude' || source === 'droid'
-      ? readAgentProcessIdentity(record.agentProcess)
-      : undefined
+  const agentProcess = readAgentProcessIdentity(
+    source === 'claude' || source === 'droid' ? record.agentProcess : undefined
+  )
   const agentPresence = agentProcess ? { agent: source, process: agentProcess } : undefined
   const sessionEndReason = readString(hookPayloadRecord, 'reason')
   if (
@@ -247,7 +246,8 @@ export function normalizeHookPayload(
       launchToken,
       tabId,
       worktreeId,
-      agentPresence
+      agentPresence,
+      providerSession: providerSession ?? undefined
     })
   }
 
@@ -264,8 +264,7 @@ export function normalizeHookPayload(
     previousOpenCodeMainAgent: options.previousOpenCodeMainAgent,
     droidAdmission
   })
-  const droidChildSession = droidChildResumeSession(droidAdmission)
-  const rowProviderSession = droidChildSession ?? providerSession
+  const rowProviderSession = droidRowProviderSession(droidAdmission, providerSession)
   const providerSessionOnly =
     (source === 'pi' || source === 'prime-agent' || source === 'jcode') &&
     eventName === 'session_start' &&
@@ -297,19 +296,20 @@ export function normalizeHookPayload(
     // Normalization is transport-agnostic; only ingestRemote knows the mux identity to stamp.
     connectionId: null,
     ...(restoredUnconfirmed ? { restoredUnconfirmed: true } : {}),
-    hasExplicitPrompt: droidChildSession
-      ? undefined
-      : source === 'amp'
-        ? hasExplicitAmpPrompt(eventName, promptText, hookPayloadRecord)
-          ? true
-          : undefined
-        : hasExplicitUserPrompt(
-            source,
-            eventName,
-            extractedPrompt,
-            dispatched.resolvedPromptText,
-            dispatched.hasTranscriptPromptEvidence
-          ),
+    hasExplicitPrompt:
+      droidAdmission?.kind === 'child'
+        ? undefined
+        : source === 'amp'
+          ? hasExplicitAmpPrompt(eventName, promptText, hookPayloadRecord)
+            ? true
+            : undefined
+          : hasExplicitUserPrompt(
+              source,
+              eventName,
+              extractedPrompt,
+              dispatched.resolvedPromptText,
+              dispatched.hasTranscriptPromptEvidence
+            ),
     promptInteractionKey: dispatched.promptInteractionKey,
     hookEventName: typeof eventName === 'string' ? eventName : undefined,
     providerPromptId:
