@@ -1,0 +1,25 @@
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat.test.ts
+  s_f87fd4e7a08936::t_8e5436597b9016 163,169-173
+  s_f87fd4e7a08936::t_c7e747ef15014a 174-176
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat.ts
+  s_f87fd4e7a08936::t_96048ffd75e51c 126-127
+  s_f87fd4e7a08936::t_a6771b57c28a9c 92-93
+  s_f87fd4e7a08936::t_bfa02602fc2a0d 128
+  s_f87fd4e7a08936::t_19670077fb62e0 129-132,138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a0d173e2ffc257042e4bf68b78b955a8ae028828",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
