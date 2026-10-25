@@ -6,10 +6,12 @@ import { supportsSupervisedProviderChildLocation } from '../provider-process/sup
 import type {
   StructuredAgentAdapterContext,
   StructuredAgentLaunchCheckInput,
+  StructuredAgentModelCatalogContext,
   StructuredAgentRuntimeAdapter,
   StructuredAgentRuntimeRegistration
 } from '../runtime/structured-agent-runtime-registrations'
 import { DROID_AGENT } from './droid-agent-definition'
+import { createDroidModelCatalogProbe } from './droid-model-catalog-probe'
 import {
   droidUnsupportedVersion,
   droidVersionSupported,
@@ -18,16 +20,24 @@ import {
 import { DroidSessionAdapter } from './droid-session-adapter'
 import { createDroidLaunchResolver } from './droid-structured-launch-resolution'
 
+/** The environment every Droid child starts from: a chat's launch and a model listing alike. */
+function droidEnvironment({
+  deps,
+  environment
+}: StructuredAgentModelCatalogContext): () => Promise<NodeJS.ProcessEnv> {
+  return async () => ({
+    ...(await environment.resolveBaseEnvironment()),
+    ...deps.resolveAgentLaunchEnv?.('droid')
+  })
+}
+
 function createDroidAdapter(context: StructuredAgentAdapterContext): StructuredAgentRuntimeAdapter {
   const { deps } = context
   return new DroidSessionAdapter({
     resolveLaunch: createDroidLaunchResolver({
       store: context.store,
       resolveWorkspacePath: deps.resolveWorkspacePath,
-      resolveEnvironment: async () => ({
-        ...(await context.environment.resolveBaseEnvironment()),
-        ...deps.resolveAgentLaunchEnv?.('droid')
-      }),
+      resolveEnvironment: droidEnvironment(context),
       ...(deps.resolveAgentCommandSettings
         ? { resolveCommandSettings: deps.resolveAgentCommandSettings }
         : {})
@@ -75,9 +85,16 @@ export function resolveDroidAccountHome({ launchEnv }: { launchEnv: NodeJS.Proce
 export const DROID_RUNTIME_REGISTRATION: StructuredAgentRuntimeRegistration = {
   definition: DROID_AGENT,
   createAdapter: createDroidAdapter,
-  modelCatalog: () => ({
-    kind: 'unavailable',
-    reason: 'Droid lists its models over a session it runs'
+  modelCatalog: (context) => ({
+    kind: 'probe',
+    // The list does not mark the model a new chat runs. A no-pick session teaches that.
+    listingNamesConfiguredModel: false,
+    probe: createDroidModelCatalogProbe({
+      resolveEnvironment: droidEnvironment(context),
+      ...(context.deps.resolveAgentCommandSettings
+        ? { resolveCommandSettings: context.deps.resolveAgentCommandSettings }
+        : {})
+    })
   }),
   supportsLocation: supportsSupervisedProviderChildLocation,
   supportsLaunch: async (launch) => {
