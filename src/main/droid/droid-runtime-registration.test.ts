@@ -1,9 +1,10 @@
-import { chmod, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { runProcess } from '@orca/process-host'
 import { LOCAL_EXECUTION_HOST_ID } from '../../shared/execution-host'
+import type * as CliCommandResolution from '../../shared/node-cli-command-resolution'
 import {
   STRUCTURED_AGENT_RUNTIME_REGISTRATIONS,
   structuredAgentRuntimeRegistration
@@ -12,6 +13,17 @@ import { DROID_AGENT, DROID_ACCOUNT_HOME_VARIABLE } from './droid-agent-definiti
 import { DROID_RUNTIME_REGISTRATION, resolveDroidAccountHome } from './droid-runtime-registration'
 
 vi.mock('@orca/process-host', () => ({ runProcess: vi.fn() }))
+
+// A machine that has droid in a system directory would otherwise find it past the fake PATH.
+const resolution = vi.hoisted(() => ({ droidInstalled: true }))
+vi.mock('../../shared/node-cli-command-resolution', async (importOriginal) => {
+  const actual = await importOriginal<typeof CliCommandResolution>()
+  return {
+    ...actual,
+    resolveCliCommand: (...args: Parameters<typeof actual.resolveCliCommand>) =>
+      resolution.droidInstalled ? actual.resolveCliCommand(...args) : args[0]
+  }
+})
 
 type LaunchInput = Parameters<NonNullable<typeof DROID_RUNTIME_REGISTRATION.supportsLaunch>>[0]
 function supportsLaunch(launch: LaunchInput): Promise<boolean> {
@@ -44,6 +56,7 @@ function prints(stdout: string, result: Partial<Awaited<ReturnType<typeof runPro
 }
 
 beforeEach(async () => {
+  resolution.droidInstalled = true
   vi.mocked(runProcess).mockReset()
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   vi.spyOn(console, 'info').mockImplementation(() => {})
@@ -143,16 +156,12 @@ describe('Droid launch support before session creation', () => {
     expect(runProcess).toHaveBeenCalledWith(expect.objectContaining({ program: process.execPath }))
   })
 
-  it('keeps the terminal chat, and names no release, when no droid is installed', async () => {
-    const empty = join(root, 'empty')
-    await mkdir(empty)
-    vi.mocked(runProcess).mockRejectedValue(
-      Object.assign(new Error('spawn droid ENOENT'), { code: 'ENOENT', path: 'droid' })
-    )
-    const notInstalled = { ...input(), env: { PATH: empty, HOME: '/host/home' } }
+  it('opens the chat to say the CLI is missing, probing and naming nothing, when no droid is installed', async () => {
+    resolution.droidInstalled = false
 
-    await expect(supportsLaunch(notInstalled)).resolves.toBe(false)
-    await expect(unsupportedVersion(notInstalled)).resolves.toBeNull()
+    await expect(supportsLaunch(input())).resolves.toBe(true)
+    await expect(unsupportedVersion(input())).resolves.toBeNull()
+    expect(runProcess).not.toHaveBeenCalled()
   })
 
   it('leaves an unrunnable Command setting to the launch to refuse', async () => {

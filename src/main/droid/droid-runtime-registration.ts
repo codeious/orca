@@ -1,5 +1,5 @@
 import { homedir } from 'node:os'
-import { join } from 'node:path'
+import { isAbsolute, join } from 'node:path'
 import { agentSessionAccountHome } from '../../shared/agent-session-account-home'
 import { isAgentSessionPreSpawnError } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { supportsSupervisedProviderChildLocation } from '../provider-process/supervised-provider-child-location'
@@ -50,11 +50,14 @@ function createDroidAdapter(context: StructuredAgentAdapterContext): StructuredA
   })
 }
 
-/** The binary the launch would spawn; null when the Command setting cannot run, which the launch
- *  itself refuses with words a person can act on. */
+/** The installed binary the launch would spawn. Null when there is none to read a release from:
+ *  the Command setting cannot run, or no droid is installed. The launch itself refuses both with
+ *  words a person can act on, so neither falls to a terminal. */
 function launchedDroid({ env, commandSettings }: StructuredAgentLaunchCheckInput): string | null {
   try {
-    return resolveDroidCommand(env, commandSettings)
+    const command = resolveDroidCommand(env, commandSettings)
+    // Resolution hands back the bare name when nothing is installed.
+    return isAbsolute(command) ? command : null
   } catch (error) {
     if (isAgentSessionPreSpawnError(error)) {
       return null
@@ -79,7 +82,6 @@ export const DROID_RUNTIME_REGISTRATION: StructuredAgentRuntimeRegistration = {
   supportsLocation: supportsSupervisedProviderChildLocation,
   supportsLaunch: async (launch) => {
     const command = launchedDroid(launch)
-    // An unrunnable Command setting is the launch's refusal to state, not a terminal.
     return command === null || droidVersionSupported({ ...launch, command })
   },
   unsupportedVersion: async (launch) => {
