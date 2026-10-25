@@ -1,205 +1,36 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AgentSessionProcessIdentity } from '../../shared/agent-session-record'
 import type { AgentJournalMessageItem } from '../../shared/agent-session-journal-types'
-import {
-  closeProviderTimelineRigs,
-  messageText,
-  openProviderTimelineRig
-} from '../native-chat/agent-session-timeline/provider-timeline-assembler-test-support'
+import { messageText } from '../native-chat/agent-session-timeline/provider-timeline-assembler-test-support'
 import {
   AgentSessionAcquisitionExitProvenError,
   AgentSessionAcquisitionExitUnprovenError,
   AgentSessionAcquisitionRootExitObservedError,
-  AgentSessionPromptAnswerRejectedError,
-  type StructuredAgentSessionAcquireInput
+  AgentSessionPromptAnswerRejectedError
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { providerStartupFailureFact } from '../native-chat/agent-session-wire/structured-agent-session-failure-text'
 import { withMissingProviderExecutable } from '../provider-process/provider-executable-missing'
 import { agentSessionLaunchFolderMissing } from '../runtime/agent-session-launch-directory'
 import { isAgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
-import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
+import {
+  DROID_RIG_SESSION,
+  FakeConnection,
+  runDroidRigCleanups,
+  setupDroidAdapter
+} from './droid-adapter-rig.test-support'
 import { DROID_HANDLE_TRANSPORT } from './droid-agent-definition'
-import type { DroidAgentConnectionOptions } from './droid-agent-connection'
 import { DroidRpcError } from './droid-rpc-errors'
-import type { DroidConnection } from './droid-session'
 import { DroidSessionAdapter } from './droid-session-adapter'
 import { buildDroidExecLaunch } from './droid-exec-launch'
-import type { DroidResolvedLaunch } from './droid-structured-launch-resolution'
 
-const sessionId = 'session-timeline'
-const cleanups: (() => Promise<void>)[] = []
-afterEach(async () => {
-  for (const cleanup of cleanups.splice(0)) {
-    await cleanup()
-  }
-  await closeProviderTimelineRigs()
-})
-
-type Reply = (params: unknown) => unknown
-
-class FakeConnection implements DroidConnection {
-  pid = 4123
-  closed = false
-  rootVerdict: 'live' | 'unverifiable' | 'exited' = 'live'
-  processless = false
-  protocolVersion: string | undefined = '1.275.0'
-  lastCloseResult: DroidConnection['lastCloseResult'] = null
-  closeResult: Awaited<ReturnType<DroidConnection['close']>> = { root: 'exited', tree: 'exited' }
-  readonly requests: { method: string; params: unknown; timeoutMs?: number | null }[] = []
-  readonly replies = new Map<string, Reply>()
-  lastId = ''
-  private closing = false
-  private ids = 0
-  private readonly exitListeners: (() => void)[] = []
-  constructor(readonly handlers: DroidAgentConnectionOptions) {}
-  async request(
-    method: string,
-    params: unknown = {},
-    options: { timeoutMs?: number | null; onId?: (id: string) => void } = {}
-  ): Promise<unknown> {
-    this.lastId = `orca-${++this.ids}`
-    options.onId?.(this.lastId)
-    this.requests.push({
-      method,
-      params,
-      ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {})
-    })
-    const reply = this.replies.get(method)
-    if (reply) {
-      return reply(params)
-    }
-    if (method === 'droid.initialize_session') {
-      return { sessionId: 'droid-session-1' }
-    }
-    if (method === 'droid.load_session') {
-      // A real Droid answers a load with the session's content and folder, never its id.
-      return { session: { messages: [], title: 'loaded' }, hostId: 'host-1', cwd: '/host/folder' }
-    }
-    return {}
-  }
-  async close(): Promise<Awaited<ReturnType<DroidConnection['close']>>> {
-    this.closing = true
-    this.closed = true
-    this.rootVerdict = this.closeResult.root
-    this.lastCloseResult = this.closeResult
-    if (this.closeResult.root === 'exited') {
-      this.exit(new Error('Droid closed'))
-    }
-    return this.closeResult
-  }
-  pauseReading(): void {}
-  resumeReading(): void {}
-  onExit(listener: () => void): void {
-    if (this.rootVerdict === 'exited') {
-      listener()
-    } else {
-      this.exitListeners.push(listener)
-    }
-  }
-  notify(notification: Record<string, unknown>): void {
-    this.handlers.onNotification?.('droid.session_notification', {
-      sessionId: 'droid-session-1',
-      notification
-    })
-  }
-  echo(text: string, requestId = this.lastId): void {
-    this.notify({
-      type: 'create_message',
-      message: { id: `user-${text}`, role: 'user', content: [{ type: 'text', text }] },
-      requestId
-    })
-  }
-  exit(error = new Error('child exited')): void {
-    this.closed = true
-    this.rootVerdict = 'exited'
-    for (const listener of this.exitListeners.splice(0)) {
-      listener()
-    }
-    this.handlers.onExit?.(error, {
-      expected: this.closing,
-      exit: { code: 1, signal: null, processless: this.processless }
-    })
-  }
-}
+const sessionId = DROID_RIG_SESSION
+const setup = setupDroidAdapter
+afterEach(runDroidRigCleanups)
 
 const text = (value: string): AgentJournalMessageItem => ({
   kind: 'message',
   role: 'user',
   blocks: [{ type: 'text', text: value }]
 })
-
-async function setup(launch: Partial<DroidResolvedLaunch> = {}) {
-  const rig = await openProviderTimelineRig({ agent: 'droid', sessionId })
-  const connections: FakeConnection[] = []
-  const lifecycle = vi.fn(),
-    settled = vi.fn(),
-    idle = vi.fn()
-  const onSpawned = vi.fn(async (_process: AgentSessionProcessIdentity) => {
-    expect(connections.at(-1)?.requests).toEqual([])
-  })
-  const input: StructuredAgentSessionAcquireInput = {
-    identity: {
-      sessionId,
-      workspaceId: 'folder-1',
-      hostId: 'local',
-      agent: 'droid',
-      providerHandle: null
-    },
-    fence: 7,
-    spawnToken: 'spawn-token',
-    events: rig.eventSink,
-    onSpawned
-  }
-  const resolved = vi.fn(async (): Promise<DroidResolvedLaunch> => ({
-    command: '/host/bin/droid',
-    cwd: '/host/folder',
-    env: { PATH: '/host/bin' },
-    previous: null,
-    autonomyLevel: 'high',
-    ...launch
-  }))
-  const openConnection = vi.fn(
-    (_launch: ProviderProcessLaunch, handlers: DroidAgentConnectionOptions) => {
-      const connection = new FakeConnection(handlers)
-      connections.push(connection)
-      return connection
-    }
-  )
-  const adapter = new DroidSessionAdapter({
-    resolveLaunch: resolved,
-    readProcessStartTime: async () => 12345,
-    openConnection,
-    onLifecycle: lifecycle,
-    onSettled: settled,
-    onIdle: idle,
-    logger: { warn: vi.fn(), error: vi.fn() }
-  })
-  cleanups.push(async () => {
-    await adapter.closeAll().catch(() => {})
-    await adapter.drainObservedExits()
-    adapter.acknowledgeSessionRelease(sessionId)
-  })
-  const start = async (options?: Readonly<Record<string, string>>) => {
-    const acquired = await adapter.acquire(options ? { ...input, options } : input)
-    const connection = connections[0]
-    if (!connection) {
-      throw new Error('connection missing')
-    }
-    return { acquired, connection }
-  }
-  return {
-    adapter,
-    rig,
-    input,
-    lifecycle,
-    settled,
-    idle,
-    onSpawned,
-    openConnection,
-    connections,
-    start
-  }
-}
 
 const assistantRows = async (h: Awaited<ReturnType<typeof setup>>) =>
   (await h.rig.rows()).flatMap(({ body }) =>
