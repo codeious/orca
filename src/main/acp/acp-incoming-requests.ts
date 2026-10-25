@@ -18,7 +18,10 @@ export class AcpIncomingRequests {
     private readonly onFailure: (error: Error) => void,
     private readonly capacity: number,
     private readonly diagnose: (message: string) => void,
-    private readonly dialect: Pick<AcpPeerDialect, 'label' | 'overCapacity'>
+    private readonly dialect: Pick<
+      AcpPeerDialect,
+      'label' | 'overCapacity' | 'startRequestsSynchronously'
+    >
   ) {}
 
   close(error: Error): void {
@@ -62,18 +65,22 @@ export class AcpIncomingRequests {
         this.open.delete(id)
       }
     }
+    const start = (): unknown => {
+      // A cancelled request still reaches its handler, so a permission can answer `cancelled`.
+      if (request.closed) {
+        throw controller.signal.reason
+      }
+      if (!this.handler) {
+        throw new AcpRpcError(-32601, `Unknown ${this.dialect.label} client method: ${method}`)
+      }
+      return this.handler(method, params, { id, signal: controller.signal })
+    }
     void Promise.race([
       abandoned,
-      Promise.resolve().then(() => {
-        // A cancelled request still reaches its handler, so a permission can answer `cancelled`.
-        if (request.closed) {
-          throw controller.signal.reason
-        }
-        if (!this.handler) {
-          throw new AcpRpcError(-32601, `Unknown ${this.dialect.label} client method: ${method}`)
-        }
-        return this.handler(method, params, { id, signal: controller.signal })
-      })
+      // A promise executor runs now, and a throw in it rejects rather than escaping the framer.
+      this.dialect.startRequestsSynchronously
+        ? new Promise<unknown>((resolve) => resolve(start()))
+        : Promise.resolve().then(start)
     ])
       .then(async (result) => {
         if (request.closed) {

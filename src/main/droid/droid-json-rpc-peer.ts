@@ -45,6 +45,8 @@ function droidDialect(noteProtocolVersion: (version: string) => void): AcpPeerDi
       invalidResponse: () => new Error('Droid sent an invalid response')
     },
     overCapacity: () => new AcpRpcError(JSON_RPC_SERVER_BUSY, 'Too many open requests'),
+    // A notification right behind a permission request in one chunk can already be about it.
+    startRequestsSynchronously: true,
     // The lost frame may be the reply a turn waits on, and nothing else would ever settle it.
     onOversizedLine: (_rejected, target) =>
       target.close(new Error('Droid sent a line over the size limit'))

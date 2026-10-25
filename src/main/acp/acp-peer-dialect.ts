@@ -33,6 +33,8 @@ export type AcpPeerDialect = {
   }
   /** How a request is turned away when too many are already open. */
   overCapacity: () => AcpRpcError
+  /** Start a request's handler as its line is read, so a later line of the same chunk sees it open. */
+  startRequestsSynchronously?: boolean
   /** What a line over the size limit costs: its sender, its caller, or the connection. */
   onOversizedLine: (
     rejected: NdjsonRejectedRecord & { kind: 'line-too-long' },
