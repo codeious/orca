@@ -4,12 +4,8 @@ import { z } from 'zod'
 export const FACTORY_API_VERSION = '1.0.0'
 export const FACTORY_PROTOCOL_VERSION = '1.269.0'
 
-export type DroidOutgoingFrame =
-  | { type: 'request'; id: string; method: string; params: unknown }
-  | { type: 'response'; id: string; result: unknown }
-  | { type: 'response'; id: string; error: { code: number; message: string } }
-
-export function stampDroidFrame(frame: DroidOutgoingFrame) {
+/** The stamp goes ahead of the frame's own fields, and the frame carries `type` and a string `id`. */
+export function stampDroidFrame<TFrame extends object>(frame: TFrame) {
   return {
     jsonrpc: '2.0' as const,
     factoryApiVersion: FACTORY_API_VERSION,
