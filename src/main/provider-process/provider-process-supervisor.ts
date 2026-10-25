@@ -3,6 +3,8 @@ import { PROVIDER_SPAWN_FAILURE_MARKER } from './provider-spawn-failure-report'
 
 /** Time the provider gets to exit on its own after its stdin ends, before SIGTERM. */
 export const PROVIDER_STDIN_END_GRACE_MS = 1_000
+/** Largest stdin-end grace a provider may ask for. Past this, the owner's stop would SIGKILL mid-close. */
+export const PROVIDER_STDIN_END_GRACE_MAX_MS = 3_000
 /** Time the provider group gets to flush and exit after SIGTERM, before SIGKILL. */
 export const PROVIDER_SIGTERM_GRACE_MS = 3_000
 /**
@@ -18,7 +20,7 @@ export const PROVIDER_OUTPUT_DRAIN_TIMEOUT_MS = 1_000
  * reap); a SIGKILL sooner can orphan its group. The graces are also the largest a spec may carry.
  */
 export const PROVIDER_SUPERVISOR_MAX_STOP_MS =
-  PROVIDER_STDIN_END_GRACE_MS + PROVIDER_SIGTERM_GRACE_MS + PROVIDER_GROUP_REAP_TIMEOUT_MS
+  PROVIDER_STDIN_END_GRACE_MAX_MS + PROVIDER_SIGTERM_GRACE_MS + PROVIDER_GROUP_REAP_TIMEOUT_MS
 
 /** Inline supervisor source kept dependency-free for the spawned Node child. */
 export const POSIX_PROVIDER_SUPERVISOR_SCRIPT = `
@@ -219,7 +221,7 @@ export function supervisedPosixLaunch(
     sigtermGraceMs = PROVIDER_SIGTERM_GRACE_MS
   }: ProviderSupervisorOptions = {}
 ): { command: string; args: string[]; env: NodeJS.ProcessEnv } {
-  assertGraceWithin('stdin-end', stdinEndGraceMs, PROVIDER_STDIN_END_GRACE_MS)
+  assertGraceWithin('stdin-end', stdinEndGraceMs, PROVIDER_STDIN_END_GRACE_MAX_MS)
   assertGraceWithin('SIGTERM', sigtermGraceMs, PROVIDER_SIGTERM_GRACE_MS)
   // Only small fields ride in the env: Linux caps one env string at 128 KiB, and argv prompts near it.
   // Electron's Node bootstrap honours these too; held in the spec, they reach only the provider.
@@ -260,7 +262,11 @@ export function createProviderSpawnSpec(
   launch: ProviderProcessLaunch,
   baseEnv: NodeJS.ProcessEnv,
   platform: NodeJS.Platform,
-  { lifetime, closeRequest }: Pick<ProviderSupervisorOptions, 'lifetime' | 'closeRequest'> = {}
+  {
+    lifetime,
+    closeRequest,
+    stdinEndGraceMs
+  }: Pick<ProviderSupervisorOptions, 'lifetime' | 'closeRequest' | 'stdinEndGraceMs'> = {}
 ): {
   program: string
   args: string[]
@@ -277,7 +283,7 @@ export function createProviderSpawnSpec(
       : supervisedPosixLaunch(
           { command: launch.command, args: launch.args, cwd: launch.cwd },
           childEnv,
-          { lifetime, closeRequest }
+          { lifetime, closeRequest, stdinEndGraceMs }
         )
   return {
     program: supervisor?.command ?? launch.command,

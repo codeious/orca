@@ -5,9 +5,13 @@ import {
   type ManagedProviderProcess,
   type ProviderProcessExit
 } from '../provider-process/managed-provider-process'
+import { PROVIDER_STDIN_END_GRACE_MAX_MS } from '../provider-process/provider-process-supervisor'
 import { resolveAcpPeerOptions } from '../acp/acp-peer-limits'
 import { withMissingProviderExecutable } from '../provider-process/provider-executable-missing'
-import type { ProviderProcessCloseResult } from '../provider-process/provider-process-close'
+import {
+  rootOnlyProviderClosePolicy,
+  type ProviderProcessCloseResult
+} from '../provider-process/provider-process-close'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import {
   DroidJsonRpcPeer,
@@ -15,6 +19,20 @@ import {
   type DroidPeerOptions
 } from './droid-json-rpc-peer'
 import { DroidConnectionClosedError } from './droid-rpc-errors'
+
+/** droid 0.249.0 exits 0 about 1.2–1.7s after stdin EOF; the 1s default grace SIGKILLs it (137) first. */
+export const DROID_STDIN_END_GRACE_MS = PROVIDER_STDIN_END_GRACE_MAX_MS
+
+/** Unsupervised closes (Windows) wait out the same EOF window; a supervisor already budgets the max. */
+export function droidProviderClosePolicy(
+  supervised: boolean
+): ReturnType<typeof rootOnlyProviderClosePolicy> {
+  const policy = rootOnlyProviderClosePolicy(supervised)
+  if (supervised || policy.gracefulExitMs >= DROID_STDIN_END_GRACE_MS) {
+    return policy
+  }
+  return { ...policy, gracefulExitMs: DROID_STDIN_END_GRACE_MS }
+}
 
 export type DroidAgentConnectionOptions = DroidPeerHandlers & {
   peer?: Omit<DroidPeerOptions, 'closeOnInputEnd'>
@@ -43,6 +61,8 @@ export class DroidAgentConnection {
     const managed = spawnManagedProviderProcess(launch, {
       spawnImpl,
       site: 'droid-agent-teardown',
+      policy: droidProviderClosePolicy,
+      stdinEndGraceMs: DROID_STDIN_END_GRACE_MS,
       ...(options.onOutput ? { onOutput: options.onOutput } : {})
     })
     this.managed = managed
