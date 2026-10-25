@@ -13,6 +13,7 @@ import {
   type AgentSessionHandleProvider
 } from '../../../../shared/agent-session-provider-handle'
 import type { AiVaultDroidSessionHolderVerdict } from '../../../../shared/ai-vault-droid-session-holder'
+import type { AiVaultOriginalPaneTarget } from './ai-vault-original-pane'
 import {
   isAiVaultSessionResumableContent,
   type AiVaultSession
@@ -33,7 +34,13 @@ export type AiVaultResumeInChatEligibility =
       /** The session may still be open in a terminal Orca cannot confirm is gone. */
       confirmHeldSession?: true
     }
-  | { available: false; reason: AiVaultResumeInChatBlockedReason }
+  | { available: false; reason: Exclude<AiVaultResumeInChatBlockedReason, 'held'> }
+  | {
+      available: false
+      reason: 'held'
+      /** The open terminal the host says holds the session, when this window can open it. */
+      openTerminal?: AiVaultOriginalPaneTarget
+    }
 
 /** What a Droid terminal pane's row says about the process holding a session. `live` blocks the
  *  chat; `unverifiable` asks first. A process proven exited is not a holder, so it is not here. */

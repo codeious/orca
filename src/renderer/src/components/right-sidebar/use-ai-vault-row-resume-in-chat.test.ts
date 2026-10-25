@@ -1,7 +1,9 @@
 // @vitest-environment happy-dom
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { useAppStore } from '@/store'
 import type { AiVaultDroidSessionHolder } from '../../../../shared/ai-vault-droid-session-holder'
+import { makePaneKey } from '../../../../shared/stable-pane-id'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import type { AiVaultResumeInChatEligibility } from './ai-vault-session-resume-in-chat'
 import { useAiVaultRowResumeInChat } from './use-ai-vault-row-resume-in-chat'
@@ -47,17 +49,15 @@ function row(agent: AiVaultSession['agent'], sessionId: string): AiVaultSession 
   } as AiVaultSession
 }
 
+// Held across renders, as the panel holds them: a fresh function or object each render would
+// rebuild the answer every time and hide a missing dependency in the hook.
+// oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the stubbed resolver reads only the session.
+const rowArgs = (session: AiVaultSession) => ({ session }) as never
+// oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the stubbed resolver ignores settings.
+const settings = {} as never
+
 function mountRows(sessions: readonly AiVaultSession[]) {
-  return renderHook(() =>
-    useAiVaultRowResumeInChat({
-      sessions,
-      // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the stubbed resolver reads only the session.
-      rowArgs: (session) => ({ session }) as never,
-      // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the stubbed resolver ignores settings.
-      settings: {} as never,
-      generation: 1
-    })
-  )
+  return renderHook(() => useAiVaultRowResumeInChat({ sessions, rowArgs, settings, generation: 1 }))
 }
 
 beforeEach(() => {
@@ -136,5 +136,132 @@ describe('the resume-in-chat answer for a history row', () => {
     const { result } = mountRows(sessions)
 
     expect(result.current(sessions[0])).toEqual({ available: true, workspaceId: 'ws-1' })
+  })
+})
+
+describe('the terminal a held Droid row can be opened in', () => {
+  const LEAF = '11111111-1111-4111-8111-111111111111'
+  const PANE = makePaneKey('tab-1', LEAF)
+  const HELD = { available: false, reason: 'held' }
+
+  function openTerminal(): void {
+    useAppStore.setState({
+      tabsByWorktree: {
+        'wt-1': [
+          {
+            id: 'tab-1',
+            ptyId: null,
+            worktreeId: 'wt-1',
+            title: 'Droid',
+            customTitle: null,
+            color: null,
+            sortOrder: 0,
+            createdAt: 1
+          }
+        ]
+      },
+      terminalLayoutsByTabId: {
+        'tab-1': {
+          root: { type: 'leaf', leafId: LEAF },
+          activeLeafId: LEAF,
+          expandedLeafId: null,
+          ptyIdsByLeafId: { [LEAF]: 'pty-1' }
+        }
+      }
+    })
+  }
+
+  // A confirm-first row reads the same before and after its answer lands, so an unchanged
+  // result proves nothing until the host's reply has been applied.
+  async function settleHostAnswers(): Promise<void> {
+    await waitFor(() => expect(mocks.ask).toHaveBeenCalled())
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+  }
+
+  beforeEach(() => {
+    useAppStore.setState({ tabsByWorktree: {}, terminalLayoutsByTabId: {} })
+  })
+
+  it('is carried by the row once its host names a live pane that is open here', async () => {
+    openTerminal()
+    mocks.ask.mockResolvedValue({ holder: 'live', panes: [{ paneKey: PANE, verdict: 'live' }] })
+    const sessions = [row('droid', 'a')]
+
+    const { result } = mountRows(sessions)
+
+    await waitFor(() =>
+      expect(result.current(sessions[0])).toEqual({
+        ...HELD,
+        openTerminal: { paneKey: PANE, worktreeId: 'wt-1', tabId: 'tab-1', leafId: LEAF }
+      })
+    )
+  })
+
+  it('is left off when the named pane is not open here, so the row stays not offered', async () => {
+    mocks.ask.mockResolvedValue({ holder: 'live', panes: [{ paneKey: PANE, verdict: 'live' }] })
+    const sessions = [row('droid', 'a')]
+
+    const { result } = mountRows(sessions)
+
+    await waitFor(() => expect(result.current(sessions[0])).toEqual(HELD))
+  })
+
+  it('is left off when the host names no pane, as an older host does', async () => {
+    openTerminal()
+    mocks.ask.mockResolvedValue({ holder: 'live' })
+    const sessions = [row('droid', 'a')]
+
+    const { result } = mountRows(sessions)
+
+    await waitFor(() => expect(result.current(sessions[0])).toEqual(HELD))
+  })
+
+  it('does not change the confirmation for a pane that only might hold the session', async () => {
+    openTerminal()
+    mocks.ask.mockResolvedValue({
+      holder: 'unverifiable',
+      panes: [{ paneKey: PANE, verdict: 'unverifiable' }]
+    })
+    const sessions = [row('droid', 'a')]
+
+    const { result } = mountRows(sessions)
+
+    await settleHostAnswers()
+    expect(result.current(sessions[0])).toEqual({
+      available: true,
+      workspaceId: 'ws-1',
+      confirmHeldSession: true
+    })
+  })
+
+  it('is never attached to a row that is still offered, whatever panes the host lists', async () => {
+    openTerminal()
+    mocks.ask.mockResolvedValue({
+      holder: 'unverifiable',
+      panes: [{ paneKey: PANE, verdict: 'live' }]
+    })
+    const sessions = [row('droid', 'a')]
+
+    const { result } = mountRows(sessions)
+
+    await settleHostAnswers()
+    expect(result.current(sessions[0])).toEqual({
+      available: true,
+      workspaceId: 'ws-1',
+      confirmHeldSession: true
+    })
+  })
+
+  it('appears once the named pane opens after the answer arrived', async () => {
+    mocks.ask.mockResolvedValue({ holder: 'live', panes: [{ paneKey: PANE, verdict: 'live' }] })
+    const sessions = [row('droid', 'a')]
+    const { result } = mountRows(sessions)
+    await waitFor(() => expect(result.current(sessions[0])).toEqual(HELD))
+
+    act(() => openTerminal())
+
+    await waitFor(() => expect(result.current(sessions[0])).toHaveProperty('openTerminal'))
   })
 })
