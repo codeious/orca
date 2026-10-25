@@ -18,7 +18,7 @@ export type DroidExecLaunchOptions = {
   structuredSession?: { id: string; spawnToken: string }
 }
 
-export const DROID_EXEC_ARGS: readonly string[] = [
+const DROID_EXEC_ARGS: readonly string[] = [
   'exec',
   '--input-format',
   'stream-jsonrpc',

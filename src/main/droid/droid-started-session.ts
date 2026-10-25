@@ -5,7 +5,7 @@ import { normalizeRuntimePathForComparison } from '../../shared/cross-platform-p
 type ResolveRealPath = (path: string) => Promise<string>
 
 // `initialize_session` names the session beside a `session` that carries only its messages.
-export const startedSchema = z.looseObject({
+const startedSchema = z.looseObject({
   sessionId: z.string().min(1).optional(),
   session: z.looseObject({ id: z.string().min(1).optional() }).optional(),
   // A load reports the folder the session was recorded in, as a real path.
@@ -37,7 +37,7 @@ export async function readStartedSession(
 
 /** A loaded session runs its tools in the folder it was recorded in, wherever this child
  *  started, so a chat in another workspace would edit a tree the person did not pick. */
-export async function refuseSessionFromOtherFolder(
+async function refuseSessionFromOtherFolder(
   workspace: string,
   reported: string | undefined,
   realpath: ResolveRealPath = fsRealpath

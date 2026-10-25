@@ -53,9 +53,9 @@ export type DroidSessionDeps = {
 }
 
 /** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. */
-export type DroidSessionBegin = DroidStartSettings & { cwd: string; resumeId: string | null }
+type DroidSessionBegin = DroidStartSettings & { cwd: string; resumeId: string | null }
 
-export const DROID_MACHINE_ID = 'orca'
+const DROID_MACHINE_ID = 'orca'
 const START_TIMEOUT_MS = 120_000
 
 /** One child owns its transport, turns and timeline, including shutdown retries. */
