@@ -196,6 +196,10 @@ describe('Droid exit watch on the guest relay', () => {
     expect(vi.getTimerCount()).toBeGreaterThan(0)
     server.stop()
 
+    // Why: the closing hook request frees its own 5 s socket timer a few real ticks late.
+    for (let tick = 0; tick < 200 && vi.getTimerCount() > 0; tick++) {
+      await new Promise<void>((resolve) => setImmediate(resolve))
+    }
     // Why: stop() also clears the marker, so only a released timer shows the watch itself stopped.
     expect(vi.getTimerCount()).toBe(0)
     await vi.advanceTimersByTimeAsync(120_000)
