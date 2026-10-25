@@ -80,7 +80,7 @@ export function getAgentResumeArgv(
   }
 }
 
-/** Opens a copy of the conversation under a new id, leaving the original untouched. Only the two
+/** Opens a copy of the conversation under a new id, leaving the original untouched. Only the
  *  agents native chat can own a conversation for, which is the only case that needs a fork. */
 export function getAgentForkArgv(
   agent: ResumableTuiAgent,
@@ -89,8 +89,14 @@ export function getAgentForkArgv(
   if (providerSession.key !== 'session_id') {
     return null
   }
-  if (agent === 'claude') {
-    return ['claude', '--resume', providerSession.id, '--fork-session']
+  switch (agent) {
+    case 'claude':
+      return ['claude', '--resume', providerSession.id, '--fork-session']
+    case 'codex':
+      return ['codex', 'fork', providerSession.id]
+    case 'droid':
+      return ['droid', '--fork', providerSession.id]
+    default:
+      return null
   }
-  return agent === 'codex' ? ['codex', 'fork', providerSession.id] : null
 }
