@@ -1,0 +1,25 @@
+src/main/droid/droid-session.ts
+  s_48f3bc0d7f0337::t_36701b5feb2489 147-148,150
+  s_48f3bc0d7f0337::t_36057986370261 149
+  s_48f3bc0d7f0337::t_e1a81bd7f443b0 52,55
+src/main/droid/droid-session-adapter.test.ts
+  s_48f3bc0d7f0337::t_b0030457567873 237-255
+  s_48f3bc0d7f0337::t_8a2fd6bddf64fb 256-268
+  s_48f3bc0d7f0337::t_7cad6ad4f35fdd 75-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "934acecc483e2cf34eaa893b1e795f14cbeed940",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
