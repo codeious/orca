@@ -18,6 +18,8 @@ export type DroidTurnDeps = {
   ) => Promise<unknown>
   settled: (id: string, outcome: AgentSessionDispatchOutcome) => void
   idle: () => void
+  /** Droid's report of the session's settings; it belongs to the session, not to a turn. */
+  settings: (report: { requestId?: string; settings: unknown }) => void
 }
 
 type Send = { id: string; at: number; requestId?: string; accepted: boolean }
@@ -139,6 +141,12 @@ export class DroidTurns {
         return
       case 'agent_turn_completed':
         this.finish(notification.reason)
+        break
+      case 'settings_updated':
+        this.deps.settings({
+          settings: notification.settings,
+          ...(notification.requestId ? { requestId: notification.requestId } : {})
+        })
         break
       case 'other':
         break

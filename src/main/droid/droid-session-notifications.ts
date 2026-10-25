@@ -50,6 +50,12 @@ const handledSchema = z.discriminatedUnion('type', [
     type: z.literal('agent_turn_completed'),
     reason: z.string(),
     turnId: z.string().optional()
+  }),
+  // `settings` is read leniently by `parseDroidSettings`: an unknown field never costs the turn.
+  z.looseObject({
+    type: z.literal('settings_updated'),
+    settings: z.unknown().optional(),
+    requestId: z.string().optional()
   })
 ])
 const HANDLED_TYPES = new Set<string>(handledSchema.options.map((arm) => arm.shape.type.value))

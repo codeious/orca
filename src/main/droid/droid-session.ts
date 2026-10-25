@@ -10,7 +10,12 @@ import {
 import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-wire/structured-agent-session-logger'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
-import type { DroidStartSettings } from './droid-session-settings'
+import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
+import {
+  DroidReportedSettings,
+  type DroidSettings,
+  type DroidStartSettings
+} from './droid-session-settings'
 import { DroidTurns } from './droid-turns'
 import { isSupportedDroidProtocol } from './droid-version-support'
 
@@ -53,7 +58,8 @@ const START_TIMEOUT_MS = 120_000
 // `initialize_session` names the session beside a `session` that carries only its messages.
 const startedSchema = z.looseObject({
   sessionId: z.string().min(1).optional(),
-  session: z.looseObject({ id: z.string().min(1).optional() }).optional()
+  session: z.looseObject({ id: z.string().min(1).optional() }).optional(),
+  settings: z.unknown().optional()
 })
 
 /** One child owns its transport, turns and timeline, including shutdown retries. */
@@ -62,6 +68,8 @@ export class DroidSession {
   readonly lane: JsonlRpcTimelineLane
   readonly turns: DroidTurns
   requestedClose = false
+  /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
+  readonly settings = new DroidReportedSettings()
   private publishedExit = false
   private failedCause?: Error
   private exitDelivery: Promise<void> = Promise.resolve()
@@ -99,7 +107,8 @@ export class DroidSession {
       generation,
       request: (method, params, options) => this.connection.request(method, params, options),
       settled: (id, outcome) => this.settle(id, outcome),
-      idle: () => deps.onIdle({ sessionId })
+      idle: () => deps.onIdle({ sessionId }),
+      settings: (report) => this.settings.receive(report)
     })
     this.connection = (
       deps.openConnection ?? ((spec, handlers) => new DroidAgentConnection(spec, handlers))
@@ -151,18 +160,31 @@ export class DroidSession {
     if (!id) {
       throw new Error('Droid did not name its session')
     }
+    if (parsed.success) {
+      this.settings.adopt(parsed.data.settings)
+    }
+    let reportedLevel = this.settings.current.autonomyLevel
     if (resumeId) {
       if (id !== resumeId) {
         throw new Error('Droid loaded a different session')
       }
       // A load takes no settings, so the level and mode the session stored would otherwise stand.
-      await this.connection.request(
-        'droid.update_session_settings',
-        { autonomyLevel, interactionMode },
-        { timeoutMs: START_TIMEOUT_MS }
-      )
+      reportedLevel = (await this.updateSettings({ autonomyLevel, interactionMode }))?.autonomyLevel
     }
+    this.lane.apply(droidAutonomyCapRow(autonomyLevel, reportedLevel))
     return id
+  }
+
+  /** What Droid reported holding in answer to this update, if it reported at all. */
+  private async updateSettings(params: DroidStartSettings): Promise<DroidSettings | undefined> {
+    const sent: { id?: string } = {}
+    await this.connection.request('droid.update_session_settings', params, {
+      timeoutMs: START_TIMEOUT_MS,
+      onId: (id) => {
+        sent.id = id
+      }
+    })
+    return sent.id === undefined ? undefined : this.settings.answerTo(sent.id)
   }
 
   async close(requested = true): ReturnType<DroidConnection['close']> {

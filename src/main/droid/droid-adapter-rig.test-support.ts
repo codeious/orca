@@ -1,8 +1,9 @@
-import { expect, vi } from 'vitest'
+import { expect, vi, type Mock } from 'vitest'
 import type { AgentSessionProcessIdentity } from '../../shared/agent-session-record'
 import {
   closeProviderTimelineRigs,
-  openProviderTimelineRig
+  openProviderTimelineRig,
+  type ProviderTimelineRig
 } from '../native-chat/agent-session-timeline/provider-timeline-assembler-test-support'
 import type { StructuredAgentSessionAcquireInput } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
@@ -108,7 +109,29 @@ export class FakeConnection implements DroidConnection {
   }
 }
 
-export async function setupDroidAdapter(launch: Partial<DroidResolvedLaunch> = {}) {
+export type DroidAdapterRig = {
+  adapter: DroidSessionAdapter
+  rig: ProviderTimelineRig
+  input: StructuredAgentSessionAcquireInput
+  lifecycle: Mock
+  settled: Mock
+  idle: Mock
+  onSpawned: Mock<(process: AgentSessionProcessIdentity) => Promise<void>>
+  openConnection: Mock<
+    (launch: ProviderProcessLaunch, handlers: DroidAgentConnectionOptions) => FakeConnection
+  >
+  connections: FakeConnection[]
+  start: (options?: Readonly<Record<string, string>>) => Promise<{
+    acquired: Awaited<ReturnType<DroidSessionAdapter['acquire']>>
+    connection: FakeConnection
+  }>
+}
+
+/** `script` runs on each connection the adapter opens, before the adapter sends anything. */
+export async function setupDroidAdapter(
+  launch: Partial<DroidResolvedLaunch> = {},
+  script?: (connection: FakeConnection) => void
+): Promise<DroidAdapterRig> {
   const rig = await openProviderTimelineRig({ agent: 'droid', sessionId: DROID_RIG_SESSION })
   const connections: FakeConnection[] = []
   const lifecycle = vi.fn(),
@@ -141,6 +164,7 @@ export async function setupDroidAdapter(launch: Partial<DroidResolvedLaunch> = {
   const openConnection = vi.fn(
     (_launch: ProviderProcessLaunch, handlers: DroidAgentConnectionOptions) => {
       const connection = new FakeConnection(handlers)
+      script?.(connection)
       connections.push(connection)
       return connection
     }
