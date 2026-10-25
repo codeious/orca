@@ -19,6 +19,7 @@ import {
   type StructuredAgentSessionLifecycleEvent
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import type { StructuredAgentCommandSettings } from '../native-chat/structured-agent-command-resolution'
+import type { UnsupportedAgentVersion } from '../native-chat/structured-agent-session-create-support'
 import type { StructuredAgentDefinition } from '../native-chat/agent-session-wire/structured-agent-definition'
 import type { StructuredAgentSessionHost } from '../native-chat/agent-session-wire/structured-agent-session-host'
 import { agentModelCatalogStore } from '../native-chat/agent-model-catalog/agent-model-catalog-store'
@@ -102,6 +103,13 @@ export type StructuredAgentModelCatalogContext = Pick<
   'deps' | 'environment'
 >
 
+/** What a registration's checks of the installed agent start from: a launch's own environment. */
+export type StructuredAgentLaunchCheckInput = {
+  cwd: string
+  env: Record<string, string>
+  commandSettings: StructuredAgentCommandSettings
+}
+
 export type StructuredAgentRuntimeRegistration = {
   definition: StructuredAgentDefinition
   createAdapter: (context: StructuredAgentAdapterContext) => StructuredAgentRuntimeAdapter
@@ -112,11 +120,13 @@ export type StructuredAgentRuntimeRegistration = {
   supportsLocation: (location: AgentSessionExecutionLocation) => boolean
   /** Whether the agent installed on this host runs a structured chat, asked at create with the
    *  environment a launch starts from; absent when the location alone decides. */
-  supportsLaunch?: (input: {
-    cwd: string
-    env: Record<string, string>
-    commandSettings: StructuredAgentCommandSettings
-  }) => Promise<boolean>
+  supportsLaunch?: (input: StructuredAgentLaunchCheckInput) => Promise<boolean>
+  /** After `supportsLaunch` said no: the installed release, when being older than the oldest the
+   *  chat supports is the whole reason, so the person is told to update rather than that the chat
+   *  can't run. Null when it isn't, or the release can't be read. */
+  unsupportedVersion?: (
+    input: StructuredAgentLaunchCheckInput
+  ) => Promise<UnsupportedAgentVersion | null>
   /** The account a chat of this agent pins; see `StructuredAgentAccountHomeRequest`. */
   resolveAccountHome: (
     request: StructuredAgentAccountHomeRequest,
