@@ -1,0 +1,27 @@
+src/main/droid/droid-version-support.test.ts
+  s_48f3bc0d7f0337::t_393ff432dc8587 1-40
+src/main/agent-cli-version-probe.test.ts
+  s_48f3bc0d7f0337::t_196837adecc5d6 5-6
+  s_48f3bc0d7f0337::t_74787275ad7721 76-105
+  s_48f3bc0d7f0337::t_85b70bdd7fd08e 106-107
+src/main/droid/droid-version-support.ts
+  s_48f3bc0d7f0337::t_d46cbac1daaac1 1-15
+src/main/agent-cli-version-probe.ts
+  s_48f3bc0d7f0337::t_8dde93c4c47770 15-19,31,41,46-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "929d90c33d595c77c7a478d00308f6b35259454d",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
