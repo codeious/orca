@@ -4,6 +4,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createServer, type Server } from 'node:http'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import type * as Os from 'node:os'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runProcessSync } from '@orca/process-host'
@@ -16,7 +17,7 @@ const { getPathMock, homedirMock } = vi.hoisted(() => ({
 vi.mock('electron', () => ({ app: { getPath: getPathMock } }))
 
 vi.mock('os', async () => {
-  const actual = (await vi.importActual('os')) as Record<string, unknown>
+  const actual = await vi.importActual<typeof Os>('os')
   return { ...actual, homedir: homedirMock }
 })
 
