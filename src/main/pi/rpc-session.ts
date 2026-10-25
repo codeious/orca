@@ -9,6 +9,7 @@ import type {
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-wire/structured-agent-session-logger'
 import { providerTimelineSink } from '../native-chat/agent-session-timeline/provider-timeline-plan'
+import { JsonlRpcSessionLifecycle } from '../jsonl-rpc/session-lifecycle'
 import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import {
   JsonlRpcAgentConnection,
@@ -66,11 +67,7 @@ export class PiRpcSession {
   readonly skipped: string[] = []
   commands?: AgentSessionSlashCommand[]
   options?: AgentSessionOptionsResult
-  requestedClose = false
-  private publishedExit = false
-  private failedCause?: Error
-  private exitDelivery: Promise<void> = Promise.resolve()
-  private releaseAfterExit?: () => void
+  private readonly lifecycle: JsonlRpcSessionLifecycle
 
   constructor(
     readonly input: StructuredAgentSessionAcquireInput,
@@ -94,17 +91,34 @@ export class PiRpcSession {
       resumeReading: () => this.connection?.resumeReading(),
       onFailed: (reason) => this.fail(new Error(reason)),
       onInputAccepted: (clientMessageId) =>
-        this.settle(clientMessageId, {
+        this.lifecycle.settle(clientMessageId, {
           state: 'accepted',
           providerIdentity: { provider: 'orca', clientMessageId }
         })
+    })
+    this.lifecycle = new JsonlRpcSessionLifecycle({
+      label: 'Pi',
+      scope: 'pi',
+      sessionId: input.identity.sessionId,
+      fence: input.fence,
+      generation,
+      lane: this.lane,
+      connection: () => this.connection,
+      logger: deps.logger,
+      onLifecycle: deps.onLifecycle,
+      onSettled: deps.onSettled,
+      endWork: () => {
+        this.dialogs.cancelAll()
+        this.turns.end()
+      },
+      beforeClose: () => this.dialogs.cancelAll()
     })
     this.turns = new PiRpcTurns({
       lane: this.lane,
       generation,
       send: (frame) => this.connection.send(frame),
       request: (command, params, options) => this.connection.request(command, params, options),
-      settled: (id, outcome) => this.settle(id, outcome),
+      settled: (id, outcome) => this.lifecycle.settle(id, outcome),
       idle: () => {
         this.dialogs.cancelAll()
         deps.onIdle({ sessionId: input.identity.sessionId })
@@ -133,17 +147,7 @@ export class PiRpcSession {
       onClose: (error) => this.fail(error),
       onDiagnostic: (message) =>
         deps.logger.warn(message, { scope: 'pi-rpc', sessionId: input.identity.sessionId }),
-      onExit: (error) => {
-        this.exitDelivery = this.exit(error)
-          .catch((cause: unknown) =>
-            deps.logger.error('Pi exit publication failed', {
-              scope: 'pi-exit',
-              sessionId: input.identity.sessionId,
-              error: cause
-            })
-          )
-          .finally(() => this.releaseAfterExit?.())
-      }
+      onExit: (error) => this.lifecycle.observeExit(error)
     })
   }
 
@@ -201,103 +205,19 @@ export class PiRpcSession {
     return withLiveCatalogListing(await readPiRpcSessionOptions(this.connection))
   }
 
-  async close(requested = true): ReturnType<PiRpcConnection['close']> {
-    this.requestedClose ||= requested
-    this.dialogs.cancelAll()
-    return this.connection.close()
+  close(requested = true): ReturnType<PiRpcConnection['close']> {
+    return this.lifecycle.close(requested)
   }
 
   fail(error: Error): void {
-    this.failedCause ??= error
-    this.deps.logger.error('Pi RPC session failed', {
-      scope: 'pi-rpc',
-      sessionId: this.input.identity.sessionId,
-      error
-    })
-    void this.close(false)
-      .then((result) => {
-        if (result.root !== 'exited') {
-          this.deps.logger.warn('Pi process exit is unverifiable', {
-            scope: 'pi-stop',
-            sessionId: this.input.identity.sessionId
-          })
-        }
-      })
-      .catch((cause: unknown) =>
-        this.deps.logger.error('Pi process cleanup failed', {
-          scope: 'pi-stop',
-          sessionId: this.input.identity.sessionId,
-          error: cause
-        })
-      )
+    this.lifecycle.fail(error)
   }
 
   drainObservedExit(): Promise<void> {
-    return this.exitDelivery
+    return this.lifecycle.drainObservedExit()
   }
 
   retire(): Promise<void> {
-    return new Promise((resolve) => {
-      this.releaseAfterExit = () => {
-        this.releaseAfterExit = undefined
-        void this.lane.drained().then(() => {
-          this.lane.dispose()
-          resolve()
-        })
-      }
-      if (this.publishedExit) {
-        void this.exitDelivery.then(() => this.releaseAfterExit?.())
-      }
-    })
-  }
-
-  private async exit(error: Error): Promise<void> {
-    if (this.publishedExit) {
-      return
-    }
-    this.publishedExit = true
-    this.dialogs.cancelAll()
-    this.turns.end()
-    this.lane.finalize()
-    this.lane.apply([
-      { type: 'session.ended', verdict: { state: 'interrupted', completedAt: Date.now() } }
-    ])
-    this.lane.flush()
-    let timer: ReturnType<typeof setTimeout> | undefined
-    try {
-      await Promise.race([
-        this.lane.drained(),
-        new Promise<void>((resolve) => {
-          timer = setTimeout(() => {
-            this.deps.logger.warn('Pi final timeline did not drain before exit publication', {
-              scope: 'pi-exit-drain',
-              sessionId: this.input.identity.sessionId
-            })
-            resolve()
-          }, 2_000)
-          timer.unref()
-        })
-      ])
-    } finally {
-      clearTimeout(timer)
-    }
-    this.deps.onLifecycle({
-      type: 'ended',
-      sessionId: this.input.identity.sessionId,
-      fence: this.input.fence,
-      acquisitionGeneration: this.generation,
-      observedAt: Date.now(),
-      cause: this.requestedClose ? 'requested-close' : 'unexpected-exit',
-      reason: (this.failedCause ?? error).message
-    })
-  }
-
-  private settle(clientMessageId: string, outcome: AgentSessionDispatchOutcome): void {
-    this.deps.onSettled({
-      sessionId: this.input.identity.sessionId,
-      clientMessageId,
-      fence: this.input.fence,
-      outcome
-    })
+    return this.lifecycle.retire()
   }
 }
