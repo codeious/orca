@@ -18,6 +18,7 @@ import {
   type DroidPeerHandlers,
   type DroidPeerOptions
 } from './droid-json-rpc-peer'
+import { DROID_PEER_LIMITS } from './droid-peer-limits'
 import { DroidConnectionClosedError } from './droid-rpc-errors'
 
 /** droid 0.249.0 exits 0 about 1.2–1.7s after stdin EOF; the 1s default grace SIGKILLs it (137) first. */
@@ -57,7 +58,11 @@ export class DroidAgentConnection {
     spawnImpl: PipedProcessSpawner = spawnProcess
   ) {
     // Rejected before the spawn so a bad limit cannot leave a process nobody owns.
-    const peerOptions = resolveAcpPeerOptions({ ...options.peer, closeOnInputEnd: false })
+    const peerOptions = resolveAcpPeerOptions({
+      ...DROID_PEER_LIMITS,
+      ...options.peer,
+      closeOnInputEnd: DROID_PEER_LIMITS.closeOnInputEnd
+    })
     const managed = spawnManagedProviderProcess(launch, {
       spawnImpl,
       site: 'droid-agent-teardown',

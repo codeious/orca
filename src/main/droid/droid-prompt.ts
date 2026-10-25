@@ -3,10 +3,10 @@ import {
   type SubmissionRejectionFact
 } from '../../shared/agent-session-failure'
 import type { AgentJournalMessageItem } from '../../shared/agent-session-journal-types'
-import { resolveAcpPeerOptions } from '../acp/acp-peer-limits'
+import { DROID_PEER_LIMITS } from './droid-peer-limits'
 
 /** The most text one send carries: a frame is one line, and the stamp and envelope share it. */
-export const DROID_PROMPT_MAX_BYTES = resolveAcpPeerOptions().maxLineBytes - 64 * 1024
+export const DROID_PROMPT_MAX_BYTES = DROID_PEER_LIMITS.maxLineBytes - 64 * 1024
 
 export type DroidPrompt =
   | { ok: true; params: { text: string } }
