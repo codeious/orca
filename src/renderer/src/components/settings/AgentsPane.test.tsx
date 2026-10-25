@@ -525,6 +525,17 @@ describe('AgentsPane', () => {
     expect(onChange).toHaveBeenCalledWith('manual')
   })
 
+  it('lists an uninstalled Droid under Available to install with the quickstart and no npm command', () => {
+    detectedAgentsMock.detectedIds = ['claude']
+    const markup = renderPane(getDefaultSettings('/tmp'))
+
+    expect(markup).toContain('Available to install')
+    expect(markup).toContain('Droid')
+    expect(markup).toContain('href="https://docs.factory.ai/cli/getting-started/quickstart"')
+    expect(markup).toContain('title="Install"')
+    expect(markup).not.toContain('npm')
+  })
+
   it('keeps catalog agent ids, labels, and commands discoverable in settings search', () => {
     for (const agent of AGENT_CATALOG) {
       expect(matchesSettingsSearch(agent.id, getAgentsPaneSearchEntries())).toBe(true)
