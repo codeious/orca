@@ -1,0 +1,79 @@
+src/main/droid/droid-json-rpc-peer.ts
+  s_a57587060a50e5::t_a2b24672b5a223 47
+  s_a57587060a50e5::t_30508a401412ba 74
+  s_a57587060a50e5::t_6ae95bc57c59de 81
+  s_a57587060a50e5::t_941a9155736d6e 44-46
+  s_a57587060a50e5::t_a70a56563fad02 48-50
+  s_a57587060a50e5::t_603f529f08ee5e 71-73
+  s_a57587060a50e5::t_ebe6d3e1478d09 75-80
+  s_a57587060a50e5::t_15f319f29af886 82-84
+  s_a57587060a50e5::t_791b82c955ddfb 2-4,25-43,51,54,56-59,62-64,67-68,85-91,96,104-109,115-116
+docs/adr/0001-structured-droid-sessions-use-stream-jsonrpc.md
+  s_a57587060a50e5::t_8cda0b7e641355 19
+src/main/acp/acp-incoming-requests.ts
+  s_a57587060a50e5::t_8a195bba1d2840 3,20-21,46,50,73
+src/main/acp/acp-json-rpc-peer-dialect.test.ts
+  s_a57587060a50e5::t_cf714525c9701f 1-206
+src/main/acp/acp-json-rpc-peer.ts
+  s_a57587060a50e5::t_5140251a9f95f8 10-12,14,33,35,50-51,59-66,73-74,80,86,113,119,129,131-132,139,165,170,234,240,253-258,260-263,266,275,285,290-292,296,305
+src/main/acp/acp-launch-specs.ts
+  s_a57587060a50e5::t_f2b03a66e2dae6 5,201
+src/main/acp/acp-peer-dialect.ts
+  s_a57587060a50e5::t_3267096d921c47 1-59
+src/main/acp/acp-rpc-envelope.ts
+  s_a57587060a50e5::t_77b50ea697d3c0 2,19-25,29,31-32,37-38,41
+src/main/droid/droid-agent-connection.ts
+  s_a57587060a50e5::t_e4ae5e31f527ee 21,61-65
+src/main/droid/droid-exec-launch.ts
+  s_a57587060a50e5::t_fa8b280b08b8c8 2,26,32-33
+src/main/droid/droid-json-rpc-peer-wire.test.ts
+  s_a57587060a50e5::t_895a6484647b13 1-107
+src/main/droid/droid-peer-limits.test.ts
+  s_a57587060a50e5::t_d7bee563bf840d 1-21
+src/main/droid/droid-peer-limits.ts
+  s_a57587060a50e5::t_a99bc46e39302a 1-9
+src/main/droid/droid-prompt.ts
+  s_a57587060a50e5::t_acfe736472cee5 6,9
+src/main/droid/droid-rpc-envelope.ts
+  s_a57587060a50e5::t_db2ea6d37d022a 7-8
+src/main/droid/droid-session-adapter.ts
+  s_a57587060a50e5::t_a3579729e020de 3-6,12,23-27,29-31,33-63,66-68
+src/main/droid/droid-session.ts
+  s_a57587060a50e5::t_ba5d3eb37a1344 1,69,100,108-123,136,153,207-208,212,216,220
+src/main/jsonl-rpc/session-adapter.test.ts
+  s_a57587060a50e5::t_b1dc605986e1c2 1-543
+src/main/jsonl-rpc/session-adapter.ts
+  s_a57587060a50e5::t_8856f72855ed14 1-260
+src/main/jsonl-rpc/session-lifecycle.test.ts
+  s_a57587060a50e5::t_ed0b0b21346d87 1-278
+src/main/jsonl-rpc/session-lifecycle.ts
+  s_a57587060a50e5::t_0eff696ea0a011 1-152
+src/main/pi/rpc-launch.ts
+  s_a57587060a50e5::t_2886c409cd7617 2,76
+src/main/pi/rpc-session-adapter.ts
+  s_a57587060a50e5::t_ca97f0132ac152 4-7,12,24-28,30-32,34-58
+src/main/pi/rpc-session.ts
+  s_a57587060a50e5::t_5f73182917e244 12,70,94,99-115,121,150,208-209,213,217,221
+src/main/runtime/structured-child-pane-env-scrub.ts
+  s_a57587060a50e5::t_b697ac06ed17c7 1-17
+src/main/runtime/structured-session-child-launch-env.test.ts
+  s_a57587060a50e5::t_6f9ce9b06d4347 1-106
+src/main/runtime/structured-session-child-launch-env.ts
+  s_a57587060a50e5::t_bc8e22eb4cfd64 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5143f1e22bbc11eee704878a758afe7d339a5886",
+  "prompts": {},
+  "sessions": {
+    "s_a57587060a50e5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fd4afa99-8ef7-4d49-9697-13345392d392",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
