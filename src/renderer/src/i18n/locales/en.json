@@ -12697,6 +12697,18 @@
           "unavailable": "{{value0}} (unavailable)",
           "description": "Accounts, detected agents and terminal options below are for this host.",
           "unavailableNotice": "This server is no longer saved, so nothing can be shown for it. Choose another host at the top of Settings."
+        },
+        "agent-launch-mode-copy": {
+          "title": "Launch mode",
+          "description": "Choose whether new Droid sessions open in the terminal or in Chat UI.",
+          "terminal": "Terminal",
+          "chat": "Chat UI",
+          "follow": "Follow Chat UI switch",
+          "resultTerminal": "New Droid sessions open in the terminal, whatever the Chat UI switch says.",
+          "resultChat": "New Droid sessions open in Chat UI, whatever the Chat UI switch says.",
+          "resultFollowOn": "New Droid sessions open in Chat UI, because the Chat UI switch in Experimental is on.",
+          "resultFollowOff": "New Droid sessions open in the terminal, because the Chat UI switch in Experimental is off.",
+          "fallbackNote": "Droid always opens in the terminal on WSL and SSH workspaces, and when it is older than {{value0}}."
         }
       },
       "right": {

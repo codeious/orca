@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { DROID_CHAT_VERSION_FLOOR as SHARED_FLOOR } from '../../shared/droid-chat-version-floor'
 import {
   DROID_CHAT_VERSION_FLOOR,
   isSupportedDroidProtocol,
@@ -27,6 +28,11 @@ describe('unsupportedDroidRelease', () => {
 describe('isSupportedDroidVersion', () => {
   it('names 0.238.0 as the oldest release the chat supports', () => {
     expect(DROID_CHAT_VERSION_FLOOR).toBe('0.238.0')
+  })
+
+  it('checks against the same floor the settings words name', () => {
+    expect(DROID_CHAT_VERSION_FLOOR).toBe(SHARED_FLOOR)
+    expect(isSupportedDroidVersion(SHARED_FLOOR)).toBe(true)
   })
 
   it.each([

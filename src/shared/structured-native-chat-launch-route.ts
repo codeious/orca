@@ -8,6 +8,7 @@
  * drifts.
  */
 
+import { agentLaunchModePreference } from './agent-launch-mode-preference'
 import { isAgentSessionHandleProvider } from './agent-session-provider-handle'
 import { parseExecutionHostId } from './execution-host'
 import type { GlobalSettings } from './global-settings-types'
@@ -20,7 +21,10 @@ import {
 import type { TuiAgent } from './tui-agent'
 import type { WorkspaceLaunchKind } from './workspace-launch-kind'
 
-export type NativeChatDefaultSettings = Pick<GlobalSettings, 'experimentalNativeChat'>
+export type NativeChatDefaultSettings = Pick<
+  GlobalSettings,
+  'experimentalNativeChat' | 'agentLaunchModes'
+>
 
 /** Why a launch that the user's default asked to be structured cannot be. */
 export type StructuredNativeChatBlocker =
@@ -61,11 +65,40 @@ export type StructuredNativeChatSupportInput = {
   hostStructuredAgents?: readonly string[]
 }
 
-/** The single Chat UI switch selects structured chat for supported new launches. */
+/** The Chat UI switch alone. A launch decision reads `resolveNativeChatLaunchChoice` instead. */
 export function isNativeChatEnabled(
   settings: Partial<NativeChatDefaultSettings> | null | undefined
 ): boolean {
   return settings?.experimentalNativeChat === true
+}
+
+export type NativeChatLaunchChoice = {
+  structured: boolean
+  /** `agent_setting` when the agent's own launch setting decided, `switch` when the Chat UI switch did. */
+  source: 'agent_setting' | 'switch'
+}
+
+/** What the user chose for a new launch of `agent`, before any feasibility rule applies. */
+export function resolveNativeChatLaunchChoice(
+  settings: Partial<NativeChatDefaultSettings> | null | undefined,
+  agent: string | undefined
+): NativeChatLaunchChoice {
+  const preference = agentLaunchModePreference(settings, agent)
+  if (preference === 'follow') {
+    return { structured: isNativeChatEnabled(settings), source: 'switch' }
+  }
+  return { structured: preference === 'chat', source: 'agent_setting' }
+}
+
+/** Whether some new launch may open a chat: the switch is on, or an agent is set to Chat. Gates
+ *  the machinery a chat needs, which an agent set to Chat needs with the switch off. */
+export function isNativeChatLaunchable(
+  settings: Partial<NativeChatDefaultSettings> | null | undefined
+): boolean {
+  return (
+    isNativeChatEnabled(settings) ||
+    Object.values(settings?.agentLaunchModes ?? {}).some((preference) => preference === 'chat')
+  )
 }
 
 function clientChoosesStructuredLaunches(capabilities: readonly string[] | undefined): boolean {

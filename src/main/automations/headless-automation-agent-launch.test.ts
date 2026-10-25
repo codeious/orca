@@ -3,9 +3,11 @@ import { launchHeadlessAutomationAgent } from './headless-automation-agent-launc
 
 const CHAT_DEFAULT_ON = { experimentalNativeChat: true }
 
-function harness(options: { startupTerminal?: Record<string, unknown> | null } = {}) {
+function harness(
+  options: { startupTerminal?: Record<string, unknown> | null; settings?: object } = {}
+) {
   const runtime = {
-    getClientSettings: () => CHAT_DEFAULT_ON,
+    getClientSettings: () => options.settings ?? CHAT_DEFAULT_ON,
     getStructuredAgentSessionCreateSupport: vi.fn(async () => ({ supported: true })),
     createManagedWorktree: vi.fn(async (_args: Record<string, unknown>) => ({
       worktree: { id: 'repo-1::/wt/auto', displayName: 'auto-nightly' },
@@ -204,5 +206,19 @@ describe('headless automation agent launch', () => {
       'The target workspace is no longer available.'
     )
     expect(runtime.launchAgentTerminal).not.toHaveBeenCalled()
+  })
+
+  it('ignores a per-agent Chat launch setting and still starts a terminal', async () => {
+    const runtime = harness({
+      settings: { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' } }
+    })
+
+    await launch(runtime, { agentId: 'droid' })
+
+    expect(runtime.launchAgentTerminal).toHaveBeenCalledWith(
+      'id:wt-1',
+      expect.objectContaining({ agent: 'droid', prompt: 'fix the flaky test' })
+    )
+    expect(runtime.getStructuredAgentSessionCreateSupport).not.toHaveBeenCalled()
   })
 })

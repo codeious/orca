@@ -9,6 +9,7 @@ import {
   type TerminalQuickCommandMutation
 } from '../../shared/terminal-quick-commands'
 import { haveSameDisabledTuiAgents } from '../../shared/tui-agent-selection'
+import { normalizeAgentLaunchModePreferences } from '../../shared/agent-launch-mode-preference'
 import { normalizeSourceControlAiSettings } from '../../shared/source-control-ai'
 import {
   SOURCE_CONTROL_LAUNCH_ACTION_IDS,
@@ -32,6 +33,7 @@ export type RuntimeClientSettings = Pick<
   | 'agentCmdOverrides'
   | 'agentDefaultArgs'
   | 'agentDefaultEnv'
+  | 'agentLaunchModes'
   | 'agentStatusHooksEnabled'
   | 'terminalCopyTrimsGutter'
   | 'defaultTaskSource'
@@ -75,6 +77,7 @@ export type RuntimeClientSettingsUpdate = Pick<
   | 'disabledTuiAgents'
   | 'agentDefaultArgs'
   | 'agentDefaultEnv'
+  | 'agentLaunchModes'
   | 'defaultTaskSource'
   | 'defaultTaskViewPreset'
   | 'visibleTaskProviders'
@@ -112,6 +115,7 @@ export class RuntimeClientSettingsController {
       agentCmdOverrides: settings.agentCmdOverrides ?? {},
       agentDefaultArgs: settings.agentDefaultArgs ?? {},
       agentDefaultEnv: settings.agentDefaultEnv ?? {},
+      agentLaunchModes: normalizeAgentLaunchModePreferences(settings.agentLaunchModes),
       agentStatusHooksEnabled: settings.agentStatusHooksEnabled !== false,
       // Why projected: mobile's terminal Copy honours this, and a host predating
       // the setting sends no key, which the client reads as on (#19770).
