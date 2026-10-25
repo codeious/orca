@@ -1,0 +1,54 @@
+src/renderer/src/lib/unsupported-agent-version-toast.ts
+  s_2390872643f3af::t_078ef5635c52e0 1-26
+src/main/agent-launch/agent-launch-mode.ts
+  s_2390872643f3af::t_26635ded1dcbf4 28-29
+  s_2390872643f3af::t_1380511aa91ee8 246
+src/renderer/src/lib/structured-agent-session-launch-admission.ts
+  s_2390872643f3af::t_ccda013228d21d 18-19
+  s_2390872643f3af::t_5a77e90e030b9c 193
+  s_2390872643f3af::t_716f92dbf0f033 194-201
+src/renderer/src/lib/structured-agent-session-launch-admission.test.ts
+  s_2390872643f3af::t_4c77ddbcb07201 43-47
+  s_2390872643f3af::t_6bd53eaa20a801 74-86,89
+  s_2390872643f3af::t_12a1a0041ba576 282-332
+  s_2390872643f3af::t_aef16a6e0a428d 36
+src/main/native-chat/structured-agent-session-create-support.ts
+  s_2390872643f3af::t_1ad3da09466f48 6
+  s_2390872643f3af::t_2bb32171608254 4
+mobile/src/tasks/agent-launch-request.test.ts
+  s_2390872643f3af::t_8840f676736336 91-124
+src/shared/unsupported-agent-version.ts
+  s_2390872643f3af::t_1eab23f57cd333 1-48
+src/renderer/src/lib/structured-agent-session-host-admission.ts
+  s_2390872643f3af::t_7103ddf9d21924 37
+  s_2390872643f3af::t_24c53ea1fab7d9 5-8
+  s_2390872643f3af::t_2d770c5b43704b 63,66-68
+  s_2390872643f3af::t_595e0fb9d1e90a 69-70
+src/renderer/src/lib/agent-launch-through-host.test.ts
+  s_2390872643f3af::t_9ef9192645b164 108-109
+  s_2390872643f3af::t_a181a384490cf4 39-40
+  s_2390872643f3af::t_3fb77964803c83 167-192
+  s_2390872643f3af::t_a3ad432e17e0ba 2
+src/renderer/src/lib/agent-launch-through-host.ts
+  s_2390872643f3af::t_2f6aff87871420 23
+  s_2390872643f3af::t_55b22e6797bd34 119-121
+mobile/src/tasks/agent-launch-request.ts
+  s_2390872643f3af::t_a6ebb3419f9615 122
+  s_2390872643f3af::t_f09ed33366438b 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6a535086697451ab834eb898949c7d4a4dcd68c2",
+  "prompts": {},
+  "sessions": {
+    "s_2390872643f3af": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "02a97d1c-3913-42e3-b96f-7553bcfc43c8",
+        "model": "custom:grok-4.7"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
