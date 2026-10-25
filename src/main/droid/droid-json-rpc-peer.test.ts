@@ -190,6 +190,21 @@ describe('the end of the connection', () => {
   })
 })
 
+describe('the protocol Droid reports', () => {
+  it('is unknown until a frame carries it, then the newest one a frame carried', async () => {
+    const { peer, say } = connect()
+    expect(peer.protocolVersion).toBeUndefined()
+
+    say({ jsonrpc: '2.0', type: 'notification', factoryProtocolVersion: '1.275.0', method: 'm' })
+    await vi.waitFor(() => expect(peer.protocolVersion).toBe('1.275.0'))
+    say({ jsonrpc: '2.0', type: 'notification', method: 'm' })
+    say({ jsonrpc: '2.0', type: 'notification', factoryProtocolVersion: 7, method: 'm' })
+    say({ jsonrpc: '2.0', type: 'notification', factoryProtocolVersion: '2.0.0', method: 'm' })
+
+    await vi.waitFor(() => expect(peer.protocolVersion).toBe('2.0.0'))
+  })
+})
+
 describe('input that is not a frame', () => {
   it('is ignored without its content reaching a diagnostic, and the next frame still lands', async () => {
     const onDiagnostic = vi.fn()

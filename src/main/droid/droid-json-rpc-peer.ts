@@ -90,6 +90,9 @@ export class DroidJsonRpcPeer {
     return this.terminalError !== undefined
   }
 
+  /** The `factoryProtocolVersion` on the newest frame Droid stamped one on. */
+  protocolVersion: string | undefined
+
   request(
     method: string,
     params: unknown,
@@ -257,6 +260,9 @@ export class DroidJsonRpcPeer {
       return
     }
     const frame = parsed.data
+    if (typeof frame.factoryProtocolVersion === 'string') {
+      this.protocolVersion = frame.factoryProtocolVersion
+    }
     if (frame.method !== undefined) {
       if ('result' in frame || 'error' in frame) {
         this.diagnose('Ignored invalid Droid request')

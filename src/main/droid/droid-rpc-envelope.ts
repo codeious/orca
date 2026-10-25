@@ -20,6 +20,7 @@ export function stampDroidFrame(frame: DroidOutgoingFrame) {
 
 /** What Droid writes: told apart by which fields are present, not by its `type` label. */
 export const droidInboundFrameSchema = z.looseObject({
+  factoryProtocolVersion: z.unknown().optional(),
   id: z.string().optional(),
   method: z.string().optional(),
   params: z.unknown().optional(),
