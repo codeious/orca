@@ -2,6 +2,7 @@ import { PassThrough } from 'node:stream'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { PipedProcessSpawner } from '@orca/process-host/process-spec'
 import { createFakePipedChild } from '../../shared/__fixtures__/fake-spawned-child'
+import { providerExecutableMissing } from '../provider-process/provider-executable-missing'
 import type { terminateProviderProcessTree } from '../provider-process/provider-process-teardown'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
 
@@ -185,6 +186,48 @@ describe('the Droid process Orca owns', () => {
     expect(connection.rootVerdict).toBe('exited')
     expect(connection.processless).toBe(true)
     expect(onExit.mock.calls[0][1].exit.processless).toBe(true)
+  })
+
+  describe('when the droid executable is not installed', () => {
+    const spawnFailure = (code: string, path: string) =>
+      Object.assign(new Error(`spawn ${path} ${code}`), { code, path })
+
+    it('marks the failure a request ends with, so the start reads as a missing CLI', async () => {
+      const { connection, child } = fixture({}, { processless: true, exitOnEnd: false })
+      const pending = connection.request('droid.initialize_session', {})
+      const failed = pending.catch((error: unknown) => error)
+
+      child.emit('error', spawnFailure('ENOENT', 'fixture-droid'))
+      child.emit('close', null, null)
+
+      expect(providerExecutableMissing(await failed)).toBe(true)
+    })
+
+    it('marks the exit it reports for a spawn that never started a process', async () => {
+      const onExit = vi.fn()
+      const { child } = fixture({ onExit }, { processless: true, exitOnEnd: false })
+
+      child.emit('error', spawnFailure('ENOENT', 'fixture-droid'))
+      child.emit('close', null, null)
+
+      expect(onExit).toHaveBeenCalledOnce()
+      expect(providerExecutableMissing(onExit.mock.calls[0][0])).toBe(true)
+    })
+
+    it.each([
+      ['a spawn that fails for another reason', spawnFailure('EACCES', 'fixture-droid')],
+      ['a missing interpreter, not the command', spawnFailure('ENOENT', '/usr/bin/env')]
+    ])('does not mark %s', async (_name, failure) => {
+      const { connection, child } = fixture({}, { processless: true, exitOnEnd: false })
+      const failed = connection
+        .request('droid.initialize_session', {})
+        .catch((error: unknown) => error)
+
+      child.emit('error', failure)
+      child.emit('close', null, null)
+
+      expect(providerExecutableMissing(await failed)).toBe(false)
+    })
   })
 
   it('refuses limits it cannot honour before it starts a process', () => {

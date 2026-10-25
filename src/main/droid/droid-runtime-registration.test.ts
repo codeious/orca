@@ -1,4 +1,4 @@
-import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { chmod, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -141,6 +141,18 @@ describe('Droid launch support before session creation', () => {
       supportsLaunch(input({ agentCmdOverrides: { droid: `"${process.execPath}"` } }))
     ).resolves.toBe(true)
     expect(runProcess).toHaveBeenCalledWith(expect.objectContaining({ program: process.execPath }))
+  })
+
+  it('keeps the terminal chat, and names no release, when no droid is installed', async () => {
+    const empty = join(root, 'empty')
+    await mkdir(empty)
+    vi.mocked(runProcess).mockRejectedValue(
+      Object.assign(new Error('spawn droid ENOENT'), { code: 'ENOENT', path: 'droid' })
+    )
+    const notInstalled = { ...input(), env: { PATH: empty, HOME: '/host/home' } }
+
+    await expect(supportsLaunch(notInstalled)).resolves.toBe(false)
+    await expect(unsupportedVersion(notInstalled)).resolves.toBeNull()
   })
 
   it('leaves an unrunnable Command setting to the launch to refuse', async () => {

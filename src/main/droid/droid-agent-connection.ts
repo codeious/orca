@@ -6,6 +6,7 @@ import {
   type ProviderProcessExit
 } from '../provider-process/managed-provider-process'
 import { resolveAcpPeerOptions } from '../acp/acp-peer-limits'
+import { withMissingProviderExecutable } from '../provider-process/provider-executable-missing'
 import type { ProviderProcessCloseResult } from '../provider-process/provider-process-close'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import {
@@ -139,15 +140,22 @@ export class DroidAgentConnection {
     this.streamExitTimer.unref()
   }
 
-  private readonly onError = (error: Error): void => this.peer.close(error)
+  private readonly onError = (error: Error): void => this.peer.close(this.markIfNotInstalled(error))
+
+  // Read where the spawn is observed: the wording of a start that fails depends on it.
+  private markIfNotInstalled<TError extends Error>(error: TError): TError {
+    return this.managed.executableMissing ? withMissingProviderExecutable(error) : error
+  }
 
   private onRootExit(exit: ProviderProcessExit): void {
     clearTimeout(this.streamExitTimer)
     const { managed } = this
-    const error = new DroidConnectionClosedError(
-      exit.processless
-        ? 'Droid process could not start'
-        : `Droid process exited (code ${exit.code ?? 'none'}, signal ${exit.signal ?? 'none'})`
+    const error = this.markIfNotInstalled(
+      new DroidConnectionClosedError(
+        exit.processless
+          ? 'Droid process could not start'
+          : `Droid process exited (code ${exit.code ?? 'none'}, signal ${exit.signal ?? 'none'})`
+      )
     )
     const { stdout } = managed.child
     let finished = false

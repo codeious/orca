@@ -13,6 +13,8 @@ import {
   AgentSessionPromptAnswerRejectedError,
   type StructuredAgentSessionAcquireInput
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
+import { providerStartupFailureFact } from '../native-chat/agent-session-wire/structured-agent-session-failure-text'
+import { withMissingProviderExecutable } from '../provider-process/provider-executable-missing'
 import { agentSessionLaunchFolderMissing } from '../runtime/agent-session-launch-directory'
 import { isAgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
@@ -336,6 +338,23 @@ describe('Droid session start', () => {
       return connection
     })
     await expect(processless.start()).rejects.toBeInstanceOf(AgentSessionAcquisitionExitProvenError)
+  })
+
+  it('words a start with no droid installed as a missing CLI, through the acquisition error', async () => {
+    const h = await setup()
+    h.openConnection.mockImplementationOnce((_launch, handlers) => {
+      const connection = new FakeConnection(handlers)
+      connection.processless = true
+      connection.replies.set('droid.initialize_session', () => {
+        throw withMissingProviderExecutable(new Error('Droid process could not start'))
+      })
+      h.connections.push(connection)
+      return connection
+    })
+    const failure = await h.start().catch((error: unknown) => error)
+
+    expect(failure).toBeInstanceOf(AgentSessionAcquisitionExitProvenError)
+    expect(providerStartupFailureFact(failure).kind).toBe('cliMissing')
   })
 
   it('refuses a launch the resolver refused, with its reason, without spawning', async () => {
