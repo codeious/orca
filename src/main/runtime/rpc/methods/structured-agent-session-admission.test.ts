@@ -187,6 +187,43 @@ describe('a client that leaves the launch mode to the host', () => {
   })
 })
 
+// The only launch signal a released phone reads is createSupport, so a per-agent launch setting
+// reaches it as that agent's answer.
+describe('a client that leaves the launch mode to the host, with a per-agent launch setting', () => {
+  const askFor = (agent: string, settings: Record<string, unknown>) =>
+    call(CREATE_SUPPORT.method, { ...CREATE_SUPPORT.params, agent }, RELEASED_PHONE, {
+      getClientSettings: () => settings
+    })
+
+  it('opens a terminal for an agent set to Terminal while the host switch is on', async () => {
+    const response = await askFor('droid', {
+      experimentalNativeChat: true,
+      agentLaunchModes: { droid: 'terminal' }
+    })
+
+    expect(response).toMatchObject({ ok: false, error: UNSUPPORTED })
+    expect(runtimeCalls.getStructuredAgentSessionCreateSupport).not.toHaveBeenCalled()
+  })
+
+  it('offers a chat for an agent set to Chat while the host switch is off', async () => {
+    const response = await askFor('droid', {
+      experimentalNativeChat: false,
+      agentLaunchModes: { droid: 'chat' }
+    })
+
+    expect(response).toMatchObject({ ok: true })
+  })
+
+  it('leaves every other agent on the host switch', async () => {
+    const settings = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' } }
+
+    expect(await askFor('codex', settings)).toMatchObject({ ok: false, error: UNSUPPORTED })
+    expect(await askFor('codex', { ...settings, experimentalNativeChat: true })).toMatchObject({
+      ok: true
+    })
+  })
+})
+
 // A paired client's picker shows the saved selection create will start the chat with.
 describe("createSupport's launch seed", () => {
   const SEED = { model: 'opus', effort: 'high' }

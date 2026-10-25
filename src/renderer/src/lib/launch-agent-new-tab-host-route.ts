@@ -10,6 +10,7 @@ import {
 import { pasteAgentLaunchPromptOnceReady } from '@/lib/launch-agent-tab-prompt-paste'
 import { useAppStore } from '@/store'
 import { getConnectionIdFromState } from '@/lib/connection-context'
+import type { TuiAgent } from '../../../shared/tui-agent'
 import { isTuiAgentEnabled } from '../../../shared/tui-agent-selection'
 import { CLIENT_PLATFORM } from '@/lib/new-workspace'
 import type { LaunchAgentInNewTabArgs } from '@/lib/launch-agent-in-new-tab'
@@ -21,11 +22,14 @@ import type { LaunchAgentInNewTabArgs } from '@/lib/launch-agent-in-new-tab'
  * `draft`) keeps main's launch, and so does a launch the host could turn into a chat.
  */
 export function newTabPromptLaunchesThroughHost(args: {
+  agent: TuiAgent
   promptDelivery: 'auto-submit' | 'draft' | 'submit-after-ready'
   pastesPrompt: boolean
 }): boolean {
   return (
-    args.promptDelivery === 'submit-after-ready' && args.pastesPrompt && windowMakesHostLaunchTab()
+    args.promptDelivery === 'submit-after-ready' &&
+    args.pastesPrompt &&
+    windowMakesHostLaunchTab(args.agent)
   )
 }
 
@@ -46,7 +50,7 @@ export function freshNewTabLaunchesThroughHost(
     args.freshNewTab === true &&
     !args.prompt?.trim() &&
     launchPlatform === CLIENT_PLATFORM &&
-    windowMakesHostLaunchTab() &&
+    windowMakesHostLaunchTab(args.agent) &&
     isTuiAgentEnabled(args.agent, state.settings?.disabledTuiAgents) &&
     getConnectionIdFromState(state, args.worktreeId) === null
   )

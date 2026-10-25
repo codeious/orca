@@ -23,7 +23,10 @@ import { isAgentLaunchResult } from '../../../shared/agent-launch-intent'
 import { toastAgentLaunchVersionReceipt } from '@/lib/unsupported-agent-version-toast'
 import { AGENT_LAUNCH_TAB_CLOSED_CODE } from '../../../shared/agent-launch-tab-closed'
 import { makePaneKey } from '../../../shared/stable-pane-id'
-import { isNativeChatEnabled } from '../../../shared/structured-native-chat-launch-route'
+import {
+  isNativeChatLaunchable,
+  resolveNativeChatLaunchChoice
+} from '../../../shared/structured-native-chat-launch-route'
 import type { TuiAgent } from '../../../shared/tui-agent'
 import type { LaunchSource } from '../../../shared/telemetry-events'
 import type { Tab } from '../../../shared/tab-types'
@@ -141,10 +144,14 @@ async function settleLaunch(
   }
 }
 
-/** Where the host could turn a launch into a chat (chat is the default), this window's paste has no
- *  terminal to go to, so such a launch keeps main's own path. */
-export function windowMakesHostLaunchTab(): boolean {
-  return !isNativeChatEnabled(useAppStore.getState().settings)
+/** Where the host could turn a launch into a chat (the switch or the agent's own setting says
+ *  chat), this window's paste has no terminal to go to, so such a launch keeps main's own path.
+ *  Without an agent, any agent's setting may make it one. */
+export function windowMakesHostLaunchTab(agent?: TuiAgent): boolean {
+  const settings = useAppStore.getState().settings
+  return agent === undefined
+    ? !isNativeChatLaunchable(settings)
+    : !resolveNativeChatLaunchChoice(settings, agent).structured
 }
 
 export function launchAgentThroughHost(args: HostAgentLaunchArgs): {

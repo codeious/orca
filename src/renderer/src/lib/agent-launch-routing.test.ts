@@ -6,7 +6,11 @@ import {
   STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY
 } from '../../../shared/protocol-version'
 import { ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES } from '../../../shared/electron-remote-runtime-client-capabilities'
-import { resolveAgentLaunchRoute, structuredAgentLaunchSupported } from './agent-launch-routing'
+import {
+  resolveAgentLaunchRoute,
+  structuredAgentLaunchDowngrade,
+  structuredAgentLaunchSupported
+} from './agent-launch-routing'
 
 const settings = { experimentalNativeChat: true }
 
@@ -142,6 +146,71 @@ describe('new agent launch routing', () => {
     // The server has not answered yet, or answered without structured sessions.
     expect(route({ ...server, hostCapabilities: null })).toBe('terminal-tui')
     expect(route({ ...server, hostCapabilities: [] })).toBe('terminal-tui')
+  })
+})
+
+describe('a per-agent launch setting', () => {
+  const droidSupported = {
+    agent: 'droid' as const,
+    executionHostId: 'local',
+    hostCapabilities: [
+      STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
+      STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY
+    ],
+    hostStructuredAgents: ['droid'],
+    workspaceKind: 'git-worktree' as const
+  }
+
+  it('opens Droid as a terminal while Chat UI is on and Droid is set to Terminal', () => {
+    const settings = {
+      experimentalNativeChat: true,
+      agentLaunchModes: { droid: 'terminal' as const }
+    }
+    expect(route({ ...droidSupported, settings })).toBe('terminal-tui')
+    expect(route({ ...droidSupported, agent: 'codex', settings })).toBe('structured-native-chat')
+  })
+
+  it('opens Droid as a chat while Chat UI is off and Droid is set to Chat', () => {
+    const settings = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' as const } }
+    expect(route({ ...droidSupported, settings })).toBe('structured-native-chat')
+    expect(route({ ...droidSupported, agent: 'codex', settings })).toBe('terminal-tui')
+  })
+
+  it('leaves Droid on Chat UI when its setting is Follow or absent', () => {
+    expect(route({ ...droidSupported, settings: { experimentalNativeChat: true } })).toBe(
+      'structured-native-chat'
+    )
+    expect(
+      route({ ...droidSupported, settings: { experimentalNativeChat: true, agentLaunchModes: {} } })
+    ).toBe('structured-native-chat')
+    expect(route({ ...droidSupported, settings: { experimentalNativeChat: false } })).toBe(
+      'terminal-tui'
+    )
+  })
+
+  it('still downgrades a Chat choice the launch cannot honour', () => {
+    const settings = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' as const } }
+    const input = { ...droidSupported, settings, executionHostId: 'ssh:host-a' }
+    const chosen = route(input)
+    expect(chosen).toBe('terminal-tui')
+    expect(structuredAgentLaunchDowngrade(input, chosen)).toBe('remote-execution-host')
+  })
+
+  it('reports no downgrade when the user chose Terminal', () => {
+    const settings = {
+      experimentalNativeChat: true,
+      agentLaunchModes: { droid: 'terminal' as const }
+    }
+    const input = { ...droidSupported, settings }
+    expect(structuredAgentLaunchDowngrade(input, route(input))).toBeNull()
+  })
+
+  it('never lets Terminal stop an explicit chat request such as Resume in new chat', () => {
+    const settings = {
+      experimentalNativeChat: false,
+      agentLaunchModes: { droid: 'terminal' as const }
+    }
+    expect(structuredAgentLaunchSupported({ ...droidSupported, settings })).toBe(true)
   })
 })
 
