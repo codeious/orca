@@ -13910,6 +13910,7 @@
             "resumeInChatConflict": "Another chat is already holding this conversation.",
             "resumeInChatTranscriptMissing": "This conversation's history could not be loaded, so it cannot be resumed in chat.",
             "resumeInChatFailed": "Could not resume this session in a new chat.",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead.",
             "resumeInNewCliUnavailable": "This session cannot be opened in the CLI.",
             "resumeInNewCliHostTooOld": "Update Orca on the host that runs this chat to resume it in a new CLI."
           },
@@ -14051,6 +14052,11 @@
             "resumeInNewCli": "Resume in New CLI",
             "resumeInNewCliTooltipFork": "Forks this conversation into a new CLI session.",
             "resumeInNewCliTooltipChat": "The native chat stays as it is."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           },
           "AiVaultSessionDeleteDialog": {
             "title": "Delete this session?",
