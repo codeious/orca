@@ -39,6 +39,7 @@ function createFakeSftp(
   })
   const fakeStats = (mode: number): { mode: number } => ({ mode })
 
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the fake implements only the SFTP calls the remote writers make.
   const sftp = {
     readFile: (path: string, _enc: string, cb: (err: unknown, data?: string) => void): void => {
       if (opts.unreadablePath === path) {
