@@ -104,7 +104,8 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
       return {
         process,
         acquisitionGeneration: session.generation,
-        link: droidProviderLink(launch, droidSessionId, input.fence, randomUUID(), Date.now())
+        link: droidProviderLink(launch, droidSessionId, input.fence, randomUUID(), Date.now()),
+        ...(session.model.startListing ? { catalogListing: session.model.startListing } : {})
       }
     } catch (error) {
       if (!session) {
@@ -166,12 +167,19 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
     return true
   }
 
-  // No Droid prompt reaches the journal yet, so there is nothing for a person to answer or pick.
+  // No Droid prompt reaches the journal yet, so there is nothing for a person to answer.
   answerPrompt: StructuredAgentSessionAdapter['answerPrompt'] = async () => {
     throw new AgentSessionPromptAnswerRejectedError('Droid has no prompt waiting for an answer')
   }
-  setOption: StructuredAgentSessionAdapter['setOption'] = async () => {
-    throw new AgentSessionOptionRejectedError(new Error('Droid has no options to set'))
+  readOptions: StructuredAgentSessionAdapter['readOptions'] = (input) =>
+    this.session(input.sessionId, input.fence).readOptions()
+  setOption: StructuredAgentSessionAdapter['setOption'] = async (input) => {
+    const session = this.session(input.sessionId, input.fence)
+    try {
+      return await session.setOption(input.key, input.value)
+    } catch (error) {
+      throw new AgentSessionOptionRejectedError(error)
+    }
   }
 
   holdsDispatch(id: string): boolean {

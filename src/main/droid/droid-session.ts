@@ -10,6 +10,8 @@ import {
 import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-wire/structured-agent-session-logger'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
+import { droidOptionParams, droidSavedOptionPicks } from './droid-model-options'
+import { DroidSessionModel } from './droid-session-model'
 import { DroidTurns } from './droid-turns'
 import { isSupportedDroidProtocol } from './droid-version-support'
 
@@ -61,6 +63,8 @@ export class DroidSession {
   readonly lane: JsonlRpcTimelineLane
   readonly turns: DroidTurns
   requestedClose = false
+  /** What a no-pick new session resolved, for the host catalog. Absent when the start listed none. */
+  readonly model = new DroidSessionModel()
   private publishedExit = false
   private failedCause?: Error
   private exitDelivery: Promise<void> = Promise.resolve()
@@ -124,6 +128,7 @@ export class DroidSession {
   /** Droid's own id for the session this child now holds. Nothing else is sent before it answers. */
   async start(): Promise<string> {
     const { cwd, resumeId } = this.begin
+    const saved = droidSavedOptionPicks(this.input.options)
     let result: unknown
     try {
       result = await (resumeId
@@ -135,7 +140,13 @@ export class DroidSession {
         : this.connection.request(
             'droid.initialize_session',
             // Never a Mission: those spend the person's credits unattended.
-            { machineId: DROID_MACHINE_ID, cwd, interactionMode: 'auto', autonomyLevel: 'off' },
+            {
+              machineId: DROID_MACHINE_ID,
+              cwd,
+              interactionMode: 'auto',
+              autonomyLevel: 'off',
+              ...droidOptionParams(saved)
+            },
             { timeoutMs: START_TIMEOUT_MS }
           ))
     } catch (error) {
@@ -151,7 +162,34 @@ export class DroidSession {
     if (!id) {
       throw new Error('Droid did not name its session')
     }
+    this.model.capture(result, saved, resumeId === null)
+    if (resumeId) {
+      await this.model.applySaved(
+        (method, params, options) => this.connection.request(method, params, options),
+        saved,
+        (error) =>
+          this.deps.logger.warn('Droid did not take the saved model', {
+            scope: 'droid-options',
+            sessionId: this.input.identity.sessionId,
+            error
+          })
+      )
+    }
     return id
+  }
+
+  readOptions(): ReturnType<DroidSessionModel['read']> {
+    return this.model.read((method, params, options) =>
+      this.connection.request(method, params, options)
+    )
+  }
+
+  setOption(key: string, value: string): ReturnType<DroidSessionModel['set']> {
+    return this.model.set(
+      (method, params, options) => this.connection.request(method, params, options),
+      key,
+      value
+    )
   }
 
   async close(requested = true): ReturnType<DroidConnection['close']> {
