@@ -20,6 +20,7 @@ import {
 import { DROID_HANDLE_TRANSPORT } from './droid-agent-definition'
 import { DroidRpcError } from './droid-rpc-errors'
 import { DroidSessionAdapter } from './droid-session-adapter'
+import { stopAgentSessionProviderRoot } from '../native-chat/agent-session-wire/structured-agent-session-provider-exit-proof'
 import { buildDroidExecLaunch } from './droid-exec-launch'
 
 const sessionId = DROID_RIG_SESSION
@@ -208,6 +209,61 @@ describe('Droid session start', () => {
     expect(h.connections[0]?.closed).toBe(true)
   })
 
+  describe('the folder a loaded session was recorded in', () => {
+    const previous = {
+      linkId: 'prior',
+      handle: { transport: DROID_HANDLE_TRANSPORT, agent: 'droid', nativeId: 'droid-session-9' },
+      origin: 'created' as const,
+      mintedAtFence: 1,
+      observedAt: 100
+    }
+    const loadReplying = (h: Awaited<ReturnType<typeof setup>>, reply: Record<string, unknown>) =>
+      h.openConnection.mockImplementationOnce((_launch, handlers) => {
+        const connection = new FakeConnection(handlers)
+        connection.replies.set('droid.load_session', () => reply)
+        h.connections.push(connection)
+        return connection
+      })
+
+    it('closes the child when Droid loaded the session from another folder', async () => {
+      const h = await setup({ previous })
+      loadReplying(h, { session: { messages: [] }, cwd: '/somewhere/else' })
+
+      await expect(h.start()).rejects.toThrow(/folder/)
+
+      const [connection] = h.connections
+      expect(connection?.closed).toBe(true)
+      // Only a load: the folder is never moved, and the session is never initialized again.
+      expect(connection?.requests.map(({ method }) => method)).toEqual(['droid.load_session'])
+    })
+
+    it('accepts the workspace when Droid reports the real path behind a symlink', async () => {
+      const h = await setup({ previous, cwd: '/link/folder' }, undefined, {
+        realpath: async (path) => (path === '/link/folder' ? '/real/folder' : path)
+      })
+      loadReplying(h, { session: { messages: [] }, cwd: '/real/folder' })
+
+      const { acquired } = await h.start()
+
+      expect(acquired.link).toMatchObject({ handle: { nativeId: 'droid-session-9' } })
+    })
+
+    it('refuses a load that names no folder, since it cannot be compared', async () => {
+      const h = await setup({ previous })
+      loadReplying(h, { session: { messages: [] } })
+
+      await expect(h.start()).rejects.toThrow(/folder/)
+      expect(h.connections[0]?.closed).toBe(true)
+    })
+
+    it('never compares a new session, which Droid starts in the folder it was given', async () => {
+      const h = await setup()
+      const { connection } = await h.start()
+
+      expect(connection.requests.map(({ method }) => method)).toEqual(['droid.initialize_session'])
+    })
+  })
+
   it.each([
     ['another major', '2.0.0'],
     ['no stamp at all', undefined]
@@ -344,7 +400,7 @@ describe('Droid session turns', () => {
         fence: 7,
         outcome: {
           state: 'accepted',
-          providerIdentity: { provider: 'orca', clientMessageId: 'send-1' }
+          providerIdentity: { provider: 'droid', messageId: 'user-hello' }
         }
       })
     )
@@ -498,6 +554,16 @@ describe('Droid session end', () => {
     )
   })
 
+  it('counts a root that exited on stdin end as gone when its tree was not reaped', async () => {
+    const h = await setup()
+    const { connection } = await h.start()
+    connection.closeResult = { root: 'exited', tree: null }
+
+    await expect(
+      stopAgentSessionProviderRoot(() => h.adapter.closeSession(sessionId))
+    ).resolves.toBe(true)
+  })
+
   it('reports a requested close as requested', async () => {
     const h = await setup()
     await h.start()
@@ -528,11 +594,23 @@ describe('Droid session end', () => {
 })
 
 describe('Droid session options and prompts', () => {
-  it('rejects an option pick, and an answer to a card Droid is not waiting on, without ending the session', async () => {
+  it('sends a model or effort pick, rejects any other option and an answer to a card Droid is not waiting on, without ending the session', async () => {
     const h = await setup()
     const { connection } = await h.start()
 
-    const option = h.adapter.setOption({ sessionId, key: 'model', value: 'x', fence: 7 })
+    await expect(
+      h.adapter.setOption({ sessionId, key: 'model', value: 'gpt-6-sol', fence: 7 })
+    ).resolves.toEqual({ model: 'gpt-6-sol' })
+    await expect(
+      h.adapter.setOption({ sessionId, key: 'effort', value: 'high', fence: 7 })
+    ).resolves.toEqual({ effort: 'high' })
+    expect(connection.requests.slice(-2).map(({ method, params }) => ({ method, params }))).toEqual(
+      [
+        { method: 'droid.update_session_settings', params: { modelId: 'gpt-6-sol' } },
+        { method: 'droid.update_session_settings', params: { reasoningEffort: 'high' } }
+      ]
+    )
+    const option = h.adapter.setOption({ sessionId, key: 'fastMode', value: 'true', fence: 7 })
     await expect(option).rejects.toSatisfy(isAgentSessionOptionRejectedError)
     await expect(
       h.adapter.answerPrompt({

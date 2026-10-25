@@ -17,8 +17,15 @@ describe('Resume in New CLI eligibility', () => {
     ).toBe('repo-1::worktree-2')
   })
 
+  it('offers the fork for a Droid row native chat owns', () => {
+    expect(
+      aiVaultSessionCliForkWorktreeId({ agent: 'droid', structuredSession: OWNED }, RESUMABLE)
+    ).toBe('repo-1::worktree-2')
+  })
+
   it('leaves rows no chat owns to plain Resume', () => {
     expect(aiVaultSessionCliForkWorktreeId({ agent: 'claude' }, RESUMABLE)).toBeNull()
+    expect(aiVaultSessionCliForkWorktreeId({ agent: 'droid' }, RESUMABLE)).toBeNull()
   })
 
   it('withholds the fork when resume is blocked or has no target', () => {

@@ -107,7 +107,8 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
       return {
         process,
         acquisitionGeneration: session.generation,
-        link: droidProviderLink(launch, droidSessionId, input.fence, randomUUID(), Date.now())
+        link: droidProviderLink(launch, droidSessionId, input.fence, randomUUID(), Date.now()),
+        ...(session.model.startListing ? { catalogListing: session.model.startListing } : {})
       }
     } catch (error) {
       if (!session) {
@@ -186,19 +187,23 @@ export class DroidSessionAdapter implements StructuredAgentSessionAdapter {
       input.response,
       input.commit
     )
+  readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = (input) =>
+    this.session(input.sessionId, input.fence).options.read()
   setOption: StructuredAgentSessionAdapter['setOption'] = async (input) => {
-    const session = this.session(input.sessionId, input.fence)
-    const spec =
-      input.key === 'planMode'
-        ? decodeStructuredAgentSessionOptionValue('planMode', input.value)
-        : null
-    if (typeof spec !== 'boolean') {
-      throw new AgentSessionOptionRejectedError(new Error('Droid has no such option to set'))
+    const { options } = this.session(input.sessionId, input.fence)
+    if (input.key === 'planMode') {
+      const spec = decodeStructuredAgentSessionOptionValue('planMode', input.value)
+      if (typeof spec !== 'boolean') {
+        throw new AgentSessionOptionRejectedError(new Error('Spec is either on or off'))
+      }
+      return options.setSpec(spec)
     }
-    return session.setSpecMode(spec)
+    try {
+      return await options.set(input.key, input.value)
+    } catch (error) {
+      throw new AgentSessionOptionRejectedError(error)
+    }
   }
-  readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = async (input) =>
-    this.session(input.sessionId, input.fence).readOptions()
 
   holdsDispatch(id: string): boolean {
     return this.sessions.get(id)?.turns.holdsDispatch ?? false

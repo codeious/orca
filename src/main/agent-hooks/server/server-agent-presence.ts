@@ -8,6 +8,8 @@ import { AgentProcessExitWatch } from '../../../shared/agent-process-exit-watch'
 import { droidExitMarker } from '../../../shared/agent-hook-listener/providers/droid-sessions'
 import { AgentHookServerLifecycle } from './server-lifecycle'
 
+export type DroidSessionHolder = Exclude<AgentProcessVerdict, 'exited'>
+
 export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecycle {
   private readonly presenceChecks = new WeakMap<
     AgentHookEventPayload,
@@ -49,6 +51,42 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
       this.resolvePaneKeyAlias(paneKey)
     )?.agentPresence
     return presence?.process !== undefined && !presence.ended
+  }
+
+  /** The firmest hold a terminal pane has on a Droid session, or null when none does. */
+  async droidSessionHolder(sessionId: string): Promise<DroidSessionHolder | null> {
+    // Why: a pane has no row until its first prompt, so a resumed session idling at its prompt is
+    // only in the pane's session record.
+    const panes = new Set<string>()
+    for (const [paneKey, row] of this.state.lastStatusByPaneKey) {
+      if (row.providerSession?.id === sessionId) {
+        panes.add(paneKey)
+      }
+    }
+    for (const [paneKey, sessions] of this.state.droidSessionsByPaneKey) {
+      if (sessions.leadId === sessionId) {
+        panes.add(paneKey)
+      }
+    }
+    const checks: Promise<AgentProcessVerdict | null>[] = []
+    for (const paneKey of panes) {
+      const row = this.state.lastStatusByPaneKey.get(paneKey)
+      // Why: a Droid pane's session record outlives the Droid when another agent takes the pane.
+      if (row && row.payload.agentType !== 'droid') {
+        continue
+      }
+      // Why: a pane with no captured process cannot be proven gone, so it is never read as free.
+      checks.push(
+        row?.agentPresence?.process
+          ? this.checkAgentPresence(paneKey)
+          : Promise.resolve('unverifiable')
+      )
+    }
+    const verdicts = await Promise.all(checks)
+    if (verdicts.includes('live')) {
+      return 'live'
+    }
+    return verdicts.includes('unverifiable') ? 'unverifiable' : null
   }
 
   checkAgentPresence(paneKey: string): Promise<AgentProcessVerdict | null> {

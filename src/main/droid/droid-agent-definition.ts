@@ -20,8 +20,8 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
     approvalEnforcement: 'provider'
   },
   restingOptions: {
-    // Spec is the one pick that reaches Droid (the next start opens in it); models are not wired yet.
-    acceptsKey: (key) => key === 'planMode',
+    // Model, effort and Spec are kept at rest and sent on the next start.
+    acceptsKey: (key) => key === 'model' || key === 'effort' || key === 'planMode',
     fallbackModels: () => null,
     effortDefaultsToModel: false
   }

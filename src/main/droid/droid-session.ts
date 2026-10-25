@@ -1,5 +1,3 @@
-import { z } from 'zod'
-import type { AgentSessionOptionsResult } from '../../shared/agent-session-wire'
 import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import { providerTimelineSink } from '../native-chat/agent-session-timeline/provider-timeline-plan'
 import {
@@ -12,13 +10,12 @@ import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
 import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
+import { droidOptionParams, droidSavedOptionPicks } from './droid-model-options'
 import { DroidPrompts } from './droid-prompts'
-import { droidCurrentOptions, setDroidSpecMode } from './droid-session-options'
-import {
-  DroidReportedSettings,
-  type DroidSettings,
-  type DroidStartSettings
-} from './droid-session-settings'
+import { DroidSessionModel } from './droid-session-model'
+import { DroidSessionOptions } from './droid-session-options'
+import { DroidReportedSettings, type DroidStartSettings } from './droid-session-settings'
+import { readStartedSession } from './droid-started-session'
 import { DroidTurns } from './droid-turns'
 import { isSupportedDroidProtocol } from './droid-version-support'
 
@@ -51,6 +48,8 @@ export type DroidSessionDeps = {
   }) => void
   onIdle: (input: { sessionId: string }) => void
   logger: StructuredAgentSessionLogger
+  /** Resolves a folder to its real path; replaced in tests. */
+  realpath?: (path: string) => Promise<string>
 }
 
 /** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. */
@@ -58,12 +57,6 @@ export type DroidSessionBegin = DroidStartSettings & { cwd: string; resumeId: st
 
 export const DROID_MACHINE_ID = 'orca'
 const START_TIMEOUT_MS = 120_000
-// `initialize_session` names the session beside a `session` that carries only its messages.
-const startedSchema = z.looseObject({
-  sessionId: z.string().min(1).optional(),
-  session: z.looseObject({ id: z.string().min(1).optional() }).optional(),
-  settings: z.unknown().optional()
-})
 
 /** One child owns its transport, turns and timeline, including shutdown retries. */
 export class DroidSession {
@@ -71,9 +64,13 @@ export class DroidSession {
   readonly lane: JsonlRpcTimelineLane
   readonly turns: DroidTurns
   readonly prompts: DroidPrompts
+  private readonly echoed = new Map<string, string>()
   requestedClose = false
   /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
   readonly settings = new DroidReportedSettings()
+  /** What a no-pick new session resolved, for the host catalog. Absent when the start listed none. */
+  readonly model = new DroidSessionModel()
+  readonly options: DroidSessionOptions
   private publishedExit = false
   private failedCause?: Error
   private exitDelivery: Promise<void> = Promise.resolve()
@@ -100,20 +97,37 @@ export class DroidSession {
       pauseReading: () => this.connection?.pauseReading(),
       resumeReading: () => this.connection?.resumeReading(),
       onFailed: (reason) => this.fail(new Error(reason)),
-      onInputAccepted: (clientMessageId) =>
+      onInputAccepted: (clientMessageId) => {
+        const messageId = this.echoed.get(clientMessageId)
+        this.echoed.delete(clientMessageId)
         this.settle(clientMessageId, {
           state: 'accepted',
-          providerIdentity: { provider: 'orca', clientMessageId }
+          providerIdentity: messageId
+            ? { provider: 'droid', messageId }
+            : { provider: 'orca', clientMessageId }
         })
+      }
     })
     this.prompts = new DroidPrompts(this.lane)
+    this.options = new DroidSessionOptions({
+      request: (method, params, options) => this.connection.request(method, params, options),
+      settings: this.settings,
+      model: this.model,
+      requested: begin.interactionMode,
+      timeoutMs: START_TIMEOUT_MS
+    })
     this.turns = new DroidTurns({
       lane: this.lane,
       generation,
       request: (method, params, options) => this.connection.request(method, params, options),
       settled: (id, outcome) => this.settle(id, outcome),
       idle: () => deps.onIdle({ sessionId }),
-      settings: (report) => this.settings.receive(report)
+      settings: (report) => this.settings.receive(report),
+      rememberEcho: (clientMessageId, messageId) => {
+        this.echoed.set(clientMessageId, messageId)
+      },
+      warn: (message, fields) =>
+        deps.logger.warn(message, { scope: 'droid-steer', sessionId, ...fields })
     })
     this.connection = (
       deps.openConnection ?? ((spec, handlers) => new DroidAgentConnection(spec, handlers))
@@ -140,6 +154,7 @@ export class DroidSession {
   /** Droid's own id for the session this child now holds. Nothing else is sent before it answers. */
   async start(): Promise<string> {
     const { cwd, resumeId, autonomyLevel, interactionMode } = this.begin
+    const saved = droidSavedOptionPicks(this.input.options)
     let result: unknown
     try {
       result = await (resumeId
@@ -150,7 +165,14 @@ export class DroidSession {
           )
         : this.connection.request(
             'droid.initialize_session',
-            { machineId: DROID_MACHINE_ID, cwd, interactionMode, autonomyLevel },
+            // The mode is Auto or Spec, never a Mission: those spend the person's credits unattended.
+            {
+              machineId: DROID_MACHINE_ID,
+              cwd,
+              interactionMode,
+              autonomyLevel,
+              ...droidOptionParams(saved)
+            },
             { timeoutMs: START_TIMEOUT_MS }
           ))
     } catch (error) {
@@ -158,52 +180,25 @@ export class DroidSession {
       throw error
     }
     this.refuseUnsupportedProtocol(true)
-    const parsed = startedSchema.safeParse(result)
-    // A load answers with the session's content, never its id, so the one asked for is the one held.
-    const id = parsed.success
-      ? (parsed.data.sessionId ?? parsed.data.session?.id ?? resumeId ?? undefined)
-      : undefined
-    if (!id) {
-      throw new Error('Droid did not name its session')
-    }
-    if (parsed.success) {
-      this.settings.adopt(parsed.data.settings)
-    }
+    const resume = resumeId ? { id: resumeId, cwd, realpath: this.deps.realpath } : null
+    const { id, settings } = await readStartedSession(result, resume)
+    this.settings.adopt(settings)
+    this.model.capture(result, saved, resumeId === null)
     let reportedLevel = this.settings.current.autonomyLevel
     if (resumeId) {
-      if (id !== resumeId) {
-        throw new Error('Droid loaded a different session')
-      }
-      // A load takes no settings, so the level and mode the session stored would otherwise stand.
-      reportedLevel = (await this.updateSettings({ autonomyLevel, interactionMode }))?.autonomyLevel
+      reportedLevel = await this.options.resume(
+        { autonomyLevel, interactionMode },
+        saved,
+        (error) =>
+          this.deps.logger.warn('Droid did not take the saved model', {
+            scope: 'droid-options',
+            sessionId: this.input.identity.sessionId,
+            error
+          })
+      )
     }
     this.lane.apply(droidAutonomyCapRow(autonomyLevel, reportedLevel))
     return id
-  }
-
-  readOptions(): AgentSessionOptionsResult {
-    return {
-      models: [],
-      current: droidCurrentOptions(this.settings.current, this.begin.interactionMode)
-    }
-  }
-
-  setSpecMode(on: boolean): Promise<Record<string, string>> {
-    return setDroidSpecMode((params) => this.updateSettings(params), this.begin.interactionMode, on)
-  }
-
-  /** What Droid reported holding in answer to this update, if it reported at all. */
-  private async updateSettings(
-    params: Partial<DroidStartSettings>
-  ): Promise<DroidSettings | undefined> {
-    const sent: { id?: string } = {}
-    await this.connection.request('droid.update_session_settings', params, {
-      timeoutMs: START_TIMEOUT_MS,
-      onId: (id) => {
-        sent.id = id
-      }
-    })
-    return sent.id === undefined ? undefined : this.settings.answerTo(sent.id)
   }
 
   async close(requested = true): ReturnType<DroidConnection['close']> {

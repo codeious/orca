@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { PipedProcessSpawner } from '@orca/process-host/process-spec'
 import type { DescendantSnapshot } from '../pty-descendant-termination'
 import { spawnManagedProviderProcess } from './managed-provider-process'
+import { PROVIDER_SUPERVISOR_MAX_STOP_MS } from './provider-process-supervisor'
 
 // The real fallback teardown; only the primitives that touch the OS are faked.
 const os = vi.hoisted(() => ({
@@ -65,7 +66,7 @@ describe('fallback teardown never claims descendants it did not observe', () => 
   it('reports no observation when the POSIX process table cannot be read', async () => {
     vi.useFakeTimers()
     const closing = rootOnly('darwin').close()
-    await vi.advanceTimersByTimeAsync(5_500)
+    await vi.advanceTimersByTimeAsync(PROVIDER_SUPERVISOR_MAX_STOP_MS)
     await expect(closing).resolves.toEqual({ root: 'exited', tree: null })
     expect(os.capture).toHaveBeenCalledOnce()
     expect(os.verifySnapshot).not.toHaveBeenCalled()
@@ -75,7 +76,7 @@ describe('fallback teardown never claims descendants it did not observe', () => 
     vi.useFakeTimers()
     os.capture.mockResolvedValueOnce({ rootPgid: 1, descendants: [], capturedAtMs: 1 })
     const closing = rootOnly('darwin').close()
-    await vi.advanceTimersByTimeAsync(5_500)
+    await vi.advanceTimersByTimeAsync(PROVIDER_SUPERVISOR_MAX_STOP_MS)
     await expect(closing).resolves.toEqual({ root: 'exited', tree: 'exited' })
     expect(os.verifySnapshot).toHaveBeenCalledOnce()
   })

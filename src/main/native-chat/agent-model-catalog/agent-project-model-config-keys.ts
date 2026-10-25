@@ -199,3 +199,25 @@ export function piSettingsMayPickModel(text: string): boolean {
   }
   return settings === null || setsAny(settings, PI_MODEL_SETTINGS)
 }
+
+// Droid settings that pick the model or effort, at the top level or under session defaults.
+const DROID_MODEL_SETTINGS = ['model', 'reasoningEffort'] as const
+
+/** True when a Droid `.factory/settings.json` could pick a model or effort. One it can't parse
+ *  counts. `~/.factory` is the account, not this file. */
+export function droidSettingsMayPickModel(text: string): boolean {
+  let settings: Record<string, unknown> | null
+  try {
+    settings = record(JSON.parse(text))
+  } catch {
+    return true
+  }
+  if (!settings) {
+    return true
+  }
+  if (setsAny(settings, DROID_MODEL_SETTINGS)) {
+    return true
+  }
+  const session = record(settings.sessionDefaultSettings)
+  return session !== null && setsAny(session, DROID_MODEL_SETTINGS)
+}

@@ -17,8 +17,11 @@ import {
   claudeProviderHandle,
   codexProviderHandle
 } from '../../shared/agent-session-provider-handle-encoding'
+import { DROID_HANDLE_TRANSPORT } from '../droid/droid-agent-definition'
 
 const PROVIDER_SESSION = '019fd532-7c11-7a90-b6de-4e1a2c3d5f60'
+const DROID_SESSION = '7b0a8f5e-4c1d-4e22-9a31-5d6c0b7e1f24'
+const OTHER_DROID_SESSION = '2e9d41c8-0b57-4a63-8f10-c3a5d7e9b602'
 
 describe('structured AI Vault ownership', () => {
   afterEach(() => setStructuredAgentSessionHost(null))
@@ -196,6 +199,131 @@ describe('structured AI Vault ownership', () => {
     ).rejects.toThrow('agent_session_conflict')
   })
 
+  describe('Droid chats', () => {
+    it('shows a Droid chat session once, as the chat-owned row', () => {
+      installOwnership({ provider: 'droid', providerSessionId: DROID_SESSION })
+      const row = {
+        ...listResult().sessions[0]!,
+        agent: 'droid' as const,
+        sessionId: DROID_SESSION
+      }
+      const result = { ...listResult(), sessions: [row] }
+
+      expect(projectStructuredAiVaultSessions(result, false).sessions).toEqual([])
+      expect(projectStructuredAiVaultSessions(result, true).sessions).toEqual([
+        {
+          ...row,
+          title: 'Droid Chat',
+          structuredSession: { sessionId: 'session-alpha', workspaceId: 'workspace-1' }
+        }
+      ])
+    })
+
+    it('does not let a Claude row with a Droid chat id borrow the chat', () => {
+      installOwnership({ provider: 'droid', providerSessionId: DROID_SESSION })
+      const lookalike = {
+        ...listResult().sessions[0]!,
+        agent: 'claude' as const,
+        sessionId: DROID_SESSION
+      }
+
+      expect(
+        projectStructuredAiVaultSessions({ ...listResult(), sessions: [lookalike] }, true).sessions
+      ).toEqual([lookalike])
+    })
+
+    it('refuses to prepare a resume of the owned session, and prepares its fork', () => {
+      installOwnership({ provider: 'droid', providerSessionId: DROID_SESSION })
+      const args = {
+        agent: 'droid' as const,
+        sessionId: DROID_SESSION,
+        filePath: `/home/u/.factory/sessions/-repo/${DROID_SESSION}.jsonl`,
+        codexHome: null,
+        executionHostId: 'local' as const
+      }
+
+      expect(() => assertLegacyAiVaultResumeAllowed(args)).toThrow('agent_session_conflict')
+      expect(() => assertLegacyAiVaultResumeAllowed({ ...args, fork: true })).not.toThrow()
+    })
+
+    it.each([
+      `droid -r ${DROID_SESSION}`,
+      `droid --resume ${DROID_SESSION}`,
+      `droid --resume=${DROID_SESSION}`,
+      `droid resume ${DROID_SESSION}`,
+      `droid resume ${DROID_SESSION} "carry on"`,
+      `droid resume --cwd /repo ${DROID_SESSION}`,
+      `droid exec -s ${DROID_SESSION} "carry on"`,
+      `droid exec --session-id ${DROID_SESSION} "carry on"`,
+      `droid exec --session-id=${DROID_SESSION} "carry on"`,
+      `droid exec -m some-model -s ${DROID_SESSION} "carry on"`,
+      // The command a vault row stores for its own resume.
+      `cd '/tmp/droid' && droid --resume '${DROID_SESSION}'`
+    ])('refuses a writer that names the owned session: %s', async (command) => {
+      installOwnership({ provider: 'droid', providerSessionId: DROID_SESSION })
+
+      await expect(
+        assertLegacyAiVaultResumeCommandAllowed(command, async () => undefined)
+      ).rejects.toThrow('agent_session_conflict')
+    })
+
+    it.each([
+      `droid --resume`,
+      `droid -r`,
+      `droid --resume --last`,
+      `droid --last`,
+      `droid resume`,
+      `droid resume --last`,
+      `droid resume -w`,
+      // A link names a session by address, so it may be the owned one.
+      `droid --resume https://app.factory.ai/sessions/${DROID_SESSION}`,
+      `droid resume https://app.factory.ai/sessions/${DROID_SESSION}`,
+      `droid exec -s https://app.factory.ai/sessions/${DROID_SESSION} "carry on"`
+    ])('refuses a writer that may pick the owned session: %s', async (command) => {
+      installOwnership({ provider: 'droid', providerSessionId: DROID_SESSION })
+
+      await expect(
+        assertLegacyAiVaultResumeCommandAllowed(command, async () => undefined)
+      ).rejects.toThrow('agent_session_conflict')
+    })
+
+    it.each([
+      `droid --fork ${DROID_SESSION}`,
+      `droid --fork=${DROID_SESSION}`,
+      `droid resume ${DROID_SESSION} --fork`,
+      `droid exec --fork ${DROID_SESSION} "carry on"`,
+      `droid -r ${OTHER_DROID_SESSION}`,
+      `droid resume ${OTHER_DROID_SESSION}`,
+      `droid exec -s ${OTHER_DROID_SESSION} "carry on"`,
+      `droid`,
+      `droid "fix the resume flow"`,
+      `droid doctor`,
+      // `-r` is the reasoning effort inside `droid exec`; it resumes nothing.
+      `droid exec -r high "carry on"`,
+      `droid exec -r ${DROID_SESSION} "carry on"`,
+      `droid exec "carry on"`,
+      // A different provider's resume of an id that happens to match.
+      `claude --resume ${DROID_SESSION}`
+    ])(
+      'allows a command that writes no second history to the owned session: %s',
+      async (command) => {
+        installOwnership({ provider: 'droid', providerSessionId: DROID_SESSION })
+
+        await expect(
+          assertLegacyAiVaultResumeCommandAllowed(command, async () => undefined)
+        ).resolves.toBeUndefined()
+      }
+    )
+
+    it('leaves a Droid resume alone while no Droid chat exists', async () => {
+      installOwnership({ provider: 'claude' })
+
+      await expect(
+        assertLegacyAiVaultResumeCommandAllowed('droid resume --last', async () => undefined)
+      ).resolves.toBeUndefined()
+    })
+  })
+
   it('prepares a fork of the owned session but still refuses a resume of it', () => {
     installOwnership()
     const args = {
@@ -234,10 +362,7 @@ function installOwnership(overrides: Partial<StructuredProviderSessionOwnership>
             providerHandleChain: [
               {
                 ...record.providerHandleChain[0]!,
-                handle:
-                  ownership.provider === 'claude'
-                    ? claudeProviderHandle(ownership.providerSessionId, null)
-                    : codexProviderHandle(ownership.providerSessionId)
+                handle: providerHandle(ownership)
               }
             ],
             lease: { ...ownership.lease, sessionId: ownership.sessionId },
@@ -247,6 +372,20 @@ function installOwnership(overrides: Partial<StructuredProviderSessionOwnership>
       }
     }
   } as never)
+}
+
+function providerHandle(ownership: StructuredProviderSessionOwnership) {
+  if (ownership.provider === 'claude') {
+    return claudeProviderHandle(ownership.providerSessionId, null)
+  }
+  if (ownership.provider === 'droid') {
+    return {
+      transport: DROID_HANDLE_TRANSPORT,
+      agent: 'droid',
+      nativeId: ownership.providerSessionId
+    }
+  }
+  return codexProviderHandle(ownership.providerSessionId)
 }
 
 function listResult(): AiVaultListResult {

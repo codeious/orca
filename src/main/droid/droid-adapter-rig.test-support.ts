@@ -8,7 +8,7 @@ import {
 import type { StructuredAgentSessionAcquireInput } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import type { DroidAgentConnectionOptions } from './droid-agent-connection'
-import type { DroidConnection } from './droid-session'
+import type { DroidConnection, DroidSessionDeps } from './droid-session'
 import { DroidSessionAdapter } from './droid-session-adapter'
 import type { DroidResolvedLaunch } from './droid-structured-launch-resolution'
 
@@ -130,7 +130,8 @@ export type DroidAdapterRig = {
 /** `script` runs on each connection the adapter opens, before the adapter sends anything. */
 export async function setupDroidAdapter(
   launch: Partial<DroidResolvedLaunch> = {},
-  script?: (connection: FakeConnection) => void
+  script?: (connection: FakeConnection) => void,
+  extraDeps: Pick<DroidSessionDeps, 'realpath'> = {}
 ): Promise<DroidAdapterRig> {
   const rig = await openProviderTimelineRig({ agent: 'droid', sessionId: DROID_RIG_SESSION })
   const connections: FakeConnection[] = []
@@ -176,7 +177,8 @@ export async function setupDroidAdapter(
     onLifecycle: lifecycle,
     onSettled: settled,
     onIdle: idle,
-    logger: { warn: vi.fn(), error: vi.fn() }
+    logger: { warn: vi.fn(), error: vi.fn() },
+    ...extraDeps
   })
   cleanups.push(async () => {
     await adapter.closeAll().catch(() => {})

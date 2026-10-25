@@ -61,6 +61,7 @@ describe.skipIf(gate.skipReason !== null)('A signed-out Droid chat (real CLI)', 
     root = mkdtempSync(join(tmpdir(), 'orca-droid-real-cli-session-'))
     mkdirSync(join(root, 'home'))
     mkdirSync(join(root, 'project'))
+    mkdirSync(join(root, 'elsewhere'))
     adapters = []
   })
 
@@ -79,12 +80,13 @@ describe.skipIf(gate.skipReason !== null)('A signed-out Droid chat (real CLI)', 
     const rig = await openProviderTimelineRig({ agent: 'droid', sessionId })
     const start = async (
       fence: number,
-      previous: AgentSessionProviderHandleLink | null
+      previous: AgentSessionProviderHandleLink | null,
+      folder = 'project'
     ): Promise<{ adapter: DroidSessionAdapter; link: AgentSessionProviderHandleLink }> => {
       const adapter = new DroidSessionAdapter({
         resolveLaunch: async () => ({
           command: resolveDroidCommand(env),
-          cwd: join(root, 'project'),
+          cwd: join(root, folder),
           env,
           previous,
           autonomyLevel: 'off'
@@ -162,5 +164,16 @@ describe.skipIf(gate.skipReason !== null)('A signed-out Droid chat (real CLI)', 
       origin: 'resumed',
       handle: { nativeId: first.link.handle.nativeId }
     })
+  }, 90_000)
+
+  it('refuses to load a session from a workspace other than the folder it was recorded in', async () => {
+    const chat = await openChat()
+    const first = await chat.start(1, null)
+    await stopAgentSessionProviderRoot(() => first.adapter.closeSession(sessionId))
+    await first.adapter.drainObservedExits()
+    first.adapter.acknowledgeSessionRelease(sessionId)
+
+    // Droid loads from any folder and reports the one it was recorded in, so only the comparison stops it.
+    await expect(chat.start(2, first.link, 'elsewhere')).rejects.toThrow(/folder/)
   }, 90_000)
 })
