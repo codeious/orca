@@ -1,0 +1,19 @@
+src/renderer/src/components/settings/AgentsPane.launch-mode.test.tsx
+  s_7ddff69f1b5110::t_b8bc1063ba5824 92-99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3ff6e5aa31096eb10feedcaa32cbc8b6e331cf6e",
+  "prompts": {},
+  "sessions": {
+    "s_7ddff69f1b5110": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "22e4c325-1442-40ad-a7e4-f5dafe0805f6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

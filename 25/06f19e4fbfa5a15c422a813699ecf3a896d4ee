@@ -1,0 +1,68 @@
+src/renderer/src/lib/worktree-activation-store-contract.ts
+  s_7ddff69f1b5110::t_b451f3aa9a36b1 62
+src/renderer/src/lib/agent-launch-caller-placement.test.ts
+  s_7ddff69f1b5110::t_88b0b4ab9cb38c 56
+src/renderer/src/lib/empty-workspace-default-agent-chat.ts
+  s_7ddff69f1b5110::t_d6e8581ad43a59 1
+  s_7ddff69f1b5110::t_dc24b1692ac5b2 32
+src/renderer/src/lib/launch-agent-new-tab-host-route.test.ts
+  s_7ddff69f1b5110::t_399a698a970411 6
+  s_7ddff69f1b5110::t_648a8d2d6d9508 100-105,107,111,114,116
+  s_7ddff69f1b5110::t_b4aaa38fca866b 117-119
+  s_7ddff69f1b5110::t_2698f25fe4dd42 120-122
+src/renderer/src/runtime/local-structured-chats.ts
+  s_7ddff69f1b5110::t_d09e646c724683 76,78-79,82-83,86-87
+  s_7ddff69f1b5110::t_4f10bdd4597ccd 97
+  s_7ddff69f1b5110::t_ca273cfb52b29f 2-5
+src/renderer/src/runtime/local-structured-chats.test.ts
+  s_7ddff69f1b5110::t_c9d43e89f83e74 60-82
+src/main/runtime/rpc/methods/structured-agent-session-admission.test.ts
+  s_7ddff69f1b5110::t_a5424032baec6e 190-226
+src/main/runtime/rpc/methods/structured-agent-session-policy.ts
+  s_7ddff69f1b5110::t_b408622ebf4f0e 10
+  s_7ddff69f1b5110::t_f7a765be785c16 100-101,103-104,107
+src/main/runtime/rpc/methods/structured-agent-session-gate.ts
+  s_7ddff69f1b5110::t_db69ac88ae4ac5 56
+src/renderer/src/lib/agent-launch-routing.test.ts
+  s_7ddff69f1b5110::t_09ce82474ba371 9-13
+  s_7ddff69f1b5110::t_d2408cad6d2a4b 152-207
+  s_7ddff69f1b5110::t_afea17e07cae9c 208-210
+  s_7ddff69f1b5110::t_12780cb136d160 211-216
+src/renderer/src/lib/agent-launch-caller-permissions.test.ts
+  s_7ddff69f1b5110::t_39bd69efc8892d 56
+src/renderer/src/lib/agent-launch-routing.ts
+  s_7ddff69f1b5110::t_64b029591eafd3 3,5
+  s_7ddff69f1b5110::t_dfdcb7d5f3f610 33,38-43
+  s_7ddff69f1b5110::t_f74840c3bcb011 16
+  s_7ddff69f1b5110::t_0d2b29ed971b8b 63-64,69
+src/renderer/src/lib/agent-launch-through-host-agent-setting.test.ts
+  s_7ddff69f1b5110::t_f1041327c51b7f 1-46
+src/renderer/src/runtime/host-structured-agents-sync.ts
+  s_7ddff69f1b5110::t_5f726db86066ee 3
+  s_7ddff69f1b5110::t_9fccd789dc222a 21
+src/renderer/src/lib/agent-launch-through-host.ts
+  s_7ddff69f1b5110::t_1587b489fbb293 26-29
+  s_7ddff69f1b5110::t_6fb13fc2ee9054 147-154
+src/renderer/src/lib/launch-agent-new-tab-host-route.ts
+  s_7ddff69f1b5110::t_0f008cef8c3016 25,30-32
+  s_7ddff69f1b5110::t_4b6f33d4db0163 53
+  s_7ddff69f1b5110::t_500908c7f91f63 13
+src/renderer/src/lib/launch-agent-in-new-tab.ts
+  s_7ddff69f1b5110::t_607ff3f3d6e4d8 248
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2506f19e4fbfa5a15c422a813699ecf3a896d4ee",
+  "prompts": {},
+  "sessions": {
+    "s_7ddff69f1b5110": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "22e4c325-1442-40ad-a7e4-f5dafe0805f6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

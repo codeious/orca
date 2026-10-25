@@ -1,0 +1,24 @@
+src/main/runtime/rpc/methods/agent-launch-floating-workspace.test.ts
+  s_7ddff69f1b5110::t_e1e95b06f4decd 87-122
+src/main/automations/headless-automation-agent-launch.test.ts
+  s_7ddff69f1b5110::t_32d5f10b0206d2 210-223
+  s_7ddff69f1b5110::t_f5cb780cdaffb6 6-8,10
+src/renderer/src/lib/agent-launch-routing.test.ts
+  s_7ddff69f1b5110::t_53d7dfb849d14d 208-224
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c1f2fc35dc5f3352d12e7245f3f39cf82610c3cc",
+  "prompts": {},
+  "sessions": {
+    "s_7ddff69f1b5110": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "22e4c325-1442-40ad-a7e4-f5dafe0805f6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

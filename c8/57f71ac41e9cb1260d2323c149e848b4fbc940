@@ -1,0 +1,33 @@
+research/droid-steering-placement.md
+  s_6443e72646c590::t_83fa9d163603bf 1-97
+research/droid-steering-placement/end-of-loop.jsonl
+  s_6443e72646c590::t_a0eb5ac45b3770 1-77
+research/droid-steering-placement/end-of-turn-interrupt.jsonl
+  s_6443e72646c590::t_2ca88d1187ba38 1-36
+research/droid-steering-placement/end-of-turn-late.jsonl
+  s_6443e72646c590::t_adab3537209b9d 1-37
+research/droid-steering-placement/end-of-turn.jsonl
+  s_6443e72646c590::t_ca68e405162d35 1-42
+research/droid-steering-placement/probe.mjs
+  s_6443e72646c590::t_1abbd65069ad5d 1-186
+research/droid-steering-placement/scrub.mjs
+  s_6443e72646c590::t_62852ccfa0e4f9 1-63
+research/droid-steering-placement/timeline.mjs
+  s_6443e72646c590::t_9721e1a8fd6d2f 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c857f71ac41e9cb1260d2323c149e848b4fbc940",
+  "prompts": {},
+  "sessions": {
+    "s_6443e72646c590": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "86089865-4cfa-4d01-afc1-0a4f5848fdbd",
+        "model": "custom:Claude-Sonnet-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

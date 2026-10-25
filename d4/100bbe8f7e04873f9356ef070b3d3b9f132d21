@@ -1,0 +1,20 @@
+src/main/droid/hook-service-real-cli.test.ts
+  s_0451622378e9c8::t_e437e290079a2c 7
+  s_0451622378e9c8::t_eccae786922fa5 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d4100bbe8f7e04873f9356ef070b3d3b9f132d21",
+  "prompts": {},
+  "sessions": {
+    "s_0451622378e9c8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d035f68d-089c-477f-9b20-d144473a213c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

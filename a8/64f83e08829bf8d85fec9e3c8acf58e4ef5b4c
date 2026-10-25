@@ -1,0 +1,124 @@
+src/main/droid/droid-configured-default.test.ts
+  s_f87fd4e7a08936::t_a9aa46be372e49 96-97
+  s_f87fd4e7a08936::t_5b9ba98262bd75 181-182
+  s_f87fd4e7a08936::t_30ca0ba2d3a36f 105-111,177,236
+  s_8f63c4159d32dc::t_f271d6c8e2b1a4 1-95,98-104,112-176,178-180,183-235,237-399
+src/main/droid/droid-session.ts
+  s_f87fd4e7a08936::t_96cfec77ffb451 167-168
+  s_f87fd4e7a08936::t_d9d6d8861dd5ea 14
+  s_8f63c4159d32dc::t_4ac5efda4f0d31 12-13,62,64-65,92-94,97-99,101,108-113,139,151-157,177-189,193-204
+src/main/droid/droid-started-session.ts
+  s_f87fd4e7a08936::t_419dc7e9375f2e 1-33
+config/tsconfig.cli.json
+  s_f87fd4e7a08936::t_d91e5b5b943d01 236-239
+mobile/src/tasks/agent-launch-request.test.ts
+  s_f87fd4e7a08936::t_e2f3431e57dd54 91-124
+mobile/src/tasks/agent-launch-request.ts
+  s_f87fd4e7a08936::t_cb47f4381cb08e 25,122
+src/main/agent-hooks/server-droid-background-child-lease.test.ts
+  s_f87fd4e7a08936::t_3033447282cd41 17-18,105,109-111
+src/main/agent-launch/agent-launch-mode.ts
+  s_f87fd4e7a08936::t_3b238792c0e2b9 28-29,246
+src/main/droid/__fixtures__/end-of-turn-interrupt.jsonl
+  s_f87fd4e7a08936::t_cbcba5ece05f1b 1-36
+src/main/droid/droid-agent-connection.test.ts
+  s_f87fd4e7a08936::t_440f05bc2a6ab4 7-17,98-119
+src/main/droid/droid-agent-connection.ts
+  s_f87fd4e7a08936::t_112201a2580af3 8,11-14,23-36,64-65
+src/main/droid/droid-agent-definition.ts
+  s_f87fd4e7a08936::t_1fffd531ad05d2 23-24
+src/main/droid/droid-model-catalog-probe.test.ts
+  s_f87fd4e7a08936::t_0cae81e9d0bbab 1-209
+src/main/droid/droid-model-catalog-probe.ts
+  s_f87fd4e7a08936::t_c158861c577106 1-104
+src/main/droid/droid-model-options.ts
+  s_f87fd4e7a08936::t_c874c975a99ddb 1-163
+src/main/droid/droid-runtime-registration.ts
+  s_f87fd4e7a08936::t_668435343ca69b 9,14,23-33,40,88-97
+src/main/droid/droid-session-adapter.test.ts
+  s_f87fd4e7a08936::t_a3b2a02bf8b4b0 26,510,664-673,703-704,708-720
+src/main/droid/droid-session-adapter.ts
+  s_f87fd4e7a08936::t_e1981e3fbc7409 107-108,170,174-182
+src/main/droid/droid-session-model.ts
+  s_f87fd4e7a08936::t_615e61a32aaf75 1-85
+src/main/droid/droid-session-notifications.ts
+  s_f87fd4e7a08936::t_ff7cdda8aa4195 53-57
+src/main/droid/droid-steering.test.ts
+  s_f87fd4e7a08936::t_f5d21e5138709d 1-378
+src/main/droid/droid-turns.ts
+  s_f87fd4e7a08936::t_45b74c379b0a21 4,22-24,86-93,95,131-133,165,179,183-202,205,260-261,264-272
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.ts
+  s_f87fd4e7a08936::t_83c7d9ad11d4db 74
+src/main/native-chat/agent-model-catalog/agent-project-git-common-root.ts
+  s_f87fd4e7a08936::t_02d9c5eaba284a 1-55
+src/main/native-chat/agent-model-catalog/agent-project-model-config-keys.ts
+  s_f87fd4e7a08936::t_fe566f2afad922 202-223
+src/main/native-chat/agent-model-catalog/agent-project-model-override.test.ts
+  s_f87fd4e7a08936::t_41b3d1c8e8ddea 269-323
+src/main/native-chat/agent-model-catalog/agent-project-model-override.ts
+  s_f87fd4e7a08936::t_7e3c5a7bc8176b 10,13,71-72,126-133,243-245
+src/main/native-chat/agent-session-journal/journal-item-identity.test.ts
+  s_f87fd4e7a08936::t_272f782dc33755 114-123
+src/main/native-chat/structured-agent-session-create-support.ts
+  s_f87fd4e7a08936::t_10ec20301c08eb 4,6
+src/main/provider-process/managed-provider-process-fallback-tree.test.ts
+  s_f87fd4e7a08936::t_fdac4a6eced01b 7,69,79
+src/main/provider-process/managed-provider-process.ts
+  s_f87fd4e7a08936::t_70c6adc07e08ea 45-46,83-84
+src/main/provider-process/provider-process-supervisor.test.ts
+  s_f87fd4e7a08936::t_e154349dccbb09 7,120-121
+src/main/provider-process/provider-process-supervisor.ts
+  s_f87fd4e7a08936::t_08161a8b2e5395 6-7,23,224,265-269,286
+src/main/runtime/structured-agent-model-catalog-discovery.test.ts
+  s_f87fd4e7a08936::t_531e7aafea44e7 66-67,70
+src/renderer/src/components/settings/AgentsPane.test.tsx
+  s_f87fd4e7a08936::t_6520068646b5a9 528-538
+src/renderer/src/lib/agent-launch-through-host.test.ts
+  s_f87fd4e7a08936::t_8d4b87638ac52c 2,39-40,108-109,167-192
+src/renderer/src/lib/agent-launch-through-host.ts
+  s_f87fd4e7a08936::t_29786b80eb71bb 23,119-121
+src/renderer/src/lib/structured-agent-session-host-admission.ts
+  s_f87fd4e7a08936::t_f6fd34ad4a7576 5-8,37,63,66-70
+src/renderer/src/lib/structured-agent-session-launch-admission.test.ts
+  s_f87fd4e7a08936::t_664d813e0f630e 36,43-47,74-86,89,282-332
+src/renderer/src/lib/structured-agent-session-launch-admission.ts
+  s_f87fd4e7a08936::t_b4b8fa8361eff5 18-19,193-201
+src/renderer/src/lib/unsupported-agent-version-toast.ts
+  s_f87fd4e7a08936::t_6e73a5cac9a12f 1-26
+src/shared/agent-session-journal-item-key.ts
+  s_f87fd4e7a08936::t_0d4aa9a84db957 145-147,201-203
+src/shared/agent-session-journal-types.ts
+  s_f87fd4e7a08936::t_2fa4e86988d61a 79-80
+src/shared/agent-session-wire.ts
+  s_f87fd4e7a08936::t_72be849d7ea3c9 400-401
+src/shared/unsupported-agent-version.ts
+  s_f87fd4e7a08936::t_aebec658aca7ba 1-48
+src/wsl-guest/agent-hook-server-droid-background-child-lease.test.ts
+  s_f87fd4e7a08936::t_f72eb3bff9c992 24-25,43-48,95,99-101
+src/wsl-guest/relay-droid-exit-watch.test.ts
+  s_f87fd4e7a08936::t_ec9008469f1bb8 82-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a864f83e08829bf8d85fec9e3c8acf58e4ef5b4c",
+  "prompts": {},
+  "sessions": {
+    "s_8f63c4159d32dc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7e1dec78-7ceb-4d1c-a3bc-a56fb13268c4",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

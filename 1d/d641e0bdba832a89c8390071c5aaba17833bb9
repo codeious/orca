@@ -1,0 +1,19 @@
+research/droid-session-protocol.md
+  s_334a89367ffaf1::t_a605e7b4f9bba1 1-142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1dd641e0bdba832a89c8390071c5aaba17833bb9",
+  "prompts": {},
+  "sessions": {
+    "s_334a89367ffaf1": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f604ffb3-84de-4b5b-bd38-100ad62ba05a",
+        "model": "custom:Custom:-Grok-4.7-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

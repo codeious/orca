@@ -1,0 +1,19 @@
+docs/adr/0004-droid-hooks-live-in-hooks-json-and-config-uis-follow-claude-parity.md
+  s_71448096a73472::t_0a0616dfb2f23a 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c8262bc1d3e682cd0e3b167a3163ff4b8aff5450",
+  "prompts": {},
+  "sessions": {
+    "s_71448096a73472": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "1d31046c-224a-488a-a880-13eaf851c74a",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+src/main/native-chat/agent-model-catalog/agent-project-model-override.ts
+  s_57750309b54426::t_cff799336b45ba 10,13
+  s_57750309b54426::t_701956d56b8191 126-133
+  s_57750309b54426::t_9e78e616d06046 71-72
+  s_57750309b54426::t_f35ee6598447ed 243-245
+src/main/native-chat/agent-model-catalog/agent-project-model-override.test.ts
+  s_57750309b54426::t_767c8d466be7f4 269-323
+src/main/native-chat/agent-model-catalog/agent-project-model-config-keys.ts
+  s_57750309b54426::t_84b1d1fefd41a5 202-223
+src/main/native-chat/agent-model-catalog/agent-project-git-common-root.ts
+  s_57750309b54426::t_e2aa60a97aa9fb 1-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e3ba4ee3ca7ba10d707be31d5b8e774e8987f44a",
+  "prompts": {},
+  "sessions": {
+    "s_57750309b54426": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fe844fd6-6376-4329-bd5c-d9649a6de275",
+        "model": "custom:grok-4.7"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

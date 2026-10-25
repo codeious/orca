@@ -1,0 +1,29 @@
+src/shared/agent-launch-mode-preference.test.ts
+  s_7ddff69f1b5110::t_0e839ea9f7fb98 1-98
+src/shared/global-settings-types.ts
+  s_7ddff69f1b5110::t_08f15816902ba2 31
+  s_7ddff69f1b5110::t_82d86b7e816464 222-223
+src/shared/agent-launch-mode-preference.ts
+  s_7ddff69f1b5110::t_c44c088ff17fb5 1-33
+src/shared/structured-native-chat-launch-route.ts
+  s_7ddff69f1b5110::t_4097c018651e5f 11
+  s_7ddff69f1b5110::t_4c92d197b2fdcd 24-27
+  s_7ddff69f1b5110::t_869bd61332ce56 68,75-102
+  s_7ddff69f1b5110::t_a85d67ad3553eb 103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "70078503fe0a5e5898d082c05ac560f0d520fe5f",
+  "prompts": {},
+  "sessions": {
+    "s_7ddff69f1b5110": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "22e4c325-1442-40ad-a7e4-f5dafe0805f6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

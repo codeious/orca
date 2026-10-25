@@ -1,0 +1,25 @@
+src/shared/agent-session-availability.ts
+  s_48f3bc0d7f0337::t_94676ad3a7c38b 39
+src/shared/agent-session-sign-in.ts
+  s_48f3bc0d7f0337::t_0f50a5f57205d0 8
+src/shared/agent-session-availability.test.ts
+  s_48f3bc0d7f0337::t_b6f1dafa27af86 45-54,56,64-65
+  s_48f3bc0d7f0337::t_7e27a4c920dba3 55
+  s_48f3bc0d7f0337::t_869679ce729081 57-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9202052068d9962f732d3e4d7920f2f799b9894c",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

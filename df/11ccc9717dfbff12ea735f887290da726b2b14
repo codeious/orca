@@ -1,0 +1,50 @@
+src/renderer/src/web/preload-api/web-preference-normalization.ts
+  s_7ddff69f1b5110::t_9252d9e3d0e169 25
+  s_7ddff69f1b5110::t_2e2cda31b5f271 169-171
+src/main/runtime/runtime-client-settings.ts
+  s_7ddff69f1b5110::t_545a8d24801556 118
+  s_7ddff69f1b5110::t_6d2715d892be78 36
+  s_7ddff69f1b5110::t_271ca54627ff26 80
+  s_7ddff69f1b5110::t_8c7647cbaefd02 12
+src/main/persistence/applying-settings/settings-update.ts
+  s_7ddff69f1b5110::t_bfba0668f45fea 4
+  s_7ddff69f1b5110::t_5f85bc3bfda812 116-120
+src/shared/agent-launch-mode-preference.test.ts
+  s_7ddff69f1b5110::t_607336cf65e96a 79-82
+src/main/runtime/runtime-store-contract.ts
+  s_7ddff69f1b5110::t_affeea8b124f3e 97
+src/shared/rpc-contract/client-settings-params.ts
+  s_7ddff69f1b5110::t_095f10d4a2e96a 10
+  s_7ddff69f1b5110::t_dd4bbafaf0b0bf 109-112
+src/shared/default-global-settings.ts
+  s_7ddff69f1b5110::t_3338b5ba7f0795 223
+src/shared/rpc-contract/client-settings-params.test.ts
+  s_7ddff69f1b5110::t_aa9310bff27112 2-16
+src/main/runtime/runtime-client-settings-agent-launch-modes-projection.test.ts
+  s_7ddff69f1b5110::t_7abe11646a803a 1-66
+  s_7ddff69f1b5110::t_da87ac857cfee2 67-69
+src/renderer/src/store/slices/settings.ts
+  s_7ddff69f1b5110::t_416dcb019f4cb0 20
+  s_7ddff69f1b5110::t_3109cea6783e0a 115-119
+src/main/persistence/applying-settings/settings-update-agent-launch-modes.test.ts
+  s_7ddff69f1b5110::t_75bc53377346c9 1-31,36-65
+  s_7ddff69f1b5110::t_a58e98308ddbb8 32-35
+src/renderer/src/store/slices/settings-agent-launch-modes.test.ts
+  s_7ddff69f1b5110::t_6a39c313c7373d 1-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "df11ccc9717dfbff12ea735f887290da726b2b14",
+  "prompts": {},
+  "sessions": {
+    "s_7ddff69f1b5110": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "22e4c325-1442-40ad-a7e4-f5dafe0805f6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

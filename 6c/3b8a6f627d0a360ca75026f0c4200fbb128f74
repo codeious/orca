@@ -1,0 +1,24 @@
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_8f63c4159d32dc::t_4770336d431faf 112
+  s_8f63c4159d32dc::t_d4eca882aec957 1
+  s_8f63c4159d32dc::t_4116f7913d13b9 122
+  s_8f63c4159d32dc::t_f16d83f686d8b4 2-111,113-121,123-182
+src/main/droid/droid-session-adapter.test.ts
+  s_8f63c4159d32dc::t_227f9a080aa5bf 3,8,14-19,25-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6c3b8a6f627d0a360ca75026f0c4200fbb128f74",
+  "prompts": {},
+  "sessions": {
+    "s_8f63c4159d32dc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7e1dec78-7ceb-4d1c-a3bc-a56fb13268c4",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

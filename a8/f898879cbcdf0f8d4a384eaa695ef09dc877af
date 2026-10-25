@@ -1,0 +1,26 @@
+docs/adr/0003-droid-launch-mode-is-a-per-agent-setting.md
+  s_a57587060a50e5::t_aaf9459e359e09 23-24
+src/renderer/src/components/floating-terminal/FloatingTerminalWindowControls.tsx
+  s_a57587060a50e5::t_02cdf251efbf61 70-71
+docs/specs/droid-first-class.md
+  s_a57587060a50e5::t_8a4c0c68152de8 496
+  s_a57587060a50e5::t_7288ca7d0b9a0d 268
+  s_a57587060a50e5::t_603f7d2d7538ca 50
+  s_a57587060a50e5::t_62e32c73256f71 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a8f898879cbcdf0f8d4a384eaa695ef09dc877af",
+  "prompts": {},
+  "sessions": {
+    "s_a57587060a50e5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fd4afa99-8ef7-4d49-9697-13345392d392",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

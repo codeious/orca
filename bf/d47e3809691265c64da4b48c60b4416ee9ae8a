@@ -1,0 +1,20 @@
+research/droid-remote-control.md
+  s_c5081a77875055::t_720fbee0b14c79 7
+  s_c5081a77875055::t_ef751eea86b7d4 1-6,8-165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bfd47e3809691265c64da4b48c60b4416ee9ae8a",
+  "prompts": {},
+  "sessions": {
+    "s_c5081a77875055": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "cae040c3-4ab2-4ca4-86b9-b511ea3eb8d1",
+        "model": "custom:Custom:-Grok-4.7-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+config/scripts/vitest-sqlite-runtime-files.mjs
+  s_a57587060a50e5::t_de51504b41e648 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f854ebdbf624bc64246e3edd36951aaff3e239d1",
+  "prompts": {},
+  "sessions": {
+    "s_a57587060a50e5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fd4afa99-8ef7-4d49-9697-13345392d392",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

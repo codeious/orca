@@ -1,0 +1,21 @@
+src/main/droid/droid-autonomy-level.test.ts
+  s_8f63c4159d32dc::t_e4ba224aef3150 1-60
+src/main/droid/droid-autonomy-level.ts
+  s_8f63c4159d32dc::t_ddb821de3876cb 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "66bc9f565dafcfb5a9045a60e4fe06b200c06fca",
+  "prompts": {},
+  "sessions": {
+    "s_8f63c4159d32dc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7e1dec78-7ceb-4d1c-a3bc-a56fb13268c4",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

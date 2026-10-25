@@ -1,0 +1,20 @@
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.test.ts
+  s_f87fd4e7a08936::t_740ec2fa133130 167-168,170-177,187
+  s_f87fd4e7a08936::t_9935053d9d181b 169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c7fc8254f6867a70b9b8e13ed8784ff46b0ce26d",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

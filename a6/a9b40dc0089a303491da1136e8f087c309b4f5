@@ -1,0 +1,27 @@
+src/main/ai-vault/structured-session-resume-grammar.test.ts
+  s_0451622378e9c8::t_e145c6aa02acd9 1-162
+src/main/ai-vault/shell-command-segments.ts
+  s_0451622378e9c8::t_7947e17ebc744f 1-13,16-106
+  s_0451622378e9c8::t_ac34486a6d07b8 14-15
+src/main/ai-vault/structured-session-ownership.test.ts
+  s_0451622378e9c8::t_c6beec8388e656 202-223
+src/main/ai-vault/structured-session-resume-grammar.ts
+  s_0451622378e9c8::t_baf0e9086d2da1 1-2
+  s_0451622378e9c8::t_546175b301e8a2 177-185
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a6a9b40dc0089a303491da1136e8f087c309b4f5",
+  "prompts": {},
+  "sessions": {
+    "s_0451622378e9c8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d035f68d-089c-477f-9b20-d144473a213c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

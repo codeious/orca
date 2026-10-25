@@ -1,0 +1,23 @@
+src/main/ai-vault/session-scanner-droid-parser.ts
+  s_f87fd4e7a08936::t_3a24e7164fce7c 134
+  s_f87fd4e7a08936::t_778360e64e7ad9 92
+  s_f87fd4e7a08936::t_f0a5a39815ef36 135-138
+src/main/ai-vault/session-scanner-droid-parser.test.ts
+  s_f87fd4e7a08936::t_5f840d34641de9 1-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3244b66225e03df49ce7ee556db096bdb8fc2feb",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

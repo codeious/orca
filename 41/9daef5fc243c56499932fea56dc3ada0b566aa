@@ -1,0 +1,22 @@
+research/droid-subagent-session-start.md
+  s_bdb3f54de3e9c7::t_8db190f39a3e4c 93
+  s_bdb3f54de3e9c7::t_efb51001a0ef1b 109,111-112
+  s_bdb3f54de3e9c7::t_91e604be7474bb 122
+  s_bdb3f54de3e9c7::t_263f3e06f52223 35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "419daef5fc243c56499932fea56dc3ada0b566aa",
+  "prompts": {},
+  "sessions": {
+    "s_bdb3f54de3e9c7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "40154320-bdf8-4d1b-a16d-8350da398a0c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

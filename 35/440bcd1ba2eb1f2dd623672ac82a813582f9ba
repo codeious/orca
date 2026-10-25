@@ -1,0 +1,21 @@
+src/main/droid/droid-prompt.test.ts
+  s_48f3bc0d7f0337::t_1f14e87d71a600 1-57
+src/main/droid/droid-prompt.ts
+  s_48f3bc0d7f0337::t_140bcf4dfc38be 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "35440bcd1ba2eb1f2dd623672ac82a813582f9ba",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

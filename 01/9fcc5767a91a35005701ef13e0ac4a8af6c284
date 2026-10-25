@@ -1,0 +1,35 @@
+src/main/droid/droid-json-rpc-peer.ts
+  s_48f3bc0d7f0337::t_98e716d65756f5 93-95
+  s_48f3bc0d7f0337::t_a54736ed8b6af5 263-265
+src/main/droid/droid-agent-connection.ts
+  s_48f3bc0d7f0337::t_8348f5bae28bfa 41
+  s_48f3bc0d7f0337::t_36c1f152d53211 8
+  s_48f3bc0d7f0337::t_a8d60595a139c4 1-7,9-40,42-198
+src/main/droid/droid-rpc-envelope.ts
+  s_48f3bc0d7f0337::t_834cec86e3abd1 23
+src/main/droid/droid-json-rpc-peer.test.ts
+  s_48f3bc0d7f0337::t_cdaf115cce78f1 193-207
+src/main/droid/droid-agent-connection.test.ts
+  s_48f3bc0d7f0337::t_ed66cdda155f1c 166
+  s_48f3bc0d7f0337::t_4b81c6f17c42b8 160,162,164
+  s_48f3bc0d7f0337::t_552174dd5df259 124-126
+  s_48f3bc0d7f0337::t_70fddef8cc3aec 1-123,127-135,137-159,161,163,165,167-199
+  s_48f3bc0d7f0337::t_a1ca778699072e 136
+  s_48f3bc0d7f0337::t_354c2006f69459 200-203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "019fcc5767a91a35005701ef13e0ac4a8af6c284",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

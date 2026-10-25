@@ -1,0 +1,19 @@
+research/droid-config-surfaces.md
+  s_a50ae02655b0ee::t_32f7b0db53f6d7 1-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b944325188b0138611d58867aa26c4d29b77bbd4",
+  "prompts": {},
+  "sessions": {
+    "s_a50ae02655b0ee": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "692bf49f-d842-4f2b-a53b-3165452e8ce7",
+        "model": "custom:Custom:-Grok-4.7-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

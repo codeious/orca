@@ -1,0 +1,42 @@
+src/main/droid/droid-agent-definition.ts
+  s_8f63c4159d32dc::t_5dfe3c1580148a 23-24
+config/scripts/vitest-sqlite-runtime-files.mjs
+  s_8f63c4159d32dc::t_2953bcf9eeae16 24
+src/main/droid/droid-spec-option.test.ts
+  s_8f63c4159d32dc::t_cecb0042a1e9b8 50
+  s_8f63c4159d32dc::t_08cb8fbe86ac37 141
+  s_8f63c4159d32dc::t_b16acf258490a6 11
+  s_8f63c4159d32dc::t_ce4b2804e3327d 1-10,12-49,51-105,127-140,142-145
+  s_8f63c4159d32dc::t_12499f4a277e85 106-126
+src/main/droid/droid-session.ts
+  s_8f63c4159d32dc::t_eab2c881ab30a5 191-192
+  s_8f63c4159d32dc::t_9c583c766c6adf 16
+  s_8f63c4159d32dc::t_c7a6fab32da7b1 184-190,193-194,196-198
+  s_8f63c4159d32dc::t_fb67fb5e4daabd 2
+src/main/droid/droid-session-options.ts
+  s_8f63c4159d32dc::t_ce94ee2aed4b2b 50
+  s_8f63c4159d32dc::t_a702910113604e 1-2,10,12-36,56-62
+  s_8f63c4159d32dc::t_392cf892779902 3-9,11,37-49,51-55
+src/main/droid/droid-session-adapter.ts
+  s_8f63c4159d32dc::t_2860efe0ed07d2 189-198
+  s_8f63c4159d32dc::t_e5708de0745cdf 4
+  s_8f63c4159d32dc::t_1e7219204d7e95 200-201
+src/main/droid/fixtures/update-settings-acks.jsonl
+  s_8f63c4159d32dc::t_df014f1d7395f0 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7846d62eed3ec873a69d07de18812d6cd4183a7e",
+  "prompts": {},
+  "sessions": {
+    "s_8f63c4159d32dc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7e1dec78-7ceb-4d1c-a3bc-a56fb13268c4",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
