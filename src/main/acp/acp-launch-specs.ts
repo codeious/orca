@@ -2,11 +2,7 @@
 // speaks protocol extensions). Nothing outside `acp-dialects/` branches on an agent's name.
 
 import { join } from 'node:path'
-import {
-  ORCA_SCRUB_SAFE_LAUNCH_ENV,
-  ORCA_SCRUB_SAFE_PANE_ENV
-} from '../../shared/agent-hook-scrub-safe-env'
-import { AGENT_HOOK_RUNTIME_ENV_KEYS } from '../ipc/pty/host-env/spawn-env-keys'
+import { STRUCTURED_CHILD_PANE_ENV_TO_DELETE } from '../runtime/structured-child-pane-env-scrub'
 import type { AcpDialect } from './acp-dialects/acp-dialect'
 import { GROK_ACP_DIALECT } from './acp-dialects/grok-dialect'
 import { OMP_ACP_DIALECT } from './acp-dialects/omp-dialect'
@@ -202,16 +198,4 @@ export function acpLaunchSpecFor(agent: string): AcpLaunchSpec | null {
   return ACP_LAUNCH_SPECS.find((spec) => spec.agent === agent) ?? null
 }
 
-/**
- * A pane's identity in the inherited environment would let the agent's own Orca status hooks
- * report for this session too; the structured session is its one status producer.
- */
-export const ACP_CHILD_ENV_TO_DELETE: readonly string[] = [
-  'ORCA_PANE_KEY',
-  'ORCA_TAB_ID',
-  'ORCA_WORKTREE_ID',
-  'ORCA_AGENT_LAUNCH_TOKEN',
-  ORCA_SCRUB_SAFE_PANE_ENV,
-  ORCA_SCRUB_SAFE_LAUNCH_ENV,
-  ...AGENT_HOOK_RUNTIME_ENV_KEYS
-]
+export const ACP_CHILD_ENV_TO_DELETE = STRUCTURED_CHILD_PANE_ENV_TO_DELETE
