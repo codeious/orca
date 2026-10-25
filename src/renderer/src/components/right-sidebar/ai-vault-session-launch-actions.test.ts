@@ -11,8 +11,15 @@ const mocks = vi.hoisted(() => ({
   prepareAiVaultSessionForResume: vi.fn(),
   launchAiVaultSessionInNewTab: vi.fn(),
   activateAiVaultResumeWorkspace: vi.fn(),
+  resumeAiVaultSessionInNewChat: vi.fn(),
+  confirm: vi.fn<() => Promise<boolean>>(),
+  droidSessionHolder: vi.fn<() => Promise<unknown>>(),
   toastError: vi.fn(),
   toastSuccess: vi.fn()
+}))
+
+vi.mock('@/components/confirmation-dialog-context', () => ({
+  useConfirmationDialog: () => mocks.confirm
 }))
 
 vi.mock('@/lib/ai-vault-session-fork-startup', () => ({
@@ -40,7 +47,7 @@ vi.mock('./ai-vault-session-launch-target', () => ({
 }))
 vi.mock('./ai-vault-session-resume-in-chat-launch', () => ({
   activateAiVaultResumeWorkspace: mocks.activateAiVaultResumeWorkspace,
-  resumeAiVaultSessionInNewChat: vi.fn()
+  resumeAiVaultSessionInNewChat: mocks.resumeAiVaultSessionInNewChat
 }))
 vi.mock('sonner', () => ({ toast: { error: mocks.toastError, success: mocks.toastSuccess } }))
 vi.mock('@/store', () => ({
@@ -85,6 +92,110 @@ function renderActions() {
     })
   ).result.current
 }
+
+describe('Resume in New Native Chat launch', () => {
+  const droid: AiVaultSession = {
+    ...owned,
+    id: 'local:droid:droid-1:/d.jsonl',
+    agent: 'droid',
+    sessionId: 'droid-1',
+    filePath: '/d.jsonl',
+    structuredSession: undefined
+  }
+  const settle = () => new Promise<void>((resolve) => setTimeout(resolve, 0))
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mocks.confirm.mockResolvedValue(true)
+    // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the launch reads one bridge method.
+    window.api = { aiVault: { droidSessionHolder: mocks.droidSessionHolder } } as never
+  })
+
+  it('resumes a Droid session as Droid once the host proves no terminal holds it', async () => {
+    mocks.droidSessionHolder.mockResolvedValue(null)
+
+    renderActions().handleResumeInNewChat(droid, 'worktree-2')
+
+    await waitFor(() =>
+      expect(mocks.resumeAiVaultSessionInNewChat).toHaveBeenCalledWith(
+        droid,
+        'droid',
+        'worktree-2',
+        expect.any(String)
+      )
+    )
+    expect(mocks.confirm).not.toHaveBeenCalled()
+  })
+
+  it('asks the host that owns the session, at the click', async () => {
+    mocks.droidSessionHolder.mockResolvedValue(null)
+
+    renderActions().handleResumeInNewChat(droid, 'worktree-2')
+
+    await waitFor(() => expect(mocks.resumeAiVaultSessionInNewChat).toHaveBeenCalled())
+    expect(mocks.droidSessionHolder).toHaveBeenCalledWith({
+      executionHostId: 'local',
+      sessionId: 'droid-1'
+    })
+  })
+
+  it('opens nothing and says so when a live terminal holds the session', async () => {
+    mocks.droidSessionHolder.mockResolvedValue('live')
+
+    renderActions().handleResumeInNewChat(droid, 'worktree-2')
+
+    await waitFor(() => expect(mocks.toastError).toHaveBeenCalledTimes(1))
+    expect(mocks.toastError).toHaveBeenCalledWith(
+      'A terminal is still running this conversation. Open that terminal instead.'
+    )
+    expect(mocks.resumeAiVaultSessionInNewChat).not.toHaveBeenCalled()
+    expect(mocks.confirm).not.toHaveBeenCalled()
+  })
+
+  it('resumes an unverifiable holder after the person confirms', async () => {
+    mocks.droidSessionHolder.mockResolvedValue('unverifiable')
+
+    renderActions().handleResumeInNewChat(droid, 'worktree-2')
+
+    await waitFor(() => expect(mocks.resumeAiVaultSessionInNewChat).toHaveBeenCalledTimes(1))
+    expect(mocks.confirm).toHaveBeenCalledTimes(1)
+  })
+
+  it('opens nothing when the person declines the confirmation', async () => {
+    mocks.droidSessionHolder.mockResolvedValue('unverifiable')
+    mocks.confirm.mockResolvedValue(false)
+
+    renderActions().handleResumeInNewChat(droid, 'worktree-2')
+
+    await waitFor(() => expect(mocks.confirm).toHaveBeenCalledTimes(1))
+    await settle()
+    expect(mocks.resumeAiVaultSessionInNewChat).not.toHaveBeenCalled()
+    expect(mocks.toastError).not.toHaveBeenCalled()
+  })
+
+  it('does not ask who holds a Claude session', async () => {
+    renderActions().handleResumeInNewChat(owned, 'worktree-2')
+
+    await waitFor(() =>
+      expect(mocks.resumeAiVaultSessionInNewChat).toHaveBeenCalledWith(
+        owned,
+        'claude',
+        'worktree-2',
+        expect.any(String)
+      )
+    )
+    expect(mocks.droidSessionHolder).not.toHaveBeenCalled()
+    expect(mocks.confirm).not.toHaveBeenCalled()
+  })
+
+  it('does nothing for an agent that has no chat to resume into', async () => {
+    renderActions().handleResumeInNewChat({ ...droid, agent: 'kimi' }, 'worktree-2')
+
+    await settle()
+    expect(mocks.resumeAiVaultSessionInNewChat).not.toHaveBeenCalled()
+    expect(mocks.droidSessionHolder).not.toHaveBeenCalled()
+  })
+})
 
 describe('Resume in New CLI launch', () => {
   beforeEach(() => {

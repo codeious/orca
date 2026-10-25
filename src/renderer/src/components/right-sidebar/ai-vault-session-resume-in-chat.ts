@@ -8,7 +8,11 @@ import { isAntigravityReferenceSession } from '../../../../shared/antigravity-se
 import { isWslStoredAiVaultSessionFile } from '@/lib/ai-vault-resume-target'
 import { normalizeRuntimePathForComparison } from '../../../../shared/cross-platform-path'
 import { LOCAL_EXECUTION_HOST_ID } from '../../../../shared/execution-host'
-import { isAgentSessionHandleProvider } from '../../../../shared/agent-session-provider-handle'
+import {
+  isAgentSessionHandleProvider,
+  type AgentSessionHandleProvider
+} from '../../../../shared/agent-session-provider-handle'
+import type { AiVaultDroidSessionHolderVerdict } from '../../../../shared/ai-vault-droid-session-holder'
 import {
   isAiVaultSessionResumableContent,
   type AiVaultSession
@@ -33,7 +37,10 @@ export type AiVaultResumeInChatEligibility =
 
 /** What a Droid terminal pane's row says about the process holding a session. `live` blocks the
  *  chat; `unverifiable` asks first. A process proven exited is not a holder, so it is not here. */
-export type AiVaultDroidHolder = 'live' | 'unverifiable'
+export type AiVaultDroidHolder = AiVaultDroidSessionHolderVerdict
+
+/** The agents a history row can resume into a chat: the provider-handle agents, plus Droid. */
+export type AiVaultResumeInChatAgent = AgentSessionHandleProvider | 'droid'
 
 /**
  * Claude and Droid do not have the same freedom about *where* a conversation may be resumed as
@@ -55,7 +62,9 @@ export function aiVaultSessionResumeInChatWorkspaceMatters(
 
 /** Droid is not a provider-handle agent (`isAgentSessionHandleProvider` stays Claude and Codex),
  *  so its chat resume is its own branch rather than a widening of that guard. */
-export function aiVaultSessionHasResumeInChatBranch(agent: AiVaultSession['agent']): boolean {
+export function aiVaultSessionHasResumeInChatBranch(
+  agent: AiVaultSession['agent']
+): agent is AiVaultResumeInChatAgent {
   return isAgentSessionHandleProvider(agent) || agent === 'droid'
 }
 
