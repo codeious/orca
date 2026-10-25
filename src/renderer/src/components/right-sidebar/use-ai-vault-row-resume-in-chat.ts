@@ -33,5 +33,8 @@ export function useAiVaultRowResumeInChat({
     [resolve, sessions]
   )
   const holders = useAiVaultDroidHolders({ sessions: droidRowsToAsk, generation })
-  return useCallback((session) => resolve(session, holders.get(session.id)), [holders, resolve])
+  return useCallback(
+    (session) => resolve(session, holders.get(session.id)?.holder),
+    [holders, resolve]
+  )
 }

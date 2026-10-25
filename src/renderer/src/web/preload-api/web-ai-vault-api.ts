@@ -8,8 +8,8 @@ import type {
   AiVaultPrepareSessionResumeResult
 } from '../../../../shared/ai-vault-resume-preparation'
 import {
-  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL,
-  parseAiVaultDroidSessionHolder,
+  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT,
+  parseAiVaultDroidSessionHolderResult,
   type AiVaultDroidSessionHolderArgs
 } from '../../../../shared/ai-vault-droid-session-holder'
 import type { AiVaultDeleteSessionArgs } from '../../../../shared/ai-vault-session-deletion'
@@ -94,13 +94,13 @@ export function createWebAiVaultApi(): NonNullable<Partial<PreloadApi>['aiVault'
       try {
         const ownRuntimeId = toRuntimeExecutionHostId(requireActiveEnvironment().id)
         if (normalizeExecutionHostId(args.executionHostId) !== ownRuntimeId) {
-          return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+          return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
         }
-        return parseAiVaultDroidSessionHolder(
+        return parseAiVaultDroidSessionHolderResult(
           await callRuntimeResult('aiVault.droidSessionHolder', { sessionId: args.sessionId })
         )
       } catch {
-        return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+        return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
       }
     },
     // Why: no server-side RPC for subagent transcript listing yet, so report an empty (not erroring) result.

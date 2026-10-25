@@ -16,18 +16,53 @@ export type AiVaultDroidSessionHolderArgs = {
   sessionId: string
 }
 
-export type AiVaultDroidSessionHolderResult = { holder: AiVaultDroidSessionHolder }
+/** One terminal pane that still has a claim on the session, with what its own process says. */
+export type AiVaultDroidHoldingPane = {
+  paneKey: string
+  verdict: AiVaultDroidSessionHolderVerdict
+}
+
+export type AiVaultDroidSessionHolderResult = {
+  holder: AiVaultDroidSessionHolder
+  /** Absent from a host that predates it: that is "cannot tell which pane", not "no pane", and
+   *  never frees the session. A free (`null`) answer carries none. */
+  panes?: AiVaultDroidHoldingPane[]
+}
 
 /** Every path that could not ask the owning host answers this, never `null`: a host that was not
  *  asked, an older host without the method, and a lost connection are all "cannot tell". */
 export const AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL: AiVaultDroidSessionHolder = 'unverifiable'
 
-export const aiVaultDroidSessionHolderResultSchema = z.object({
-  holder: z.enum(['live', 'unverifiable']).nullable()
+export const AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT: AiVaultDroidSessionHolderResult =
+  Object.freeze({ holder: AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL })
+
+// `panes` stays unknown here so a pane list this client cannot read never costs the holder.
+// zod 4 treats a bare `z.unknown()` key as required, which would make a host that omits it unreadable.
+const holderReplySchema = z.object({
+  holder: z.enum(['live', 'unverifiable']).nullable(),
+  panes: z.unknown().optional()
 })
 
+const holdingPanesSchema = z.array(
+  z.object({ paneKey: z.string().min(1), verdict: z.enum(['live', 'unverifiable']) })
+)
+
 /** A malformed or missing reply is "cannot tell", not a free session. */
+export function parseAiVaultDroidSessionHolderResult(
+  value: unknown
+): AiVaultDroidSessionHolderResult {
+  const reply = holderReplySchema.safeParse(value)
+  if (!reply.success) {
+    return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
+  }
+  const { holder, panes } = reply.data
+  if (holder === null) {
+    return { holder }
+  }
+  const holding = holdingPanesSchema.safeParse(panes)
+  return holding.success ? { holder, panes: holding.data } : { holder }
+}
+
 export function parseAiVaultDroidSessionHolder(value: unknown): AiVaultDroidSessionHolder {
-  const parsed = aiVaultDroidSessionHolderResultSchema.safeParse(value)
-  return parsed.success ? parsed.data.holder : AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+  return parseAiVaultDroidSessionHolderResult(value).holder
 }

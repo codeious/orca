@@ -8,6 +8,7 @@ vi.mock('./web-runtime-session', () => ({
 import { createWebAiVaultApi } from './web-ai-vault-api'
 
 const OWN = { executionHostId: 'runtime:owning-host', sessionId: 'droid-session' }
+const PANE_KEY = 'tab-1:11111111-1111-4111-8111-111111111111'
 
 beforeEach(() => {
   callRuntimeResult.mockReset()
@@ -19,12 +20,24 @@ describe('web aiVault.droidSessionHolder', () => {
     async (holder) => {
       callRuntimeResult.mockResolvedValue({ holder })
 
-      await expect(createWebAiVaultApi().droidSessionHolder(OWN)).resolves.toBe(holder)
+      await expect(createWebAiVaultApi().droidSessionHolder(OWN)).resolves.toStrictEqual({
+        holder
+      })
       expect(callRuntimeResult).toHaveBeenCalledExactlyOnceWith('aiVault.droidSessionHolder', {
         sessionId: 'droid-session'
       })
     }
   )
+
+  it('relays the panes the paired runtime names', async () => {
+    const panes = [{ paneKey: PANE_KEY, verdict: 'live' }]
+    callRuntimeResult.mockResolvedValue({ holder: 'live', panes })
+
+    await expect(createWebAiVaultApi().droidSessionHolder(OWN)).resolves.toStrictEqual({
+      holder: 'live',
+      panes
+    })
+  })
 
   it.each([
     ['a different paired runtime', 'runtime:other-host'],
@@ -34,7 +47,7 @@ describe('web aiVault.droidSessionHolder', () => {
   ])('cannot tell for %s, without asking the owning runtime', async (_label, executionHostId) => {
     await expect(
       createWebAiVaultApi().droidSessionHolder({ ...OWN, executionHostId })
-    ).resolves.toBe('unverifiable')
+    ).resolves.toStrictEqual({ holder: 'unverifiable' })
     expect(callRuntimeResult).not.toHaveBeenCalled()
   })
 
@@ -43,7 +56,9 @@ describe('web aiVault.droidSessionHolder', () => {
       Object.assign(new Error('unknown method'), { code: 'method_not_found' })
     )
 
-    await expect(createWebAiVaultApi().droidSessionHolder(OWN)).resolves.toBe('unverifiable')
+    await expect(createWebAiVaultApi().droidSessionHolder(OWN)).resolves.toStrictEqual({
+      holder: 'unverifiable'
+    })
   })
 
   it.each([
@@ -52,6 +67,8 @@ describe('web aiVault.droidSessionHolder', () => {
   ])('cannot tell when the runtime answers %s', async (_label, reply) => {
     callRuntimeResult.mockResolvedValue(reply)
 
-    await expect(createWebAiVaultApi().droidSessionHolder(OWN)).resolves.toBe('unverifiable')
+    await expect(createWebAiVaultApi().droidSessionHolder(OWN)).resolves.toStrictEqual({
+      holder: 'unverifiable'
+    })
   })
 })

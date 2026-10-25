@@ -112,7 +112,7 @@ describe('Resume in New Native Chat launch', () => {
   })
 
   it('resumes a Droid session as Droid once the host proves no terminal holds it', async () => {
-    mocks.droidSessionHolder.mockResolvedValue(null)
+    mocks.droidSessionHolder.mockResolvedValue({ holder: null })
 
     renderActions().handleResumeInNewChat(droid, 'worktree-2')
 
@@ -128,7 +128,7 @@ describe('Resume in New Native Chat launch', () => {
   })
 
   it('asks the host that owns the session, at the click', async () => {
-    mocks.droidSessionHolder.mockResolvedValue(null)
+    mocks.droidSessionHolder.mockResolvedValue({ holder: null })
 
     renderActions().handleResumeInNewChat(droid, 'worktree-2')
 
@@ -140,7 +140,7 @@ describe('Resume in New Native Chat launch', () => {
   })
 
   it('opens nothing and says so when a live terminal holds the session', async () => {
-    mocks.droidSessionHolder.mockResolvedValue('live')
+    mocks.droidSessionHolder.mockResolvedValue({ holder: 'live' })
 
     renderActions().handleResumeInNewChat(droid, 'worktree-2')
 
@@ -153,7 +153,7 @@ describe('Resume in New Native Chat launch', () => {
   })
 
   it('resumes an unverifiable holder after the person confirms', async () => {
-    mocks.droidSessionHolder.mockResolvedValue('unverifiable')
+    mocks.droidSessionHolder.mockResolvedValue({ holder: 'unverifiable' })
 
     renderActions().handleResumeInNewChat(droid, 'worktree-2')
 
@@ -162,7 +162,7 @@ describe('Resume in New Native Chat launch', () => {
   })
 
   it('opens nothing when the person declines the confirmation', async () => {
-    mocks.droidSessionHolder.mockResolvedValue('unverifiable')
+    mocks.droidSessionHolder.mockResolvedValue({ holder: 'unverifiable' })
     mocks.confirm.mockResolvedValue(false)
 
     renderActions().handleResumeInNewChat(droid, 'worktree-2')

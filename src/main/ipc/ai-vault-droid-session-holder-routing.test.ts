@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { AI_VAULT_DROID_SESSION_HOLDER_CHANNEL } from '../../shared/ai-vault-droid-session-holder'
+import {
+  AI_VAULT_DROID_SESSION_HOLDER_CHANNEL,
+  type AiVaultDroidSessionHolderResult
+} from '../../shared/ai-vault-droid-session-holder'
 
 const ipcHandle = vi.hoisted(() => vi.fn())
 vi.mock('electron', () => ({ ipcMain: { handle: ipcHandle } }))
@@ -8,38 +11,52 @@ const { registerAiVaultDroidSessionHolderHandler, resolveAiVaultDroidSessionHold
   await import('./ai-vault-droid-session-holder-routing')
 
 const SESSION = 'droid-session'
+const PANE_KEY = 'tab-1:11111111-1111-4111-8111-111111111111'
+const CANNOT_TELL = { holder: 'unverifiable' }
 
 function readers() {
   return {
-    readLocal: vi.fn(async (_sessionId: string): Promise<'live' | 'unverifiable' | null> => null),
+    readLocal: vi.fn(async (_sessionId: string): Promise<AiVaultDroidSessionHolderResult> => ({
+      holder: null
+    })),
     readRuntime: vi.fn(
-      async (_environmentId: string, _sessionId: string): Promise<'live' | 'unverifiable' | null> =>
-        null
+      async (
+        _environmentId: string,
+        _sessionId: string
+      ): Promise<AiVaultDroidSessionHolderResult> => ({
+        holder: null
+      })
     )
   }
 }
+
+const ANSWERS: AiVaultDroidSessionHolderResult[] = [
+  { holder: 'live', panes: [{ paneKey: PANE_KEY, verdict: 'live' }] },
+  { holder: 'unverifiable' },
+  { holder: null }
+]
 
 beforeEach(() => {
   ipcHandle.mockReset()
 })
 
 describe('resolveAiVaultDroidSessionHolderByHost', () => {
-  it.each(['live', 'unverifiable', null] as const)(
-    'asks this machine for a local session and relays %s',
+  it.each(ANSWERS)(
+    'asks this machine for a local session and relays %j, panes included',
     async (answer) => {
       const r = readers()
       r.readLocal.mockResolvedValue(answer)
 
       await expect(
         resolveAiVaultDroidSessionHolderByHost({ executionHostId: 'local', sessionId: SESSION }, r)
-      ).resolves.toBe(answer)
+      ).resolves.toEqual(answer)
       expect(r.readLocal).toHaveBeenCalledWith(SESSION)
       expect(r.readRuntime).not.toHaveBeenCalled()
     }
   )
 
-  it.each(['live', 'unverifiable', null] as const)(
-    'asks the paired host that owns a runtime session and relays %s',
+  it.each(ANSWERS)(
+    'asks the paired host that owns a runtime session and relays %j, panes included',
     async (answer) => {
       const r = readers()
       r.readRuntime.mockResolvedValue(answer)
@@ -49,7 +66,7 @@ describe('resolveAiVaultDroidSessionHolderByHost', () => {
           { executionHostId: 'runtime:env-1', sessionId: SESSION },
           r
         )
-      ).resolves.toBe(answer)
+      ).resolves.toEqual(answer)
       expect(r.readRuntime).toHaveBeenCalledWith('env-1', SESSION)
       expect(r.readLocal).not.toHaveBeenCalled()
     }
@@ -63,7 +80,7 @@ describe('resolveAiVaultDroidSessionHolderByHost', () => {
         { executionHostId: 'ssh:build-box', sessionId: SESSION },
         r
       )
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual(CANNOT_TELL)
     expect(r.readLocal).not.toHaveBeenCalled()
     expect(r.readRuntime).not.toHaveBeenCalled()
   })
@@ -76,7 +93,7 @@ describe('resolveAiVaultDroidSessionHolderByHost', () => {
         { executionHostId: 'runtime:unresolved-owner', sessionId: SESSION },
         r
       )
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual(CANNOT_TELL)
     expect(r.readLocal).not.toHaveBeenCalled()
     expect(r.readRuntime).not.toHaveBeenCalled()
   })
@@ -90,7 +107,7 @@ describe('resolveAiVaultDroidSessionHolderByHost', () => {
 
     await expect(
       resolveAiVaultDroidSessionHolderByHost({ executionHostId, sessionId: SESSION }, r)
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual(CANNOT_TELL)
     expect(r.readLocal).not.toHaveBeenCalled()
     expect(r.readRuntime).not.toHaveBeenCalled()
   })
@@ -98,13 +115,13 @@ describe('resolveAiVaultDroidSessionHolderByHost', () => {
   it('cannot tell when no reader is wired for the session host', async () => {
     await expect(
       resolveAiVaultDroidSessionHolderByHost({ executionHostId: 'local', sessionId: SESSION }, {})
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual(CANNOT_TELL)
     await expect(
       resolveAiVaultDroidSessionHolderByHost(
         { executionHostId: 'runtime:env-1', sessionId: SESSION },
         {}
       )
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual(CANNOT_TELL)
   })
 
   it('cannot tell when a reader fails, never null', async () => {
@@ -114,13 +131,13 @@ describe('resolveAiVaultDroidSessionHolderByHost', () => {
 
     await expect(
       resolveAiVaultDroidSessionHolderByHost({ executionHostId: 'local', sessionId: SESSION }, r)
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual(CANNOT_TELL)
     await expect(
       resolveAiVaultDroidSessionHolderByHost(
         { executionHostId: 'runtime:env-1', sessionId: SESSION },
         r
       )
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual(CANNOT_TELL)
   })
 })
 
@@ -140,11 +157,24 @@ describe('the aiVault droid session holder IPC channel', () => {
 
   it('answers in the shape the host RPC uses', async () => {
     const r = readers()
-    r.readLocal.mockResolvedValue('live')
+    r.readLocal.mockResolvedValue({ holder: 'live' })
 
     await expect(
       registeredHandler(r)({ executionHostId: 'local', sessionId: SESSION })
     ).resolves.toEqual({ holder: 'live' })
+  })
+
+  it('names the holding panes on the wire', async () => {
+    const r = readers()
+    const panes = [{ paneKey: PANE_KEY, verdict: 'live' }]
+    r.readLocal.mockResolvedValue({
+      holder: 'live',
+      panes: [{ paneKey: PANE_KEY, verdict: 'live' }]
+    })
+
+    await expect(
+      registeredHandler(r)({ executionHostId: 'local', sessionId: SESSION })
+    ).resolves.toEqual({ holder: 'live', panes })
   })
 
   it('keeps a proven-free answer distinct from cannot-tell on the wire', async () => {
@@ -166,7 +196,7 @@ describe('the aiVault droid session holder IPC channel', () => {
   ])('cannot tell for %s, without asking anyone', async (_label, args) => {
     const r = readers()
 
-    await expect(registeredHandler(r)(args)).resolves.toEqual({ holder: 'unverifiable' })
+    await expect(registeredHandler(r)(args)).resolves.toEqual(CANNOT_TELL)
     expect(r.readLocal).not.toHaveBeenCalled()
     expect(r.readRuntime).not.toHaveBeenCalled()
   })

@@ -148,8 +148,6 @@ export const AI_VAULT_METHODS = [
     permission: 'workspace',
     params: AiVaultDroidSessionHolderParams,
     // A terminal process, not a chat: no structured host is needed to say who holds a session.
-    handler: async (params, { runtime }) => ({
-      holder: await runtime.droidSessionHolder(params.sessionId)
-    })
+    handler: (params, { runtime }) => runtime.droidSessionHolder(params.sessionId)
   })
 ]

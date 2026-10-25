@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import type { AiVaultDroidSessionHolder } from '../../../../shared/ai-vault-droid-session-holder'
+import type { AiVaultDroidSessionHolderResult } from '../../../../shared/ai-vault-droid-session-holder'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import { askAiVaultDroidSessionHolder } from './ai-vault-droid-session-holder-check'
 
-const NO_HOLDERS: ReadonlyMap<string, AiVaultDroidSessionHolder> = new Map()
+const NO_HOLDERS: ReadonlyMap<string, AiVaultDroidSessionHolderResult> = new Map()
 
 /**
  * What the owning host says holds each listed Droid row, keyed by the row's id. A row with no entry
- * has not been answered yet, which the eligibility reads as cannot-tell; `null` is the host's proof
- * that nobody holds it. The verdict is only for showing the row: the click asks again.
+ * has not been answered yet, which the eligibility reads as cannot-tell; a `null` holder is the
+ * host's proof that nobody holds it. The answer is only for showing the row: the click asks again.
  *
  * `generation` is whatever changes when the list is rescanned, since a terminal may have started or
  * ended since the last answer.
@@ -19,7 +19,7 @@ export function useAiVaultDroidHolders({
 }: {
   sessions: readonly AiVaultSession[]
   generation: unknown
-}): ReadonlyMap<string, AiVaultDroidSessionHolder> {
+}): ReadonlyMap<string, AiVaultDroidSessionHolderResult> {
   const [holders, setHolders] = useState(NO_HOLDERS)
   const latestSessions = useRef(sessions)
   useEffect(() => {
@@ -30,9 +30,9 @@ export function useAiVaultDroidHolders({
   useEffect(() => {
     let superseded = false
     for (const session of latestSessions.current) {
-      void askAiVaultDroidSessionHolder(session).then((holder) => {
+      void askAiVaultDroidSessionHolder(session).then((answer) => {
         if (!superseded) {
-          setHolders((current) => new Map(current).set(session.id, holder))
+          setHolders((current) => new Map(current).set(session.id, answer))
         }
       })
     }

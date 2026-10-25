@@ -41,18 +41,30 @@ describe('the Droid holder verdicts a history list shows', () => {
     const { result } = renderHook(() => useAiVaultDroidHolders({ sessions, generation: 1 }))
 
     expect(result.current.has('local:droid:a')).toBe(false)
-    await act(async () => pending.resolve('live'))
-    expect(result.current.get('local:droid:a')).toBe('live')
+    await act(async () => pending.resolve({ holder: 'live' }))
+    expect(result.current.get('local:droid:a')).toStrictEqual({ holder: 'live' })
   })
 
   it("keeps the host's proof that nobody holds a row as null, not as missing", async () => {
-    mocks.ask.mockResolvedValue(null)
+    mocks.ask.mockResolvedValue({ holder: null })
     const sessions = [droid('a')]
 
     const { result } = renderHook(() => useAiVaultDroidHolders({ sessions, generation: 1 }))
 
     await waitFor(() => expect(result.current.has('local:droid:a')).toBe(true))
-    expect(result.current.get('local:droid:a')).toBeNull()
+    expect(result.current.get('local:droid:a')).toStrictEqual({ holder: null })
+  })
+
+  it('keeps the panes the host names for a row', async () => {
+    const panes = [{ paneKey: 'tab-1:11111111-1111-4111-8111-111111111111', verdict: 'live' }]
+    mocks.ask.mockResolvedValue({ holder: 'live', panes })
+    const sessions = [droid('a')]
+
+    const { result } = renderHook(() => useAiVaultDroidHolders({ sessions, generation: 1 }))
+
+    await waitFor(() =>
+      expect(result.current.get('local:droid:a')).toStrictEqual({ holder: 'live', panes })
+    )
   })
 
   it('records a failed question as cannot-tell, never as free', async () => {
@@ -61,11 +73,13 @@ describe('the Droid holder verdicts a history list shows', () => {
 
     const { result } = renderHook(() => useAiVaultDroidHolders({ sessions, generation: 1 }))
 
-    await waitFor(() => expect(result.current.get('local:droid:a')).toBe('unverifiable'))
+    await waitFor(() =>
+      expect(result.current.get('local:droid:a')).toStrictEqual({ holder: 'unverifiable' })
+    )
   })
 
   it('asks each row about its own session', async () => {
-    mocks.ask.mockResolvedValue(null)
+    mocks.ask.mockResolvedValue({ holder: null })
     const sessions = [droid('a'), droid('b')]
 
     renderHook(() => useAiVaultDroidHolders({ sessions, generation: 1 }))
@@ -76,7 +90,7 @@ describe('the Droid holder verdicts a history list shows', () => {
   })
 
   it('does not ask again when the same rows arrive in a new array', async () => {
-    mocks.ask.mockResolvedValue(null)
+    mocks.ask.mockResolvedValue({ holder: null })
 
     const { rerender } = renderHook(
       ({ sessions }) => useAiVaultDroidHolders({ sessions, generation: 1 }),
@@ -90,7 +104,7 @@ describe('the Droid holder verdicts a history list shows', () => {
   })
 
   it('asks again after a fresh scan, because a terminal may have started or ended', async () => {
-    mocks.ask.mockResolvedValue(null)
+    mocks.ask.mockResolvedValue({ holder: null })
     const sessions = [droid('a')]
 
     const { rerender } = renderHook(
@@ -98,14 +112,14 @@ describe('the Droid holder verdicts a history list shows', () => {
       { initialProps: { generation: 1 } }
     )
     await waitFor(() => expect(mocks.ask).toHaveBeenCalledTimes(1))
-    mocks.ask.mockResolvedValue('live')
+    mocks.ask.mockResolvedValue({ holder: 'live' })
     rerender({ generation: 2 })
 
     await waitFor(() => expect(mocks.ask).toHaveBeenCalledTimes(2))
   })
 
   it('asks about a row that appears later', async () => {
-    mocks.ask.mockResolvedValue(null)
+    mocks.ask.mockResolvedValue({ holder: null })
 
     const { rerender } = renderHook(
       ({ sessions }) => useAiVaultDroidHolders({ sessions, generation: 1 }),
@@ -124,7 +138,7 @@ describe('the Droid holder verdicts a history list shows', () => {
 
   it('drops an answer that a newer scan has already replaced', async () => {
     const stale = deferred<unknown>()
-    mocks.ask.mockReturnValueOnce(stale.promise).mockResolvedValue('live')
+    mocks.ask.mockReturnValueOnce(stale.promise).mockResolvedValue({ holder: 'live' })
     const sessions = [droid('a')]
 
     const { result, rerender } = renderHook(
@@ -132,9 +146,11 @@ describe('the Droid holder verdicts a history list shows', () => {
       { initialProps: { generation: 1 } }
     )
     rerender({ generation: 2 })
-    await waitFor(() => expect(result.current.get('local:droid:a')).toBe('live'))
-    await act(async () => stale.resolve(null))
+    await waitFor(() =>
+      expect(result.current.get('local:droid:a')).toStrictEqual({ holder: 'live' })
+    )
+    await act(async () => stale.resolve({ holder: null }))
 
-    expect(result.current.get('local:droid:a')).toBe('live')
+    expect(result.current.get('local:droid:a')).toStrictEqual({ holder: 'live' })
   })
 })

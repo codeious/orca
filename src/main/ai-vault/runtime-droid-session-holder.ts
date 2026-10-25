@@ -1,7 +1,7 @@
 import {
-  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL,
-  parseAiVaultDroidSessionHolder,
-  type AiVaultDroidSessionHolder
+  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT,
+  parseAiVaultDroidSessionHolderResult,
+  type AiVaultDroidSessionHolderResult
 } from '../../shared/ai-vault-droid-session-holder'
 import { callRuntimeEnvironment } from '../ipc/runtime-environment-transport-routing'
 
@@ -11,7 +11,7 @@ export async function readRuntimeAiVaultDroidSessionHolder(
   userDataPath: string,
   environmentId: string,
   sessionId: string
-): Promise<AiVaultDroidSessionHolder> {
+): Promise<AiVaultDroidSessionHolderResult> {
   try {
     const response = await callRuntimeEnvironment(
       userDataPath,
@@ -20,9 +20,9 @@ export async function readRuntimeAiVaultDroidSessionHolder(
       { sessionId }
     )
     return response.ok === true
-      ? parseAiVaultDroidSessionHolder(response.result)
-      : AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+      ? parseAiVaultDroidSessionHolderResult(response.result)
+      : AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
   } catch {
-    return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+    return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
   }
 }

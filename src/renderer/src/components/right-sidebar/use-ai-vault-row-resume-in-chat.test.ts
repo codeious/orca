@@ -81,7 +81,7 @@ describe('the resume-in-chat answer for a history row', () => {
   })
 
   it('stops offering a Droid row once its host says a terminal holds it', async () => {
-    mocks.ask.mockResolvedValue('live')
+    mocks.ask.mockResolvedValue({ holder: 'live' })
     const sessions = [row('droid', 'a')]
 
     const { result } = mountRows(sessions)
@@ -92,7 +92,7 @@ describe('the resume-in-chat answer for a history row', () => {
   })
 
   it('offers a Droid row without a confirmation once its host proves it is free', async () => {
-    mocks.ask.mockResolvedValue(null)
+    mocks.ask.mockResolvedValue({ holder: null })
     const sessions = [row('droid', 'a')]
 
     const { result } = mountRows(sessions)
@@ -113,7 +113,7 @@ describe('the resume-in-chat answer for a history row', () => {
   })
 
   it('asks only about Droid rows, so a Claude or Codex row costs no host call', async () => {
-    mocks.ask.mockResolvedValue(null)
+    mocks.ask.mockResolvedValue({ holder: null })
 
     mountRows([row('claude', 'c'), row('codex', 'x'), row('droid', 'a')])
 
@@ -122,7 +122,7 @@ describe('the resume-in-chat answer for a history row', () => {
   })
 
   it('does not ask about a Droid row the workspace already rules out', async () => {
-    mocks.ask.mockResolvedValue(null)
+    mocks.ask.mockResolvedValue({ holder: null })
 
     mountRows([row('droid', 'elsewhere-1'), row('droid', 'a')])
 

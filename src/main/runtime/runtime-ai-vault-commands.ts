@@ -3,8 +3,8 @@ import type {
   AiVaultPrepareSessionResumeResult
 } from '../../shared/ai-vault-resume-preparation'
 import {
-  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL,
-  type AiVaultDroidSessionHolder
+  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT,
+  type AiVaultDroidSessionHolderResult
 } from '../../shared/ai-vault-droid-session-holder'
 import type {
   AiVaultSessionTitleRequest,
@@ -20,20 +20,20 @@ export class RuntimeAiVaultCommands {
       | ((args: AiVaultPrepareSessionResumeArgs) => Promise<AiVaultPrepareSessionResumeResult>)
       | null,
     private readonly getDroidSessionHolder: () =>
-      | ((sessionId: string) => Promise<AiVaultDroidSessionHolder>)
+      | ((sessionId: string) => Promise<AiVaultDroidSessionHolderResult>)
       | null
   ) {}
 
   /** A runtime without a hook server, or whose probe fails, cannot tell: that is not "free". */
-  async droidSessionHolder(sessionId: string): Promise<AiVaultDroidSessionHolder> {
+  async droidSessionHolder(sessionId: string): Promise<AiVaultDroidSessionHolderResult> {
     const read = this.getDroidSessionHolder()
     if (!read) {
-      return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+      return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
     }
     try {
       return await read(sessionId)
     } catch {
-      return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+      return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
     }
   }
 

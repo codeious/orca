@@ -131,7 +131,7 @@ async function mountPanel() {
 }
 
 it('stops offering a Droid history row once its host says a terminal holds it', async () => {
-  mocks.ask.mockResolvedValue('live')
+  mocks.ask.mockResolvedValue({ holder: 'live' })
 
   await mountPanel()
 

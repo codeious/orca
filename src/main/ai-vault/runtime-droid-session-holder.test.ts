@@ -15,7 +15,7 @@ describe('readRuntimeAiVaultDroidSessionHolder', () => {
 
     await expect(
       readRuntimeAiVaultDroidSessionHolder('/user-data', 'env-1', 'droid-session')
-    ).resolves.toBe('live')
+    ).resolves.toEqual({ holder: 'live' })
     expect(callRuntimeEnvironment).toHaveBeenCalledWith(
       '/user-data',
       'env-1',
@@ -29,7 +29,28 @@ describe('readRuntimeAiVaultDroidSessionHolder', () => {
 
     await expect(
       readRuntimeAiVaultDroidSessionHolder('/user-data', 'env-1', 'droid-session')
-    ).resolves.toBe(holder)
+    ).resolves.toEqual({ holder })
+  })
+
+  it('relays the panes the paired host names', async () => {
+    const panes = [{ paneKey: 'tab-1:11111111-1111-4111-8111-111111111111', verdict: 'live' }]
+    callRuntimeEnvironment.mockResolvedValue({
+      id: '1',
+      ok: true,
+      result: { holder: 'live', panes }
+    })
+
+    await expect(
+      readRuntimeAiVaultDroidSessionHolder('/user-data', 'env-1', 'droid-session')
+    ).resolves.toStrictEqual({ holder: 'live', panes })
+  })
+
+  it('reads a paired host that predates panes as holding, with no pane named', async () => {
+    callRuntimeEnvironment.mockResolvedValue({ id: '1', ok: true, result: { holder: 'live' } })
+
+    await expect(
+      readRuntimeAiVaultDroidSessionHolder('/user-data', 'env-1', 'droid-session')
+    ).resolves.toStrictEqual({ holder: 'live' })
   })
 
   it('cannot tell on a host that predates the method', async () => {
@@ -41,7 +62,7 @@ describe('readRuntimeAiVaultDroidSessionHolder', () => {
 
     await expect(
       readRuntimeAiVaultDroidSessionHolder('/user-data', 'env-1', 'droid-session')
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual({ holder: 'unverifiable' })
   })
 
   it('cannot tell when the connection to the host fails', async () => {
@@ -49,7 +70,7 @@ describe('readRuntimeAiVaultDroidSessionHolder', () => {
 
     await expect(
       readRuntimeAiVaultDroidSessionHolder('/user-data', 'env-1', 'droid-session')
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual({ holder: 'unverifiable' })
   })
 
   it('cannot tell when the host answers something that is not a holder', async () => {
@@ -57,6 +78,6 @@ describe('readRuntimeAiVaultDroidSessionHolder', () => {
 
     await expect(
       readRuntimeAiVaultDroidSessionHolder('/user-data', 'env-1', 'droid-session')
-    ).resolves.toBe('unverifiable')
+    ).resolves.toEqual({ holder: 'unverifiable' })
   })
 })

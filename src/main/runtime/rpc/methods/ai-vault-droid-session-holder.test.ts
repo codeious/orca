@@ -1,5 +1,6 @@
 import '../unused-default-rpc-methods.test-fixture'
 import { describe, expect, it, vi } from 'vitest'
+import { z } from 'zod'
 import { RpcDispatcher } from '../dispatcher'
 import type { RpcRequest } from '../core'
 import type { OrcaRuntimeService } from '../../orca-runtime'
@@ -18,11 +19,15 @@ function dispatcherFor(droidSessionHolder: (sessionId: string) => Promise<unknow
   return new RpcDispatcher({ runtime, methods: AI_VAULT_METHODS })
 }
 
+// The reply schema a client of the previous release reads with: only `holder`, extra keys ignored.
+const PREVIOUS_CLIENT_REPLY = z.object({ holder: z.enum(['live', 'unverifiable']).nullable() })
+const PANE_KEY = 'tab-1:11111111-1111-4111-8111-111111111111'
+
 describe('aiVault.droidSessionHolder', () => {
   it.each(['live', 'unverifiable', null] as const)(
     'answers %s from the host that owns the process',
     async (holder) => {
-      const droidSessionHolder = vi.fn(async () => holder)
+      const droidSessionHolder = vi.fn(async () => ({ holder }))
 
       const response = await dispatcherFor(droidSessionHolder).dispatch(
         request({ sessionId: 'droid-session' })
@@ -33,13 +38,34 @@ describe('aiVault.droidSessionHolder', () => {
     }
   )
 
+  it('names the holding panes beside the holder', async () => {
+    const panes = [{ paneKey: PANE_KEY, verdict: 'live' }]
+
+    const response = await dispatcherFor(async () => ({ holder: 'live', panes })).dispatch(
+      request({ sessionId: 'droid-session' })
+    )
+
+    expect(response).toMatchObject({ ok: true, result: { holder: 'live', panes } })
+  })
+
+  it('stays readable by a client that predates the pane list', async () => {
+    const response = await dispatcherFor(async () => ({
+      holder: 'live',
+      panes: [{ paneKey: PANE_KEY, verdict: 'live' }]
+    })).dispatch(request({ sessionId: 'droid-session' }))
+
+    expect(response).toMatchObject({ ok: true })
+    const result = response.ok ? response.result : null
+    expect(PREVIOUS_CLIENT_REPLY.parse(result)).toEqual({ holder: 'live' })
+  })
+
   it.each([
     ['no session id', {}],
     ['an empty session id', { sessionId: '' }],
     ['an unbounded session id', { sessionId: 'x'.repeat(513) }],
     ['a non-string session id', { sessionId: 7 }]
   ])('refuses %s before asking the host', async (_label, params) => {
-    const droidSessionHolder = vi.fn(async () => null)
+    const droidSessionHolder = vi.fn(async () => ({ holder: null }))
 
     const response = await dispatcherFor(droidSessionHolder).dispatch(request(params))
 
@@ -56,7 +82,7 @@ describe('aiVault.droidSessionHolder', () => {
     const runtime = {
       getRuntimeId: () => 'test-runtime',
       ensureStructuredAgentSessionHost,
-      droidSessionHolder: async () => 'live' as const
+      droidSessionHolder: async () => ({ holder: 'live' as const })
     } as unknown as OrcaRuntimeService
     const dispatcher = new RpcDispatcher({ runtime, methods: AI_VAULT_METHODS })
 

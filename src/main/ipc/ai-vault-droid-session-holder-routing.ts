@@ -1,8 +1,7 @@
 import { ipcMain } from 'electron'
 import {
-  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL,
+  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT,
   AI_VAULT_DROID_SESSION_HOLDER_CHANNEL,
-  type AiVaultDroidSessionHolder,
   type AiVaultDroidSessionHolderArgs,
   type AiVaultDroidSessionHolderResult
 } from '../../shared/ai-vault-droid-session-holder'
@@ -10,8 +9,11 @@ import { parseRoutableExecutionHostId } from '../../shared/execution-host'
 import { AiVaultDroidSessionHolderParams } from '../../shared/rpc-contract/ai-vault-params'
 
 export type AiVaultDroidSessionHolderReaders = {
-  readLocal?: (sessionId: string) => Promise<AiVaultDroidSessionHolder>
-  readRuntime?: (environmentId: string, sessionId: string) => Promise<AiVaultDroidSessionHolder>
+  readLocal?: (sessionId: string) => Promise<AiVaultDroidSessionHolderResult>
+  readRuntime?: (
+    environmentId: string,
+    sessionId: string
+  ) => Promise<AiVaultDroidSessionHolderResult>
 }
 
 export type AiVaultDroidSessionHolderHandlerOptions = {
@@ -24,7 +26,7 @@ export type AiVaultDroidSessionHolderHandlerOptions = {
 export async function resolveAiVaultDroidSessionHolderByHost(
   args: AiVaultDroidSessionHolderArgs,
   readers: AiVaultDroidSessionHolderReaders
-): Promise<AiVaultDroidSessionHolder> {
+): Promise<AiVaultDroidSessionHolderResult> {
   const host = parseRoutableExecutionHostId(args.executionHostId)
   try {
     if (host?.kind === 'local' && readers.readLocal) {
@@ -34,9 +36,9 @@ export async function resolveAiVaultDroidSessionHolderByHost(
       return await readers.readRuntime(host.environmentId, args.sessionId)
     }
   } catch {
-    return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+    return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
   }
-  return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+  return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
 }
 
 export function registerAiVaultDroidSessionHolderHandler(
@@ -47,14 +49,12 @@ export function registerAiVaultDroidSessionHolderHandler(
     async (_event, args: unknown): Promise<AiVaultDroidSessionHolderResult> => {
       const request = readRequest(args)
       if (!request) {
-        return { holder: AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL }
+        return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
       }
-      return {
-        holder: await resolveAiVaultDroidSessionHolderByHost(request, {
-          readLocal: options.readLocalDroidSessionHolder,
-          readRuntime: options.readRuntimeDroidSessionHolder
-        })
-      }
+      return resolveAiVaultDroidSessionHolderByHost(request, {
+        readLocal: options.readLocalDroidSessionHolder,
+        readRuntime: options.readRuntimeDroidSessionHolder
+      })
     }
   )
 }

@@ -16,7 +16,7 @@ import type {
   AiVaultPrepareSessionResumeArgs,
   AiVaultPrepareSessionResumeResult
 } from '../../shared/ai-vault-resume-preparation'
-import type { AiVaultDroidSessionHolder } from '../../shared/ai-vault-droid-session-holder'
+import type { AiVaultDroidSessionHolderResult } from '../../shared/ai-vault-droid-session-holder'
 import type { RuntimeDesktopWindowStatus } from '../../shared/runtime-types'
 import type { AgentSessionClaimSigner } from './agent-session-claim-identity'
 import type { OrchestrationEnvironmentTransport } from './orchestration/environment-transport'
@@ -94,7 +94,7 @@ export class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCommands {
       checkHookAgentPresence?: (
         paneKey: string
       ) => Promise<'live' | 'unverifiable' | 'exited' | null>
-      droidSessionHolder?: (sessionId: string) => Promise<AiVaultDroidSessionHolder>
+      droidSessionHolder?: (sessionId: string) => Promise<AiVaultDroidSessionHolderResult>
       reconcileAgentStatusForEndedProcess?: (paneKeys: Iterable<string>) => void
       dropAgentStatusForRemovedWorktree?: (worktreeId: string, host?: ExecutionHostScope) => void
       canRecoverPersistentLocalPtys?: () => boolean

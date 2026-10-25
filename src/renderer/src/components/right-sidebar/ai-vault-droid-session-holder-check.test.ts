@@ -2,7 +2,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import type { AiVaultDroidSessionHolder } from '../../../../shared/ai-vault-droid-session-holder'
-import { decideAiVaultDroidChatResume } from './ai-vault-droid-session-holder-check'
+import {
+  askAiVaultDroidSessionHolder,
+  decideAiVaultDroidChatResume
+} from './ai-vault-droid-session-holder-check'
 
 const mocks = vi.hoisted(() => ({
   ask: vi.fn<(args: { executionHostId: string; sessionId: string }) => Promise<unknown>>(),
@@ -17,7 +20,7 @@ const session = {
 } as AiVaultSession
 
 function answer(holder: AiVaultDroidSessionHolder): void {
-  mocks.ask.mockResolvedValue(holder)
+  mocks.ask.mockResolvedValue({ holder })
 }
 
 function decide() {
@@ -84,5 +87,37 @@ describe('deciding a Droid chat resume at the click', () => {
     await decide()
 
     expect(mocks.confirm).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('asking the host that owns a Droid session', () => {
+  const PANE_KEY = 'tab-1:11111111-1111-4111-8111-111111111111'
+
+  it('hands back the panes the host names beside the holder', async () => {
+    const panes = [{ paneKey: PANE_KEY, verdict: 'live' }]
+    mocks.ask.mockResolvedValue({ holder: 'live', panes })
+
+    await expect(askAiVaultDroidSessionHolder(session)).resolves.toStrictEqual({
+      holder: 'live',
+      panes
+    })
+  })
+
+  it('names no pane for a bridge that predates panes', async () => {
+    mocks.ask.mockResolvedValue({ holder: 'live' })
+
+    await expect(askAiVaultDroidSessionHolder(session)).resolves.toStrictEqual({ holder: 'live' })
+  })
+
+  it.each([
+    ['a bare null, which only the answer object may carry', null],
+    ['a bare live', 'live'],
+    ['a synonym for free', { holder: 'free' }]
+  ])('reads %s as cannot-tell, never as free', async (_label, reply) => {
+    mocks.ask.mockResolvedValue(reply)
+
+    await expect(askAiVaultDroidSessionHolder(session)).resolves.toStrictEqual({
+      holder: 'unverifiable'
+    })
   })
 })

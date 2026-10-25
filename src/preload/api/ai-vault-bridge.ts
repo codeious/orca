@@ -14,11 +14,11 @@ import type {
 import type { AiVaultSessionTitlesArgs } from '../../shared/ai-vault-session-title'
 import type { AiVaultPrepareSessionResumeArgs } from '../../shared/ai-vault-resume-preparation'
 import {
-  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL,
+  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT,
   AI_VAULT_DROID_SESSION_HOLDER_CHANNEL,
-  parseAiVaultDroidSessionHolder,
-  type AiVaultDroidSessionHolder,
-  type AiVaultDroidSessionHolderArgs
+  parseAiVaultDroidSessionHolderResult,
+  type AiVaultDroidSessionHolderArgs,
+  type AiVaultDroidSessionHolderResult
 } from '../../shared/ai-vault-droid-session-holder'
 import type { PreloadApi } from '../api-types'
 
@@ -53,10 +53,15 @@ export const aiVaultApi = {
     ipcRenderer.invoke('aiVault:cancelListSessions', args),
   prepareSessionResume: (args: AiVaultPrepareSessionResumeArgs) =>
     ipcRenderer.invoke('aiVault:prepareSessionResume', args),
-  droidSessionHolder: (args: AiVaultDroidSessionHolderArgs): Promise<AiVaultDroidSessionHolder> =>
+  droidSessionHolder: (
+    args: AiVaultDroidSessionHolderArgs
+  ): Promise<AiVaultDroidSessionHolderResult> =>
     ipcRenderer
       .invoke(AI_VAULT_DROID_SESSION_HOLDER_CHANNEL, args)
-      .then(parseAiVaultDroidSessionHolder, () => AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL),
+      .then(
+        parseAiVaultDroidSessionHolderResult,
+        () => AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
+      ),
   listSubagentSessions: (args: AiVaultSubagentListArgs) =>
     ipcRenderer.invoke('aiVault:listSubagentSessions', args),
   getFirstUserPrompt: (args: AiVaultFirstUserPromptArgs) =>

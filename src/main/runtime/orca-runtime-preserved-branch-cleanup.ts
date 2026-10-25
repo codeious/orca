@@ -21,7 +21,7 @@ import type {
   AiVaultPrepareSessionResumeArgs,
   AiVaultPrepareSessionResumeResult
 } from '../../shared/ai-vault-resume-preparation'
-import type { AiVaultDroidSessionHolder } from '../../shared/ai-vault-droid-session-holder'
+import type { AiVaultDroidSessionHolderResult } from '../../shared/ai-vault-droid-session-holder'
 import type { AgentSessionClaimSigner } from './agent-session-claim-identity'
 import type { AgentStatus } from '../../shared/agent-detection'
 import { RuntimeLegacyWorkerTerminalRecoveryPersistence } from './runtime-legacy-worker-terminal-recovery-persistence'
@@ -127,7 +127,7 @@ export class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeWithTermin
     | null
 
   protected readonly droidSessionHolderFn:
-    | ((sessionId: string) => Promise<AiVaultDroidSessionHolder>)
+    | ((sessionId: string) => Promise<AiVaultDroidSessionHolderResult>)
     | null
 
   protected readonly reconcileAgentStatusForEndedProcessFn:

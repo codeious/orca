@@ -275,8 +275,8 @@ describe('droidSessionHolder IPC', () => {
   }
 
   it('asks this machine for a local session and the paired host for a runtime session', async () => {
-    const readLocalDroidSessionHolder = vi.fn().mockResolvedValue('live')
-    const readRuntimeDroidSessionHolder = vi.fn().mockResolvedValue(null)
+    const readLocalDroidSessionHolder = vi.fn().mockResolvedValue({ holder: 'live' })
+    const readRuntimeDroidSessionHolder = vi.fn().mockResolvedValue({ holder: null })
     registerAiVaultHandlers({ readLocalDroidSessionHolder, readRuntimeDroidSessionHolder })
 
     await expect(
@@ -296,7 +296,7 @@ describe('droidSessionHolder IPC', () => {
     const ensureStructuredSessionOwnership = vi.fn().mockRejectedValue(new Error('refused'))
     registerAiVaultHandlers({
       ensureStructuredSessionOwnership,
-      readLocalDroidSessionHolder: vi.fn().mockResolvedValue('live')
+      readLocalDroidSessionHolder: vi.fn().mockResolvedValue({ holder: 'live' })
     })
 
     await expect(

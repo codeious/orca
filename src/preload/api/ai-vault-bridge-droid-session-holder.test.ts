@@ -9,6 +9,7 @@ vi.mock('electron', () => ({
 const { aiVaultApi } = await import('./ai-vault-bridge')
 
 const ARGS = { executionHostId: 'local', sessionId: 'droid-session' }
+const PANE_KEY = 'tab-1:11111111-1111-4111-8111-111111111111'
 
 beforeEach(() => {
   invoke.mockReset()
@@ -20,15 +21,27 @@ describe('aiVaultApi.droidSessionHolder', () => {
     async (holder) => {
       invoke.mockResolvedValue({ holder })
 
-      await expect(aiVaultApi.droidSessionHolder(ARGS)).resolves.toBe(holder)
+      await expect(aiVaultApi.droidSessionHolder(ARGS)).resolves.toStrictEqual({ holder })
       expect(invoke).toHaveBeenCalledWith(AI_VAULT_DROID_SESSION_HOLDER_CHANNEL, ARGS)
     }
   )
 
+  it('hands the renderer the panes main names', async () => {
+    const panes = [{ paneKey: PANE_KEY, verdict: 'live' }]
+    invoke.mockResolvedValue({ holder: 'live', panes })
+
+    await expect(aiVaultApi.droidSessionHolder(ARGS)).resolves.toStrictEqual({
+      holder: 'live',
+      panes
+    })
+  })
+
   it('cannot tell when main fails to answer', async () => {
     invoke.mockRejectedValue(new Error('No handler registered for aiVault:droidSessionHolder'))
 
-    await expect(aiVaultApi.droidSessionHolder(ARGS)).resolves.toBe('unverifiable')
+    await expect(aiVaultApi.droidSessionHolder(ARGS)).resolves.toStrictEqual({
+      holder: 'unverifiable'
+    })
   })
 
   it.each([
@@ -39,6 +52,8 @@ describe('aiVaultApi.droidSessionHolder', () => {
   ])('cannot tell when main answers %s, never a free session', async (_label, reply) => {
     invoke.mockResolvedValue(reply)
 
-    await expect(aiVaultApi.droidSessionHolder(ARGS)).resolves.toBe('unverifiable')
+    await expect(aiVaultApi.droidSessionHolder(ARGS)).resolves.toStrictEqual({
+      holder: 'unverifiable'
+    })
   })
 })

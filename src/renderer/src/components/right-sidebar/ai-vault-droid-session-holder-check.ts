@@ -2,29 +2,28 @@ import { toast } from 'sonner'
 import type { ConfirmationDialogContextValue } from '@/components/confirmation-dialog-context'
 import { translate } from '@/i18n/i18n'
 import {
-  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL,
-  type AiVaultDroidSessionHolder
+  AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT,
+  parseAiVaultDroidSessionHolderResult,
+  type AiVaultDroidSessionHolderResult
 } from '../../../../shared/ai-vault-droid-session-holder'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 
 export type AiVaultDroidChatResumeDecision = 'resume' | 'held' | 'declined'
 
-/** Only a literal `null` frees the session. A stale bridge, a thrown call, or an unknown word is
- *  cannot-tell, never free. */
+/** Only an answer whose holder is a literal `null` frees the session. A stale bridge, a thrown
+ *  call, or an unknown word is cannot-tell, never free. */
 export async function askAiVaultDroidSessionHolder(
   session: Pick<AiVaultSession, 'executionHostId' | 'sessionId'>
-): Promise<AiVaultDroidSessionHolder> {
+): Promise<AiVaultDroidSessionHolderResult> {
   try {
-    const holder: unknown = await window.api.aiVault.droidSessionHolder({
-      executionHostId: session.executionHostId,
-      sessionId: session.sessionId
-    })
-    if (holder === null) {
-      return null
-    }
-    return holder === 'live' ? 'live' : AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+    return parseAiVaultDroidSessionHolderResult(
+      await window.api.aiVault.droidSessionHolder({
+        executionHostId: session.executionHostId,
+        sessionId: session.sessionId
+      })
+    )
   } catch {
-    return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL
+    return AI_VAULT_DROID_SESSION_HOLDER_CANNOT_TELL_RESULT
   }
 }
 
@@ -33,7 +32,7 @@ export async function decideAiVaultDroidChatResume(args: {
   session: Pick<AiVaultSession, 'executionHostId' | 'sessionId'>
   confirm: ConfirmationDialogContextValue
 }): Promise<AiVaultDroidChatResumeDecision> {
-  const holder = await askAiVaultDroidSessionHolder(args.session)
+  const { holder } = await askAiVaultDroidSessionHolder(args.session)
   if (holder === null) {
     return 'resume'
   }
