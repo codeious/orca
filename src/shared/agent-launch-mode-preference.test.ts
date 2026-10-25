@@ -21,6 +21,25 @@ describe('agent launch mode preferences', () => {
     )
   })
 
+  it.each([
+    ['an unknown mode', '{"droid":"bogus"}'],
+    ['a non-string mode', '{"droid":7}'],
+    ['a null mode', '{"droid":null}'],
+    ['a stored Follow', '{"droid":"follow"}'],
+    ['a list instead of a record', '["chat"]'],
+    ['a string instead of a record', '"chat"'],
+    ['a number instead of a record', '7']
+  ])('reads %s in a hand-edited file as Follow', (_name, json) => {
+    expect(agentLaunchModePreference({ agentLaunchModes: JSON.parse(json) }, 'droid')).toBe(
+      'follow'
+    )
+  })
+
+  it('reads an entry under an id that is not an agent as Follow', () => {
+    const settings = { agentLaunchModes: JSON.parse('{"notAnAgent":"chat"}') }
+    expect(agentLaunchModePreference(settings, 'notAnAgent')).toBe('follow')
+  })
+
   it('keeps Terminal and Chat, and drops Follow, unknown agents, and unknown values', () => {
     expect(
       normalizeAgentLaunchModePreferences({
@@ -99,6 +118,16 @@ describe('resolveNativeChatLaunchChoice', () => {
         'droid'
       )
     ).toEqual({ structured: true, source: 'agent_setting' })
+  })
+
+  it('keeps an agent on the switch when its stored mode is not one this build knows', () => {
+    const agentLaunchModes = JSON.parse('{"droid":"bogus"}')
+    expect(
+      resolveNativeChatLaunchChoice({ experimentalNativeChat: true, agentLaunchModes }, 'droid')
+    ).toEqual({ structured: true, source: 'switch' })
+    expect(
+      resolveNativeChatLaunchChoice({ experimentalNativeChat: false, agentLaunchModes }, 'droid')
+    ).toEqual({ structured: false, source: 'switch' })
   })
 
   it('leaves every other agent on the switch', () => {
