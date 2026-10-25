@@ -89,4 +89,12 @@ describe('the launch mode in Settings search', () => {
     expect(onlyThisEntry).toHaveLength(1)
     expect(matchesSettingsSearch(query, onlyThisEntry)).toBe(true)
   })
+
+  it('is the entry that carries the match, not another Agents entry', () => {
+    const everyOtherEntry = getAgentsPaneSearchEntries().filter(
+      (entry) => entry.title !== 'Launch mode'
+    )
+
+    expect(matchesSettingsSearch('launch mode', everyOtherEntry)).toBe(false)
+  })
 })
