@@ -5,6 +5,10 @@ import {
   wrapWindowsHookCommand
 } from '../agent-hooks/installer-utils'
 import {
+  buildHookProcessCapture,
+  CLAUDE_HOOK_PARENT_CAPTURE
+} from '../agent-hooks/hook-process-capture'
+import {
   buildPosixHookPayloadCapture,
   buildPosixHookSpoolLines,
   buildWindowsHookEnvironmentGuardLines,
@@ -32,7 +36,7 @@ export function getDroidManagedCommand(
   // The shared Windows wrapper keeps the path out of cmd.exe's raw command line. #6078.
   return target === 'local' && process.platform === 'win32'
     ? wrapWindowsHookCommand(scriptPath)
-    : wrapPosixHookCommand(scriptPath)
+    : wrapPosixHookCommand(scriptPath, {}, { parentCapture: CLAUDE_HOOK_PARENT_CAPTURE })
 }
 
 export function getDroidManagedScript(target: 'local' | 'posix' = 'local'): string {
@@ -52,6 +56,7 @@ export function getDroidManagedScript(target: 'local' | 'posix' = 'local'): stri
   return [
     '#!/bin/sh',
     ...buildPosixHookPayloadCapture(),
+    ...buildHookProcessCapture(),
     ...buildPosixHookSpoolLines('droid'),
     'if [ -n "$ORCA_AGENT_HOOK_ENDPOINT" ] && [ -r "$ORCA_AGENT_HOOK_ENDPOINT" ]; then',
     '  . "$ORCA_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
@@ -74,6 +79,7 @@ export function getDroidManagedScript(target: 'local' | 'posix' = 'local'): stri
     '  --data-urlencode "worktreeId=${ORCA_WORKTREE_ID}" \\',
     '  --data-urlencode "env=${ORCA_AGENT_HOOK_ENV}" \\',
     '  --data-urlencode "version=${ORCA_AGENT_HOOK_VERSION}" \\',
+    '  --data-urlencode "agentProcess=${orca_agent_process:-}" \\',
     '  --data-urlencode "payload@-" >/dev/null 2>&1 || spool_hook_event',
     'exit 0',
     ''
