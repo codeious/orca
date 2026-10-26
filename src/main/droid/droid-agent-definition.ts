@@ -23,6 +23,7 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
     // Model, effort and Spec are kept at rest and sent on the next start.
     acceptsKey: (key) => key === 'model' || key === 'effort' || key === 'planMode',
     fallbackModels: () => null,
-    effortDefaultsToModel: false
+    effortDefaultsToModel: false,
+    waitsForCatalogListing: true
   }
 }

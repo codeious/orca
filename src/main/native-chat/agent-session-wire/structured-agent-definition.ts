@@ -19,6 +19,9 @@ export type StructuredAgentDefinition = AgentSessionStoredAgent & {
     fallbackModels: () => AgentSessionModelOption[] | null
     /** An unpicked effort reads as the model's default effort, as a running child reports it. */
     effortDefaultsToModel: boolean
+    /** Wait for a cold catalog's listing instead of answering with no models; for an agent with no
+     *  fallback list, because the client keeps an empty answer as final. */
+    waitsForCatalogListing?: true
   }
 }
 

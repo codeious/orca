@@ -68,6 +68,42 @@ describe('options at rest', () => {
   )
 })
 
+describe('options at rest for an agent that does not ask to wait for a listing', () => {
+  it('reads the catalog without waiting while a cold listing runs', async () => {
+    const record = restingRecord()
+    const modelCatalog = createAgentModelCatalogService({
+      store: new AgentModelCatalogStore(),
+      getRecord: () => record,
+      drivesRecord: () => true,
+      resolveAccountHome: async () => ({ variable: 'CODEX_HOME', path: '/homes/a' }),
+      probes: { codex: () => new Promise<AgentModelCatalogSuccess>(() => {}) }
+    })
+    const read = vi.fn(modelCatalog.read)
+    const resting = {
+      child: null,
+      params: { provider: 'codex' },
+      journal: { context: { floor: () => null } }
+    }
+    // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the resting read touches only these members.
+    const context = {
+      deps: {
+        adapter: {},
+        agents: NO_STRUCTURED_AGENTS,
+        store: { getRecord: () => record },
+        modelCatalog: { ...modelCatalog, read }
+      },
+      serialize: (_sessionId: string, task: () => Promise<unknown>) => task(),
+      openConversation: async () => resting,
+      conversation: async () => resting
+    } as unknown as StructuredAgentSessionMutationContext
+
+    const result = await readStructuredAgentSessionOptions(context, SESSION)
+    expect(read).toHaveBeenCalledOnce()
+    expect(read.mock.calls[0]?.[0]).not.toHaveProperty('waitForListing')
+    expect(result.models).toEqual([])
+  })
+})
+
 describe('live Codex option reads', () => {
   it('leaves the session lane free while a cold listing waits, then applies it under the child fence', async () => {
     const listing = Promise.withResolvers<void>()

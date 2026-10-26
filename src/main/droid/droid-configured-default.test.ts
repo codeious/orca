@@ -25,7 +25,12 @@ import {
   closeProviderTimelineRigs,
   openProviderTimelineRig
 } from '../native-chat/agent-session-timeline/provider-timeline-assembler-test-support'
-import { DROID_HANDLE_TRANSPORT } from './droid-agent-definition'
+import { StructuredAgentRegistry } from '../native-chat/agent-session-wire/structured-agent-registry'
+import type { StructuredAgentSessionAdapter } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
+import type { StructuredAgentSessionMutationContext } from '../native-chat/agent-session-wire/structured-agent-session-host-mutations'
+import { readStructuredAgentSessionOptions } from '../native-chat/agent-session-wire/structured-agent-session-options-read'
+import { StructuredAgentSessionTaskQueue } from '../native-chat/agent-session-wire/structured-agent-session-task-queue'
+import { DROID_AGENT, DROID_HANDLE_TRANSPORT } from './droid-agent-definition'
 import { createDroidModelCatalogProbe } from './droid-model-catalog-probe'
 import type { DroidConnection } from './droid-session'
 import { DroidSessionAdapter } from './droid-session-adapter'
@@ -130,7 +135,7 @@ type ChatOptions = {
   resumeId?: string
 }
 
-async function droidHost() {
+async function droidHost(opts: { listing?: Promise<void> } = {}) {
   const records = new Map<string, AgentSessionRecord>()
   const store = new AgentModelCatalogStore({ now: () => 1_000 })
   const catalog = createAgentModelCatalogService({
@@ -152,6 +157,7 @@ async function droidHost() {
             if (method !== 'droid.list_models' || JSON.stringify(params) !== '{}') {
               throw new Error(`probe sent ${method} ${JSON.stringify(params)}`)
             }
+            await opts.listing
             return { models: MODELS }
           },
           close: async () => {}
@@ -161,7 +167,7 @@ async function droidHost() {
   })
 
   let chats = 0
-  async function chat(workspacePath: string, opts: ChatOptions = {}) {
+  function addRecord(workspacePath: string): string {
     const sessionId = `droid-${++chats}`
     // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the catalog service reads only these fields.
     records.set(sessionId, {
@@ -176,6 +182,38 @@ async function droidHost() {
         workspaceKind: 'git-worktree'
       }
     } as AgentSessionRecord)
+    return sessionId
+  }
+
+  // A chat created and published but not started: no child, so its options read answers at rest.
+  const queue = new StructuredAgentSessionTaskQueue()
+  const resting = {
+    child: null,
+    params: { provider: 'droid' },
+    journal: { context: { floor: () => null } }
+  }
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the registry reads only the optional methods a declaration needs, and Droid declares none.
+  const adapter = {} as StructuredAgentSessionAdapter
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the resting read touches only these members.
+  const context = {
+    deps: {
+      adapter,
+      agents: new StructuredAgentRegistry([{ definition: DROID_AGENT, adapter }]),
+      store: { getRecord: (sessionId: string) => records.get(sessionId) },
+      modelCatalog: catalog
+    },
+    serialize: (sessionId: string, task: () => Promise<unknown>) =>
+      queue.serialize(sessionId, task),
+    openConversation: async () => resting,
+    conversation: async () => resting
+  } as unknown as StructuredAgentSessionMutationContext
+  function restingChat(workspacePath: string) {
+    const sessionId = addRecord(workspacePath)
+    return { sessionId, readOptions: () => readStructuredAgentSessionOptions(context, sessionId) }
+  }
+
+  async function chat(workspacePath: string, opts: ChatOptions = {}) {
+    const sessionId = addRecord(workspacePath)
     const rig = await openProviderTimelineRig({ agent: 'droid', sessionId })
     const connection = new ListingConnection(
       started(opts.modelId ?? 'gpt-6-sol', opts.effort ?? 'high', opts.models ?? MODELS),
@@ -237,7 +275,7 @@ async function droidHost() {
       }
     }
   }
-  return { catalog, chat }
+  return { catalog, chat, queue, restingChat }
 }
 
 function frame(state: StructuredAgentSessionOptionState) {
@@ -400,5 +438,56 @@ describe('Droid model and effort in the composer', () => {
     expect(firstFrame(await catalog.read({ agent: 'droid', workspacePath: clean }))).toEqual(
       NOTHING
     )
+  })
+})
+
+describe('Droid options at rest on a cold profile', () => {
+  const MODEL_IDS = ['gpt-6-sol', 'custom:Fake-Local-0']
+
+  it("reads a cold chat's options at rest with the probe's list and names no model", async () => {
+    const { restingChat } = await droidHost()
+    const options = await restingChat(workspace('clean')).readOptions()
+    expect(options.models.map((model) => model.id)).toEqual(MODEL_IDS)
+    expect(options.models.some((model) => model.isDefault)).toBe(false)
+    expect(options.current).toEqual({})
+  })
+
+  it("keeps the probe's list when a cold chat's resting answer lands before the probe's catalog", async () => {
+    const { catalog, restingChat } = await droidHost()
+    const seed = structuredAgentSessionSeedCatalog('droid')
+    const atRest = applyStructuredAgentSessionOptions(
+      createStructuredAgentSessionOptionState('droid', seed),
+      seed,
+      await restingChat(workspace('clean')).readOptions()
+    )
+    const model = structuredAgentSessionOptionSnapshot(atRest).find(
+      (descriptor) => descriptor.id === 'model'
+    )
+    expect(model?.settable).toBe(true)
+    expect(
+      model?.kind.type === 'select' ? model.kind.choices.map((choice) => choice.value) : []
+    ).toEqual(MODEL_IDS)
+    expect(frame(atRest)).toEqual(NOTHING)
+    const later = await catalog.read({ agent: 'droid', waitForListing: true })
+    expect(applyStructuredAgentSessionModelCatalog(atRest, seed, later, { newLaunch: true })).toBe(
+      atRest
+    )
+  })
+
+  it('holds the resting answer for a listing that is still running without holding the chat’s lane', async () => {
+    const listing = Promise.withResolvers<void>()
+    const { queue, restingChat } = await droidHost({ listing: listing.promise })
+    const chatAtRest = restingChat(workspace('clean'))
+    let answered = false
+    const reading = chatAtRest.readOptions().then((options) => {
+      answered = true
+      return options
+    })
+    await expect(
+      queue.serialize(chatAtRest.sessionId, async () => 'a send goes through')
+    ).resolves.toBe('a send goes through')
+    expect(answered).toBe(false)
+    listing.resolve()
+    expect((await reading).models.map((model) => model.id)).toEqual(MODEL_IDS)
   })
 })

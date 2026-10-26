@@ -58,8 +58,13 @@ async function readStructuredAgentSessionOptionsAtRest(
     throw new Error('agent_session_identity_required')
   }
   const rules = restingOptionRules(deps.agents, record)
+  // Outside the session's serialize, so a held read never queues a send behind it.
   const catalog = (await deps.modelCatalog
-    ?.read({ agent: record.provider, sessionId })
+    ?.read({
+      agent: record.provider,
+      sessionId,
+      ...(rules?.waitsForCatalogListing ? { waitForListing: true } : {})
+    })
     .catch(() => null)) ?? { origin: 'unknown' as const }
   // With no catalog for the account, the list a running child of this agent falls back to.
   const listed = catalog.origin === 'unknown' ? (rules?.fallbackModels() ?? null) : catalog.models
