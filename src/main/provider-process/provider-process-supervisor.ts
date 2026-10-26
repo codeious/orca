@@ -123,6 +123,8 @@ if (child.pid) {
   process.stdin.pipe(child.stdin)
   child.stdout.pipe(process.stdout)
   child.stderr.pipe(process.stderr)
+  // pipe() never ends process.stdout, so an owner reading for the provider's EOF would wait on the supervisor's exit.
+  if (spec.forwardOutputEnd) child.stdout.once('end', () => process.stdout.end())
   // A dead owner's stdout pipe raises EPIPE; unhandled, it would end this pid before the group.
   for (const stream of [process.stdin, process.stdout, process.stderr, child.stdin, child.stdout, child.stderr]) {
     stream.on('error', () => {})
@@ -134,7 +136,11 @@ const drainProviderOutput = () => {
     stream.once('end', resolve)
     stream.once('close', resolve)
   })
-  const flushed = (stream) => new Promise((resolve) => stream.write('', resolve))
+  const flushed = (stream) => new Promise((resolve) => {
+    if (!stream.writableEnded) return stream.write('', resolve)
+    if (stream.writableFinished) return resolve()
+    stream.once('finish', resolve)
+  })
   const drained = Promise.all([child.stdout, child.stderr].map(ended))
     .then(() => Promise.all([process.stdout, process.stderr].map(flushed)))
   return Promise.race([drained, new Promise((resolve) => setTimeout(resolve, ${PROVIDER_OUTPUT_DRAIN_TIMEOUT_MS}))])
@@ -191,6 +197,8 @@ export type ProviderSupervisorOptions = {
   ownerPid?: number
   stdinEndGraceMs?: number
   sigtermGraceMs?: number
+  /** The provider's stdout end reaches the owner while the provider keeps running; off, it waits on the supervisor's exit. */
+  forwardOutputEnd?: boolean
 }
 
 // The user's Node startup options, as the CLI launchers stash them away from Electron's bootstrap.
@@ -218,7 +226,8 @@ export function supervisedPosixLaunch(
     lifetime = 'session',
     closeRequest = 'stdin-end-and-sigterm',
     stdinEndGraceMs = PROVIDER_STDIN_END_GRACE_MS,
-    sigtermGraceMs = PROVIDER_SIGTERM_GRACE_MS
+    sigtermGraceMs = PROVIDER_SIGTERM_GRACE_MS,
+    forwardOutputEnd = false
   }: ProviderSupervisorOptions = {}
 ): { command: string; args: string[]; env: NodeJS.ProcessEnv } {
   assertGraceWithin('stdin-end', stdinEndGraceMs, PROVIDER_STDIN_END_GRACE_MAX_MS)
@@ -242,6 +251,7 @@ export function supervisedPosixLaunch(
       closeRequest,
       stdinEndGraceMs,
       sigtermGraceMs,
+      forwardOutputEnd,
       nodeEnv
     })
   ).toString('base64')
@@ -265,8 +275,12 @@ export function createProviderSpawnSpec(
   {
     lifetime,
     closeRequest,
-    stdinEndGraceMs
-  }: Pick<ProviderSupervisorOptions, 'lifetime' | 'closeRequest' | 'stdinEndGraceMs'> = {}
+    stdinEndGraceMs,
+    forwardOutputEnd
+  }: Pick<
+    ProviderSupervisorOptions,
+    'lifetime' | 'closeRequest' | 'stdinEndGraceMs' | 'forwardOutputEnd'
+  > = {}
 ): {
   program: string
   args: string[]
@@ -283,7 +297,7 @@ export function createProviderSpawnSpec(
       : supervisedPosixLaunch(
           { command: launch.command, args: launch.args, cwd: launch.cwd },
           childEnv,
-          { lifetime, closeRequest, stdinEndGraceMs }
+          { lifetime, closeRequest, stdinEndGraceMs, forwardOutputEnd }
         )
   return {
     program: supervisor?.command ?? launch.command,

@@ -68,6 +68,8 @@ export class DroidAgentConnection {
       site: 'droid-agent-teardown',
       policy: droidProviderClosePolicy,
       stdinEndGraceMs: DROID_STDIN_END_GRACE_MS,
+      // onStdoutEnd below only fires if the supervisor passes Droid's output end on.
+      forwardOutputEnd: true,
       ...(options.onOutput ? { onOutput: options.onOutput } : {})
     })
     this.managed = managed
