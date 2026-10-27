@@ -6,7 +6,10 @@ import {
 import { resolveStructuredAgentSessionOwner } from '@/runtime/structured-agent-session-owner'
 import { useAppStore } from '@/store'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
-import { normalizeExecutionHostId } from '../../../../shared/execution-host'
+import {
+  LOCAL_EXECUTION_HOST_ID,
+  normalizeExecutionHostId
+} from '../../../../shared/execution-host'
 import { STRUCTURED_AGENT_SESSION_RESUME_HISTORY_RUNTIME_CAPABILITY } from '../../../../shared/protocol-version'
 import { isStructuredAdoptionAgent } from '../../../../shared/structured-adoption-agent'
 import { resolveAiVaultTargetWorkspacePath } from './ai-vault-session-launch-target'
@@ -58,7 +61,10 @@ export function resolveAiVaultSessionResumeInChatForWorkspace(args: {
           kind: workspaceKindForWorktreeId(targetWorkspaceId),
           worktreeId: targetWorkspaceId
         },
-        settings: args.settings
+        settings: args.settings,
+        // This build registers every adoption agent, and the host list is only asked for once a
+        // setting names chat, which an explicit resume must not depend on.
+        ...(targetOwner === LOCAL_EXECUTION_HOST_ID ? { assumeHostListsAgent: true as const } : {})
       }) &&
       resolveHostCapabilities(state, targetOwner)?.includes(
         STRUCTURED_AGENT_SESSION_RESUME_HISTORY_RUNTIME_CAPABILITY

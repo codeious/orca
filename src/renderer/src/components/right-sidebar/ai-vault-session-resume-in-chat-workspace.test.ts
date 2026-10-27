@@ -133,6 +133,27 @@ describe('resuming a Droid conversation from history in a chat', () => {
     )
   })
 
+  it("assumes this computer's host lists Droid, since no setting has to name chat first", () => {
+    droidResumeInChat({ droidHolder: null })
+
+    expect(mocks.feasible).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ agent: 'droid', assumeHostListsAgent: true })
+    )
+  })
+
+  it("assumes nothing of a paired server's host, which has to list Droid itself", () => {
+    mocks.owner.mockReturnValue('runtime:server-1')
+
+    droidResumeInChat({
+      session: { ...droidSession, executionHostId: 'runtime:server-1' },
+      droidHolder: null
+    })
+
+    expect(mocks.feasible).toHaveBeenCalledOnce()
+    expect(mocks.feasible.mock.calls[0]?.[1]).not.toHaveProperty('assumeHostListsAgent')
+  })
+
   it('is offered, with the confirmation, before anyone has said who holds it', () => {
     expect(droidResumeInChat()).toEqual({
       available: true,
