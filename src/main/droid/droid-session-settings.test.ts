@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { resolveStructuredLaunchSeedOptions } from '../../shared/native-chat-session-option-defaults'
 import {
   DroidReportedSettings,
   droidInteractionModeFromSavedOptions,
@@ -11,9 +12,26 @@ describe('Droid saved Spec mode', () => {
     [{}, 'auto'],
     [{ planMode: 'false' }, 'auto'],
     [{ planMode: 'spec' }, 'auto'],
+    [{ planMode: 'yes' }, 'auto'],
     [{ planMode: 'true' }, 'spec']
   ] as const)('reads %j as %s', (saved, mode) => {
     expect(droidInteractionModeFromSavedOptions(saved)).toBe(mode)
+  })
+
+  it('reads a planted launch default as Spec only for the boolean true', () => {
+    const modeOfPlanted = (planModeJson: string) =>
+      droidInteractionModeFromSavedOptions(
+        resolveStructuredLaunchSeedOptions(
+          JSON.parse(
+            `{"droid":{"model":"claude-haiku-5-5","valuesByModel":{"claude-haiku-5-5":{"planMode":${planModeJson}}}}}`
+          ),
+          'droid'
+        )
+      )
+
+    expect(modeOfPlanted('true')).toBe('spec')
+    expect(modeOfPlanted('false')).toBe('auto')
+    expect(modeOfPlanted('"yes"')).toBe('auto')
   })
 })
 

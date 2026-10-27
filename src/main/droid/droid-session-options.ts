@@ -76,9 +76,29 @@ export class DroidSessionOptions {
     return { ...listed, current: droidCurrentOptions(settings.current, requested, listed.current) }
   }
 
-  set(key: string, value: string): ReturnType<DroidSessionModel['set']> {
+  /**
+   * Answers with the whole map of picks the host keeps: it stores what a pick returns as the
+   * chat's options, so a bare `{ [key]: value }` would drop Spec and the other half of the pair.
+   * Where Droid reported nothing for the pick, the picked value stands.
+   */
+  async set(key: string, value: string): Promise<Record<string, string>> {
     const { request, settings, model, requested } = this.deps
-    return model.set(request, key, value, specIsOn(settings.current, requested))
+    const sent: { id?: string } = {}
+    await model.set(
+      (method, params, options) =>
+        request(method, params, {
+          ...options,
+          onId: (id) => {
+            sent.id = id
+          }
+        }),
+      key,
+      value,
+      specIsOn(settings.current, requested)
+    )
+    const answer = sent.id === undefined ? undefined : settings.answerTo(sent.id)
+    const picks = this.picks(answer ?? settings.current)
+    return answer ? picks : { ...picks, [key]: value }
   }
 
   /**
@@ -95,14 +115,7 @@ export class DroidSessionOptions {
     if (reported?.interactionMode === undefined) {
       throw new AgentSessionOptionRejectedError(new Error('Droid did not report the mode it holds'))
     }
-    const { model, requested } = this.deps
-    const current = droidCurrentOptions(reported, requested, model.current)
-    const planMode = encodeStructuredAgentSessionOptionValue('planMode', current.planMode)
-    return {
-      ...(planMode === null ? {} : { planMode }),
-      ...(current.model ? { model: current.model } : {}),
-      ...(current.effort ? { effort: current.effort } : {})
-    }
+    return this.picks(reported)
   }
 
   /** A load takes no settings, so what the session stored stands unless it is sent again. */
@@ -116,6 +129,18 @@ export class DroidSessionOptions {
     const spec = specIsOn(reported ?? {}, wanted.interactionMode)
     await this.deps.model.applySaved(this.deps.request, saved, spec, warn)
     return reported?.autonomyLevel
+  }
+
+  /** The Spec, model and effort picks the host stores for a chat Droid holds as `reported`. */
+  private picks(reported: DroidSettings): Record<string, string> {
+    const { model, requested } = this.deps
+    const current = droidCurrentOptions(reported, requested, model.current)
+    const planMode = encodeStructuredAgentSessionOptionValue('planMode', current.planMode)
+    return {
+      ...(planMode === null ? {} : { planMode }),
+      ...(current.model ? { model: current.model } : {}),
+      ...(current.effort ? { effort: current.effort } : {})
+    }
   }
 
   /** What Droid reported holding in answer to this update, if it reported at all. */

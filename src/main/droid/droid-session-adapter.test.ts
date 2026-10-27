@@ -600,10 +600,10 @@ describe('Droid session options and prompts', () => {
 
     await expect(
       h.adapter.setOption({ sessionId, key: 'model', value: 'gpt-6-sol', fence: 7 })
-    ).resolves.toEqual({ model: 'gpt-6-sol' })
+    ).resolves.toEqual({ planMode: 'false', model: 'gpt-6-sol' })
     await expect(
       h.adapter.setOption({ sessionId, key: 'effort', value: 'high', fence: 7 })
-    ).resolves.toEqual({ effort: 'high' })
+    ).resolves.toEqual({ planMode: 'false', model: 'gpt-6-sol', effort: 'high' })
     expect(connection.requests.slice(-2).map(({ method, params }) => ({ method, params }))).toEqual(
       [
         { method: 'droid.update_session_settings', params: { modelId: 'gpt-6-sol' } },
