@@ -1,0 +1,43 @@
+src/shared/structured-native-chat-launch-route.ts
+  s_4f5191b444c27b::t_a847f270d0579a 66-68
+  s_4f5191b444c27b::t_2f25d2d5e777f3 123-124
+  s_4f5191b444c27b::t_7f0c4c1916a350 125-127
+src/renderer/src/lib/agent-launch-routing.ts
+  s_4f5191b444c27b::t_3f2ea942a554c8 30-31
+  s_4f5191b444c27b::t_2b760e6040b035 61-62
+src/renderer/src/lib/agent-launch-routing.test.ts
+  s_4f5191b444c27b::t_fcd09dffda6667 234-304
+src/renderer/src/lib/agent-launch-route-input.test.ts
+  s_4f5191b444c27b::t_69659feb7b47a0 414-468,472-474
+  s_4f5191b444c27b::t_5dfbee8be50841 469-471
+src/shared/structured-native-chat-launch-route.test.ts
+  s_4f5191b444c27b::t_f6a830dd7819c7 8
+  s_4f5191b444c27b::t_0497c96a8ab5db 141-202
+src/renderer/src/lib/agent-launch-route-input.ts
+  s_4f5191b444c27b::t_065ce43ba50a37 61
+  s_4f5191b444c27b::t_1e8c79c76b948f 59-60
+  s_4f5191b444c27b::t_79e49d26a4e7e5 8-11
+  s_4f5191b444c27b::t_a66a615bd4a6e6 140-158
+  s_4f5191b444c27b::t_bf5a6b023d4127 199-200
+src/renderer/src/lib/agent-launch-route-registered-agents.test.ts
+  s_4f5191b444c27b::t_840d78b509a5a7 151-164,169,171-180,185-186,201-203,205,217-218,220-221,223,226-228
+  s_4f5191b444c27b::t_278765aef7b943 71,74-79,85,89-91
+  s_4f5191b444c27b::t_5dfbee8be50841 86-88,187-195,207-216,219
+  s_4f5191b444c27b::t_522a7a63b3a940 165-168,170,181-184,196-200,204,206,222,224-225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "74b4deb9dcaaa369bbaa62ac789e20f7b47ae504",
+  "prompts": {},
+  "sessions": {
+    "s_4f5191b444c27b": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "216c8480-3187-473a-9d7f-ef8357dcaa80",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
