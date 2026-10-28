@@ -5,6 +5,10 @@ import {
 } from '../../../shared/execution-host'
 import type { AppState } from '@/store/types'
 import { findWorktreeById } from '@/store/slices/worktree-helpers'
+import {
+  getManagedOrcadSshTargetId,
+  type ManagedOrcadEnvironmentSummary
+} from '../../../shared/managed-orcad-execution-host'
 import { requestsCwdOutsideWorkspaceRootForWorkspace } from '../../../shared/terminal-startup-cwd'
 import type { TuiAgent } from '../../../shared/tui-agent'
 import { workspaceKindForWorktreeId } from '../../../shared/workspace-launch-kind'
@@ -52,7 +56,9 @@ export type AgentLaunchRouteStore = {
    *  in the intersection so these lookups resolve to the full records. */
   worktreesByRepo?: AppState['worktreesByRepo']
   folderWorkspaces?: AppState['folderWorkspaces']
-} & Parameters<typeof getExecutionHostIdForWorktree>[0] &
+  /** Which paired servers are an SSH host's managed Orca server. */
+  runtimeEnvironments?: readonly ManagedOrcadEnvironmentSummary[]
+} & Omit<Parameters<typeof getExecutionHostIdForWorktree>[0], 'runtimeEnvironments'> &
   Parameters<typeof getLocalProjectExecutionRuntimeContext>[0] &
   Parameters<typeof getConnectionIdFromState>[0]
 
@@ -131,6 +137,25 @@ function hostStructuredAgentsInput(
   return agents ? { hostStructuredAgents: agents.map((row) => row.agent) } : {}
 }
 
+/** Only the environment catalog says whether a paired server is an SSH host's managed Orca server;
+ *  a server it has not loaded or does not list has an unknown owner. */
+function sshOwnedRuntimeInput(
+  store: AgentLaunchRouteStore,
+  executionHostId: string
+): Pick<AgentLaunchRoutingInput, 'sshOwnedRuntime'> {
+  const host = parseExecutionHostId(executionHostId)
+  if (host?.kind !== 'runtime') {
+    return {}
+  }
+  const environment = store.runtimeEnvironments?.find((row) => row.id === host.environmentId)
+  if (environment && getManagedOrcadSshTargetId(environment)) {
+    return { sshOwnedRuntime: true }
+  }
+  return environment && store.runtimeEnvironmentCatalogHydrated === true
+    ? {}
+    : { sshOwnedRuntime: 'unknown' }
+}
+
 /** The one place that gathers what a launch route decision needs; only the planner resolves on it. */
 export function buildAgentLaunchRouteInput(
   store: AgentLaunchRouteStore,
@@ -171,6 +196,7 @@ export function buildAgentLaunchRouteInput(
       resolveFolderWorkspacePath: (folderWorkspaceId) =>
         store.folderWorkspaces?.find((entry) => entry.id === folderWorkspaceId)?.folderPath
     }),
-    ...hostStructuredAgentsInput(store, executionHostId)
+    ...hostStructuredAgentsInput(store, executionHostId),
+    ...sshOwnedRuntimeInput(store, executionHostId)
   }
 }

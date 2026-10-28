@@ -411,6 +411,67 @@ describe('buildAgentLaunchRouteInput', () => {
       }
     })
 
+    // Droid opens in the terminal on an SSH host; the managed server of one is a `runtime:` host.
+    describe('whether the server is an SSH host', () => {
+      const catalogStore = (
+        runtimeEnvironments: NonNullable<AgentLaunchRouteStore['runtimeEnvironments']>,
+        hydrated = true
+      ): AgentLaunchRouteStore => ({
+        ...pairedStore(CURRENT_SERVER),
+        runtimeEnvironments,
+        runtimeEnvironmentCatalogHydrated: hydrated
+      })
+      const sshOwnershipOf = (appStore: AgentLaunchRouteStore) =>
+        buildAgentLaunchRouteInput(appStore, { ...args, agent: 'droid' }).sshOwnedRuntime
+
+      it('marks the managed server of an SSH host', () => {
+        const managed = catalogStore([
+          { id: 'other' },
+          { id: 'server-1', orcadDeployment: { sshTargetId: 'lima-desktop' } }
+        ])
+        expect(sshOwnershipOf(managed)).toBe(true)
+        // The mark describes the host: every agent's input carries it, only Droid reads it.
+        expect(buildAgentLaunchRouteInput(managed, args).sshOwnedRuntime).toBe(true)
+        expect(routeFor(managed, args)).toBe('structured-native-chat')
+      })
+
+      it.each([
+        ['has no managed deployment', [{ id: 'server-1' }]],
+        ['has a blank SSH target', [{ id: 'server-1', orcadDeployment: { sshTargetId: ' ' } }]],
+        ['has a null deployment', [{ id: 'server-1', orcadDeployment: null }]]
+      ])('leaves a server that %s unmarked', (_name, environments) => {
+        const input = buildAgentLaunchRouteInput(catalogStore(environments), {
+          ...args,
+          agent: 'droid'
+        })
+        expect(input).not.toHaveProperty('sshOwnedRuntime')
+      })
+
+      it('reads the owner as unknown until the catalog has loaded', () => {
+        expect(sshOwnershipOf(pairedStore(CURRENT_SERVER))).toBe('unknown')
+        expect(sshOwnershipOf(catalogStore([{ id: 'server-1' }], false))).toBe('unknown')
+        expect(routeFor(pairedStore(CURRENT_SERVER), args)).toBe('structured-native-chat')
+      })
+
+      it('reads the owner as unknown for a server the loaded catalog does not list', () => {
+        expect(sshOwnershipOf(catalogStore([{ id: 'other' }]))).toBe('unknown')
+        expect(sshOwnershipOf(catalogStore([]))).toBe('unknown')
+      })
+
+      it.each(['local', 'ssh:build-box'])('never marks a %s host', (hostId) => {
+        mocks.getExecutionHostIdForWorktree.mockReturnValue(hostId)
+        const managed = catalogStore([
+          { id: 'server-1', orcadDeployment: { sshTargetId: 'lima-desktop' } }
+        ])
+        expect(buildAgentLaunchRouteInput(managed, { ...args, agent: 'droid' })).not.toHaveProperty(
+          'sshOwnedRuntime'
+        )
+        expect(buildAgentLaunchRouteInput(store(), { ...args, agent: 'droid' })).not.toHaveProperty(
+          'sshOwnedRuntime'
+        )
+      })
+    })
+
     // A launch command override never decides the surface, here or on the server.
     it("does not route on this machine's launch command override for the server", () => {
       const settings = { ...STRUCTURED_SETTINGS, agentCmdOverrides: { claude: 'claude-wrapper' } }

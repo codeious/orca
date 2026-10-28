@@ -27,6 +27,8 @@ export type AgentLaunchRoutingInput = {
   startsOutsideWorkspaceRoot?: boolean
   /** The agents the target host listed as structured; absent until it has. */
   hostStructuredAgents?: readonly string[]
+  /** Whether a `runtime:` host is the managed Orca server of an SSH host; absent when it is not. */
+  sshOwnedRuntime?: true | 'unknown'
 }
 
 export function resolveAgentLaunchRoute(input: AgentLaunchRoutingInput): AgentLaunchRoute {
@@ -56,7 +58,8 @@ function structuredAgentLaunchSupport(input: Omit<AgentLaunchRoutingInput, 'laun
     workspaceKind: input.workspaceKind,
     projectRuntime: input.projectRuntime,
     startsOutsideWorkspaceRoot: input.startsOutsideWorkspaceRoot,
-    ...(input.hostStructuredAgents ? { hostStructuredAgents: input.hostStructuredAgents } : {})
+    ...(input.hostStructuredAgents ? { hostStructuredAgents: input.hostStructuredAgents } : {}),
+    ...(input.sshOwnedRuntime ? { sshOwnedRuntime: input.sshOwnedRuntime } : {})
   })
 }
 

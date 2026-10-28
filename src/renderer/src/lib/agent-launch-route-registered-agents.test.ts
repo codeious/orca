@@ -68,16 +68,27 @@ function pairedStatus(runtimeId: string): RuntimeEnvironmentStatus {
 }
 
 type RouteSettings = Partial<typeof SETTINGS> &
-  Partial<Pick<GlobalSettings, 'agentCmdOverrides' | 'agentDefaultEnv'>>
+  Partial<Pick<GlobalSettings, 'agentCmdOverrides' | 'agentDefaultEnv' | 'agentLaunchModes'>>
 
 function store(
-  overrides: { settings?: RouteSettings; runtimeId?: string } = {}
+  overrides: {
+    settings?: RouteSettings
+    runtimeId?: string
+    runtimeEnvironments?: AgentLaunchRouteStore['runtimeEnvironments']
+    runtimeEnvironmentCatalogHydrated?: boolean
+  } = {}
 ): AgentLaunchRouteStore {
   const state = {
     settings: { ...SETTINGS, ...overrides.settings },
     runtimeStatusByEnvironmentId: new Map([['env-1', pairedStatus(overrides.runtimeId ?? 'rt-1')]]),
     worktreesByRepo: {},
-    folderWorkspaces: []
+    folderWorkspaces: [],
+    ...(overrides.runtimeEnvironments
+      ? { runtimeEnvironments: overrides.runtimeEnvironments }
+      : {}),
+    ...(overrides.runtimeEnvironmentCatalogHydrated === undefined
+      ? {}
+      : { runtimeEnvironmentCatalogHydrated: overrides.runtimeEnvironmentCatalogHydrated })
   }
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the route builder reads only the settings, host statuses and workspace rows given here; a missing member reads as absent, as the sibling route tests rely on.
   return state as unknown as AgentLaunchRouteStore
@@ -134,6 +145,84 @@ describe('structured launch of a host-registered agent', () => {
     expect(routeFor(store({ runtimeId: 'rt-2' }), 'grok', PAIRED)).not.toBe(
       'structured-native-chat'
     )
+  })
+})
+
+// Droid always opens in the terminal on an SSH host, including one a managed Orca server serves.
+describe('Droid on a paired server', () => {
+  const LISTS_DROID = {
+    agents: [...LISTS_GROK.agents, { agent: 'droid', capabilities: {} }]
+  }
+  const FOLLOW: RouteSettings = { experimentalNativeChat: true }
+  const CHAT: RouteSettings = {
+    experimentalNativeChat: false,
+    agentLaunchModes: { droid: 'chat' }
+  }
+  const MODES = [
+    ['Follow with Chat UI on', FOLLOW],
+    ['Chat', CHAT]
+  ] as const
+  const loadedCatalog = (
+    settings: RouteSettings,
+    runtimeEnvironments: NonNullable<AgentLaunchRouteStore['runtimeEnvironments']>
+  ) => store({ settings, runtimeEnvironments, runtimeEnvironmentCatalogHydrated: true })
+  const SSH_OWNED = [{ id: 'env-1', orcadDeployment: { sshTargetId: 'lima-desktop' } }]
+  const NOT_SSH = [{ id: 'env-1' }]
+  let warn: MockInstance<typeof console.warn>
+  beforeEach(async () => {
+    warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    mocks.callRuntimeRpc.mockResolvedValue(LISTS_DROID)
+    await loadHostStructuredAgents('runtime:env-1', REGISTERED, 'rt-1')
+  })
+  afterEach(() => {
+    warn.mockRestore()
+  })
+
+  it.each(MODES)('opens a chat under %s on a server that is not an SSH host', (_name, settings) => {
+    expect(routeFor(loadedCatalog(settings, NOT_SSH), 'droid', PAIRED)).toBe(
+      'structured-native-chat'
+    )
+  })
+
+  it.each(MODES)(
+    'opens the terminal under %s on the managed server of an SSH host',
+    (_name, settings) => {
+      expect(routeFor(loadedCatalog(settings, SSH_OWNED), 'droid', PAIRED)).toBe('terminal-tui')
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('droid opens terminal-tui: remote-execution-host')
+      )
+    }
+  )
+
+  it.each(['claude', 'codex', 'grok'] as const)(
+    'keeps %s in a chat on the managed server of an SSH host',
+    (agent) => {
+      expect(routeFor(loadedCatalog(FOLLOW, SSH_OWNED), agent, PAIRED)).toBe(
+        'structured-native-chat'
+      )
+    }
+  )
+
+  // Ownership is unknown until the catalog has loaded; a chat must not open on a guess.
+  it.each(MODES)(
+    'opens the terminal under %s before the server catalog has loaded',
+    (_name, settings) => {
+      expect(routeFor(store({ settings }), 'droid', PAIRED)).toBe('terminal-tui')
+      expect(routeFor(store({ settings, runtimeEnvironments: NOT_SSH }), 'droid', PAIRED)).toBe(
+        'terminal-tui'
+      )
+      expect(routeFor(store({ settings: FOLLOW }), 'claude', PAIRED)).toBe('structured-native-chat')
+    }
+  )
+
+  it('opens the terminal when the loaded catalog does not list the server', () => {
+    expect(routeFor(loadedCatalog(FOLLOW, [{ id: 'env-2' }]), 'droid', PAIRED)).toBe('terminal-tui')
+  })
+
+  it('keeps a local Droid chat whatever the server catalog holds', async () => {
+    await loadHostStructuredAgents('local', REGISTERED, null)
+    expect(routeFor(store({ settings: FOLLOW }), 'droid')).toBe('structured-native-chat')
+    expect(routeFor(loadedCatalog(FOLLOW, SSH_OWNED), 'droid')).toBe('structured-native-chat')
   })
 })
 

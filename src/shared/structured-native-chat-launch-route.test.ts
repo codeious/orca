@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest'
 import {
+  STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY,
   STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY,
   STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY
 } from './protocol-version'
@@ -135,5 +136,67 @@ describe('agents beyond Claude and Codex', () => {
   it('leave Claude and Codex offered by hosts that predate the capability', () => {
     expect(support({ agent: 'claude' })).toEqual({ supported: true })
     expect(support({ agent: 'codex' })).toEqual({ supported: true })
+  })
+})
+
+// Droid always opens in the terminal on an SSH host. A managed Orca server on that host is a
+// `runtime:` host, which this route otherwise admits as a paired server.
+describe('Droid on a runtime host that is an SSH host', () => {
+  const RUNTIME_CAPABILITIES = [
+    STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
+    STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY,
+    STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY
+  ]
+  const runtimeHost = (overrides: Partial<StructuredNativeChatSupportInput> = {}) =>
+    support({
+      agent: 'droid',
+      executionHostId: 'runtime:env-1',
+      hostCapabilities: RUNTIME_CAPABILITIES,
+      clientCapabilities: [
+        STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
+        STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY
+      ],
+      hostStructuredAgents: ['droid'],
+      ...overrides
+    })
+
+  it('is offered by a paired server that is not an SSH host', () => {
+    expect(runtimeHost()).toEqual({ supported: true })
+  })
+
+  it('is refused on a server managed for an SSH host', () => {
+    expect(runtimeHost({ sshOwnedRuntime: true })).toEqual({
+      supported: false,
+      blocker: 'remote-execution-host'
+    })
+  })
+
+  it('is refused while it is unknown whether the server is an SSH host', () => {
+    expect(runtimeHost({ sshOwnedRuntime: 'unknown' })).toEqual({
+      supported: false,
+      blocker: 'remote-execution-host'
+    })
+  })
+
+  it.each([true, 'unknown'] as const)(
+    'leaves Claude, Codex and pi offered when the runtime is %s as an SSH host',
+    (sshOwnedRuntime) => {
+      for (const agent of ['claude', 'codex', 'pi'] as const) {
+        expect(runtimeHost({ agent, hostStructuredAgents: [agent], sshOwnedRuntime })).toEqual({
+          supported: true
+        })
+      }
+    }
+  )
+
+  it('leaves a local Droid launch alone', () => {
+    expect(
+      support({
+        agent: 'droid',
+        hostCapabilities: RUNTIME_CAPABILITIES,
+        hostStructuredAgents: ['droid'],
+        sshOwnedRuntime: true
+      })
+    ).toEqual({ supported: true })
   })
 })

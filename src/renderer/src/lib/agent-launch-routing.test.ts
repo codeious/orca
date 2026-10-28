@@ -231,6 +231,77 @@ describe('a per-agent launch setting', () => {
   })
 })
 
+// An SSH host served by a managed Orca server is a `runtime:` host, yet Droid keeps its terminal.
+describe('Droid on a runtime host that is an SSH host', () => {
+  const negotiated = [
+    STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
+    STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY
+  ]
+  const onRuntime = {
+    executionHostId: 'runtime:env-1',
+    hostCapabilities: [
+      ...negotiated,
+      STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY
+    ],
+    clientCapabilities: negotiated,
+    workspaceKind: 'folder' as const
+  }
+  const droid = { ...onRuntime, agent: 'droid' as const, hostStructuredAgents: ['droid'] }
+  const follow = { experimentalNativeChat: true }
+  const chat = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' as const } }
+
+  it.each([
+    ['Follow with Chat UI on', follow],
+    ['Chat', chat]
+  ])('opens the terminal under %s when the server is an SSH host', (_name, modeSettings) => {
+    const input = { ...droid, settings: modeSettings, sshOwnedRuntime: true as const }
+    const chosen = route(input)
+    expect(chosen).toBe('terminal-tui')
+    expect(structuredAgentLaunchDowngrade(input, chosen)).toBe('remote-execution-host')
+  })
+
+  it.each([
+    ['Follow with Chat UI on', follow],
+    ['Chat', chat]
+  ])('opens the terminal under %s while it is unknown whether it is', (_name, modeSettings) => {
+    const input = { ...droid, settings: modeSettings, sshOwnedRuntime: 'unknown' as const }
+    expect(route(input)).toBe('terminal-tui')
+    expect(structuredAgentLaunchDowngrade(input, 'terminal-tui')).toBe('remote-execution-host')
+  })
+
+  it('still opens a chat on a paired server that is not an SSH host', () => {
+    expect(route({ ...droid, settings: follow })).toBe('structured-native-chat')
+    expect(route({ ...droid, settings: chat })).toBe('structured-native-chat')
+  })
+
+  it.each([true, 'unknown'] as const)(
+    'leaves Claude and Codex in chat when the runtime is %s as an SSH host',
+    (sshOwnedRuntime) => {
+      for (const agent of ['claude', 'codex'] as const) {
+        expect(route({ ...onRuntime, agent, settings: follow, sshOwnedRuntime })).toBe(
+          'structured-native-chat'
+        )
+      }
+    }
+  )
+
+  it('refuses an explicit chat request for Droid there, and keeps it for Claude', () => {
+    const settings = { experimentalNativeChat: false }
+    expect(structuredAgentLaunchSupported({ ...droid, settings })).toBe(true)
+    expect(structuredAgentLaunchSupported({ ...droid, settings, sshOwnedRuntime: true })).toBe(
+      false
+    )
+    expect(
+      structuredAgentLaunchSupported({
+        ...onRuntime,
+        agent: 'claude',
+        settings,
+        sshOwnedRuntime: true
+      })
+    ).toBe(true)
+  })
+})
+
 describe('explicit structured chat requests', () => {
   it.each(['claude', 'codex'] as const)('supports %s history resume on a capable host', (agent) => {
     const input = {
