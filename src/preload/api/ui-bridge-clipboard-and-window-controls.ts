@@ -147,6 +147,9 @@ export const uiClipboardAndWindowControlsApi = {
   setShortcutRecorderFocused: (focused: boolean): void => {
     ipcRenderer.send('ui:setShortcutRecorderFocused', focused)
   },
+  setDroidComposerFocused: (focused: boolean): void => {
+    ipcRenderer.send('ui:setDroidComposerFocused', focused)
+  },
   onRichMarkdownContextCommand: (
     callback: (payload: RichMarkdownContextMenuCommandPayload) => void
   ): (() => void) => {

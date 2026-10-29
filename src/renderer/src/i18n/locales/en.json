@@ -18720,6 +18720,13 @@
         "reconnecting": "{{hostName}} is reconnecting…",
         "reconnect": "Reconnect"
       },
+      "droidHelp": {
+        "keysIntro": "Droid keys in the message box:",
+        "shiftTab": "Shift+Tab: switch Spec mode on or off.",
+        "ctrlL": "Ctrl+L: cycle autonomy.",
+        "tab": "Tab: cycle reasoning effort.",
+        "ctrlN": "Ctrl+N: cycle through models."
+      },
       "interruptedContinue": {
         "continue": "Continue",
         "failed": "Couldn't continue this chat. Try again, or send a message.",

@@ -326,6 +326,7 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       draft,
       recall: recall.recall,
       isComposing: imeEnterGesture.isComposing,
+      agent,
       completePickerItem: goalMode.interceptPick(completeItem),
       dispatchPickerCommand: goalMode.interceptPick(dispatchPickerCommand),
       dismissPicker: dismiss,
@@ -351,6 +352,7 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
     return (
       <NativeChatComposerField
         draftScopeKey={draftScopeKey}
+        mirrorDroidComposerFocus={agent === 'droid'}
         textareaRef={textareaRef}
         draft={draft}
         disabled={disabled}

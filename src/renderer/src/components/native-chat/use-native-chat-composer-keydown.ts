@@ -5,6 +5,12 @@ import {
   type KeyboardEventHandler,
   type SetStateAction
 } from 'react'
+import type { AgentType } from '../../../../shared/agent-status-types'
+import {
+  matchDroidComposerKey,
+  type DroidComposerKey
+} from '../../../../shared/droid-composer-keys'
+import { getShortcutPlatform } from '@/lib/shortcut-platform'
 import type { ComposerAutocomplete, NativeChatPickerItem } from './native-chat-composer-state'
 import { isMacPlatform } from './native-chat-shortcut'
 import type { NativeChatMentionFiles } from './use-native-chat-mention-files'
@@ -33,6 +39,10 @@ export type UseNativeChatComposerKeyDownArgs = {
   /** Cmd/Ctrl+Enter from an empty composer: send the newest queued draft now; false falls
    *  through to send. */
   steerQueued?: (() => boolean) | undefined
+  /** Only `droid` reads the map below; every other agent keeps today's keys. */
+  agent?: AgentType
+  /** What each Droid key does. A key with no entry falls through to today's handling. */
+  droidKeys?: Partial<Record<DroidComposerKey, () => void>> | undefined
   setActiveSuggestion: Dispatch<SetStateAction<number>>
   setDraft: Dispatch<SetStateAction<string>>
   setCaret: Dispatch<SetStateAction<number>>
@@ -53,6 +63,8 @@ export function useNativeChatComposerKeyDown({
   interrupt,
   send,
   steerQueued,
+  agent,
+  droidKeys,
   setActiveSuggestion,
   setDraft,
   setCaret
@@ -118,6 +130,18 @@ export function useNativeChatComposerKeyDown({
         }
       }
 
+      // Droid's map comes after IME and the open menu and before today's handling. Unwired keys fall through.
+      const droidKey =
+        agent === 'droid' && !event.defaultPrevented
+          ? matchDroidComposerKey(event, getShortcutPlatform())
+          : null
+      const droidAction = droidKey ? droidKeys?.[droidKey] : undefined
+      if (droidAction) {
+        event.preventDefault()
+        droidAction()
+        return
+      }
+
       if (event.key === 'Escape') {
         event.preventDefault()
         interrupt()
@@ -167,12 +191,14 @@ export function useNativeChatComposerKeyDown({
     },
     [
       activeSuggestion,
+      agent,
       autocomplete,
       completeMention,
       completePickerItem,
       dismissPicker,
       dispatchPickerCommand,
       draft,
+      droidKeys,
       hasAttachments,
       interrupt,
       isComposing,

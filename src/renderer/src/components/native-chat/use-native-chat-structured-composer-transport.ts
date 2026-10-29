@@ -5,6 +5,7 @@ import type {
   NativeChatOptionPickerRequest,
   NativeChatStructuredComposerTransport
 } from './native-chat-composer-types'
+import { answerDroidHostCommand } from './droid-help-keys'
 import type { NativeChatStructuredViewProps } from './native-chat-view-types'
 import type { useStructuredAgentSession } from './use-structured-agent-session'
 import type { StructuredAgentSessionQueuedMessagesController } from './use-structured-agent-session-queued-messages'
@@ -59,7 +60,8 @@ export function useNativeChatStructuredComposerTransport(args: {
           setOption: controller.setStructuredOption,
           conversationCommands: controller.conversationCommands,
           runConversationCommand: controller.runConversationCommand,
-          ...(setThreadGoalObjective ? { setThreadGoalObjective } : {})
+          ...(setThreadGoalObjective ? { setThreadGoalObjective } : {}),
+          ...(props.agent === 'droid' ? { answerHostCommand: answerDroidHostCommand } : {})
         }),
       ...(setThreadGoalObjective ? { threadGoal: { setObjective: setThreadGoalObjective } } : {}),
       sendOut: controller.sendOut || starting,

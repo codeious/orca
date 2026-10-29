@@ -37,6 +37,8 @@ export type NativeChatComposerFieldProps = {
    *  only in the composer it was dropped on. */
   /** Owner of the draft the editor's document is saved with. */
   draftScopeKey: string
+  /** The chat runs Droid: the editor mirrors its focus so Droid's Ctrl keys reach it. */
+  mirrorDroidComposerFocus?: boolean
   textareaRef: RefObject<NativeChatComposerInput | null>
   draft: string
   disabled: boolean
@@ -127,6 +129,7 @@ function imeComposedSegment(base: string, settled: string): string {
 
 export function NativeChatComposerField({
   draftScopeKey,
+  mirrorDroidComposerFocus,
   textareaRef,
   draft,
   disabled,
@@ -296,6 +299,7 @@ export function NativeChatComposerField({
             <NativeChatPromptEditor
               key={draftScopeKey}
               scopeKey={draftScopeKey}
+              mirrorDroidComposerFocus={mirrorDroidComposerFocus}
               inputRef={textareaRef}
               initialValue={draft}
               disabled={disabled}
