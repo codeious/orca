@@ -1,0 +1,104 @@
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown-droid.test.tsx
+  s_9dae7fe5f07ae6::t_f110ee7d8de923 225
+  s_9dae7fe5f07ae6::t_9c3d267c5436ab 73-82
+  s_9dae7fe5f07ae6::t_ef8d861b259088 1-7,9-10,12-59,61-72,83-117,119-141,143-152,156-168,180-224,226-255,267-309
+  s_9dae7fe5f07ae6::t_c64807c2d44506 142,153-155,169-179,256-266
+  s_9dae7fe5f07ae6::t_94d169d3a095e9 60
+  s_9dae7fe5f07ae6::t_ee2c10030689bf 118
+  s_9dae7fe5f07ae6::t_8898fcf6b926a2 8,11
+src/shared/structured-agent-session-composer-host-answer.test.ts
+  s_9dae7fe5f07ae6::t_67cd03da5ac914 43-49,52-53,57
+  s_9dae7fe5f07ae6::t_f23d498956f5ce 1-42,50-51,54-56,58-75
+src/renderer/src/components/native-chat/droid-help-keys.test.ts
+  s_9dae7fe5f07ae6::t_593d906967bfb9 22-30
+  s_9dae7fe5f07ae6::t_256c36b7c403ed 34
+  s_9dae7fe5f07ae6::t_a3db85db41630c 1-21,31-33,35-77
+src/renderer/src/i18n/locales/en.json
+  s_9dae7fe5f07ae6::t_cd3fbac61a29b8 18728
+  s_9dae7fe5f07ae6::t_9b41a9beb7b7ad 18723-18727,18729
+src/renderer/src/components/native-chat/use-droid-composer-focus-mirror.ts
+  s_9dae7fe5f07ae6::t_3dae626938356d 1-26
+src/shared/droid-composer-keys.ts
+  s_9dae7fe5f07ae6::t_19e2e24571e0d8 1-47
+src/renderer/src/web/preload-api/web-ui-api.ts
+  s_9dae7fe5f07ae6::t_c01d63bdef1f9e 291
+src/preload/api/ui-bridge-clipboard-and-window-controls.ts
+  s_9dae7fe5f07ae6::t_3e2bc9aabffd1a 150-152
+src/main/window/droid-composer-focus-mirror.ts
+  s_9dae7fe5f07ae6::t_4baa268494ca0b 1-12,16-38
+  s_9dae7fe5f07ae6::t_c64807c2d44506 13-15
+src/renderer/src/components/native-chat/NativeChatPromptEditor.tsx
+  s_9dae7fe5f07ae6::t_c18da834e9e60d 290-303
+  s_9dae7fe5f07ae6::t_5e68af3d20566d 32-33
+  s_9dae7fe5f07ae6::t_2910d8875f0b2b 28
+  s_9dae7fe5f07ae6::t_17e5e5481d7a1b 54
+  s_9dae7fe5f07ae6::t_1dfa404ed80ac3 44
+src/renderer/src/components/native-chat/NativeChatComposerField.tsx
+  s_9dae7fe5f07ae6::t_68dcba31e0345a 132
+  s_9dae7fe5f07ae6::t_d6adfdc960cbf7 40-41
+  s_9dae7fe5f07ae6::t_e2eb80f45644e2 302
+src/shared/structured-agent-session-composer.ts
+  s_9dae7fe5f07ae6::t_6340f8212ada3d 43-45
+  s_9dae7fe5f07ae6::t_fb3225b4a68964 204-205
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.ts
+  s_9dae7fe5f07ae6::t_98df190ba024a2 63-64
+  s_9dae7fe5f07ae6::t_7491b9cb5e5699 8
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown.ts
+  s_9dae7fe5f07ae6::t_c17bee8b968081 8,13
+  s_9dae7fe5f07ae6::t_c64807c2d44506 9-12
+  s_9dae7fe5f07ae6::t_160950e0248d38 66-67
+  s_9dae7fe5f07ae6::t_178cfd3b557cc6 42-45
+  s_9dae7fe5f07ae6::t_14cbaf669426db 133,135,139-144
+  s_9dae7fe5f07ae6::t_94c58146a0bc6d 134,136-138
+  s_9dae7fe5f07ae6::t_b90581174a314c 194,201
+src/renderer/src/components/native-chat/droid-help-keys.ts
+  s_9dae7fe5f07ae6::t_c64807c2d44506 7-10
+  s_9dae7fe5f07ae6::t_11d68415b949d6 13
+  s_9dae7fe5f07ae6::t_1cbfe9b16e1f46 1-6,11-12,14-28
+src/renderer/src/components/native-chat/use-droid-composer-focus-mirror.test.tsx
+  s_9dae7fe5f07ae6::t_c70472aea68e9d 3,41-42,49-51
+  s_9dae7fe5f07ae6::t_c441649859ebc0 1-2,4-40,43-48,52-80
+src/main/window/createMainWindow-droid-composer-focus-shortcuts.test.ts
+  s_9dae7fe5f07ae6::t_9f112034e1f53b 85
+  s_9dae7fe5f07ae6::t_1e8230f13e9e47 86-90
+  s_9dae7fe5f07ae6::t_b9a0064574b571 1-84,91-283
+src/main/window/main-window-focus-lifecycle.ts
+  s_9dae7fe5f07ae6::t_f9b298ea03e15b 24
+  s_9dae7fe5f07ae6::t_ad253b0b02d734 150
+  s_9dae7fe5f07ae6::t_f93a5f3776ac01 292
+  s_9dae7fe5f07ae6::t_cd3f392faa7093 260
+  s_9dae7fe5f07ae6::t_26633a79fa095d 277
+  s_9dae7fe5f07ae6::t_52fe4d0ffa7fdb 303
+  s_9dae7fe5f07ae6::t_ddd601c70a2f73 57
+  s_9dae7fe5f07ae6::t_35e9d9e3c4a8fc 31
+src/renderer/src/components/native-chat/NativeChatComposer.tsx
+  s_9dae7fe5f07ae6::t_344f364df54226 355
+  s_9dae7fe5f07ae6::t_855865bb0015d2 329
+src/main/window/main-window-shortcut-routing.ts
+  s_9dae7fe5f07ae6::t_571fff3bd726ac 209-218
+  s_9dae7fe5f07ae6::t_939175b2b25285 3
+src/shared/droid-composer-keys.test.ts
+  s_9dae7fe5f07ae6::t_991d3488f21711 7
+  s_9dae7fe5f07ae6::t_68df348cd2ad3f 29
+  s_9dae7fe5f07ae6::t_67656ad06dad8b 1-6,8-28,30-42,44-74,76-87
+  s_9dae7fe5f07ae6::t_97464fa360a9a4 43
+  s_9dae7fe5f07ae6::t_205bbe77c65121 75
+src/preload/api/ui-window-api.ts
+  s_9dae7fe5f07ae6::t_b020a63a7bdfd8 49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7e0b172fee3f62839440eae47e5541123905391c",
+  "prompts": {},
+  "sessions": {
+    "s_9dae7fe5f07ae6": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a3a14a9d-f493-447f-a9cd-22fb6cb50dd3",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
