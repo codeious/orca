@@ -1,3 +1,4 @@
+import type { AgentJournalQuestionPicker } from './agent-session-journal-question-picker'
 import type { AgentSessionProviderContextBoundary } from './agent-session-provider-context'
 // ─── Canonical agent-session journal: cross-process wire shapes ─────────────
 // The host-owned timeline for a structured agent session. Everything here must
@@ -191,7 +192,7 @@ export type AgentJournalFreeTextInput = {
   placeholder?: string
 }
 
-export type AgentJournalQuestion = {
+export type AgentJournalQuestion = AgentJournalQuestionPicker & {
   id: string
   question: string
   header?: string

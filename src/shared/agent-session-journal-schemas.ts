@@ -149,6 +149,9 @@ const Question = z.object({
   header: z.string().optional(),
   multiSelect: z.boolean(),
   options: z.array(PromptOption),
+  description: z.string().optional(),
+  preselectedOptionIds: z.array(z.string()).optional(),
+  initialSearch: z.string().optional(),
   freeTextQuestionId: z.string().optional(),
   freeTextInput: FreeTextInput.optional()
 })

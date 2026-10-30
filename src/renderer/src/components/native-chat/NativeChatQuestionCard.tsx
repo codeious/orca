@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils'
 import { translate } from '@/i18n/i18n'
 import type { AskAnswerSelection, AskPrompt } from './native-chat-interactive-prompt'
 import { NativeChatPromptCollapseToggle } from './NativeChatPromptCollapse'
+import { NativeChatQuestionOptionRow } from './NativeChatQuestionOptionRow'
+import { NativeChatQuestionSearch } from './NativeChatQuestionSearch'
+import { questionOptionMatchesSearch } from './native-chat-question-search'
 import { useNativeChatPromptCardFocus } from './use-native-chat-prompt-card-focus'
 import { useNativeChatQuestionAutoAdvance } from './use-native-chat-question-auto-advance'
 import { useNativeChatQuestionNumberKeys } from './use-native-chat-question-number-keys'
@@ -25,6 +28,8 @@ export type NativeChatQuestionCardProps = {
   onCancel: () => void
   /** Fold the card to a strip and give the input back, writing nothing; Escape does too. */
   onCollapse?: () => void
+  /** Escape dismisses the prompt, as its Cancel does; absent, Escape leaves the card alone. */
+  cancelOnEscape?: boolean
   /** Take focus when the card takes the input region; number keys pick while it holds. */
   shouldFocus?: boolean
   /** Exposes the free-text row so pane-level Paste can target it while the
@@ -54,6 +59,7 @@ export function NativeChatQuestionCard({
   freeTextInputs,
   onCancel,
   onCollapse,
+  cancelOnEscape = false,
   shouldFocus = false,
   answerInputRef
 }: NativeChatQuestionCardProps): React.JSX.Element {
@@ -63,9 +69,14 @@ export function NativeChatQuestionCard({
   useNativeChatPromptCardFocus(cardRef, shouldFocus, index)
   // Keep option identity by index: labels are display text and are not guaranteed
   // unique, while Claude's selector commits the numbered row (STA-1860).
-  const [selections, setSelections] = useState<number[][]>(() => prompt.questions.map(() => []))
+  const [selections, setSelections] = useState<number[][]>(() =>
+    prompt.questions.map((question) => [...(question.preselected ?? [])])
+  )
   const [otherText, setOtherText] = useState<string[]>(() =>
     prompt.questions.map((_, qi) => freeTextInputs?.[qi]?.initialValue ?? '')
+  )
+  const [searchText, setSearchText] = useState<string[]>(() =>
+    prompt.questions.map((question) => question.initialSearch ?? '')
   )
 
   const total = prompt.questions.length
@@ -151,6 +162,11 @@ export function NativeChatQuestionCard({
   // A single-select pick answers the question, so the card moves on after a beat that
   // shows the row chosen; picking it again in that beat takes the answer back.
   const pickOption = (optionIndex: number): void => {
+    const option = q.options[optionIndex]
+    // A number key can name a row the search hides; only a row on screen is picked.
+    if (!option || !questionOptionMatchesSearch(option, searchText[index] ?? '')) {
+      return
+    }
     const cur = selections[index] ?? []
     const picked = !cur.includes(optionIndex)
     const chosen = !picked
@@ -221,14 +237,19 @@ export function NativeChatQuestionCard({
       className="shrink-0 bg-chat-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       aria-busy={isSubmitting}
       onKeyDown={(event) => {
+        if (event.key !== 'Escape' || event.nativeEvent.isComposing || isSubmitting) {
+          return
+        }
+        if (cancelOnEscape) {
+          event.preventDefault()
+          event.stopPropagation()
+          if (!isCancelling) {
+            cancel()
+          }
+          return
+        }
         // Why not from a text field: Escape there is editing, and collapsing would hide the draft.
-        if (
-          event.key === 'Escape' &&
-          !event.nativeEvent.isComposing &&
-          collapse &&
-          !isSubmitting &&
-          !isEditableTarget(event.target)
-        ) {
+        if (collapse && !isEditableTarget(event.target)) {
           event.preventDefault()
           event.stopPropagation()
           collapse()
@@ -290,21 +311,41 @@ export function NativeChatQuestionCard({
               <X className="size-4" />
             </button>
           </div>
+          {q.description ? (
+            <p
+              data-testid="native-chat-question-card-note"
+              className="break-words px-3.5 pb-2.5 text-xs text-muted-foreground"
+            >
+              {q.description}
+            </p>
+          ) : null}
+          {q.initialSearch !== undefined ? (
+            <NativeChatQuestionSearch
+              value={searchText[index] ?? ''}
+              disabled={isSubmitting}
+              onChange={(value) => {
+                autoAdvance.cancel()
+                setSearchText((prev) => prev.map((text, qi) => (qi === index ? value : text)))
+              }}
+            />
+          ) : null}
 
           {/* Scroll only kicks in on long option lists; the sleek scrollbar rides
               the card's right edge instead of crowding the choices. */}
           <div className="max-h-[50vh] divide-y divide-border/60 overflow-y-auto border-t border-border scrollbar-sleek">
-            {q.options.map((opt, i) => (
-              <OptionRow
-                key={`${i}:${opt.label}`}
-                badge={String(i + 1)}
-                label={opt.label}
-                description={opt.description}
-                selected={(selections[index] ?? []).includes(i)}
-                disabled={isSubmitting}
-                onSelect={() => pickOption(i)}
-              />
-            ))}
+            {q.options.map((opt, i) =>
+              questionOptionMatchesSearch(opt, searchText[index] ?? '') ? (
+                <NativeChatQuestionOptionRow
+                  key={`${i}:${opt.label}`}
+                  badge={String(i + 1)}
+                  label={opt.label}
+                  description={opt.description}
+                  selected={(selections[index] ?? []).includes(i)}
+                  disabled={isSubmitting}
+                  onSelect={() => pickOption(i)}
+                />
+              ) : null
+            )}
             <div className="flex items-center gap-3 px-3.5 py-2.5">
               {questionAllowsOther ? (
                 <>
@@ -404,51 +445,5 @@ export function NativeChatQuestionCard({
         ) : null}
       </div>
     </div>
-  )
-}
-
-function OptionRow({
-  badge,
-  label,
-  description,
-  selected,
-  disabled,
-  onSelect
-}: {
-  badge: string
-  label: string
-  description?: string
-  selected: boolean
-  disabled: boolean
-  onSelect: () => void
-}): React.JSX.Element {
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={onSelect}
-      // Selection is otherwise only the visual check/badge swap; expose it to
-      // assistive tech.
-      aria-pressed={selected}
-      className={cn(
-        'flex w-full items-start gap-3 px-3.5 py-2.5 text-left transition-colors disabled:pointer-events-none',
-        selected ? 'bg-accent' : 'hover:bg-accent'
-      )}
-    >
-      <span
-        className={cn(
-          'flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-medium',
-          selected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-        )}
-      >
-        {selected ? <Check className="size-3.5" strokeWidth={3} /> : badge}
-      </span>
-      <span className="min-w-0">
-        <span className="block break-words text-sm text-foreground">{label}</span>
-        {description ? (
-          <span className="block break-words text-xs text-muted-foreground">{description}</span>
-        ) : null}
-      </span>
-    </button>
   )
 }

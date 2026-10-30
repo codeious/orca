@@ -17,7 +17,7 @@ afterEach(() => {
   container.remove()
 })
 
-function render(question: AgentJournalQuestion) {
+function render(question: AgentJournalQuestion, cancelOnEscape?: boolean) {
   const onAnswer = vi.fn()
   const onCancel = vi.fn()
   act(() =>
@@ -26,10 +26,44 @@ function render(question: AgentJournalQuestion) {
         questions={[question]}
         onAnswer={onAnswer}
         onCancel={onCancel}
+        {...(cancelOnEscape === undefined ? {} : { cancelOnEscape })}
       />
     )
   )
   return { onAnswer, onCancel }
+}
+function rows(): HTMLButtonElement[] {
+  return [...container.querySelectorAll<HTMLButtonElement>('button[aria-pressed]')]
+}
+function pressedLabels(): string[] {
+  return rows()
+    .filter((row) => row.getAttribute('aria-pressed') === 'true')
+    .map((row) => row.textContent ?? '')
+}
+function click(node: Element | undefined): void {
+  if (!node) {
+    throw new Error('Missing node to click')
+  }
+  act(() => node.dispatchEvent(new MouseEvent('click', { bubbles: true })))
+}
+function typeSearch(value: string): void {
+  const search = container.querySelector('input')
+  if (!search) {
+    throw new Error('Missing search field')
+  }
+  const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
+  act(() => {
+    setValue?.call(search, value)
+    search.dispatchEvent(new Event('input', { bubbles: true }))
+  })
+}
+function pressEscape(): void {
+  const target = container.querySelector('button')
+  act(() =>
+    target?.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+    )
+  )
 }
 function submit(): void {
   const button = [...container.querySelectorAll('button')].find(
@@ -125,5 +159,130 @@ describe('structured extension question cards', () => {
       kind: 'answers',
       answers: [{ questionId: 'q1', optionIds: ['opaque-index-0'] }]
     })
+  })
+})
+
+// A pick-options request as the journal holds it: one question, no typed answer.
+const picker: AgentJournalQuestion = {
+  id: 'q1',
+  question: 'Pick a channel',
+  multiSelect: true,
+  options: [
+    { id: 'o1', label: 'Alpha', description: 'first' },
+    { id: 'o2', label: 'Beta' },
+    { id: 'o3', label: 'Gamma' }
+  ]
+}
+
+describe('structured pick-options cards', () => {
+  it('opens with nothing chosen, no search and no note when the request carried none', () => {
+    const { onAnswer } = render(picker)
+
+    expect(pressedLabels()).toEqual([])
+    expect(container.querySelector('input')).toBeNull()
+    expect(container.querySelector('[data-testid="native-chat-question-card-note"]')).toBeNull()
+    expect(onAnswer).not.toHaveBeenCalled()
+  })
+
+  it('opens on the rows the request preselected, and sends them unchanged', () => {
+    const { onAnswer } = render({ ...picker, preselectedOptionIds: ['o1', 'o3'] })
+
+    expect(rows().map((row) => row.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'true'])
+    submit()
+    expect(onAnswer).toHaveBeenCalledWith({
+      kind: 'answers',
+      answers: [{ questionId: 'q1', optionIds: ['o1', 'o3'] }]
+    })
+  })
+
+  it('leaves out a preselected row the person deselects', () => {
+    const { onAnswer } = render({ ...picker, preselectedOptionIds: ['o1', 'o3'] })
+
+    click(rows()[0])
+    submit()
+
+    expect(onAnswer).toHaveBeenCalledWith({
+      kind: 'answers',
+      answers: [{ questionId: 'q1', optionIds: ['o3'] }]
+    })
+  })
+
+  it('starts on the search the request named, and narrows the rows to the rows it matches', () => {
+    render({ ...picker, initialSearch: 'ALP' })
+
+    expect(container.querySelector('input')?.value).toBe('ALP')
+    expect(rows().map((row) => row.textContent)).toEqual(['1Alphafirst'])
+
+    typeSearch('first')
+    expect(rows().map((row) => row.textContent)).toEqual(['1Alphafirst'])
+    typeSearch('')
+    expect(rows()).toHaveLength(3)
+  })
+
+  it('sends a row picked after filtering, and a row the filter hides only if it was chosen before', () => {
+    const { onAnswer } = render({
+      ...picker,
+      preselectedOptionIds: ['o2'],
+      initialSearch: 'alp'
+    })
+
+    click(rows()[0])
+    submit()
+
+    expect(onAnswer).toHaveBeenCalledWith({
+      kind: 'answers',
+      answers: [{ questionId: 'q1', optionIds: ['o1', 'o2'] }]
+    })
+  })
+
+  it('does not send a hidden row that was never chosen', () => {
+    const { onAnswer } = render({ ...picker, initialSearch: 'alp' })
+
+    click(rows()[0])
+    submit()
+
+    expect(onAnswer).toHaveBeenCalledWith({
+      kind: 'answers',
+      answers: [{ questionId: 'q1', optionIds: ['o1'] }]
+    })
+  })
+
+  it('shows the note the request carried under the title', () => {
+    render({ ...picker, description: 'Invite the bot first' })
+
+    expect(
+      container.querySelector('[data-testid="native-chat-question-card-note"]')?.textContent
+    ).toBe('Invite the bot first')
+  })
+
+  it('cancels on Escape when the host says Escape closes this card', () => {
+    const { onAnswer, onCancel } = render(picker, true)
+
+    pressEscape()
+
+    expect(onCancel).toHaveBeenCalledTimes(1)
+    expect(onAnswer).not.toHaveBeenCalled()
+  })
+
+  it('keeps Escape for a card that takes a typed answer, so Escape never drops the draft', () => {
+    const { onCancel } = render(input, true)
+
+    act(() =>
+      container
+        .querySelector('input')
+        ?.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+        )
+    )
+
+    expect(onCancel).not.toHaveBeenCalled()
+  })
+
+  it('leaves Escape alone by default, so Claude, Codex, pi and ACP cards keep today’s keys', () => {
+    const { onCancel } = render(picker)
+
+    pressEscape()
+
+    expect(onCancel).not.toHaveBeenCalled()
   })
 })

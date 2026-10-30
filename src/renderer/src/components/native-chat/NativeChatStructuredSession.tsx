@@ -381,6 +381,8 @@ export function NativeChatStructuredSession(
               onAnswer={(response) => void promptResponse.respond(prompt, response)}
               isSubmitting={promptResponse.holds(prompt)}
               onCancel={cancelPrompt}
+              // A Droid card's dismissal answers Droid and leaves the turn running; Claude's Cancel is a Stop.
+              cancelOnEscape={props.agent === 'droid'}
               shouldFocus={!promptsUnanswerable && props.isVisible && props.isFocusedGroup}
               answerInputRef={questionAnswerInputRef}
             />

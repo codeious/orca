@@ -7,6 +7,7 @@ export function NativeChatStructuredQuestionCard({
   questions,
   onAnswer,
   onCancel,
+  cancelOnEscape,
   isSubmitting,
   shouldFocus,
   answerInputRef
@@ -14,6 +15,8 @@ export function NativeChatStructuredQuestionCard({
   questions: readonly AgentJournalQuestion[]
   onAnswer: (response: AgentSessionPromptResponse) => void
   onCancel: () => void
+  /** Escape dismisses the card; set only for an agent whose dismissal leaves its turn running. */
+  cancelOnEscape?: boolean
   isSubmitting?: boolean
   shouldFocus?: boolean
   answerInputRef?: RefObject<HTMLInputElement | null>
@@ -21,16 +24,29 @@ export function NativeChatStructuredQuestionCard({
   return (
     <NativeChatQuestionCard
       prompt={{
-        questions: questions.map((question) => ({
-          question: question.question,
-          ...(question.header ? { header: question.header } : {}),
-          multiSelect: question.multiSelect,
-          options: question.options.map((option) => ({
-            label: option.label,
-            ...(option.description ? { description: option.description } : {})
-          }))
-        }))
+        questions: questions.map((question) => {
+          const preselected = (question.preselectedOptionIds ?? []).flatMap((id) => {
+            const optionIndex = question.options.findIndex((option) => option.id === id)
+            return optionIndex === -1 ? [] : [optionIndex]
+          })
+          return {
+            question: question.question,
+            ...(question.header ? { header: question.header } : {}),
+            ...(question.description ? { description: question.description } : {}),
+            multiSelect: question.multiSelect,
+            options: question.options.map((option) => ({
+              label: option.label,
+              ...(option.description ? { description: option.description } : {})
+            })),
+            ...(preselected.length > 0 ? { preselected } : {}),
+            ...(question.initialSearch === undefined
+              ? {}
+              : { initialSearch: question.initialSearch })
+          }
+        })
       }}
+      // Escape in a typed answer is editing; dismissing there would drop the draft.
+      cancelOnEscape={cancelOnEscape && !questions.some((question) => question.freeTextQuestionId)}
       allowOther={questions.map((question) => Boolean(question.freeTextQuestionId))}
       freeTextInputs={questions.map((question) => question.freeTextInput)}
       onAnswer={(answers) => {

@@ -110,6 +110,19 @@ function boundPromptQuestion(question: AgentJournalQuestion): AgentJournalQuesti
     ...(question.header === undefined ? {} : { header: boundPromptText(question.header) }),
     multiSelect: question.multiSelect,
     options: boundPromptOptions(question.options),
+    ...(question.description === undefined
+      ? {}
+      : { description: boundPromptText(question.description) }),
+    ...(question.preselectedOptionIds === undefined
+      ? {}
+      : {
+          preselectedOptionIds: question.preselectedOptionIds
+            .slice(0, MAX_JOURNAL_PROMPT_OPTIONS)
+            .map(boundPromptIdentifier)
+        }),
+    ...(question.initialSearch === undefined
+      ? {}
+      : { initialSearch: boundPromptText(question.initialSearch) }),
     ...(question.freeTextQuestionId
       ? { freeTextQuestionId: boundPromptIdentifier(question.freeTextQuestionId) }
       : {}),

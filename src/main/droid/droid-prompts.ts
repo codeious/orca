@@ -12,6 +12,7 @@ import {
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import type { DroidRequestContext } from './droid-json-rpc-peer'
 import { droidPermissionPresentation } from './droid-permission-requests'
+import { droidPickOptionsPresentation } from './droid-pick-options-requests'
 import type { DroidPromptEnvironment, DroidPromptPresentation } from './droid-prompt-presentation'
 import { droidQuestionPresentation } from './droid-question-requests'
 import { DroidRpcError } from './droid-rpc-errors'
@@ -21,7 +22,8 @@ const PRESENTERS = new Map<
   (params: unknown, environment: DroidPromptEnvironment) => DroidPromptPresentation
 >([
   ['droid.request_permission', droidPermissionPresentation],
-  ['droid.ask_user', droidQuestionPresentation]
+  ['droid.ask_user', droidQuestionPresentation],
+  ['droid.pick_options', droidPickOptionsPresentation]
 ])
 
 type OpenRequest = {
