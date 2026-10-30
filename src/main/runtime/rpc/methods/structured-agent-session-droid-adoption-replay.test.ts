@@ -14,6 +14,7 @@ import {
   droidProviderLink
 } from '../../../droid/droid-structured-launch-resolution'
 import { openTestJournalHostDatabase } from '../../../native-chat/agent-session-journal/journal-host-database-test-support'
+import { AgentSessionJournal } from '../../../native-chat/agent-session-journal/journal-store'
 import type { StructuredAgentSessionAdapter } from '../../../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { StructuredAgentSessionHost } from '../../../native-chat/agent-session-wire/structured-agent-session-host'
 import { createStructuredAgentSessionLogger } from '../../../native-chat/agent-session-wire/structured-agent-session-logger'
@@ -166,6 +167,11 @@ function pageText(response: RpcResponse): string {
   return JSON.stringify((response as { result: { value: { page: unknown } } }).result.value.page)
 }
 
+function pageItems(response: RpcResponse): unknown[] {
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: Every caller passes a successful agentSession reply, which carries the page under result.value.
+  return (response as { result: { value: { page: { items: unknown[] } } } }).result.value.page.items
+}
+
 beforeEach(async () => {
   root = await mkdtemp(join(tmpdir(), 'orca-droid-adoption-rpc-'))
   home = join(root, 'home')
@@ -235,6 +241,72 @@ describe('Resume in new chat for a Droid session, through the create RPC', () =>
     expect(adapter.acquire).toHaveBeenCalledTimes(1)
     expect(internal.publishStructuredAgentSessionTab).toHaveBeenCalledTimes(2)
   })
+
+  // Droid files a session it just created as a lone session_start row, so a Spec handoff's new
+  // session has no messages until the first prompt is sent.
+  it('opens a Droid session that has no messages yet, and makes Droid load it', async () => {
+    await writeDroidSession(home, { messages: false })
+    const replaceEpoch = vi.spyOn(AgentSessionJournal.prototype, 'replaceEpochItems')
+    const { dispatcher, loaded, store, adapter } = await openRig()
+
+    const response = await call(dispatcher, createParams())
+
+    expect(response).toMatchObject({ ok: true, result: { ok: true } })
+    expect(pageItems(response)).toEqual([])
+    // Nothing was imported, so the journal keeps the epoch it opened with.
+    expect(replaceEpoch).not.toHaveBeenCalled()
+    expect(loaded).toEqual([DROID_SESSION])
+    expect(adapter.acquire).toHaveBeenCalledTimes(1)
+    expect(
+      store.getRecord(CHAT)?.providerHandleChain.map((link) => [link.origin, link.handle.nativeId])
+    ).toEqual([['adopted', DROID_SESSION]])
+  })
+
+  it('replays a Droid session with no messages after its file is gone', async () => {
+    const file = await writeDroidSession(home, { messages: false })
+    const { dispatcher, loaded, adapter } = await openRig(
+      vi
+        .fn<() => Promise<void>>()
+        .mockRejectedValueOnce(new Error('simulated lost tab publication'))
+        .mockResolvedValue(undefined)
+    )
+    const params = createParams()
+    await call(dispatcher, params)
+    await rm(file)
+    setStructuredAgentSessionHost(null)
+
+    const replay = await call(dispatcher, params)
+
+    expect(replay).toMatchObject({ ok: true, result: { ok: true, replayed: true } })
+    expect(pageItems(replay)).toEqual([])
+    expect(loaded).toEqual([DROID_SESSION])
+    expect(adapter.acquire).toHaveBeenCalledTimes(1)
+  })
+
+  const NOT_THIS_SESSION = {
+    'a session_start row naming another session': { startId: 'a-different-session' },
+    'a zero-byte file': { content: '' },
+    'a file with no session_start row': {
+      content: `${JSON.stringify({ type: 'system', cwd: '/work/app' })}\n`
+    }
+  }
+
+  it.each(Object.entries(NOT_THIS_SESSION))(
+    'refuses %s before claiming the conversation',
+    async (_name, file) => {
+      await writeDroidSession(home, { messages: false, ...file })
+      const { dispatcher, store, adapter } = await openRig()
+
+      const response = await call(dispatcher, createParams())
+
+      expect(response).toMatchObject({
+        ok: true,
+        result: { ok: false, refusal: { code: 'agent_session_identity_required' } }
+      })
+      expect(adapter.acquire).not.toHaveBeenCalled()
+      expect(store.getRecord(CHAT)).toBeNull()
+    }
+  )
 
   it('refuses a second chat adopting a conversation the first one holds', async () => {
     await writeDroidSession(home)

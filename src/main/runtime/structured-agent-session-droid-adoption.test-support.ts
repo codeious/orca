@@ -48,17 +48,37 @@ export function droidRuntimeAt(location: AgentSessionExecutionLocation): OrcaRun
   return runtime
 }
 
-/** One user turn and one assistant turn that thinks before it answers, filed as Droid does. */
+/**
+ * One user turn and one assistant turn that thinks before it answers, filed as Droid does.
+ * `messages: false` is a session Droid has created but not yet spoken in: one `session_start` row
+ * (`startId` names the id inside it). `content` replaces the whole file.
+ */
 export async function writeDroidSession(
   home: string,
-  options: { id?: string; slug?: string; folder?: 'sessions' | 'projects' } = {}
+  options: {
+    id?: string
+    slug?: string
+    folder?: 'sessions' | 'projects'
+    messages?: boolean
+    startId?: string
+    content?: string
+  } = {}
 ): Promise<string> {
-  const { id = DROID_SESSION, slug = '-work-app', folder = 'sessions' } = options
+  const { id = DROID_SESSION, slug = '-work-app', folder = 'sessions', messages = true } = options
   const directory = join(home, '.factory', folder, slug)
   const path = join(directory, `${id}.jsonl`)
   await mkdir(directory, { recursive: true })
+  if (options.content !== undefined) {
+    await writeFile(path, options.content, 'utf8')
+    return path
+  }
+  const start = { type: 'session_start', id: options.startId ?? id, cwd: '/work/app' }
+  if (!messages) {
+    await writeFile(path, `${JSON.stringify(start)}\n`, 'utf8')
+    return path
+  }
   const records = [
-    { type: 'session_start', id, cwd: '/work/app' },
+    start,
     {
       type: 'message',
       id: 'u1',

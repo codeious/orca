@@ -220,6 +220,27 @@ describe('adopting a provider conversation on create', () => {
     }
   )
 
+  // Only Droid files a session before its first message; for Codex an empty history is a source
+  // that cannot be trusted, whatever row names the conversation.
+  it.each([
+    ['its session_meta row alone', { type: 'session_meta', payload: { id: THREAD, cwd: '/w' } }],
+    ['a Droid-style session_start row', { type: 'session_start', id: THREAD, cwd: '/w' }]
+  ])('refuses a Codex source holding %s', async (_name, row) => {
+    root = await mkdtemp(join(tmpdir(), 'orca-adopt-codex-metadata-'))
+    const transcriptPath = join(root, 'rollout.jsonl')
+    await writeFile(transcriptPath, `${JSON.stringify(row)}\n`)
+    const sessionAdapter = adapter()
+
+    const result = await attach(transcriptPath, sessionAdapter)
+
+    expect(result).toMatchObject({
+      ok: false,
+      refusal: { code: 'agent_session_identity_required' }
+    })
+    expect(sessionAdapter.acquire).not.toHaveBeenCalled()
+    expect(store?.getRecord(SESSION)).toBeNull()
+  })
+
   it('still releases acquisition on an import write failure, and leaves the conversation open', async () => {
     root = await mkdtemp(join(tmpdir(), 'orca-adopt-write-failure-'))
     const transcriptPath = join(root, 'rollout.jsonl')
