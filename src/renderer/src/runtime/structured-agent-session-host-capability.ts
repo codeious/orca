@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+  AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY,
   AGENT_SESSION_CONVERSATION_STOP_RUNTIME_CAPABILITY,
   AGENT_SESSION_QUEUED_COMMANDS_RUNTIME_CAPABILITY,
   AGENT_SESSION_QUEUED_MESSAGE_EDIT_RUNTIME_CAPABILITY,
@@ -117,6 +118,15 @@ export function useStructuredAgentSessionHostQueuesMessagesState(
   return useStructuredAgentSessionHostCapabilityState(
     target,
     AGENT_SESSION_QUEUED_MESSAGES_RUNTIME_CAPABILITY
+  )
+}
+
+/** Whether the host takes `afterReply` on a send. An older host rejects the unknown key, so a
+ *  client sends it only once this is known, and `unknown` sends an ordinary message. */
+export function useStructuredAgentSessionHostWaitsForReply(target: RuntimeClientTarget): boolean {
+  return useStructuredAgentSessionHostCapability(
+    target,
+    AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY
   )
 }
 

@@ -32,6 +32,7 @@ export function applyJournalSubmission(
       ? { queuedMessageId: row.queuedMessageId }
       : {}),
     ...(row.origin === 'client' || row.origin === 'host' ? { origin: row.origin } : {}),
+    ...(row.afterReply === true ? { afterReply: true } : {}),
     // Kept as written, a newer build's kind too; an undecodable one as an empty kind, so neither
     // reads as a row without one.
     ...(row.source !== undefined ? { source: { kind: storedSourceKind(row.source) } } : {})

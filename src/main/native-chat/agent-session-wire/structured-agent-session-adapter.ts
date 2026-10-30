@@ -277,6 +277,9 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
     /** Host clock on the submission row this send came from; the origin the turn
      *  it opens records as `requestedAt`. */
     requestedAt?: number
+    /** Answer after the reply in progress instead of steering it. An adapter with no such
+     *  placement ignores it. */
+    afterReply?: true
     /** Revalidate after preparation, immediately before writing to the provider. */
     beforeDispatch?: () => Promise<void>
   }): Promise<AgentSessionDispatchOutcome>

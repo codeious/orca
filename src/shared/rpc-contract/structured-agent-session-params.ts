@@ -135,6 +135,11 @@ export const SendParams = z
      *  older host refuses it: clients send it only when `agent-session.queued-messages.v1` is
      *  advertised. Participates in the operation fingerprint, never the body fingerprint. */
     delivery: z.literal('queue-if-active').optional(),
+    /** Answer inside the running turn after its current reply instead of at its next tool boundary
+     *  (Droid's Ctrl+Enter). An adapter with no such placement ignores it. Strict object, so an
+     *  older host refuses it: clients send it only when `agent-session.after-reply.v1` is
+     *  advertised. Participates in the operation fingerprint, never the body fingerprint. */
+    afterReply: z.literal(true).optional(),
     body: SendBody
   })
   .strict()

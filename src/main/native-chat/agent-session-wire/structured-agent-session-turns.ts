@@ -103,7 +103,8 @@ async function dispatchSafely(
   ctx: AgentSessionHandoverContext,
   clientMessageId: string,
   body: AgentJournalMessageItem,
-  requestedAt: number
+  requestedAt: number,
+  afterReply: boolean
 ): Promise<AgentSessionDispatchOutcome> {
   try {
     return await ctx.adapter.dispatch({
@@ -111,7 +112,8 @@ async function dispatchSafely(
       clientMessageId,
       body,
       fence: ctx.fence,
-      requestedAt
+      requestedAt,
+      ...(afterReply ? { afterReply: true } : {})
     })
   } catch (error) {
     return { state: 'unknown', reason: error instanceof Error ? error.message : String(error) }
@@ -138,6 +140,8 @@ export async function performSend(
     origin?: 'client' | 'host'
     /** Who it is from; the submission keeps the kind only. */
     source?: AgentSessionMessageSource
+    /** Kept on the submission: the handover may run after a restart. */
+    afterReply?: true
   }
 ): Promise<TurnOutcome<AgentSessionSendResult>> {
   const existing = ctx.journal
@@ -232,7 +236,8 @@ export async function handOverSubmission(
     ctx,
     clientMessageId,
     body,
-    structuredAgentSessionHandoverOrigin(ctx.journal, submission)
+    structuredAgentSessionHandoverOrigin(ctx.journal, submission),
+    submission.afterReply === true
   )
   // An admission needs no dispatch row: the submission is already pending.
   if (outcome.state === 'admitted') {

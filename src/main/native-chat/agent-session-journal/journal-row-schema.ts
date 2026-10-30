@@ -162,6 +162,10 @@ export type JournalSubmissionRow = JournalRowBase & {
    *  continuation, a launch prompt, the queue's automatic drain. Absent on rows from before it
    *  was recorded. Older readers keep the key and ignore it. */
   origin?: JournalSubmissionOrigin
+  /** The client asked this message to wait for the running reply (`AgentJournalSubmission`).
+   *  Absent on every other row. Older readers keep the key and ignore it; a malformed one is
+   *  read as absent, never the row dropped. */
+  afterReply?: true
   /** Who it is from: its `AgentSessionMessageSource`'s kind only (`AgentJournalSubmission`).
    *  Absent on rows from before it was recorded. Older readers keep the key and ignore it. */
   source?: { kind: string }

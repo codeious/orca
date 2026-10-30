@@ -142,9 +142,20 @@ export function useNativeChatComposerKeyDown({
           ? matchDroidComposerKey(event, getShortcutPlatform())
           : null
       const droidAction = droidKey ? droidKeys?.[droidKey] : undefined
+      // Steers the waiting card and says whether it did. Platform primary modifier only (AGENTS.md):
+      // ⌘ on Mac, Ctrl elsewhere. Only from an empty composer: the chord never sends a card past
+      // what the user just wrote.
+      const trySteerQueued = (): boolean =>
+        (isMacPlatform() ? event.metaKey : event.ctrlKey) &&
+        draft.trim() === '' &&
+        !hasAttachments &&
+        steerQueued?.() === true
       if (droidAction) {
         event.preventDefault()
-        droidAction()
+        // Off a Mac that chord is also Droid's Ctrl+Enter, so a waiting card still goes first.
+        if (!(droidKey === 'ctrlEnter' && trySteerQueued())) {
+          droidAction()
+        }
         return
       }
 
@@ -154,16 +165,10 @@ export function useNativeChatComposerKeyDown({
         return
       }
       if (event.key === 'Enter' && !event.shiftKey) {
-        // Platform primary modifier only (AGENTS.md): ⌘ on Mac, Ctrl elsewhere.
-        const steerChord = isMacPlatform() ? event.metaKey : event.ctrlKey
-        // Only from an empty composer: the chord never sends a card past what the user just wrote.
-        const composerEmpty = draft.trim() === '' && !hasAttachments
-        if (steerChord && composerEmpty && steerQueued?.()) {
-          event.preventDefault()
-          return
-        }
         event.preventDefault()
-        send()
+        if (!trySteerQueued()) {
+          send()
+        }
         return
       }
       const arrow = event.key === 'ArrowUp' || event.key === 'ArrowDown'

@@ -245,13 +245,6 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
     const sessionOptionsSurface = structuredTransport?.optionsSurface ?? ptySessionOptionsSurface
     const contextUsageSummary = useNativeChatContextUsageSummary(structuredTransport)
     const sessionOptionsSnapshot = structuredTransport?.optionSnapshot ?? ptySessionOptionsSnapshot
-    const droidKeys = useNativeChatDroidComposerKeys({
-      agent,
-      snapshot: sessionOptionsSnapshot,
-      surface: sessionOptionsSurface,
-      isWorking
-    })
-
     const { send: sendStructured, fieldProps: queue } = useNativeChatHeldQueueComposerSend({
       agent,
       draftScopeKey,
@@ -292,7 +285,7 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       optimisticSendOutcome,
       terminalTabId
     })
-    const { send, goalMode } = useNativeChatComposerSubmit({
+    const { send, sendAfterReply, goalMode } = useNativeChatComposerSubmit({
       structuredTransport,
       draftScopeKey,
       draft,
@@ -303,6 +296,13 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       sendStructured,
       setDraft,
       setCaret
+    })
+    const droidKeys = useNativeChatDroidComposerKeys({
+      agent,
+      snapshot: sessionOptionsSnapshot,
+      surface: sessionOptionsSurface,
+      isWorking,
+      sendAfterReply
     })
 
     const interrupt = useNativeChatComposerInterrupt({

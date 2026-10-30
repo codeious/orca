@@ -38,17 +38,15 @@ export function useNativeChatStructuredComposerTransport(args: {
       ? (objective: string) => threadGoal.change({ kind: 'set', objective })
       : null
     return {
-      send: (text, attachments) =>
-        sendThroughLaunch(text, attachments.length > 0, () =>
-          controller.send(
-            text,
-            attachments.map(({ path, connectionId }) => ({
-              path,
-              previewUri: path,
-              ...(connectionId ? { connectionId } : {})
-            }))
-          )
-        ),
+      send: (text, attachments, options) =>
+        sendThroughLaunch(text, attachments.length > 0, () => {
+          const images = attachments.map(({ path, connectionId }) => ({
+            path,
+            previewUri: path,
+            ...(connectionId ? { connectionId } : {})
+          }))
+          return options ? controller.send(text, images, options) : controller.send(text, images)
+        }),
       dispatchCommand: (text: string) =>
         dispatchStructuredAgentSessionComposerCommand(text, {
           agent: props.agent,

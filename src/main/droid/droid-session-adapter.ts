@@ -86,7 +86,8 @@ export class DroidSessionAdapter
       input.clientMessageId,
       input.requestedAt ?? Date.now(),
       prompt.params,
-      input.beforeDispatch
+      input.beforeDispatch,
+      input.afterReply ? { afterReply: true } : {}
     )
   }
 

@@ -40,11 +40,16 @@ export type NativeChatQueueHold = {
   clear: () => Promise<boolean>
 }
 
+/** How a message differs from an ordinary send. `afterReply`: answer inside the running turn after
+ *  its current reply, not at its next tool boundary (Droid's Ctrl+Enter). */
+export type NativeChatSendOptions = { afterReply?: true }
+
 export type NativeChatStructuredComposerTransport = {
   conversationCommands?: readonly AgentSessionConversationCommand[]
   send: (
     text: string,
-    attachments: readonly NativeChatComposerImageAttachment[]
+    attachments: readonly NativeChatComposerImageAttachment[],
+    options?: NativeChatSendOptions
   ) => boolean | 'queued'
   /** A send is out: Send stays disabled, and a send returns false, until it settles. */
   sendOut?: boolean

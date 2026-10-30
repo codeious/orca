@@ -510,6 +510,10 @@ export type AgentJournalSubmission = {
    *  A restart or a close keeps only a person's Send cut short as a card. The snapshot still
    *  carries it; no released client reads it. */
   origin?: 'client' | 'host'
+  /** Host-only: the client asked this message to wait for the running reply and answer inside the
+   *  same turn, so its handover tells the adapter so. Only an adapter with such a placement reads
+   *  it; absent is an ordinary send. */
+  afterReply?: true
   /** Who it is from: the kind of its `AgentSessionMessageSource` ('user' or 'agent'), so a restart
    *  or a close keeps only a person's unsent send as a card. Only the kind: the senders stay on the
    *  card, host-only, and publishing them here would need a strip. A newer build's kind is kept as
