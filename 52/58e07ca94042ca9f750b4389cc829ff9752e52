@@ -1,0 +1,41 @@
+src/main/droid/droid-prompt-presentation.ts
+  s_6614372dbc1d2c::t_42257155db3d8d 30-32
+src/main/droid/droid-questions.test.ts
+  s_6614372dbc1d2c::t_b9d7db29351fe2 267-269,293-295
+  s_6614372dbc1d2c::t_87598256845a63 13
+  s_6614372dbc1d2c::t_9d70277fa0d785 212,215-223,225-266,270-292,296-365,367-440
+  s_6614372dbc1d2c::t_23aca331e2f832 38,41,45-90
+  s_6614372dbc1d2c::t_fa08c219ca7ecb 366
+  s_6614372dbc1d2c::t_fa34fa319704be 2-6,14-19,25
+src/main/droid/droid-prompts.ts
+  s_6614372dbc1d2c::t_a2324d528b7a14 33
+  s_6614372dbc1d2c::t_76d2264a08cdee 126-128
+  s_6614372dbc1d2c::t_7e5674fc36d04d 31-32
+  s_6614372dbc1d2c::t_19578d7af0a2b0 66
+  s_6614372dbc1d2c::t_ca70260842addc 104,106-110
+  s_6614372dbc1d2c::t_de14c2c60ad192 151-157,160-164,167,172
+  s_6614372dbc1d2c::t_25b277f51a0730 37
+  s_6614372dbc1d2c::t_013d924d76e41b 65
+  s_6614372dbc1d2c::t_e6fbde08946b51 158-159
+src/main/droid/droid-question-requests.ts
+  s_6614372dbc1d2c::t_1a1e9cc7382387 5-6,16,20-21,32-34,43-64,72-99,102-106
+src/main/droid/fixtures/ask-user-multiselect.jsonl
+  s_6614372dbc1d2c::t_35c6e888acdf1d 1
+  s_6614372dbc1d2c::t_9f0f7450610a22 2-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5258e07ca94042ca9f750b4389cc829ff9752e52",
+  "prompts": {},
+  "sessions": {
+    "s_6614372dbc1d2c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "27d4bd26-929b-4b00-a9cb-2d55fafdcb25",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
