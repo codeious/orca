@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { PopoverTrigger } from '@/components/ui/popover'
 import { translate } from '@/i18n/i18n'
+import { DROID_AUTONOMY_OPTION_ID } from '../../../../shared/droid-autonomy-options'
 import { sortNativeChatSessionOptions } from '../../../../shared/native-chat-session-option-snapshot'
 import {
   sessionOptionDispatchUnconfirmed,
@@ -36,6 +37,7 @@ import { NativeChatModelCombobox } from './NativeChatModelCombobox'
 import { useNativeChatPickerFocusReturn } from './native-chat-picker-focus-return'
 import { NativeChatSessionOptionChoiceBody } from './NativeChatSessionOptionChoiceBody'
 import { PickerTrigger } from './NativeChatSessionOptionPickerTrigger'
+import { NativeChatAutonomyPicker } from './NativeChatAutonomyPicker'
 import { NativeChatSpecPairPicker } from './NativeChatSpecPairPicker'
 
 export type NativeChatSessionOptionPickersProps = {
@@ -172,7 +174,7 @@ function NativeChatSessionOptionPickersInner({
     return null
   }
   // A set pair stays drawn with Spec off, so it is never hidden.
-  const { specPair } = surface
+  const { specPair, autonomy } = surface
   const specOn = snapshot.some(
     (descriptor) =>
       descriptor.id === 'planMode' &&
@@ -299,6 +301,18 @@ function NativeChatSessionOptionPickersInner({
           pair={specPair}
           disabled={isWorking || pendingId !== null}
           pick={(id, value) => runSurfaceCall(id, setPendingId, () => surface.setOption(id, value))}
+          focusComposer={focusComposer}
+        />
+      ) : null}
+      {autonomy ? (
+        <NativeChatAutonomyPicker
+          autonomy={autonomy}
+          disabled={isWorking || pendingId !== null}
+          pick={(level) =>
+            runSurfaceCall(DROID_AUTONOMY_OPTION_ID, setPendingId, () =>
+              surface.setOption(DROID_AUTONOMY_OPTION_ID, level)
+            )
+          }
           focusComposer={focusComposer}
         />
       ) : null}

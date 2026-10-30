@@ -5,17 +5,12 @@ import type {
   AgentSessionOptionsResult
 } from '../../../../shared/agent-session-wire'
 import type { AgentType } from '../../../../shared/agent-status-types'
-import { isDroidSpecPairOptionId } from '../../../../shared/droid-spec-pair-options'
-import {
-  canSetDroidSpecPairOption,
-  commitStructuredAgentSessionPick,
-  droidSpecPairSurfaceOf
-} from '../../../../shared/droid-spec-pair-view'
+import { isDroidDraftOptionId } from '../../../../shared/droid-autonomy-view'
+import { commitStructuredAgentSessionPick } from '../../../../shared/droid-spec-pair-view'
 import { structuredAgentSessionSeedCatalog } from '../../../../shared/structured-agent-session-seed-catalog'
 import type { SessionOptionsSurface } from '../../../../shared/native-chat-session-options'
 import {
   applyStructuredAgentSessionOptions,
-  canSetStructuredAgentSessionOption,
   lockedStructuredAgentSessionOptionSnapshot,
   structuredAgentSessionOptionPicks,
   structuredAgentSessionOptionSnapshot,
@@ -30,6 +25,10 @@ import type { StructuredAgentSessionMutate } from './use-structured-agent-sessio
 import { useHostModelCatalogUpgrade } from './use-host-model-catalog-upgrade'
 import { useStructuredAgentSessionOptionState } from './use-structured-agent-session-option-state'
 import { agentSessionWriteFailureText } from './agent-session-write-notice-text'
+import {
+  canSetStructuredSessionPick,
+  useStructuredAgentSessionDraftControls
+} from './structured-agent-session-draft-controls'
 import type { StructuredAgentSessionLaunchView } from './use-native-chat-provisional-launch'
 import {
   getStructuredAgentSessionLaunchSelection,
@@ -151,8 +150,8 @@ export function useStructuredAgentSessionOptions(args: {
               ? commitStructuredAgentSessionPick(current, id, encoded, committed)
               : current
           )
-          // The Spec pair is not a per-model pick; the next chat takes it from the saved record.
-          if (!isDroidSpecPairOptionId(id)) {
+          // Spec's pair and the autonomy level are the session's, not per-model picks.
+          if (!isDroidDraftOptionId(id)) {
             // The launch seed names the model an effort-only pick was made under.
             rememberOptionPicks(
               structuredAgentSessionOptionView(currentState, launchSeedOptions, NO_HELD_OPTIONS),
@@ -205,7 +204,7 @@ export function useStructuredAgentSessionOptions(args: {
     (outcome: StructuredLaunchOptionOutcome, id: string) => {
       if (outcome.kind === 'refused') {
         toast.error(agentSessionWriteFailureText(outcome.failure, 'option'))
-      } else if (outcome.kind === 'accepted' && !isDroidSpecPairOptionId(id)) {
+      } else if (outcome.kind === 'accepted' && !isDroidDraftOptionId(id)) {
         rememberOptionPicks(
           structuredAgentSessionOptionView(
             optionStateRef.current,
@@ -226,11 +225,16 @@ export function useStructuredAgentSessionOptions(args: {
   }, [acceptsPicks, held, launchSeedOptions, optionState])
   const setStructuredOption = useCallback(
     async (id: string, value: string | boolean): Promise<boolean> => {
-      const view = structuredAgentSessionOptionView(optionStateRef.current, launchSeedOptions, held)
       const encoded = encodeStructuredAgentSessionOptionValue(id, value)
-      const allowed = isDroidSpecPairOptionId(id)
-        ? canSetDroidSpecPairOption(view, id, encoded ?? '', launchSeedOptions, held)
-        : canSetStructuredAgentSessionOption(view, id, value)
+      const allowed = canSetStructuredSessionPick({
+        agent,
+        state: optionStateRef.current,
+        seed: launchSeedOptions,
+        held,
+        id,
+        value,
+        encoded
+      })
       if (!optionCatalog || encoded === null || !allowed) {
         return false
       }
@@ -246,6 +250,7 @@ export function useStructuredAgentSessionOptions(args: {
       return sendStructuredOption(id, encoded)
     },
     [
+      agent,
       fence,
       held,
       launchSeedOptions,
@@ -275,19 +280,23 @@ export function useStructuredAgentSessionOptions(args: {
     },
     [launchSeedOptions, optionStateRef, sessionId, setStructuredOption]
   )
-  const specPair = useMemo(
-    () => droidSpecPairSurfaceOf(optionState, launchSeedOptions, held, acceptsPicks),
-    [acceptsPicks, held, launchSeedOptions, optionState]
-  )
+  const { specPair, autonomy } = useStructuredAgentSessionDraftControls({
+    agent,
+    state: optionState,
+    seed: launchSeedOptions,
+    held,
+    acceptsPicks
+  })
   const optionSurface = useMemo<SessionOptionsSurface>(
     () => ({
       getSnapshot: () => optionSnapshot,
       setOption,
       invokeAction: async () => ({ snapshot: optionSnapshot }),
       subscribe: () => () => {},
-      ...(specPair ? { specPair } : {})
+      ...(specPair ? { specPair } : {}),
+      ...(autonomy ? { autonomy } : {})
     }),
-    [setOption, optionSnapshot, specPair]
+    [setOption, optionSnapshot, specPair, autonomy]
   )
 
   const support =

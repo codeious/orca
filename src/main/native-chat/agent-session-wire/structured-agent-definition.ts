@@ -25,6 +25,12 @@ export type StructuredAgentDefinition = AgentSessionStoredAgent & {
     /** The at-rest answer names Spec, and the model and effort it runs on, from the saved picks:
      *  a client that sees no Spec in an answer drops the Spec row and any Spec pick it holds. */
     reportsSavedSpec?: true
+    /** The autonomy level a start would send, from the saved picks and the launch arguments (absent
+     *  when the host cannot read them). The answer names it so a client shows what goes out. */
+    autonomyAtRest?: (
+      saved: Readonly<Record<string, string>>,
+      launchArgs: readonly string[] | undefined
+    ) => string | undefined
   }
 }
 

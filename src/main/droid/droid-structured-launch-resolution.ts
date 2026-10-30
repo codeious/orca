@@ -14,7 +14,8 @@ import { resolveAgentSessionLaunchDirectory } from '../runtime/agent-session-lau
 import type { AgentSessionRecordStore } from '../runtime/agent-session-record-store'
 import { isWindowsProcessStartTimeAvailable } from '../windows/windows-process-table'
 import { DROID_ACCOUNT_HOME_VARIABLE, DROID_HANDLE_TRANSPORT } from './droid-agent-definition'
-import { droidAutonomyLevelFromLaunchArgs, type DroidAutonomyLevel } from './droid-autonomy-level'
+import type { DroidAutonomyLevel } from '../../shared/droid-autonomy-options'
+import { droidAutonomyLevelFromLaunchArgs } from './droid-autonomy-level'
 import { readDroidVersion, resolveDroidCommand } from './droid-launch-resolution'
 import { isSupportedDroidVersion, unsupportedDroidRelease } from './droid-version-support'
 

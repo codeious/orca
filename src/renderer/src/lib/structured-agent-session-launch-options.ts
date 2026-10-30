@@ -3,6 +3,7 @@ import type {
   AgentSessionMutationResult,
   AgentSessionOptionResult
 } from '../../../shared/agent-session-wire'
+import { DROID_AUTONOMY_OPTION_ID } from '../../../shared/droid-autonomy-options'
 import {
   DROID_SPEC_EFFORT_OPTION_ID,
   DROID_SPEC_MODEL_OPTION_ID,
@@ -52,11 +53,12 @@ export type StructuredLaunchOptionOutcome =
 
 type OptionReply = (outcome: StructuredLaunchOptionOutcome) => void
 
-/** Model first so an effort lands under the model it was picked against; Spec's pair last, since
- *  its effort belongs to the Spec model before it. */
+/** Model first so an effort lands under the model it was picked against; Spec's pair after them,
+ *  since its effort belongs to the Spec model before it. The autonomy level depends on neither. */
 const HELD_OPTION_APPLY_ORDER = [
   ...STRUCTURED_LAUNCH_SEED_OPTION_IDS,
-  ...DROID_SPEC_PAIR_OPTION_IDS
+  ...DROID_SPEC_PAIR_OPTION_IDS,
+  DROID_AUTONOMY_OPTION_ID
 ] as const
 
 const optionReplies = new WeakMap<StructuredLaunchState, Map<string, OptionReply>>()
@@ -70,15 +72,18 @@ function repliesFor(state: StructuredLaunchState): Map<string, OptionReply> {
   return replies
 }
 
-/** A model pick drops picks held under the model it replaces; Spec's switch and pair are not under
- *  it. Clearing the Spec model drops the Spec effort held for it, as the host does. */
+/** A model pick drops picks held under the model it replaces; Spec's switch and pair and the
+ *  autonomy level are not under it. Clearing the Spec model drops the Spec effort held for it, as
+ *  the host does. */
 function heldKeysReplacedBy(
   held: Readonly<Record<string, string>>,
   id: string,
   encoded: string
 ): string[] {
   if (id === 'model') {
-    return Object.keys(held).filter((key) => !isDroidSessionSpecOptionId(key))
+    return Object.keys(held).filter(
+      (key) => !isDroidSessionSpecOptionId(key) && key !== DROID_AUTONOMY_OPTION_ID
+    )
   }
   return id === DROID_SPEC_MODEL_OPTION_ID && encoded === DROID_SPEC_SAME_AS_MAIN
     ? [id, DROID_SPEC_EFFORT_OPTION_ID]

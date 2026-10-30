@@ -1,9 +1,8 @@
-export const DROID_AUTONOMY_LEVELS = ['off', 'low', 'medium', 'high'] as const
-export type DroidAutonomyLevel = (typeof DROID_AUTONOMY_LEVELS)[number]
-
-export function isDroidAutonomyLevel(value: unknown): value is DroidAutonomyLevel {
-  return DROID_AUTONOMY_LEVELS.some((level) => level === value)
-}
+import {
+  DROID_AUTONOMY_LEVELS,
+  isDroidAutonomyLevel,
+  type DroidAutonomyLevel
+} from '../../shared/droid-autonomy-options'
 
 /**
  * The level the Agent Permissions arguments ask for, read the way `droid --auto` would:

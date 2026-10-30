@@ -1,5 +1,10 @@
 import type { AgentSessionOptionsResult } from '../../shared/agent-session-wire'
 import {
+  DROID_AUTONOMY_OPTION_ID,
+  isDroidAutonomyLevel,
+  type DroidAutonomyLevel
+} from '../../shared/droid-autonomy-options'
+import {
   DROID_SPEC_EFFORT_OPTION_ID,
   DROID_SPEC_MODEL_OPTION_ID,
   DROID_SPEC_SAME_AS_MAIN
@@ -25,6 +30,9 @@ type Request = (
   params?: unknown,
   options?: { timeoutMs?: number | null; onId?: (id: string) => void }
 ) => Promise<unknown>
+
+/** JSON-RPC's code for a method the peer does not have: a Droid older than the update call. */
+const METHOD_NOT_FOUND = -32601
 
 /** The mode Droid reports, else the one the start pinned. */
 function specIsOn(settings: DroidSettings, requested: DroidInteractionMode): boolean {
@@ -60,21 +68,32 @@ function droidCurrentOptions(
     ...(effort ? { effort } : {}),
     ...(settings.specModeModelId ? { specModel: settings.specModeModelId } : {}),
     ...(settings.specModeReasoningEffort ? { specEffort: settings.specModeReasoningEffort } : {}),
+    ...(settings.autonomyLevel ? { autonomyLevel: settings.autonomyLevel } : {}),
+    ...(settings.availableAutonomyLevels
+      ? { availableAutonomyLevels: settings.availableAutonomyLevels }
+      : {}),
     confirmed: [...confirmed]
   }
 }
 
 /** What one Droid child holds and can be asked to change: its model, effort, mode and level. */
 export class DroidSessionOptions {
+  /** The level the person chose in the chat, kept in the stored picks; unset while Agent Permissions
+   *  decides, so a model pick never pins the level Droid happened to report. */
+  private chosenAutonomy: DroidAutonomyLevel | undefined
+
   constructor(
     private readonly deps: {
       request: Request
       settings: DroidReportedSettings
       model: DroidSessionModel
       requested: DroidInteractionMode
+      pickedAutonomy?: DroidAutonomyLevel
       timeoutMs: number
     }
-  ) {}
+  ) {
+    this.chosenAutonomy = deps.pickedAutonomy
+  }
 
   async read(): ReturnType<DroidSessionModel['read']> {
     const { request, settings, model, requested } = this.deps
@@ -90,6 +109,9 @@ export class DroidSessionOptions {
   async set(key: string, value: string): Promise<Record<string, string>> {
     if (key === DROID_SPEC_MODEL_OPTION_ID || key === DROID_SPEC_EFFORT_OPTION_ID) {
       return this.setSpecPair(key, value)
+    }
+    if (key === DROID_AUTONOMY_OPTION_ID) {
+      return this.setAutonomy(value)
     }
     const { request, settings, model } = this.deps
     const sent: { id?: string } = {}
@@ -107,6 +129,28 @@ export class DroidSessionOptions {
     const answer = sent.id === undefined ? undefined : settings.answerTo(sent.id)
     const picks = this.picks(answer ?? settings.current)
     return answer ? picks : { ...picks, [key]: value }
+  }
+
+  /** Droid may run a lower level than asked for, so the stored level is the one it reports. */
+  private async setAutonomy(value: string): Promise<Record<string, string>> {
+    if (!isDroidAutonomyLevel(value)) {
+      throw new Error(`Droid has no autonomy level named ${value}`)
+    }
+    const { settings } = this.deps
+    let answer: DroidSettings | undefined
+    try {
+      answer = await this.update({ autonomyLevel: value })
+    } catch (error) {
+      throw error instanceof DroidRpcError && error.code === METHOD_NOT_FOUND
+        ? new Error('Changing the autonomy level needs a newer Droid. Update Droid and try again.')
+        : error
+    }
+    if (!answer) {
+      settings.adopt({ autonomyLevel: value })
+    }
+    const next: DroidSettings = answer ?? { ...settings.current }
+    this.chosenAutonomy = next.autonomyLevel ?? value
+    return this.picks(next)
   }
 
   /** Clearing the Spec model clears the effort that belonged to it. Droid may report nothing after a
@@ -165,7 +209,7 @@ export class DroidSessionOptions {
     return reported?.autonomyLevel
   }
 
-  /** The Spec, model, effort and Spec pair picks the host stores for a chat Droid holds as `reported`. */
+  /** The Spec, model, effort, Spec pair and chosen level the host stores for a chat Droid holds as `reported`. */
   private picks(reported: DroidSettings): Record<string, string> {
     const { model, requested } = this.deps
     const current = droidCurrentOptions(reported, requested, model.current)
@@ -175,7 +219,8 @@ export class DroidSessionOptions {
       ...(current.model ? { model: current.model } : {}),
       ...(current.effort ? { effort: current.effort } : {}),
       ...(current.specModel ? { [DROID_SPEC_MODEL_OPTION_ID]: current.specModel } : {}),
-      ...(current.specEffort ? { [DROID_SPEC_EFFORT_OPTION_ID]: current.specEffort } : {})
+      ...(current.specEffort ? { [DROID_SPEC_EFFORT_OPTION_ID]: current.specEffort } : {}),
+      ...(this.chosenAutonomy ? { [DROID_AUTONOMY_OPTION_ID]: this.chosenAutonomy } : {})
     }
   }
 

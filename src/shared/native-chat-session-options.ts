@@ -1,4 +1,5 @@
 import type { AgentType } from './agent-status-types'
+import type { DroidAutonomyLevel } from './droid-autonomy-options'
 
 export type SessionOptionValue = string | boolean
 
@@ -134,9 +135,20 @@ export type SessionOptionSpecPair = {
   settable: boolean
 }
 
+/** Droid's autonomy level, drawn beside the options and set through `setOption` under
+ *  `autonomyLevel`, but never one of the snapshot's descriptors: it is not tracked per model or
+ *  remembered for the next launch. `levels` is what a pick or a key may move to. */
+export type SessionOptionAutonomy = {
+  level: DroidAutonomyLevel
+  levels: readonly DroidAutonomyLevel[]
+  settable: boolean
+}
+
 export type SessionOptionsSurface = {
   /** Present only for an agent whose Spec runs on a model of its own. */
   specPair?: SessionOptionSpecPair
+  /** Present only for an agent that reports an autonomy level, once it has one to show. */
+  autonomy?: SessionOptionAutonomy
   getSnapshot(): SessionOptionDescriptor[]
   /** Apply an absolute target; known flip-only options use their tracked baseline. */
   setOption(id: string, value: SessionOptionValue): Promise<SessionOptionSetResult>

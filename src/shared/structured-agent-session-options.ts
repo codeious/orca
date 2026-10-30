@@ -1,4 +1,5 @@
 import type { AgentSessionOptionCatalog, CatalogModel } from './agent-session-option-catalog'
+import { droidAutonomyOf, type DroidAutonomyState } from './droid-autonomy-options'
 import {
   DROID_SPEC_EFFORT_OPTION_ID,
   DROID_SPEC_MODEL_OPTION_ID,
@@ -63,6 +64,9 @@ export type StructuredAgentSessionOptionState = {
   /** The Spec model and effort the host holds. Beside the record, which tracks only what a model's
    *  own options and the next launch's seed can carry. Unset until a session's answer names them. */
   specPair?: DroidSpecPair
+  /** The level Droid holds, or the one its next start will send, and the levels it offers. Beside
+   *  the record for the same reason as the pair: no model's options carry it. */
+  autonomy?: DroidAutonomyState | undefined
 }
 
 /** With `seedCatalog`, the state holds the static seed from the first frame, but the picker shows
@@ -162,6 +166,7 @@ export function applyStructuredAgentSessionOptions(
     ...state,
     catalog: structuredAgentSessionOptionCatalog(seed, result),
     catalogSource: 'live',
+    autonomy: droidAutonomyOf(result.current),
     ...(seed.offersSpecAtRest
       ? {
           specPair: droidSpecPairOf({

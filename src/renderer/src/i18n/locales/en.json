@@ -18339,7 +18339,13 @@
         "specModelHeading": "Spec model",
         "specSameAsMainModel": "Same as main model",
         "specEffortHeading": "Spec effort",
-        "specSameAsMainEffort": "Same as main effort"
+        "specSameAsMainEffort": "Same as main effort",
+        "autonomyValue": "Autonomy: {{value0}}",
+        "autonomyHeading": "Autonomy level",
+        "autonomyOff": "Off",
+        "autonomyLow": "Low",
+        "autonomyMedium": "Medium",
+        "autonomyHigh": "High"
       },
       "tool": {
         "exitCode": "exit {{value0}}",

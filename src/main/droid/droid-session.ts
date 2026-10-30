@@ -57,8 +57,13 @@ export type DroidSessionDeps = {
   realpath?: (path: string) => Promise<string>
 }
 
-/** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. */
-type DroidSessionBegin = DroidStartSettings & { cwd: string; resumeId: string | null }
+/** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. A picked
+ *  level was chosen in the chat; otherwise it is the one Agent Permissions asks for. */
+type DroidSessionBegin = DroidStartSettings & {
+  cwd: string
+  resumeId: string | null
+  autonomyPicked: boolean
+}
 
 const DROID_MACHINE_ID = 'orca'
 const START_TIMEOUT_MS = 120_000
@@ -131,6 +136,7 @@ export class DroidSession {
       settings: this.settings,
       model: this.model,
       requested: begin.interactionMode,
+      ...(begin.autonomyPicked ? { pickedAutonomy: begin.autonomyLevel } : {}),
       timeoutMs: START_TIMEOUT_MS
     })
     this.turns = new DroidTurns({
@@ -205,7 +211,10 @@ export class DroidSession {
           })
       )
     }
-    this.lane.apply(droidAutonomyCapRow(autonomyLevel, reportedLevel))
+    // The row names Agent Permissions, so it is not said of a level the person picked in the chat.
+    if (!this.begin.autonomyPicked) {
+      this.lane.apply(droidAutonomyCapRow(autonomyLevel, reportedLevel))
+    }
     return id
   }
 

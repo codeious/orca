@@ -55,7 +55,10 @@ function restingOptionRules(
 }
 
 async function readStructuredAgentSessionOptionsAtRest(
-  deps: Pick<StructuredAgentSessionHostDeps, 'store' | 'agents' | 'modelCatalog'>,
+  deps: Pick<
+    StructuredAgentSessionHostDeps,
+    'store' | 'agents' | 'modelCatalog' | 'restingLaunchArgs'
+  >,
   sessionId: string
 ): Promise<RestingOptions> {
   const record = deps.store.getRecord(sessionId)
@@ -90,6 +93,7 @@ async function readStructuredAgentSessionOptionsAtRest(
     (rules?.effortDefaultsToModel
       ? models.find((entry) => entry.id === model)?.defaultEffort
       : undefined)
+  const autonomyLevel = rules?.autonomyAtRest?.(saved, await restingLaunchArgs(deps, record))
   return {
     models: listed ? structuredAgentSessionOptionModels(listed, model, (row) => row) : [],
     ...(catalog.origin !== 'unknown' && catalog.fastModeSupport
@@ -100,8 +104,21 @@ async function readStructuredAgentSessionOptionsAtRest(
       ...(effort ? { effort } : {}),
       ...(typeof fastMode === 'boolean' ? { fastMode } : {}),
       ...(saved.serviceTier ? { serviceTier: saved.serviceTier } : {}),
-      ...(rules?.reportsSavedSpec ? savedSpecCurrent(saved) : {})
+      ...(rules?.reportsSavedSpec ? savedSpecCurrent(saved) : {}),
+      ...(autonomyLevel ? { autonomyLevel } : {})
     }
+  }
+}
+
+/** What a start would launch with, or nothing when the host cannot read it: the answer then names no level. */
+async function restingLaunchArgs(
+  deps: Pick<StructuredAgentSessionHostDeps, 'restingLaunchArgs'>,
+  record: AgentSessionRecord
+): Promise<readonly string[] | undefined> {
+  try {
+    return await deps.restingLaunchArgs?.(record.provider)
+  } catch {
+    return undefined
   }
 }
 

@@ -364,6 +364,97 @@ describe('picks made while a chat launches', () => {
   })
 })
 
+describe('autonomy picks made while a chat launches', () => {
+  let setOptionReplies: Deferred<unknown>[]
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    localStorage.clear()
+    resetStructuredAgentLaunchPersistenceForTests()
+    resetStructuredAgentLaunchRegistryForTests()
+    setOptionReplies = []
+    mocks.createIntent.mockReturnValue(launchIntent({ model: 'main-seeded' }))
+    vi.mocked(refreshLocalStructuredSessionTabs).mockResolvedValue([PUBLISHED])
+    mocks.call.mockImplementation((_target, method) => {
+      if (method === 'agentSession.setOption') {
+        const reply = deferred<unknown>()
+        setOptionReplies.push(reply)
+        return reply.promise
+      }
+      return new Promise(() => {})
+    })
+  })
+
+  it('are applied after the main model and effort and the Spec pair, against the receipt fence', async () => {
+    mocks.launch.mockResolvedValue({ sessionId: SESSION_ID, fence: 3 })
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-autonomy-1' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'low')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specModel', 'cheap-model')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'effort', 'high')
+    for (let applied = 0; applied < 3; applied += 1) {
+      await settle()
+      setOptionReplies[applied]?.resolve(ACCEPTED)
+    }
+    await settle()
+
+    expect(mutations()).toEqual([
+      { method: 'agentSession.setOption', fence: 3, key: 'effort', value: 'high' },
+      { method: 'agentSession.setOption', fence: 3, key: 'specModel', value: 'cheap-model' },
+      { method: 'agentSession.setOption', fence: 3, key: 'autonomyLevel', value: 'low' }
+    ])
+  })
+
+  it('survive a main model pick, which drops only the picks made under the model it replaces', () => {
+    mocks.launch.mockReturnValue(new Promise(() => {}))
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-autonomy-2' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'effort', 'high')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'low')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'model', 'main-picked')
+
+    expect(getStructuredAgentSessionLaunchSelection(SESSION_ID)?.held).toEqual({
+      model: 'main-picked',
+      autonomyLevel: 'low'
+    })
+  })
+
+  it('replace the level held before them, so the last pick is the one applied', async () => {
+    mocks.launch.mockReturnValue(new Promise(() => {}))
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-autonomy-3' })
+    const first = holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'low')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'medium')
+
+    expect(getStructuredAgentSessionLaunchSelection(SESSION_ID)?.held).toEqual({
+      autonomyLevel: 'medium'
+    })
+    await expect(first).resolves.toEqual({ kind: 'superseded' })
+  })
+
+  it('are folded into what the launch reports it runs once the host accepts them', async () => {
+    mocks.launch.mockResolvedValue({ sessionId: SESSION_ID, fence: 1 })
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-autonomy-4' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'low')
+    await settle()
+    const seen: unknown[] = []
+    subscribeStructuredAgentLaunchStatus(() =>
+      seen.push(getStructuredAgentSessionLaunchSelection(SESSION_ID))
+    )
+    setOptionReplies[0]!.resolve({
+      ok: true,
+      value: {
+        key: 'autonomyLevel',
+        value: 'low',
+        options: { model: 'main-seeded', autonomyLevel: 'low' }
+      }
+    })
+    await settle()
+
+    expect(seen[0]).toEqual({
+      seed: { model: 'main-seeded', autonomyLevel: 'low' },
+      held: {}
+    })
+  })
+})
+
 describe('Spec model and effort picks made while a chat launches', () => {
   let setOptionReplies: Deferred<unknown>[]
 

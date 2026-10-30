@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { decodeStructuredAgentSessionOptionValue } from '../../shared/structured-agent-session-option-codec'
-import { isDroidAutonomyLevel, type DroidAutonomyLevel } from './droid-autonomy-level'
+import { isDroidAutonomyLevel, type DroidAutonomyLevel } from '../../shared/droid-autonomy-options'
 
 /** Never `mission`: those spend the person's credits unattended. */
 export type DroidInteractionMode = 'auto' | 'spec'

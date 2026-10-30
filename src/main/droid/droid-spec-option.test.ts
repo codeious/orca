@@ -133,6 +133,8 @@ describe('Droid Spec option', () => {
       effort: 'xhigh',
       specModel: SPEC,
       specEffort: 'xhigh',
+      autonomyLevel: 'off',
+      availableAutonomyLevels: ['off', 'low', 'medium', 'high'],
       confirmed: ['planMode', 'model', 'effort']
     })
   })

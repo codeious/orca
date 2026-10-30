@@ -1,4 +1,5 @@
 import { agentSessionFailureWords } from '../../shared/agent-session-failure-words'
+import { droidAutonomyLevelFromSavedOptions } from '../../shared/droid-autonomy-options'
 import { decodeStructuredAgentSessionOptionValue } from '../../shared/structured-agent-session-option-codec'
 import { JsonlRpcSessionAdapter } from '../jsonl-rpc/session-adapter'
 import type {
@@ -45,10 +46,13 @@ export class DroidSessionAdapter
       env: launch.env,
       structuredSession: { id: input.identity.sessionId, spawnToken: input.spawnToken }
     })
+    // A level picked in the chat wins over Agent Permissions, as the saved Spec switch does for the mode.
+    const picked = droidAutonomyLevelFromSavedOptions(input.options)
     return new DroidSession(input, generation, spec, this.deps, {
       cwd: launch.cwd,
       resumeId: launch.previous?.handle.nativeId ?? null,
-      autonomyLevel: launch.autonomyLevel,
+      autonomyLevel: picked ?? launch.autonomyLevel,
+      autonomyPicked: picked !== undefined,
       interactionMode: droidInteractionModeFromSavedOptions(input.options)
     })
   }

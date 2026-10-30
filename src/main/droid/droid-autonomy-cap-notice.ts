@@ -1,5 +1,6 @@
 import type { ProviderTimelineEvent } from '../native-chat/agent-session-timeline/provider-timeline-event'
-import { droidAutonomyLowerThanAsked, type DroidAutonomyLevel } from './droid-autonomy-level'
+import type { DroidAutonomyLevel } from '../../shared/droid-autonomy-options'
+import { droidAutonomyLowerThanAsked } from './droid-autonomy-level'
 
 const LEVEL_NAMES: Record<DroidAutonomyLevel, string> = {
   off: 'Off',

@@ -495,6 +495,10 @@ export type AgentSessionOptionsResult = {
     /** Droid only: the model and effort Spec runs on in place of the main ones. Absent means Spec runs the main pair. */
     specModel?: string
     specEffort?: string
+    /** Droid only: the autonomy level the session holds, or at rest the one its next start sends. */
+    autonomyLevel?: string
+    /** Droid only: the levels a running session offers. Absent at rest, where all four are offered. */
+    availableAutonomyLevels?: readonly string[]
     /** Provider-reported effective routing, distinct from the next-turn preference. */
     fastModeState?: AgentSessionFastModeState
     /**

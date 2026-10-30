@@ -1,5 +1,10 @@
+import {
+  DROID_AUTONOMY_OPTION_ID,
+  droidAutonomyLevelFromSavedOptions
+} from '../../shared/droid-autonomy-options'
 import { isDroidSpecPairOptionId } from '../../shared/droid-spec-pair-options'
 import type { DirectoryAccountAgentDefinition } from '../native-chat/agent-session-wire/structured-agent-definition'
+import { droidAutonomyLevelFromLaunchArgs } from './droid-autonomy-level'
 
 export const DROID_HANDLE_TRANSPORT = 'droid-stream-jsonrpc'
 
@@ -22,10 +27,18 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
   },
   restingOptions: {
     acceptsKey: (key) =>
-      key === 'model' || key === 'effort' || key === 'planMode' || isDroidSpecPairOptionId(key),
+      key === 'model' ||
+      key === 'effort' ||
+      key === 'planMode' ||
+      key === DROID_AUTONOMY_OPTION_ID ||
+      isDroidSpecPairOptionId(key),
     fallbackModels: () => null,
     effortDefaultsToModel: false,
     waitsForCatalogListing: true,
-    reportsSavedSpec: true
+    reportsSavedSpec: true,
+    // The start sends the picked level over `--auto`, so with no pick the launch arguments decide.
+    autonomyAtRest: (saved, launchArgs) =>
+      droidAutonomyLevelFromSavedOptions(saved) ??
+      (launchArgs ? droidAutonomyLevelFromLaunchArgs(launchArgs) : undefined)
   }
 }

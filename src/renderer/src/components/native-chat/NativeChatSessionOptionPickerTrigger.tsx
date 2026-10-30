@@ -3,16 +3,28 @@ import { Button } from '@/components/ui/button'
 import type { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import type { PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { ShortcutKeyCombo } from '@/components/ShortcutKeyCombo'
 import { translate } from '@/i18n/i18n'
+
+/** A key the pill answers to: the caps for the tooltip and the same chord for assistive tech. */
+export type PickerShortcut = { keys: string[]; ariaKeyShortcuts: string }
 
 function PickerTooltipContent(props: {
   label: string
   disabledReason?: string | null
   dispatched: boolean
+  shortcut?: PickerShortcut
 }): React.JSX.Element {
   return (
     <div className="space-y-0.5">
-      <div>{props.disabledReason ?? props.label}</div>
+      {props.shortcut && !props.disabledReason ? (
+        <div className="flex items-center gap-2">
+          <span>{props.label}</span>
+          <ShortcutKeyCombo keys={props.shortcut.keys} />
+        </div>
+      ) : (
+        <div>{props.disabledReason ?? props.label}</div>
+      )}
       {props.dispatched ? (
         <div>
           {translate(
@@ -33,6 +45,7 @@ export function PickerTrigger(props: {
   disabled: boolean
   disabledReason?: string | null
   dispatched: boolean
+  shortcut?: PickerShortcut
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>
 }): React.JSX.Element {
   // Why: value-only visible text must still include the category in the
@@ -53,6 +66,7 @@ export function PickerTrigger(props: {
             variant="ghost"
             size="xs"
             aria-label={accessibleName}
+            aria-keyshortcuts={props.shortcut?.ariaKeyShortcuts}
             className="max-w-48"
             onKeyDown={props.onKeyDown}
           >
@@ -66,6 +80,7 @@ export function PickerTrigger(props: {
           label={props.tooltipLabel}
           disabledReason={props.disabledReason}
           dispatched={props.dispatched}
+          shortcut={props.shortcut}
         />
       </TooltipContent>
     </Tooltip>

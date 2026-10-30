@@ -2,6 +2,8 @@
 // option, so none of this goes through the record that tracks a model's options.
 
 import type { CatalogModel } from './agent-session-option-catalog'
+import { DROID_AUTONOMY_OPTION_ID } from './droid-autonomy-options'
+import { withDroidAutonomyPick } from './droid-autonomy-view'
 import {
   DROID_SPEC_MODEL_OPTION_ID,
   DROID_SPEC_PAIR_OPTION_IDS,
@@ -136,13 +138,17 @@ export function droidSpecPairSurfaceOf(
   )
 }
 
-/** The state once the host has accepted any pick: the pair is its own, every other id is an option. */
+/** The state once the host has accepted any pick: the pair and the autonomy level are their own,
+ *  every other id is an option. The level shown is the one the host kept, which may be lower. */
 export function commitStructuredAgentSessionPick(
   state: StructuredAgentSessionOptionState,
   id: string,
   value: string,
   committed: Readonly<Record<string, string>>
 ): StructuredAgentSessionOptionState {
+  if (id === DROID_AUTONOMY_OPTION_ID) {
+    return withDroidAutonomyPick(state, committed[DROID_AUTONOMY_OPTION_ID] ?? value)
+  }
   return isDroidSpecPairOptionId(id)
     ? withDroidSpecPairPick(state, id, value)
     : commitStructuredAgentSessionOptionValues(state, committed)
