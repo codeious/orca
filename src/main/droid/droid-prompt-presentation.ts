@@ -27,4 +27,7 @@ export type DroidPromptPresentation = {
   /** What Droid is answered with. Null is a dismissal, which Droid hears as its own refusal.
    *  Throws for a response the card did not offer. */
   reply: (response: AgentSessionPromptResponse | null) => unknown
+  /** Set on a card that is one part of a longer request. Answering it opens the next card and Droid
+   *  keeps waiting; only a dismissal still goes to `reply`. Throws for a response the card did not offer. */
+  advance?: (response: AgentSessionPromptResponse) => DroidPromptPresentation
 }

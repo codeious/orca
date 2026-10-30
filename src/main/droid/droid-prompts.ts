@@ -28,10 +28,13 @@ const PRESENTERS = new Map<
 
 type OpenRequest = {
   key: string
+  /** The journal request the card on show is under. A longer request shows one card after another. */
+  cardKey: string
+  cardCount: number
   presentation: DroidPromptPresentation
   signal: AbortSignal
   claimed: boolean
-  /** A Stop landed while an answer was being saved: a failed save withdraws it. */
+  /** A Stop landed while an answer was being saved: a failed save, or a next card, withdraws it. */
   withdrawing: boolean
   settle: (reply: unknown) => void
 }
@@ -59,6 +62,8 @@ export class DroidPrompts {
     return new Promise((resolve) => {
       const entry: OpenRequest = {
         key,
+        cardKey: key,
+        cardCount: 1,
         presentation,
         signal: context.signal,
         claimed: false,
@@ -96,8 +101,13 @@ export class DroidPrompts {
       throw new AgentSessionPromptUnavailableError(itemId)
     }
     let reply: unknown
+    let nextCard: DroidPromptPresentation | undefined
     try {
-      reply = entry.presentation.reply(response)
+      if (response && entry.presentation.advance) {
+        nextCard = entry.presentation.advance(response)
+      } else {
+        reply = entry.presentation.reply(response)
+      }
     } catch (error) {
       throw new AgentSessionPromptAnswerRejectedError(
         error instanceof Error ? error.message : String(error)
@@ -113,7 +123,9 @@ export class DroidPrompts {
       }
       throw error
     }
-    if (answer) {
+    if (nextCard) {
+      this.showNextCard(entry, nextCard)
+    } else if (answer) {
       entry.settle(reply)
     } else {
       this.open.delete(entry.key)
@@ -136,14 +148,28 @@ export class DroidPrompts {
     this.open.clear()
   }
 
+  private showNextCard(entry: OpenRequest, card: DroidPromptPresentation): void {
+    // Nobody is left to answer a closed connection, and a Stop that landed while the answer was
+    // being saved ends the questionnaire.
+    if (entry.signal.aborted || entry.withdrawing) {
+      this.withdraw(entry)
+      return
+    }
+    entry.cardCount += 1
+    entry.cardKey = `${entry.key}:card-${entry.cardCount}`
+    entry.presentation = card
+    entry.claimed = false
+    this.lane.apply([{ type: 'request.open', request: entry.cardKey, body: card.body }])
+  }
+
   private withdraw(entry: OpenRequest): void {
     entry.settle(entry.presentation.reply(null))
-    this.lane.apply([{ type: 'request.withdrawn', request: entry.key }])
+    this.lane.apply([{ type: 'request.withdrawn', request: entry.cardKey }])
   }
 
   private find(itemId: string): OpenRequest | null {
     for (const entry of this.open.values()) {
-      if (!entry.claimed && this.lane.isRequestRow(itemId, entry.key)) {
+      if (!entry.claimed && this.lane.isRequestRow(itemId, entry.cardKey)) {
         return entry
       }
     }
