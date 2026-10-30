@@ -1,0 +1,32 @@
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown-droid.test.tsx
+  s_5138afc3cc0cca::t_48237053be8cc1 15-18,20
+  s_5138afc3cc0cca::t_f98a5fb464f869 289-295,301-320,334-420
+  s_5138afc3cc0cca::t_ed58c358aa32dc 21
+  s_5138afc3cc0cca::t_05280be18031dd 47-50
+  s_5138afc3cc0cca::t_704357c05d4042 296-300
+  s_5138afc3cc0cca::t_9bdd03b86eb5c0 113,119
+  s_5138afc3cc0cca::t_0aa9426f5c6a5f 321-333
+  s_5138afc3cc0cca::t_78818fbf3e2cab 459-478
+  s_5138afc3cc0cca::t_64d1f16d6c94be 149
+  s_5138afc3cc0cca::t_4ded641acedd03 51-88
+  s_5138afc3cc0cca::t_8f29fe37ed21b1 32
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown.ts
+  s_5138afc3cc0cca::t_39b2fa87ac1ec4 127-128
+  s_5138afc3cc0cca::t_cd1ecc782daab6 126,129-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d079fffd09aab548cd940b1a51d56012c0094dd7",
+  "prompts": {},
+  "sessions": {
+    "s_5138afc3cc0cca": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "dd3713ca-e5de-4057-bb9d-6489c30b205d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
