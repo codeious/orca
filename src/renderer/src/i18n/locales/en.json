@@ -18742,12 +18742,22 @@
         "reconnecting": "{{hostName}} is reconnecting…",
         "reconnect": "Reconnect"
       },
+      "droidCommands": {
+        "help": "Show the Droid commands and keys"
+      },
       "droidHelp": {
+        "commandsIntro": "Droid commands:",
+        "commandLine": "/{{name}}: {{description}}.",
         "keysIntro": "Droid keys in the message box:",
         "shiftTab": "Shift+Tab: switch Spec mode on or off.",
         "ctrlL": "Ctrl+L: cycle autonomy.",
         "tab": "Tab: cycle reasoning effort.",
-        "ctrlN": "Ctrl+N: cycle through models."
+        "ctrlN": "Ctrl+N: cycle through models.",
+        "enter": "Enter: send your message. While Droid works, it steers the reply.",
+        "ctrlEnter": "Ctrl+Enter: send your message. While Droid works, wait: Droid answers after its current reply.",
+        "ctrlC": "Ctrl+C: copies the selected text; with none selected, it stops the running reply once. It never closes the chat, ends the Droid session or quits Orca.",
+        "escape": "Esc: close an open menu or card, or clear the message. It never stops a reply.",
+        "escapeThree": "Esc three times: open rewind when the message box is empty."
       },
       "interruptedContinue": {
         "continue": "Continue",

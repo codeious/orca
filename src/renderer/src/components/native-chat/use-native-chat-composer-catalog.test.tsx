@@ -66,6 +66,44 @@ describe('composer catalog authority', () => {
       'effort'
     ])
   })
+  it('offers a Droid chat the Droid commands, whether or not the host reports a catalog', () => {
+    const unreported = renderHook(() => useNativeChatComposerCatalog('droid', transport()))
+    expect(unreported.result.current.agentCommands.map(({ name }) => name)).toEqual([
+      'model',
+      'effort',
+      'help'
+    ])
+    const reported = renderHook(() =>
+      useNativeChatComposerCatalog('droid', transport([{ name: 'my-command', kind: 'command' }]))
+    )
+    expect(reported.result.current.agentCommands.map(({ name }) => name)).toEqual([
+      'my-command',
+      'help'
+    ])
+    const empty = renderHook(() => useNativeChatComposerCatalog('droid', transport([])))
+    expect(empty.result.current.agentCommands.map(({ name }) => name)).toEqual(['help'])
+    const help = unreported.result.current.agentCommands.find(({ name }) => name === 'help')
+    expect(help?.description?.trim()).toBeTruthy()
+  })
+  it('does not offer a Droid command twice when the host reports it too', () => {
+    const { result } = renderHook(() =>
+      useNativeChatComposerCatalog('droid', transport([{ name: 'help', kind: 'command' }]))
+    )
+    expect(result.current.agentCommands.map(({ name }) => name)).toEqual(['help'])
+  })
+  it.each(['claude', 'codex', 'omp', 'openclaude', 'pi'])(
+    'offers %s no Droid command, reported or not',
+    (agent) => {
+      const unreported = renderHook(() => useNativeChatComposerCatalog(agent, transport()))
+      expect(unreported.result.current.agentCommands).toEqual(structuredSlashCommands([], agent))
+      const reported = [{ name: 'init', kind: 'command' as const }]
+      const withReport = renderHook(() => useNativeChatComposerCatalog(agent, transport(reported)))
+      expect(withReport.result.current.agentCommands).toEqual(
+        sessionSlashCommandSuggestions(agent, reported)
+      )
+      expect(unreported.result.current.agentCommands.map(({ name }) => name)).not.toContain('help')
+    }
+  )
   it('respects empty catalogs and command-only catalogs without reviving disk skills', () => {
     const { result, rerender } = renderHook(
       ({ reported }) => useNativeChatComposerCatalog('claude', transport(reported)),

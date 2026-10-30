@@ -7,11 +7,22 @@ import {
   type SlashCommandSuggestion
 } from '../../../../shared/native-chat-slash-commands'
 import { structuredSlashCommands } from '../../../../shared/structured-agent-session-composer'
+import { droidCommandSuggestions } from './droid-commands'
 import type { NativeChatStructuredComposerTransport } from './native-chat-composer-types'
 
 export type NativeChatComposerCatalog = {
   agentCommands: readonly SlashCommandSuggestion[]
   sessionSkillNames: readonly string[] | undefined
+}
+
+/** A Droid chat's own commands follow whatever else it offers, which may already name one. */
+function withDroidCommands(
+  offered: readonly SlashCommandSuggestion[]
+): readonly SlashCommandSuggestion[] {
+  return [
+    ...offered,
+    ...droidCommandSuggestions().filter((own) => !offered.some(({ name }) => name === own.name))
+  ]
 }
 
 /**
@@ -28,15 +39,16 @@ export function useNativeChatComposerCatalog(
   const structured = Boolean(structuredTransport)
   const reported = structuredTransport?.sessionCommands
   const conversationCommands = structuredTransport?.conversationCommands
-  const agentCommands = useMemo(
-    () =>
-      !structured
-        ? getVerifiedNativeChatCommands(agent)
-        : reported !== undefined
-          ? sessionSlashCommandSuggestions(agent, reported)
-          : structuredSlashCommands(conversationCommands, agent),
-    [agent, conversationCommands, reported, structured]
-  )
+  const agentCommands = useMemo(() => {
+    if (!structured) {
+      return getVerifiedNativeChatCommands(agent)
+    }
+    const offered =
+      reported !== undefined
+        ? sessionSlashCommandSuggestions(agent, reported)
+        : structuredSlashCommands(conversationCommands, agent)
+    return agent === 'droid' ? withDroidCommands(offered) : offered
+  }, [agent, conversationCommands, reported, structured])
   const sessionSkillNames = useMemo(
     () => (reported !== undefined ? sessionReportedSkillNames(reported) : undefined),
     [reported]

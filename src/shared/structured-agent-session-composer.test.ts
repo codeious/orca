@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { DROID_HOST_COMMAND_NAMES } from './droid-command-registry'
 import {
   dispatchStructuredAgentSessionComposerCommand,
   isStructuredAgentSessionComposerCommand,
@@ -94,6 +95,25 @@ describe('isStructuredAgentSessionComposerCommand', () => {
 
   it('leaves an unknown token to the chat path', () => {
     expect(isStructuredAgentSessionComposerCommand('/my-skill', 'claude')).toBe(false)
+  })
+
+  it.each(DROID_HOST_COMMAND_NAMES)(
+    'claims a typed /%s for Droid, with or without words after it',
+    (name) => {
+      expect(isStructuredAgentSessionComposerCommand(`/${name}`, 'droid')).toBe(true)
+      expect(isStructuredAgentSessionComposerCommand(`/${name} and more`, 'droid')).toBe(true)
+    }
+  )
+
+  // The Droid registry is Droid's alone: every other agent claims /help as it did before it.
+  it.each([
+    ['claude', false],
+    ['codex', false],
+    ['omp', false],
+    ['openclaude', false],
+    ['pi', true]
+  ] as const)('claims /help for %s as it did before the Droid registry: %s', (agent, claimed) => {
+    expect(isStructuredAgentSessionComposerCommand('/help', agent)).toBe(claimed)
   })
 })
 

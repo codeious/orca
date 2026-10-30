@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DROID_COMPOSER_KEY_CHORDS } from '../../../../shared/droid-composer-keys'
+import { DROID_HOST_COMMAND_NAMES } from '../../../../shared/droid-command-registry'
 import { answerDroidHostCommand, droidHelpKeyLines, droidHelpText } from './droid-help-keys'
 
 const EN_CATALOG_PATH = join(__dirname, '../../i18n/locales/en.json')
@@ -16,9 +17,8 @@ afterEach(() => {
 })
 
 describe('Droid /help key list', () => {
-  it('lists the four mode bindings, each led by its chord', () => {
+  it('lists the four mode bindings first, each led by its chord', () => {
     const lines = droidHelpKeyLines()
-    expect(lines).toHaveLength(4)
     const chords = [
       DROID_COMPOSER_KEY_CHORDS.shiftTab,
       DROID_COMPOSER_KEY_CHORDS.ctrlL,
@@ -34,11 +34,47 @@ describe('Droid /help key list', () => {
     expect(lines[3]).toMatch(/models/i)
   })
 
+  it('lists the whole key map, one line per key, each led by its label', () => {
+    const labels = droidHelpKeyLines().map((line) => line.slice(0, line.indexOf(':')))
+    expect(labels).toEqual([
+      'Shift+Tab',
+      'Ctrl+L',
+      'Tab',
+      'Ctrl+N',
+      'Enter',
+      'Ctrl+Enter',
+      'Ctrl+C',
+      'Esc',
+      'Esc three times'
+    ])
+  })
+
+  it('says what Enter, Ctrl+Enter, Ctrl+C and Esc do while Droid works', () => {
+    const [enter, ctrlEnter, ctrlC, escape, escapeThree] = droidHelpKeyLines().slice(4)
+    expect(enter).toMatch(/steers/i)
+    expect(ctrlEnter).toMatch(/wait/i)
+    expect(ctrlEnter).toMatch(/answers after its current reply/i)
+    expect(ctrlC).toMatch(/copies the selected text/i)
+    expect(ctrlC).toMatch(/with none selected, it stops the running reply once/i)
+    expect(ctrlC).toMatch(/never closes the chat, ends the Droid session or quits Orca/i)
+    expect(escape).toMatch(/never stops a reply/i)
+    expect(escapeThree).toMatch(/rewind/i)
+  })
+
   it('reads as one paragraph holding every binding', () => {
     const text = droidHelpText()
     expect(text).not.toContain('\n')
     for (const line of droidHelpKeyLines()) {
       expect(text).toContain(line)
+    }
+  })
+
+  it('lists every registered command ahead of the keys, from the registry', () => {
+    const text = droidHelpText()
+    expect(DROID_HOST_COMMAND_NAMES.length).toBeGreaterThan(0)
+    for (const name of DROID_HOST_COMMAND_NAMES) {
+      expect(text).toContain(`/${name}:`)
+      expect(text.indexOf(`/${name}:`)).toBeLessThan(text.indexOf('Shift+Tab:'))
     }
   })
 
@@ -49,8 +85,9 @@ describe('Droid /help key list', () => {
   ])('writes Ctrl+, never a Command glyph or Cmd, on %s', (_os, userAgent) => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent)
     const text = droidHelpText()
-    expect(text).toContain('Ctrl+L')
-    expect(text).toContain('Ctrl+N')
+    for (const chord of ['Ctrl+L', 'Ctrl+N', 'Ctrl+Enter', 'Ctrl+C']) {
+      expect(text).toContain(chord)
+    }
     expect(text).not.toMatch(/⌘|⌃|Cmd|Command|Meta/)
     expect(text).toBe(droidHelpText())
   })
@@ -59,7 +96,9 @@ describe('Droid /help key list', () => {
     const entries = enHelpEntries()
     for (const [name, chord] of [
       ['ctrlL', 'Ctrl+L'],
-      ['ctrlN', 'Ctrl+N']
+      ['ctrlN', 'Ctrl+N'],
+      ['ctrlEnter', 'Ctrl+Enter'],
+      ['ctrlC', 'Ctrl+C']
     ]) {
       const value = entries[name]
       expect(typeof value).toBe('string')

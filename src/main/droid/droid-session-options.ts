@@ -11,6 +11,7 @@ import {
 } from '../../shared/droid-spec-pair-options'
 import { encodeStructuredAgentSessionOptionValue } from '../../shared/structured-agent-session-option-codec'
 import { AgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
+import { isDroidMethodNotFound, needsNewerDroidSentence } from './droid-missing-method'
 import type { DroidSavedPicks } from './droid-model-options'
 import { DroidRpcError } from './droid-rpc-errors'
 import type { DroidSessionModel } from './droid-session-model'
@@ -30,9 +31,6 @@ type Request = (
   params?: unknown,
   options?: { timeoutMs?: number | null; onId?: (id: string) => void }
 ) => Promise<unknown>
-
-/** JSON-RPC's code for a method the peer does not have: a Droid older than the update call. */
-const METHOD_NOT_FOUND = -32601
 
 /** The mode Droid reports, else the one the start pinned. */
 function specIsOn(settings: DroidSettings, requested: DroidInteractionMode): boolean {
@@ -129,7 +127,7 @@ export class DroidSessionOptions {
       )
     } catch (error) {
       // Droid's own sentence says why a model or effort is refused (an organization's policy, say).
-      throw error instanceof DroidRpcError && error.code !== METHOD_NOT_FOUND
+      throw error instanceof DroidRpcError && !isDroidMethodNotFound(error)
         ? new AgentSessionOptionRejectedError(error, 'providerRefusedOption')
         : error
     }
@@ -148,8 +146,12 @@ export class DroidSessionOptions {
     try {
       answer = await this.update({ autonomyLevel: value })
     } catch (error) {
-      throw error instanceof DroidRpcError && error.code === METHOD_NOT_FOUND
-        ? new Error('Changing the autonomy level needs a newer Droid. Update Droid and try again.')
+      // The sentence is Orca's own, written for a person, so a client may quote it.
+      throw isDroidMethodNotFound(error)
+        ? new AgentSessionOptionRejectedError(
+            new Error(needsNewerDroidSentence('Changing the autonomy level')),
+            'providerRefusedOption'
+          )
         : error
     }
     if (!answer) {

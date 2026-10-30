@@ -3,6 +3,7 @@ import {
   getTextDrivenNativeChatCommands
 } from './native-chat-agent-profiles'
 import type { AgentType } from './agent-status-types'
+import { DROID_HOST_COMMAND_NAMES } from './droid-command-registry'
 import type { SessionOptionDescriptor, SessionOptionValue } from './native-chat-session-options'
 import type { SlashCommandSuggestion } from './native-chat-slash-commands'
 import type { AgentSessionConversationCommand } from './agent-session-conversation-command'
@@ -104,7 +105,8 @@ function structuredRecognizedCommands(agent: AgentType): readonly SlashCommandSu
   return [
     ...STRUCTURED_AGENT_SESSION_SLASH_COMMANDS,
     ...CONVERSATION_COMMANDS,
-    ...getHostClaimedNativeChatCommands(agent)
+    ...getHostClaimedNativeChatCommands(agent),
+    ...(agent === 'droid' ? DROID_HOST_COMMAND_NAMES.map((name) => ({ name })) : [])
   ]
 }
 

@@ -16,6 +16,7 @@ import {
   droidSavedOptionPicks,
   droidSpecPairParams
 } from './droid-model-options'
+import { droidRequestFailure } from './droid-missing-method'
 import { DroidPrompts } from './droid-prompts'
 import { DroidSessionModel } from './droid-session-model'
 import { DroidSessionOptions } from './droid-session-options'
@@ -84,6 +85,12 @@ export class DroidSession {
   readonly model = new DroidSessionModel()
   readonly options: DroidSessionOptions
 
+  /** Every request after the start goes through here, so a method this Droid lacks reads alike. */
+  readonly request: DroidConnection['request'] = (method, params, options) =>
+    this.connection.request(method, params, options).catch((error: unknown) => {
+      throw droidRequestFailure(method, error)
+    })
+
   constructor(
     readonly input: StructuredAgentSessionAcquireInput,
     readonly generation: string,
@@ -137,7 +144,7 @@ export class DroidSession {
       handoffs: this.handoffs
     })
     this.options = new DroidSessionOptions({
-      request: (method, params, options) => this.connection.request(method, params, options),
+      request: this.request,
       settings: this.settings,
       model: this.model,
       requested: begin.interactionMode,
@@ -147,7 +154,7 @@ export class DroidSession {
     this.turns = new DroidTurns({
       lane: this.lane,
       generation,
-      request: (method, params, options) => this.connection.request(method, params, options),
+      request: this.request,
       settled: (id, outcome) => this.lifecycle.settle(id, outcome),
       idle: () => deps.onIdle({ sessionId }),
       settings: (report) => this.settings.receive(report),
