@@ -10,14 +10,14 @@ const base = {
 }
 
 describe('a host-answered command', () => {
-  it('shows the answer in place of the refusal and never reaches the model', async () => {
+  it('says the answer as information in place of the refusal and never reaches the model', async () => {
     const answerHostCommand = vi.fn((name: string) => (name === 'help' ? 'the key list' : null))
     const outcome = await dispatchStructuredAgentSessionComposerCommand('/help', {
       ...base,
       agent: 'droid',
       answerHostCommand
     })
-    expect(outcome).toEqual({ handled: true, accepted: true, error: 'the key list' })
+    expect(outcome).toEqual({ handled: true, accepted: true, error: null, info: 'the key list' })
     expect(answerHostCommand).toHaveBeenCalledWith('help')
     expect(base.runConversationCommand).not.toHaveBeenCalled()
   })
@@ -28,16 +28,17 @@ describe('a host-answered command', () => {
       agent: 'droid',
       answerHostCommand: (name) => (name === 'help' ? 'the key list' : null)
     })
-    expect(outcome).toMatchObject({ handled: true, error: 'the key list' })
+    expect(outcome).toMatchObject({ handled: true, error: null, info: 'the key list' })
   })
 
-  it('keeps the refusal for a command the answer does not cover', async () => {
+  it('keeps the refusal, as an error with no information, for a command the answer does not cover', async () => {
     const outcome = await dispatchStructuredAgentSessionComposerCommand('/help', {
       ...base,
       agent: 'droid',
       answerHostCommand: () => null
     })
     expect(outcome.error).toMatch(/\/help is not available in chat sessions/)
+    expect(outcome.info).toBeUndefined()
   })
 
   it("keeps today's refusal when no answer is supplied", async () => {
@@ -47,6 +48,21 @@ describe('a host-answered command', () => {
     })
     expect(outcome.handled).toBe(true)
     expect(outcome.error).toMatch(/\/help is not available in chat sessions/)
+    expect(outcome.info).toBeUndefined()
+  })
+
+  it('keeps a refused conversation command an error even when an answer is supplied', async () => {
+    const outcome = await dispatchStructuredAgentSessionComposerCommand('/clear', {
+      ...base,
+      agent: 'droid',
+      conversationCommands: [],
+      answerHostCommand: () => 'the key list'
+    })
+    expect(outcome).toEqual({
+      handled: true,
+      accepted: false,
+      error: '/clear is not supported by this chat host.'
+    })
   })
 
   // Claude's harness runs /help itself and Codex does not list it: neither is the host's to answer.

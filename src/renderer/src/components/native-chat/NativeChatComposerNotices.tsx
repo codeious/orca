@@ -1,9 +1,16 @@
-import { AlertCircle, Paperclip, ServerOff, X } from 'lucide-react'
+import { AlertCircle, Info, Paperclip, ServerOff, X, type LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { translate } from '@/i18n/i18n'
 import { cn } from '@/lib/utils'
 import { NativeChatCopyButton } from './NativeChatCopyButton'
 import type { NativeChatComposerNotice } from './native-chat-composer-notice'
+
+const NOTICE_ICONS = {
+  error: AlertCircle,
+  attachment: Paperclip,
+  info: Info,
+  host: ServerOff
+} as const satisfies Record<NativeChatComposerNotice['kind'], LucideIcon>
 
 /** One card above the composer, one row per notice, errors first. The live region stays mounted so
  *  a screen reader hears the first notice too. */
@@ -56,7 +63,7 @@ export function NativeChatPromptSlotNotices({
 function NoticeRow({ notice }: { notice: NativeChatComposerNotice }): React.JSX.Element {
   const isError = notice.kind === 'error'
   const isHostWarning = notice.kind === 'host' && notice.tone === 'warning'
-  const Icon = notice.kind === 'host' ? ServerOff : isError ? AlertCircle : Paperclip
+  const Icon = NOTICE_ICONS[notice.kind]
   const dismissLabel = translate('components.native-chat.notices.dismiss', 'Dismiss')
   return (
     <li data-notice-kind={notice.kind} className={cn(isError && 'bg-destructive/5')}>

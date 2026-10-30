@@ -40,8 +40,8 @@ export type StructuredAgentSessionComposerOptions = {
   /** Present only where the host can set this session's goal; otherwise `/goal`
    *  stays message text the agent acts on itself. */
   setThreadGoalObjective?: (objective: string) => Promise<boolean>
-  /** The host's own reply to a command it claims but has no action for, shown in place of the
-   *  refusal; null keeps the refusal. The text is never sent to the model. */
+  /** The host's own reply to a command it claims but has no action for, shown as information in
+   *  place of the refusal; null keeps the refusal. The text is never sent to the model. */
   answerHostCommand?: (name: string) => string | null
 }
 
@@ -58,6 +58,8 @@ export type StructuredAgentSessionCommandOutcome = {
   handled: boolean
   accepted: boolean
   error: string | null
+  /** What the host answered the command with: said as information, where `error` is a failure. */
+  info?: string
   /** The refusal is said only while this still holds. */
   refusedWhile?: StructuredAgentSessionCommandRefusalCause
 }
@@ -202,7 +204,9 @@ export async function dispatchStructuredAgentSessionComposerCommand(
   }
   if (command.name !== 'model' && command.name !== 'effort') {
     const answer = controller.answerHostCommand?.(command.name)
-    return answer ? { handled: true, accepted: true, error: answer } : unavailable(command.name)
+    return answer
+      ? { handled: true, accepted: true, error: null, info: answer }
+      : unavailable(command.name)
   }
   const descriptor = controller.snapshot.find((entry) => entry.id === command.name)
   if (!descriptor || descriptor.kind.type !== 'select') {

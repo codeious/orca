@@ -23,6 +23,8 @@ export type NativeChatComposerErrorDetail = {
   errorText?: string
   /** A refused command's cause: its line is said only while that still holds. */
   refusedWhile?: StructuredAgentSessionCommandRefusalCause
+  /** `info`: the line is the host's answer to a command, not a failure. */
+  kind?: 'info'
 }
 
 export type NativeChatOptionPickerRequest = {

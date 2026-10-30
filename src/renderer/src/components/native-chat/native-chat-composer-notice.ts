@@ -15,7 +15,13 @@ export type NativeChatComposerNotice = NativeChatComposerNoticeContent & {
   key: string
   action?: { label: string; onClick: () => void; disabled?: boolean }
   onDismiss?: () => void
-} & ({ kind: 'error' | 'attachment' } | { kind: 'host'; tone: 'warning' | 'muted' })
+} & ({ kind: 'error' | 'attachment' | 'info' } | { kind: 'host'; tone: 'warning' | 'muted' })
+
+/** A chat's last send or command line: an error, or with `kind: 'info'` the host's answer. */
+export type NativeChatComposerLine = NativeChatComposerNoticeContent & {
+  kind?: 'info'
+  onDismiss: () => void
+}
 
 /** `headline` in Orca's words, with the error as written beside it. `localErrorIsOrcaWords`: an
  *  error raised in this window (not wrapped by main-process IPC) is already Orca's sentence. */
