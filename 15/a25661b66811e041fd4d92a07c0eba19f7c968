@@ -1,0 +1,42 @@
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.session.test.tsx
+  s_3bea8510715b06::t_c26b7d58a91a84 260-275
+  s_3bea8510715b06::t_5fc54134715105 156-161,286-288,293-295
+  s_3bea8510715b06::t_a419b9f51e02e7 361
+  s_3bea8510715b06::t_cf3562eebc605c 177,179-181,185-189,196
+  s_3bea8510715b06::t_4bf71458f56cf7 85-87,91,100
+  s_3bea8510715b06::t_a179e458c3b8a6 308-317,324-339
+  s_3bea8510715b06::t_bfc60cbec3f19e 227,229,233-247
+  s_3bea8510715b06::t_cbab2b973b12df 127-128
+  s_3bea8510715b06::t_cedce17e4632b2 1-84,88-90,92-99,101-126,129-155,162-176,178,182-184,190-195,197-226,228,230-232,248-259,276-285,289-292,296-307,318-323,340-360,362-375
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.test.tsx
+  s_3bea8510715b06::t_5fc54134715105 348-352,487-491,542
+  s_3bea8510715b06::t_a1d2ebe6dee5b8 269-347,353-486,492-523,531,533-541,543-632
+  s_3bea8510715b06::t_8a124a1a589edb 524-530,532
+  s_3bea8510715b06::t_54d0ef2b5afa76 40-41
+  s_3bea8510715b06::t_365b8a6151e6f0 63
+  s_3bea8510715b06::t_21acd688115f54 56,58,65
+  s_3bea8510715b06::t_74ac8f24ba3b50 3-5
+  s_3bea8510715b06::t_d4a660295f3977 46,62
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.ts
+  s_3bea8510715b06::t_5fc54134715105 30-31,57-62
+  s_3bea8510715b06::t_e6907e1c7761c8 13-29,32-34,46-47,50-51,63,65-67,82-91,93
+  s_3bea8510715b06::t_a9dec8f85546f6 38,44
+src/renderer/src/components/native-chat/NativeChatComposer.tsx
+  s_3bea8510715b06::t_0a8face91ba86a 251-252
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "15a25661b66811e041fd4d92a07c0eba19f7c968",
+  "prompts": {},
+  "sessions": {
+    "s_3bea8510715b06": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fcc33dcc-7b20-4f3f-ade9-db9b90f8f650",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
