@@ -1,0 +1,23 @@
+src/renderer/src/components/native-chat/use-droid-spec-handoff.test.tsx
+  s_ac49df01610bb9::t_a79fbd0e4b2870 100-104
+src/renderer/src/components/native-chat/use-droid-spec-handoff.ts
+  s_ac49df01610bb9::t_b82f1356ae2296 33,37
+src/main/droid/droid-autonomy-picker.test.ts
+  s_ac49df01610bb9::t_85149d8139bdfb 150-166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "489ef237057a5ef7a59ab2e53d97e6c8249fa50d",
+  "prompts": {},
+  "sessions": {
+    "s_ac49df01610bb9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ed644bda-4336-4c1a-98b4-642eb504700f",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
