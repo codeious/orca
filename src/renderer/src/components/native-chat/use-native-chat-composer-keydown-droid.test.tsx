@@ -12,6 +12,7 @@ import {
   type DroidComposerKey
 } from '../../../../shared/droid-composer-keys'
 import type { ComposerAutocomplete } from './native-chat-composer-state'
+import { NON_DROID_AGENTS } from '../../../../shared/non-droid-composer-key-agents.test-fixture'
 import type {
   SessionOptionDescriptor,
   SessionOptionsSurface
@@ -432,8 +433,6 @@ describe('Droid composer key map', () => {
 })
 
 describe('keys of every agent but Droid', () => {
-  const AGENTS = ['claude', 'codex', 'pi', 'grok', 'opencode', 'omp'] as const
-
   // Mode keys, Ctrl+C and Up/Down are not the composer's: they reach the browser unchanged.
   const UNTOUCHED: Record<string, KeyInit> = {
     'Shift+Tab': KEYS.shiftTab,
@@ -445,7 +444,7 @@ describe('keys of every agent but Droid', () => {
     ArrowDown: { key: 'ArrowDown', code: 'ArrowDown' }
   }
 
-  describe.each(AGENTS)('%s', (agent) => {
+  describe.each(NON_DROID_AGENTS)('%s', (agent) => {
     it.each(Object.keys(UNTOUCHED))(
       'leaves %s to the browser even with Droid keys wired',
       (key) => {

@@ -66,6 +66,7 @@ vi.mock('../dictation/dictation-control-events', () => ({
 }))
 
 import { NativeChatComposer } from './NativeChatComposer'
+import { NON_DROID_AGENTS } from '../../../../shared/non-droid-composer-key-agents.test-fixture'
 import { changePrompt, promptEditor, promptValue } from './native-chat-prompt-editor.test-support'
 
 const PASS_THROUGH = { handled: false, accepted: false, error: null }
@@ -269,43 +270,40 @@ describe('a Droid composer that does not have the key', () => {
   })
 })
 
-describe.each(['claude', 'codex', 'pi', 'grok', 'opencode', 'omp'] as const)(
-  'the %s composer keeps its own Esc and Ctrl+C',
-  (agent) => {
-    it('stops a running turn on Esc and keeps the draft when idle', () => {
-      const running = renderComposer({ agent, isWorking: true })
-      changePrompt(running.input, 'keep-me')
-      expect(press(running.input, ESCAPE)).toBe(true)
-      expect(running.onStop).toHaveBeenCalledTimes(1)
-      expect(promptValue(running.input)).toBe('keep-me')
-      cleanup()
+describe.each(NON_DROID_AGENTS)('the %s composer keeps its own Esc and Ctrl+C', (agent) => {
+  it('stops a running turn on Esc and keeps the draft when idle', () => {
+    const running = renderComposer({ agent, isWorking: true })
+    changePrompt(running.input, 'keep-me')
+    expect(press(running.input, ESCAPE)).toBe(true)
+    expect(running.onStop).toHaveBeenCalledTimes(1)
+    expect(promptValue(running.input)).toBe('keep-me')
+    cleanup()
 
-      const idle = renderComposer({ agent, isWorking: false })
-      changePrompt(idle.input, 'keep-me')
-      press(idle.input, ESCAPE)
-      expect(idle.onStop).not.toHaveBeenCalled()
-      expect(promptValue(idle.input)).toBe('keep-me')
-    })
+    const idle = renderComposer({ agent, isWorking: false })
+    changePrompt(idle.input, 'keep-me')
+    press(idle.input, ESCAPE)
+    expect(idle.onStop).not.toHaveBeenCalled()
+    expect(promptValue(idle.input)).toBe('keep-me')
+  })
 
-    it('leaves Ctrl+C to the browser: no stop, no copy of its own, key not claimed', () => {
-      const { onStop, input } = renderComposer({ agent, isWorking: true })
-      changePrompt(input, 'copy-me')
-      select(input, 1, 5)
+  it('leaves Ctrl+C to the browser: no stop, no copy of its own, key not claimed', () => {
+    const { onStop, input } = renderComposer({ agent, isWorking: true })
+    changePrompt(input, 'copy-me')
+    select(input, 1, 5)
 
-      expect(press(input, CTRL_C)).toBe(false)
-      expect(onStop).not.toHaveBeenCalled()
-      expect(writeClipboardText).not.toHaveBeenCalled()
-      select(input, 3, 3)
-      expect(press(input, CTRL_C)).toBe(false)
-      expect(onStop).not.toHaveBeenCalled()
-    })
+    expect(press(input, CTRL_C)).toBe(false)
+    expect(onStop).not.toHaveBeenCalled()
+    expect(writeClipboardText).not.toHaveBeenCalled()
+    select(input, 3, 3)
+    expect(press(input, CTRL_C)).toBe(false)
+    expect(onStop).not.toHaveBeenCalled()
+  })
 
-    it('sends on Enter mid-turn with no Droid placement', async () => {
-      const { structured, input } = renderComposer({ agent, isWorking: true })
-      changePrompt(input, 'hello')
-      press(input, ENTER)
-      await vi.waitFor(() => expect(structured.send).toHaveBeenCalledTimes(1))
-      expect(structured.send).toHaveBeenLastCalledWith('hello', [])
-    })
-  }
-)
+  it('sends on Enter mid-turn with no Droid placement', async () => {
+    const { structured, input } = renderComposer({ agent, isWorking: true })
+    changePrompt(input, 'hello')
+    press(input, ENTER)
+    await vi.waitFor(() => expect(structured.send).toHaveBeenCalledTimes(1))
+    expect(structured.send).toHaveBeenLastCalledWith('hello', [])
+  })
+})

@@ -6,6 +6,7 @@
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { AgentType } from '../../../../shared/agent-status-types'
 import type * as nativeChatAgentProfiles from '../../../../shared/native-chat-agent-profiles'
 import type { NativeChatStructuredComposerTransport } from './native-chat-composer-types'
 
@@ -67,6 +68,7 @@ vi.mock('../dictation/dictation-control-events', () => ({
 }))
 
 import { NativeChatComposer } from './NativeChatComposer'
+import { NON_DROID_AGENTS_BY_PLATFORM } from './native-chat-non-droid-agents.test-support'
 import { changePrompt } from './native-chat-prompt-editor.test-support'
 
 const PASS_THROUGH = { handled: false, accepted: false, error: null }
@@ -95,7 +97,7 @@ function transport(): NativeChatStructuredComposerTransport {
 let paneCounter = 0
 
 function renderComposer(args: {
-  agent: 'droid' | 'claude'
+  agent: AgentType
   isWorking: boolean
   structured?: NativeChatStructuredComposerTransport
   steerQueued?: () => boolean
@@ -179,6 +181,26 @@ describe('Droid composer next to the queue steer chord', () => {
     expect(structured.send).toHaveBeenLastCalledWith('plain', [])
   })
 
+  it('keeps Cmd+Enter on a Mac an ordinary send when no turn runs, never the wait key', async () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(MAC)
+    const { structured, input } = renderComposer({ agent: 'droid', isWorking: false })
+
+    changePrompt(input, 'plain')
+    press(input, { metaKey: true })
+    await vi.waitFor(() => expect(structured.send).toHaveBeenCalledTimes(1))
+    expect(structured.send).toHaveBeenLastCalledWith('plain', [])
+  })
+
+  it('sends nothing on Cmd+Enter from an empty idle composer on a Mac', async () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(MAC)
+    const { structured, input } = renderComposer({ agent: 'droid', isWorking: false })
+
+    press(input, { metaKey: true })
+    await Promise.resolve()
+    expect(structured.send).not.toHaveBeenCalled()
+    expect(structured.dispatchCommand).not.toHaveBeenCalled()
+  })
+
   it('still steers a waiting card from an empty composer off a Mac, and waits with text', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(LINUX)
     const steerQueued = vi.fn(() => true)
@@ -219,4 +241,72 @@ describe('every other agent', () => {
     expect(steerQueued).toHaveBeenCalledTimes(1)
     expect(structured.send).not.toHaveBeenCalled()
   })
+})
+
+// ⌘+Enter on a Mac, Ctrl+Enter elsewhere: the other modifier is only a plain send.
+describe('the primary-modifier Enter on every agent but Droid', () => {
+  const primary = (mac: boolean) => (mac ? { metaKey: true } : { ctrlKey: true })
+  const secondary = (mac: boolean) => (mac ? { ctrlKey: true } : { metaKey: true })
+
+  it.each(NON_DROID_AGENTS_BY_PLATFORM)(
+    'calls the held-follow-up release from an empty composer for $agent on $os',
+    ({ agent, userAgent, mac }) => {
+      vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent)
+      const steerQueued = vi.fn(() => true)
+      const { structured, input } = renderComposer({ agent, isWorking: true, steerQueued })
+
+      press(input, primary(mac))
+      expect(steerQueued).toHaveBeenCalledTimes(1)
+      expect(structured.send).not.toHaveBeenCalled()
+    }
+  )
+
+  it.each(NON_DROID_AGENTS_BY_PLATFORM)(
+    'sends text instead of releasing a held follow-up for $agent on $os',
+    async ({ agent, userAgent, mac }) => {
+      vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent)
+      const steerQueued = vi.fn(() => true)
+      const { structured, input } = renderComposer({ agent, isWorking: true, steerQueued })
+
+      changePrompt(input, 'hello')
+      press(input, primary(mac))
+      await vi.waitFor(() => expect(structured.send).toHaveBeenCalledTimes(1))
+      expect(structured.send).toHaveBeenLastCalledWith('hello', [])
+      expect(steerQueued).not.toHaveBeenCalled()
+    }
+  )
+
+  it.each(NON_DROID_AGENTS_BY_PLATFORM)(
+    'sends nothing from an empty composer when no follow-up is held for $agent on $os',
+    async ({ agent, userAgent, mac }) => {
+      vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent)
+      const steerQueued = vi.fn(() => false)
+      const { structured, input } = renderComposer({ agent, isWorking: true, steerQueued })
+
+      press(input, primary(mac))
+      await Promise.resolve()
+      expect(steerQueued).toHaveBeenCalledTimes(1)
+      expect(structured.send).not.toHaveBeenCalled()
+      expect(structured.dispatchCommand).not.toHaveBeenCalled()
+    }
+  )
+
+  it.each(NON_DROID_AGENTS_BY_PLATFORM)(
+    'takes the other modifier for a plain send, never a release, for $agent on $os',
+    async ({ agent, userAgent, mac }) => {
+      vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent)
+      const steerQueued = vi.fn(() => true)
+      const { structured, input } = renderComposer({ agent, isWorking: true, steerQueued })
+
+      press(input, secondary(mac))
+      await Promise.resolve()
+      expect(structured.send).not.toHaveBeenCalled()
+
+      changePrompt(input, 'hello')
+      press(input, secondary(mac))
+      await vi.waitFor(() => expect(structured.send).toHaveBeenCalledTimes(1))
+      expect(structured.send).toHaveBeenLastCalledWith('hello', [])
+      expect(steerQueued).not.toHaveBeenCalled()
+    }
+  )
 })
