@@ -61,6 +61,13 @@ const handledSchema = z.discriminatedUnion('type', [
     type: z.literal('queued_messages_discarded'),
     requestId: z.string().optional(),
     text: z.string().optional()
+  }),
+  // Sent on the session that showed the plan; the client, not Droid, starts `newSessionId`.
+  z.looseObject({
+    type: z.literal('spec_handoff_session_created'),
+    newSessionId: z.string().min(1),
+    initialPrompt: z.string().default(''),
+    specHandoffId: z.string().min(1)
   })
 ])
 const HANDLED_TYPES = new Set<string>(handledSchema.options.map((arm) => arm.shape.type.value))

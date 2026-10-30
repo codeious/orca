@@ -121,8 +121,7 @@ async function applyAdoptedTranscript(
   }
   const nativeId = agentSessionProviderHandleFromAdopted(adopt.providerHandle).nativeId
   if (!adopt.transcriptPath) {
-    // A replay carries no path. The founding import already wrote any history Droid's file held,
-    // so a Droid journal still empty here belongs to a session that had none.
+    // The founding import already wrote whatever history Droid's file held.
     if (params.agent === 'droid') {
       return
     }
@@ -141,8 +140,8 @@ async function applyAdoptedTranscript(
     throw new Error(imported.error)
   }
   // `replaced: false` means the transcript decoded to nothing. The row promised a conversation and
-  // the provider resumed one, so an empty journal here is a disagreement, not an empty chat,
-  // unless the file is Droid's own record of a session nobody has spoken in.
+  // the provider resumed one, so an empty journal here is a disagreement, not an empty chat
+  // (unless Droid filed a session nobody has spoken in).
   if (
     !imported.replaced &&
     !(await isUnspokenDroidSession(params.agent, nativeId, adopt.transcriptPath))

@@ -234,6 +234,8 @@ const KnownItemBody = z.discriminatedUnion('kind', [
     blockedPath: z.string().optional(),
     matchedAskRule: ApprovalMatchedAskRule.optional(),
     subject: ApprovalSubject.optional(),
+    acceptsComment: z.boolean().optional(),
+    acceptsPlanEdit: z.boolean().optional(),
     detail: z.string().nullable(),
     options: z.array(PromptOption),
     resolution: Resolution
@@ -263,7 +265,15 @@ const KnownItemBody = z.discriminatedUnion('kind', [
     providerFrame: ProviderFrame.optional(),
     threadGoal: AgentJournalThreadGoalStateSchema.optional(),
     failure: AgentSessionFailureFactSchema.optional(),
-    orcaStop: z.object({ cause: z.string().min(1) }).optional()
+    orcaStop: z.object({ cause: z.string().min(1) }).optional(),
+    specHandoff: z
+      .object({
+        newSessionId: z.string().min(1),
+        initialPrompt: z.string(),
+        specHandoffId: z.string().min(1),
+        autonomyLevel: z.string().min(1).optional()
+      })
+      .optional()
   }),
   z.object({
     kind: z.literal('turn'),

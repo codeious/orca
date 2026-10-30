@@ -18576,9 +18576,17 @@
         "reason": "Reason",
         "needsAccess": "Needs access to",
         "needsNewerOrca": "This request needs a newer version of Orca.",
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)",
         "plan": {
-          "file": "Plan file"
+          "file": "Plan file",
+          "edit": "Edit plan",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits"
         }
+      },
+      "specHandoff": {
+        "failed": "Could not open the new Droid session. The planning session is still open."
       },
       "launchPromptNotDelivered": "Not delivered — check the terminal",
       "subagents": {

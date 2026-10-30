@@ -207,13 +207,25 @@ export const QueuedMessageActionParams = z
  *  restart's) so the cards send again. Gated like the draft actions above. */
 export const QueuedMessagesResumeParams = z.object({ envelope: MutationEnvelope }).strict()
 
+/** Text a person typed onto an approval; hashed verbatim by both peers, so no trim or transform. */
+const ApprovalNote = z
+  .string()
+  .max(AGENT_SESSION_QUESTION_ANSWER_MAX_BYTES)
+  .refine(
+    (value) => Buffer.byteLength(value, 'utf8') <= AGENT_SESSION_QUESTION_ANSWER_MAX_BYTES,
+    'Text is too large'
+  )
+
 export const RespondParams = z
   .object({
     envelope: MutationEnvelope,
     itemId: Identifier('Invalid item id'),
     /** Compare-and-set: the revision the client had on screen. */
     expectedRevision: z.number().int().positive(),
-    optionId: Identifier('Invalid option id', MAX_RESPONSE_OPTION_ID_LENGTH)
+    optionId: Identifier('Invalid option id', MAX_RESPONSE_OPTION_ID_LENGTH),
+    /** Both gated on `agent-session.approval-notes.v1`: an older host refuses the strict keys. */
+    comment: ApprovalNote.optional(),
+    editedSpecContent: ApprovalNote.optional()
   })
   .strict()
 

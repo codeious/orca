@@ -90,6 +90,28 @@ describe('prompt response parameters', () => {
     await rejects('agentSession.respondToApproval', { ...base, optionId: 'x'.repeat(1025) })
   })
 
+  it('takes a comment and an edited plan beside an approval option, and bounds both', async () => {
+    const base = { envelope: envelope(), itemId: 'item-1', expectedRevision: 1, optionId: 'cancel' }
+    const notes = { comment: ' keep the second step ', editedSpecContent: '1. Write.\n2. Test.' }
+    const response = await call(
+      'agentSession.respondToApproval',
+      { ...base, ...notes },
+      STRUCTURED_CLIENT
+    )
+    expect(response).toMatchObject({ ok: true })
+    expect(hostCalls.respondToPrompt).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ kind: 'approval', optionId: 'cancel', ...notes })
+    )
+
+    await rejects('agentSession.respondToApproval', { ...base, comment: 'x'.repeat(64 * 1024 + 1) })
+    await rejects('agentSession.respondToApproval', {
+      ...base,
+      editedSpecContent: 'é'.repeat(40 * 1024)
+    })
+    await rejects('agentSession.respondToQuestion', { ...base, comment: 'a note' })
+  })
+
   it('takes a question id exactly as the agent wrote it, including edge spaces', async () => {
     const answers = [{ questionId: 'scope ', optionIds: [], other: 'mine' }]
     const response = await call(

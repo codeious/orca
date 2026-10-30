@@ -3,6 +3,7 @@ import { agentSessionFailureWords } from '../../shared/agent-session-failure-wor
 import type { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import { DISPATCH_DOUBT_PROVIDER_ENDED_UNANSWERED } from '../native-chat/agent-session-journal/journal-dispatch-doubt-reasons'
 import type { AgentSessionDispatchOutcome } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
+import type { ProviderTimelineEvent } from '../native-chat/agent-session-timeline/provider-timeline-event'
 import { DroidMessages } from './droid-messages'
 import { DroidRpcError } from './droid-rpc-errors'
 import { parseDroidNotification, type DroidNotification } from './droid-session-notifications'
@@ -21,6 +22,10 @@ export type DroidTurnDeps = {
   idle: () => void
   /** Droid's report of the session's settings; it belongs to the session, not to a turn. */
   settings: (report: { requestId?: string; settings: unknown }) => void
+  /** The row that tells the chat to open the session a Spec plan moved to, if this session asked for it. */
+  specHandoff?: (
+    notification: Extract<DroidNotification, { type: 'spec_handoff_session_created' }>
+  ) => ProviderTimelineEvent[]
   /** The echo's message id, recorded before the timeline admits the send. */
   rememberEcho?: (clientMessageId: string, messageId: string) => void
   warn?: (message: string, fields: { requestId: string }) => void
@@ -152,6 +157,9 @@ export class DroidTurns {
       case 'tool_result':
         lane.apply(this.messages.toolResult(notification))
         return
+      case 'spec_handoff_session_created':
+        lane.apply(this.deps.specHandoff?.(notification) ?? [])
+        return
       case 'error':
         this.lastError = notification.message ?? notification.error?.message
         return
@@ -250,7 +258,9 @@ export class DroidTurns {
   private finish(reason: string): void {
     this.open(Date.now())
     const cancelled = this.stopped || reason === 'cancelled'
-    const outcome = cancelled ? 'cancellation' : reason === 'completed' ? 'success' : 'failure'
+    // A plan handed to a new session ends the planning turn as planned, not as an error.
+    const succeeded = reason === 'completed' || reason === 'spec_handoff'
+    const outcome = cancelled ? 'cancellation' : succeeded ? 'success' : 'failure'
     const events = this.messages.settle()
     if (outcome === 'failure') {
       const fact = agentSessionFailureFact(

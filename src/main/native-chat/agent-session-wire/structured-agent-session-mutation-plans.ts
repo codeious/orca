@@ -283,7 +283,9 @@ export function promptPlan(
       itemId: params.itemId,
       expectedRevision: params.expectedRevision,
       optionId: params.optionId,
-      answers: params.answers
+      answers: params.answers,
+      comment: params.comment,
+      editedSpecContent: params.editedSpecContent
     },
     run: (ctx) => performPrompt(ctx, params),
     replay: (ctx) => {

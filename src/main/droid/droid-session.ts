@@ -21,6 +21,7 @@ import { DroidSessionModel } from './droid-session-model'
 import { DroidSessionOptions } from './droid-session-options'
 import { DroidReportedSettings, type DroidStartSettings } from './droid-session-settings'
 import { readStartedSession } from './droid-started-session'
+import { DroidSpecHandoffs } from './droid-spec-handoff'
 import { DroidTurns } from './droid-turns'
 import { isSupportedDroidProtocol } from './droid-version-support'
 
@@ -75,6 +76,7 @@ export class DroidSession {
   readonly turns: DroidTurns
   readonly prompts: DroidPrompts
   private readonly echoed = new Map<string, string>()
+  private readonly handoffs = new DroidSpecHandoffs()
   private readonly lifecycle: JsonlRpcSessionLifecycle
   /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
   readonly settings = new DroidReportedSettings()
@@ -130,7 +132,10 @@ export class DroidSession {
         this.turns.end()
       }
     })
-    this.prompts = new DroidPrompts(this.lane)
+    this.prompts = new DroidPrompts(this.lane, {
+      autonomyLevels: () => this.settings.current.availableAutonomyLevels,
+      handoffs: this.handoffs
+    })
     this.options = new DroidSessionOptions({
       request: (method, params, options) => this.connection.request(method, params, options),
       settings: this.settings,
@@ -146,6 +151,7 @@ export class DroidSession {
       settled: (id, outcome) => this.lifecycle.settle(id, outcome),
       idle: () => deps.onIdle({ sessionId }),
       settings: (report) => this.settings.receive(report),
+      specHandoff: (notification) => this.handoffs.created(notification),
       rememberEcho: (clientMessageId, messageId) => {
         this.echoed.set(clientMessageId, messageId)
       },

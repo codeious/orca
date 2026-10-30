@@ -1,5 +1,8 @@
 import type { RuntimeClientTarget } from '@/runtime/runtime-rpc-client'
-import { supportsStructuredAgentSessionQuestionAnswers } from '@/runtime/structured-agent-session-client'
+import {
+  supportsStructuredAgentSessionApprovalNotes,
+  supportsStructuredAgentSessionQuestionAnswers
+} from '@/runtime/structured-agent-session-client'
 import {
   legacyAgentSessionSelectedOptionId,
   type AgentSessionPromptResponse
@@ -22,7 +25,20 @@ export async function respondToStructuredAgentSessionPrompt({
   const promptTarget = { itemId: item.itemId, expectedRevision: item.revision }
   let fields: Record<string, unknown>
   if (response.kind === 'option') {
-    fields = { ...promptTarget, optionId: response.optionId }
+    const { comment, editedSpecContent } = response
+    if (
+      (comment !== undefined || editedSpecContent !== undefined) &&
+      !(await supportsStructuredAgentSessionApprovalNotes(target))
+    ) {
+      // An older host refuses the strict keys, and dropping the note would answer without it.
+      return null
+    }
+    fields = {
+      ...promptTarget,
+      optionId: response.optionId,
+      ...(comment === undefined ? {} : { comment }),
+      ...(editedSpecContent === undefined ? {} : { editedSpecContent })
+    }
   } else if (await supportsStructuredAgentSessionQuestionAnswers(target)) {
     // Negotiated before mutate fingerprints the call: older hosts reject the strict field.
     fields = { ...promptTarget, answers: response.answers }

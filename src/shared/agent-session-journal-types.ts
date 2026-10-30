@@ -19,6 +19,7 @@ import type { AgentSessionContextUsage } from './agent-session-context-usage'
 import type { AgentSessionProviderHandle } from './agent-session-provider-handle'
 import type { NativeChatBlock, NativeChatRole } from './native-chat-types'
 import type { AgentMessageSource } from './agent-session-message-source'
+import type { AgentJournalSpecHandoff } from './agent-session-journal-spec-handoff'
 
 export { type AgentType }
 
@@ -235,6 +236,10 @@ export type AgentJournalApprovalItem = {
   blockedPath?: string
   matchedAskRule?: AgentJournalApprovalMatchedAskRule
   subject?: AgentJournalApprovalSubject
+  /** The answer may carry a note beside the chosen option; absent, the provider takes none. */
+  acceptsComment?: boolean
+  /** The answer may carry the plan's text as the person edited it. */
+  acceptsPlanEdit?: boolean
   detail: string | null
   options: AgentJournalPromptOption[]
   resolution: AgentJournalResolution
@@ -342,6 +347,8 @@ type AgentJournalStatusItemFields = {
   /** On the row about a reply Orca's own stop cut off: why Orca stopped. Its cause is open (a newer
    *  host may name one this build does not know), so read it with `readAgentSessionOrcaStop`. */
   orcaStop?: { cause: string }
+  /** On the row where Droid made the session a Spec plan moves to: the chat opens that session. */
+  specHandoff?: AgentJournalSpecHandoff
 }
 
 /** A status row that reports no failure; its text is its writer's own. */

@@ -26,6 +26,7 @@ import { useNativeChatFileLinkContext } from './use-native-chat-file-link-contex
 import { useRecheckNativeChatFileLinksWhenTurnEnds } from './use-native-chat-file-link-existence'
 import { useNativeChatTabOwnerWorktreeId } from './use-native-chat-tab-owner'
 import { useStructuredAgentSession } from './use-structured-agent-session'
+import { useDroidSpecHandoff } from './use-droid-spec-handoff'
 import { useNativeChatImageRuntimeContext } from './native-chat-image-runtime-context'
 import { useStructuredNativeChatPaneCommands } from './use-structured-native-chat-pane-commands'
 import type { NativeChatStructuredViewProps } from './native-chat-view-types'
@@ -96,6 +97,12 @@ export function NativeChatStructuredSession(
     ...(provisionalLaunch.launch ? { launch: provisionalLaunch.launch } : {})
   })
   useRecheckNativeChatFileLinksWhenTurnEnds(controller.isWorking)
+  useDroidSpecHandoff({
+    tabId: props.tabId,
+    agent: props.agent,
+    status: controller.status,
+    journalItems: controller.journalItems
+  })
   const stopControls = nativeChatStructuredStopControls(controller, hostExecution.stopping)
   const launchDraftSignal = useNativeChatLaunchDraftSignal({
     terminalTabId: props.tabId,
@@ -357,8 +364,8 @@ export function NativeChatStructuredSession(
             <NativeChatApprovalCard
               key={`${prompt.itemId}:${prompt.revision}`}
               approval={approval}
-              onChoose={(optionId) =>
-                void promptResponse.respond(prompt, { kind: 'option', optionId })
+              onChoose={(optionId, notes) =>
+                void promptResponse.respond(prompt, { kind: 'option', optionId, ...notes })
               }
               isSubmitting={promptResponse.holds(prompt)}
               onCancel={cancelPrompt}

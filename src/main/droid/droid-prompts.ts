@@ -12,11 +12,14 @@ import {
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import type { DroidRequestContext } from './droid-json-rpc-peer'
 import { droidPermissionPresentation } from './droid-permission-requests'
-import type { DroidPromptPresentation } from './droid-prompt-presentation'
+import type { DroidPromptEnvironment, DroidPromptPresentation } from './droid-prompt-presentation'
 import { droidQuestionPresentation } from './droid-question-requests'
 import { DroidRpcError } from './droid-rpc-errors'
 
-const PRESENTERS = new Map<string, (params: unknown) => DroidPromptPresentation>([
+const PRESENTERS = new Map<
+  string,
+  (params: unknown, environment: DroidPromptEnvironment) => DroidPromptPresentation
+>([
   ['droid.request_permission', droidPermissionPresentation],
   ['droid.ask_user', droidQuestionPresentation]
 ])
@@ -34,7 +37,10 @@ type OpenRequest = {
 export class DroidPrompts {
   private readonly open = new Map<string, OpenRequest>()
 
-  constructor(private readonly lane: JsonlRpcTimelineLane) {}
+  constructor(
+    private readonly lane: JsonlRpcTimelineLane,
+    private readonly environment: DroidPromptEnvironment
+  ) {}
 
   /** The peer's handler for a request Droid makes: a card, answered when a person chooses. */
   handle(method: string, params: unknown, context: DroidRequestContext): Promise<unknown> {
@@ -45,7 +51,7 @@ export class DroidPrompts {
         `Unsupported Droid client method: ${method}`
       )
     }
-    const presentation = present(params)
+    const presentation = present(params, this.environment)
     const key = `${method}:${context.id}`
     this.lane.apply([{ type: 'request.open', request: key, body: presentation.body }])
     return new Promise((resolve) => {

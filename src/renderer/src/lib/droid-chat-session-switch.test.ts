@@ -10,6 +10,10 @@ import { DROID_SPEC_SAME_AS_MAIN } from '../../../shared/droid-spec-pair-options
 import { structuredAgentSessionTabId } from '../../../shared/structured-agent-session-projection'
 import type { TabsSlice } from '../store/slices/tabs/tabs-slice-contract'
 import { createTestStore } from '../store/slices/store-test-helpers'
+import {
+  clearStructuredAgentSessionPendingSends,
+  getStructuredAgentSessionPendingSends
+} from '@/components/native-chat/structured-agent-session-pending-sends'
 
 type CallParams = { key?: string; value?: string }
 type CreateIntent = (
@@ -147,6 +151,7 @@ beforeEach(() => {
   localStorage.clear()
   resetStructuredAgentLaunchPersistenceForTests()
   resetStructuredAgentLaunchRegistryForTests()
+  clearStructuredAgentSessionPendingSends(NEW_CHAT)
   store = createTestStore()
   mocks.store.current = store
   mocks.createIntent.mockImplementation(chatIntent)
@@ -362,6 +367,83 @@ describe('switching a Droid chat to another Droid session', () => {
     await switched.settlement
 
     expect(optionPicks()).toEqual([['specModel', DROID_SPEC_SAME_AS_MAIN]])
+  })
+
+  describe('with a first message and settings for an existing session', () => {
+    const PLAN_PROMPT = `Implement the following plan:\n\n${'1. Write the file.\n'.repeat(900)}`
+
+    const switchWith = (
+      settings: { spec?: boolean; autonomyLevel?: string } | undefined,
+      firstMessage: string | undefined
+    ): ReturnType<typeof switchDroidChatSession> =>
+      switchDroidChatSession({
+        fromTabId: `agent-session:${OLD_CHAT}`,
+        placement: 'replace',
+        target: {
+          kind: 'existing',
+          droidSessionId: DROID_ID,
+          ...(settings ? { settings } : {})
+        },
+        ...(firstMessage === undefined ? {} : { firstMessage })
+      })
+
+    it('holds the settings before the session is used, and sends the whole message once', async () => {
+      const switched = switchWith({ spec: false, autonomyLevel: 'medium' }, PLAN_PROMPT)
+
+      // Staged at the click, as the chat's one send, so nothing typed meanwhile goes ahead of it.
+      expect(PLAN_PROMPT.length).toBeGreaterThan(16 * 1024)
+      expect(getStructuredAgentSessionPendingSends(NEW_CHAT)).toMatchObject([
+        { phase: 'sending', body: { blocks: [{ type: 'text', text: PLAN_PROMPT.trimEnd() }] } }
+      ])
+      await switched.settlement
+
+      expect(intentRequest()).toEqual([WORKTREE, 'droid', 'local', { providerSessionId: DROID_ID }])
+      expect(optionPicks()).toEqual([
+        ['planMode', 'false'],
+        ['autonomyLevel', 'medium']
+      ])
+      expect(mocks.launch).toHaveBeenCalledTimes(1)
+      expect(getStructuredAgentSessionPendingSends(NEW_CHAT)).toHaveLength(1)
+    })
+
+    it('leaves the autonomy to the saved default when the option names no level', async () => {
+      await switchWith({ spec: false }, PLAN_PROMPT).settlement
+
+      expect(optionPicks()).toEqual([['planMode', 'false']])
+    })
+
+    it.each(['', '  \n'])('sends nothing for the message %j', async (blank) => {
+      await switchWith(undefined, blank).settlement
+
+      expect(getStructuredAgentSessionPendingSends(NEW_CHAT)).toHaveLength(0)
+      expect(optionPicks()).toEqual([])
+    })
+
+    it('closes the old tab only after the new session is published', async () => {
+      const switched = switchWith({ spec: false }, PLAN_PROMPT)
+
+      expect(tabIds()).toContain(`agent-session:${OLD_CHAT}`)
+      await switched.settlement
+
+      expect(tabIds()).toEqual([
+        'agent-session:claude-before',
+        NEW_TAB,
+        'agent-session:claude-after'
+      ])
+    })
+
+    it('keeps the old tab when the new session cannot be loaded, and never sends into it', async () => {
+      mocks.launch.mockRejectedValue(
+        new StructuredAgentSessionCreateRefusalError('Droid could not load that session')
+      )
+      const switched = switchWith({ spec: false }, PLAN_PROMPT)
+
+      await expect(switched.settlement).resolves.toMatchObject({ kind: 'failed' })
+
+      expect(tab(`agent-session:${OLD_CHAT}`)).toBeDefined()
+      expect(mocks.beginClose).not.toHaveBeenCalled()
+      expect(getStructuredAgentSessionPendingSends(OLD_CHAT)).toHaveLength(0)
+    })
   })
 
   it('refuses to start from a chat of another agent, and changes nothing', () => {

@@ -29,8 +29,9 @@ export type DroidFreshSessionSettings = {
 }
 
 export type DroidSessionSwitchTarget =
-  /** A Droid session that already exists (rewind, Spec handoff, compress, Open fork). */
-  | { kind: 'existing'; droidSessionId: string }
+  /** A Droid session that already exists (rewind, Spec handoff, compress, Open fork). Without
+   *  `settings` it resumes as saved; with them, those picks are applied before it is used. */
+  | { kind: 'existing'; droidSessionId: string; settings?: DroidFreshSessionSettings }
   /** A session Droid starts new (/clear, /new). */
   | { kind: 'fresh'; settings: DroidFreshSessionSettings }
 
@@ -40,6 +41,8 @@ export type DroidSessionSwitchRequest = {
   /** `replace`: the new session takes the tab's place. `beside`: it opens in a new tab next to it. */
   placement: 'replace' | 'beside'
   target: DroidSessionSwitchTarget
+  /** Sent once as the new session's first message, after its held settings. */
+  firstMessage?: string
 }
 
 export type DroidSessionSwitch = {
@@ -109,12 +112,15 @@ export function switchDroidChatSession(request: DroidSessionSwitchRequest): Droi
       ...(executionHostId ? { executionHostId } : {}),
       ...(target.kind === 'existing'
         ? { resumeFrom: { providerSessionId: target.droidSessionId } }
+        : {}),
+      ...(request.firstMessage?.trim()
+        ? { prompt: request.firstMessage, promptDelivery: 'auto-submit' as const }
         : {})
     },
     {}
   )
   try {
-    if (target.kind === 'fresh') {
+    if (target.settings) {
       holdFreshSettings(handle.sessionId, target.settings)
     }
     const tab = openStructuredAgentSessionProvisionalTab({

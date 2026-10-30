@@ -42,12 +42,20 @@ export type ChatApproval = {
   blockedPath?: string
   subject?: AgentJournalApprovalSubject
   detail?: string
+  /** The agent takes a typed comment, or an edited plan, along with the option chosen. */
+  acceptsComment?: boolean
+  acceptsPlanEdit?: boolean
   options: { label: string; send: string }[]
 }
+
+/** What the person typed onto an approval card; a field is absent when they typed nothing. */
+export type ChatApprovalNotes = { comment?: string; editedSpecContent?: string }
 
 /** A journal approval prompt as its card reads it; each option sends its id. */
 export function chatApprovalFromJournal(body: AgentJournalApprovalItem): ChatApproval {
   return {
+    ...(body.acceptsComment ? { acceptsComment: true } : {}),
+    ...(body.acceptsPlanEdit ? { acceptsPlanEdit: true } : {}),
     title: body.title,
     ...(body.displayName ? { displayName: body.displayName } : {}),
     ...(body.description ? { description: body.description } : {}),

@@ -7,6 +7,7 @@ import type {
 import type { AgentSessionConversationOutline } from '../../../shared/agent-session-conversation-outline'
 import { AGENT_SESSION_CONVERSATION_COMMAND_TIMEOUT_MS } from '../../../shared/agent-session-conversation-command'
 import {
+  AGENT_SESSION_APPROVAL_NOTES_CAPABILITY,
   AGENT_SESSION_ATTENTION_ACK_RUNTIME_CAPABILITY,
   AGENT_SESSION_CONVERSATION_OUTLINE_RUNTIME_CAPABILITY,
   AGENT_SESSION_PROMPT_CANCEL_RUNTIME_CAPABILITY,
@@ -71,6 +72,12 @@ export function supportsStructuredAgentSessionQuestionAnswers(
     target,
     AGENT_SESSION_QUESTION_ANSWERS_RUNTIME_CAPABILITY
   )
+}
+
+export function supportsStructuredAgentSessionApprovalNotes(
+  target: RuntimeClientTarget
+): Promise<boolean> {
+  return structuredAgentSessionHostSupports(target, AGENT_SESSION_APPROVAL_NOTES_CAPABILITY)
 }
 
 /** Null when the host predates the outline, without calling it. A failed read
