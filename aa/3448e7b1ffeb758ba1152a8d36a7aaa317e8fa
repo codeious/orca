@@ -1,0 +1,53 @@
+src/renderer/src/components/native-chat/native-chat-non-droid-agents.test-support.ts
+  s_e6863169af2245::t_a021eab7cdc23a 1
+  s_e6863169af2245::t_cb8d6f487a1d5e 2-11
+src/renderer/src/components/native-chat/NativeChatComposer.droid-wait.test.tsx
+  s_e6863169af2245::t_a13f52562dd5d7 9
+  s_e6863169af2245::t_fc16eb808a8fc1 184-203
+  s_e6863169af2245::t_db45125c15ab58 245-251,253-312
+  s_e6863169af2245::t_7c038e395df309 252
+  s_e6863169af2245::t_3bfbfe83333778 71
+  s_e6863169af2245::t_f51ce20ea6c132 100
+src/renderer/src/components/native-chat/native-chat-composer-prompt-recall.test.tsx
+  s_e6863169af2245::t_47e7aeaccb388a 9
+  s_e6863169af2245::t_18367ffb681640 6
+  s_e6863169af2245::t_27e3e53fda9f54 81,88
+  s_e6863169af2245::t_08103044397890 128-138,141-148,150-168
+src/renderer/src/components/native-chat/NativeChatComposer.droid-turn-keys.test.tsx
+  s_e6863169af2245::t_47e7aeaccb388a 69
+  s_e6863169af2245::t_50609841625278 273-309
+src/shared/non-droid-composer-key-agents.test-fixture.ts
+  s_e6863169af2245::t_2e3efd1d5f9e0c 1-3,5-9
+  s_e6863169af2245::t_a3111ba6e40149 4
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown-non-droid-agents.test.tsx
+  s_e6863169af2245::t_d332d6dad2d598 202,208-210,212-226
+  s_e6863169af2245::t_47e7aeaccb388a 11
+  s_e6863169af2245::t_258a5d0580f995 1-2,4-10,12-115,118-124,126-164,166,168,174,176-178,185-186,198,207,211,237
+  s_e6863169af2245::t_844f267df23cfc 165,167,169-173,175,179-184,190
+  s_e6863169af2245::t_7ba75c40a6ebc4 3
+  s_e6863169af2245::t_b95f07bed8813a 116-117,125
+  s_e6863169af2245::t_50609841625278 187-189,191-197,199-201,203-206
+  s_e6863169af2245::t_4a64329eac9069 227-236
+src/main/acp/acp-launch-specs-composer-key-agents.test.ts
+  s_e6863169af2245::t_e67404fe6a9a37 2
+  s_e6863169af2245::t_548a56164446ae 1,3-12
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown-droid.test.tsx
+  s_e6863169af2245::t_47e7aeaccb388a 15
+  s_e6863169af2245::t_c36359417344db 447
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "aa3448e7b1ffeb758ba1152a8d36a7aaa317e8fa",
+  "prompts": {},
+  "sessions": {
+    "s_e6863169af2245": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "8d9e4d40-dee3-4d7a-a23a-40b9ce9316ed",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
