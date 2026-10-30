@@ -30,13 +30,11 @@ function openDroidSpecHandoff(fromTabId: string, handoff: AgentJournalSpecHandof
       fromTabId,
       placement: 'replace',
       // Auto, whatever the saved default: the plan is approved, and Spec would only ask again.
+      // An option that names no level is "no autonomy"; leaving it unset would resume at Agent Permissions.
       target: {
         kind: 'existing',
         droidSessionId: handoff.newSessionId,
-        settings: {
-          spec: false,
-          ...(handoff.autonomyLevel ? { autonomyLevel: handoff.autonomyLevel } : {})
-        }
+        settings: { spec: false, autonomyLevel: handoff.autonomyLevel ?? 'off' }
       },
       firstMessage: handoff.initialPrompt
     })

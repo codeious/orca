@@ -97,7 +97,11 @@ describe('opening the session a Spec plan was handed to', () => {
     expect(mocks.switchSession).toHaveBeenCalledWith({
       fromTabId: TAB,
       placement: 'replace',
-      target: { kind: 'existing', droidSessionId: NEW_SESSION, settings: { spec: false } },
+      target: {
+        kind: 'existing',
+        droidSessionId: NEW_SESSION,
+        settings: { spec: false, autonomyLevel: 'off' }
+      },
       firstMessage: PROMPT
     })
   })

@@ -147,6 +147,23 @@ describe('the autonomy level picked before the first message', () => {
     ])
   })
 
+  it('sends Off again on resume when Off was saved and Agent Permissions run higher', async () => {
+    const h = await setupDroidAdapter(
+      { previous: priorSession, autonomyLevel: 'high' },
+      droidOffering(ALL)
+    )
+
+    const { connection } = await h.start({ autonomyLevel: 'off', planMode: 'false' })
+
+    expect(connection.requests.map(({ method, params }) => ({ method, params }))).toEqual([
+      { method: 'droid.load_session', params: { sessionId: 'droid-session-9' } },
+      {
+        method: 'droid.update_session_settings',
+        params: { autonomyLevel: 'off', interactionMode: 'auto' }
+      }
+    ])
+  })
+
   it('does not blame Agent Permissions when Droid runs below a level the person picked', async () => {
     const h = await setupDroidAdapter({ autonomyLevel: 'high' }, droidOffering(['off', 'low']))
 
