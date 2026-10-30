@@ -1,7 +1,8 @@
 // @vitest-environment happy-dom
 
-// Shift+Tab is Droid's Spec switch and Ctrl+L its autonomy cycle. Each acts only for a Droid chat that
-// can act on it, and otherwise leaves the key alone so it keeps its ordinary job.
+// Shift+Tab is Droid's Spec switch, Ctrl+L its autonomy cycle, Tab its reasoning-effort cycle and
+// Ctrl+N its model cycle. Each acts only for a Droid chat that can act on it, and otherwise leaves
+// the key alone so it keeps its ordinary job. While a turn runs all four are held, not handed back.
 
 import { renderHook } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
@@ -36,10 +37,13 @@ const MODEL_ROW: SessionOptionDescriptor = {
   settable: true
 }
 
+type KeysProps = { snapshot: SessionOptionDescriptor[]; isWorking?: boolean | undefined }
+
 function setup(args: {
   agent: string
   snapshot: SessionOptionDescriptor[]
   autonomy?: SessionOptionAutonomy
+  isWorking?: boolean
 }) {
   const setOption = vi.fn(async () => ({ snapshot: args.snapshot }))
   const surface: SessionOptionsSurface = {
@@ -49,14 +53,16 @@ function setup(args: {
     invokeAction: async () => ({ snapshot: args.snapshot }),
     subscribe: () => () => {}
   }
+  const initialProps: KeysProps = { snapshot: args.snapshot, isWorking: args.isWorking }
   const hook = renderHook(
-    (props: { snapshot: SessionOptionDescriptor[] }) =>
+    (props: KeysProps) =>
       useNativeChatDroidComposerKeys({
         agent: args.agent,
         snapshot: props.snapshot,
-        surface
+        surface,
+        isWorking: props.isWorking
       }),
-    { initialProps: { snapshot: args.snapshot } }
+    { initialProps }
   )
   return { hook, setOption }
 }
@@ -259,4 +265,368 @@ describe('useNativeChatDroidComposerKeys: Ctrl+L', () => {
       expect(setOption).not.toHaveBeenCalled()
     }
   )
+})
+
+function selectRow(
+  id: 'model' | 'effort',
+  values: readonly string[],
+  currentValue: string | undefined,
+  overrides: Partial<SessionOptionDescriptor> = {}
+): SessionOptionDescriptor {
+  return {
+    id,
+    label: id === 'model' ? 'Model' : 'Reasoning effort',
+    category: id === 'model' ? 'model' : 'thought_level',
+    kind: {
+      type: 'select',
+      ...(currentValue === undefined ? {} : { currentValue }),
+      choices: values.map((value) => ({ value, label: value.toUpperCase() }))
+    },
+    valueSource: 'default',
+    transport: 'agent-session',
+    settable: true,
+    ...overrides
+  }
+}
+
+const MODELS = ['haiku', 'sonnet', 'opus'] as const
+const EFFORTS = ['off', 'low', 'medium', 'high'] as const
+
+describe('useNativeChatDroidComposerKeys: Tab', () => {
+  it.each([
+    ['off', 'low'],
+    ['low', 'medium'],
+    ['medium', 'high'],
+    ['high', 'off']
+  ] as const)("moves the model's effort %s to %s, wrapping at the end", (from, to) => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('model', MODELS, 'haiku'), selectRow('effort', EFFORTS, from)]
+    })
+
+    hook.result.current?.tab?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('effort', to)
+  })
+
+  it('walks the order of the effort row itself, not a fixed order', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('effort', ['max', 'min', 'mid'], 'max')]
+    })
+
+    hook.result.current?.tab?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('effort', 'min')
+  })
+
+  it('starts at the first choice when no effort is named yet or the named one is not offered', () => {
+    const unnamed = setup({ agent: 'droid', snapshot: [selectRow('effort', EFFORTS, undefined)] })
+    unnamed.hook.result.current?.tab?.()
+    expect(unnamed.setOption).toHaveBeenCalledExactlyOnceWith('effort', 'off')
+
+    const stranger = setup({ agent: 'droid', snapshot: [selectRow('effort', EFFORTS, 'xhigh')] })
+    stranger.hook.result.current?.tab?.()
+    expect(stranger.setOption).toHaveBeenCalledExactlyOnceWith('effort', 'off')
+  })
+
+  it('follows the newest snapshot, so the next press moves on from the last', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('effort', EFFORTS, 'off')]
+    })
+    hook.rerender({ snapshot: [selectRow('effort', EFFORTS, 'medium')] })
+
+    hook.result.current?.tab?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('effort', 'high')
+  })
+
+  it('sets the effort alone, leaving the model, Spec and autonomy where they are', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [
+        selectRow('model', MODELS, 'sonnet'),
+        selectRow('effort', EFFORTS, 'low'),
+        specRow()
+      ],
+      autonomy: autonomy('low')
+    })
+
+    hook.result.current?.tab?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('effort', 'medium')
+  })
+
+  it('claims no key for a model that offers no effort, so Tab keeps its ordinary job', () => {
+    const { hook } = setup({ agent: 'droid', snapshot: [selectRow('model', MODELS, 'haiku')] })
+
+    expect(hook.result.current?.tab).toBeUndefined()
+  })
+
+  it('claims no key while the effort cannot be set', () => {
+    const { hook } = setup({
+      agent: 'droid',
+      snapshot: [
+        selectRow('effort', EFFORTS, 'low', {
+          settable: false,
+          disabledReason: 'available-after-session-start'
+        })
+      ]
+    })
+
+    expect(hook.result.current?.tab).toBeUndefined()
+  })
+
+  it('claims no key when the effort offers nothing to move to', () => {
+    const { hook } = setup({ agent: 'droid', snapshot: [selectRow('effort', ['low'], 'low')] })
+
+    expect(hook.result.current?.tab).toBeUndefined()
+  })
+
+  it('does not take Tab for a switch row named effort', () => {
+    const { hook } = setup({
+      agent: 'droid',
+      snapshot: [specRow({ id: 'effort', category: 'thought_level' })]
+    })
+
+    expect(hook.result.current?.tab).toBeUndefined()
+  })
+
+  it('offers no fast control: Tab and Ctrl+N only ever set the model or the effort', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [
+        selectRow('model', ['droid-core', 'droid-core-fast'], 'droid-core'),
+        selectRow('effort', EFFORTS, 'low')
+      ]
+    })
+
+    hook.result.current?.tab?.()
+    hook.result.current?.ctrlN?.()
+
+    expect(setOption.mock.calls).toEqual([
+      ['effort', 'medium'],
+      ['model', 'droid-core-fast']
+    ])
+  })
+})
+
+describe('useNativeChatDroidComposerKeys: Ctrl+N', () => {
+  it.each([
+    ['haiku', 'sonnet'],
+    ['sonnet', 'opus'],
+    ['opus', 'haiku']
+  ] as const)('moves the model %s to %s in the menu order, wrapping at the end', (from, to) => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('model', MODELS, from)]
+    })
+
+    hook.result.current?.ctrlN?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('model', to)
+  })
+
+  it('walks the order of the model row itself, not an alphabetical one', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('model', ['zeta', 'alpha', 'mid'], 'zeta')]
+    })
+
+    hook.result.current?.ctrlN?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('model', 'alpha')
+  })
+
+  it('takes a cold chat that names no model to the first one in the menu', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('model', MODELS, undefined)]
+    })
+
+    hook.result.current?.ctrlN?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('model', 'haiku')
+  })
+
+  it('follows the newest snapshot, so the next press moves on from the last', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('model', MODELS, 'haiku')]
+    })
+    hook.rerender({ snapshot: [selectRow('model', MODELS, 'sonnet')] })
+
+    hook.result.current?.ctrlN?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('model', 'opus')
+  })
+
+  it('claims no key without a model row, with one model, or while the model cannot be set', () => {
+    const none = setup({ agent: 'droid', snapshot: [selectRow('effort', EFFORTS, 'low')] })
+    expect(none.hook.result.current?.ctrlN).toBeUndefined()
+
+    const single = setup({ agent: 'droid', snapshot: [selectRow('model', ['haiku'], 'haiku')] })
+    expect(single.hook.result.current?.ctrlN).toBeUndefined()
+
+    const locked = setup({
+      agent: 'droid',
+      snapshot: [
+        selectRow('model', MODELS, 'haiku', {
+          settable: false,
+          disabledReason: 'available-after-session-start'
+        })
+      ]
+    })
+    expect(locked.hook.result.current?.ctrlN).toBeUndefined()
+  })
+
+  it('is wired beside Tab, Shift+Tab and Ctrl+L, each setting its own option', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [
+        selectRow('model', MODELS, 'haiku'),
+        selectRow('effort', EFFORTS, 'off'),
+        specRow()
+      ],
+      autonomy: autonomy('low')
+    })
+
+    hook.result.current?.ctrlN?.()
+    hook.result.current?.tab?.()
+    hook.result.current?.shiftTab?.()
+    hook.result.current?.ctrlL?.()
+
+    expect(setOption.mock.calls).toEqual([
+      ['model', 'sonnet'],
+      ['effort', 'low'],
+      ['planMode', true],
+      ['autonomyLevel', 'medium']
+    ])
+  })
+})
+
+describe('useNativeChatDroidComposerKeys: every other agent keeps Tab and Ctrl+N', () => {
+  it.each(['claude', 'codex', 'pi', 'grok', 'opencode', 'omp', 'gemini'])(
+    '%s: claims no key, running or not, even with model and effort rows',
+    (agent) => {
+      const snapshot = [selectRow('model', MODELS, 'haiku'), selectRow('effort', EFFORTS, 'low')]
+      for (const isWorking of [false, true]) {
+        const { hook, setOption } = setup({ agent, snapshot, autonomy: autonomy('low'), isWorking })
+
+        expect(hook.result.current).toBeUndefined()
+        expect(setOption).not.toHaveBeenCalled()
+      }
+    }
+  )
+
+  it('a composer with no agent claims no key', () => {
+    const snapshot = [selectRow('model', MODELS, 'haiku'), selectRow('effort', EFFORTS, 'low')]
+    const surface: SessionOptionsSurface = {
+      getSnapshot: () => snapshot,
+      setOption: vi.fn(async () => ({ snapshot })),
+      invokeAction: async () => ({ snapshot }),
+      subscribe: () => () => {}
+    }
+    const hook = renderHook(() =>
+      useNativeChatDroidComposerKeys({ agent: undefined, snapshot, surface, isWorking: true })
+    )
+
+    expect(hook.result.current).toBeUndefined()
+  })
+})
+
+const HELD_KEYS = ['shiftTab', 'ctrlL', 'tab', 'ctrlN'] as const
+
+describe('useNativeChatDroidComposerKeys: while a turn runs', () => {
+  const RICH = [selectRow('model', MODELS, 'haiku'), selectRow('effort', EFFORTS, 'low'), specRow()]
+
+  it.each(HELD_KEYS)('holds %s: it is claimed and changes nothing', (key) => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: RICH,
+      autonomy: autonomy('low'),
+      isWorking: true
+    })
+
+    expect(hook.result.current?.[key]).toBeTypeOf('function')
+    hook.result.current?.[key]?.()
+
+    expect(setOption).not.toHaveBeenCalled()
+  })
+
+  it('holds all four even when the chat has nothing for them to act on', () => {
+    const { hook, setOption } = setup({ agent: 'droid', snapshot: [], isWorking: true })
+
+    for (const key of HELD_KEYS) {
+      expect(hook.result.current?.[key]).toBeTypeOf('function')
+      hook.result.current?.[key]?.()
+    }
+    expect(setOption).not.toHaveBeenCalled()
+  })
+
+  it('holds all four with no options surface at all', () => {
+    const hook = renderHook(() =>
+      useNativeChatDroidComposerKeys({
+        agent: 'droid',
+        snapshot: [],
+        surface: null,
+        isWorking: true
+      })
+    )
+
+    expect(HELD_KEYS.map((key) => typeof hook.result.current?.[key])).toEqual([
+      'function',
+      'function',
+      'function',
+      'function'
+    ])
+  })
+
+  it('claims no other key, so Escape still interrupts and Enter still sends', () => {
+    const { hook } = setup({
+      agent: 'droid',
+      snapshot: RICH,
+      autonomy: autonomy('low'),
+      isWorking: true
+    })
+
+    expect(Object.keys(hook.result.current ?? {}).toSorted()).toEqual([...HELD_KEYS].toSorted())
+  })
+
+  it('works again, from where the chat stands, when the turn ends', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: RICH,
+      autonomy: autonomy('low'),
+      isWorking: true
+    })
+    for (const key of HELD_KEYS) {
+      hook.result.current?.[key]?.()
+    }
+    expect(setOption).not.toHaveBeenCalled()
+
+    hook.rerender({ snapshot: RICH, isWorking: false })
+    for (const key of HELD_KEYS) {
+      hook.result.current?.[key]?.()
+    }
+
+    expect(setOption.mock.calls).toEqual([
+      ['planMode', true],
+      ['autonomyLevel', 'medium'],
+      ['effort', 'medium'],
+      ['model', 'sonnet']
+    ])
+  })
+
+  it('holds the keys again when the next turn starts', () => {
+    const { hook, setOption } = setup({ agent: 'droid', snapshot: RICH, isWorking: false })
+    hook.rerender({ snapshot: RICH, isWorking: true })
+
+    for (const key of HELD_KEYS) {
+      hook.result.current?.[key]?.()
+    }
+
+    expect(setOption).not.toHaveBeenCalled()
+  })
 })

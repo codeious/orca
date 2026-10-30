@@ -248,7 +248,8 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
     const droidKeys = useNativeChatDroidComposerKeys({
       agent,
       snapshot: sessionOptionsSnapshot,
-      surface: sessionOptionsSurface
+      surface: sessionOptionsSurface,
+      isWorking
     })
 
     const { send: sendStructured, fieldProps: queue } = useNativeChatHeldQueueComposerSend({
