@@ -1,5 +1,5 @@
 /** The slash commands a Droid chat answers on the host, so their text never reaches the model. */
-export const DROID_HOST_COMMAND_NAMES = ['help'] as const
+export const DROID_HOST_COMMAND_NAMES = ['help', 'clear', 'new', 'quit', 'exit'] as const
 
 export type DroidHostCommandName = (typeof DROID_HOST_COMMAND_NAMES)[number]
 

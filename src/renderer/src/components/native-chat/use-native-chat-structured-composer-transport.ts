@@ -6,13 +6,14 @@ import type {
   NativeChatStructuredComposerTransport
 } from './native-chat-composer-types'
 import { answerDroidHostCommand } from './droid-help-keys'
+import { useDroidSessionCommands } from './use-droid-session-commands'
 import type { NativeChatStructuredViewProps } from './native-chat-view-types'
 import type { useStructuredAgentSession } from './use-structured-agent-session'
 import type { StructuredAgentSessionQueuedMessagesController } from './use-structured-agent-session-queued-messages'
 
 /** What the composer of a structured chat sends, picks and runs through, from the chat's controller. */
 export function useNativeChatStructuredComposerTransport(args: {
-  props: Pick<NativeChatStructuredViewProps, 'agent' | 'sessionId' | 'target'>
+  props: Pick<NativeChatStructuredViewProps, 'agent' | 'sessionId' | 'target' | 'tabId'>
   controller: ReturnType<typeof useStructuredAgentSession>
   /** Sends now, restarts a failed start with the message, or refuses while the chat starts. */
   sendThroughLaunch: (
@@ -31,6 +32,12 @@ export function useNativeChatStructuredComposerTransport(args: {
 }): NativeChatStructuredComposerTransport {
   const { props, controller, sendThroughLaunch, starting, worktreeId, optionPickerRequest } = args
   const { setOptionPickerRequest, onError, onSubmitted, queuedMessages } = args
+  const droidSessionCommands = useDroidSessionCommands({
+    tabId: props.tabId,
+    agent: props.agent,
+    optionSnapshot: controller.optionSnapshot,
+    optionSurface: controller.optionSurface
+  })
   const acceptsImages = useStructuredAgentAcceptsImages(props.target, props.agent)
   return useMemo((): NativeChatStructuredComposerTransport => {
     const threadGoal = controller.threadGoal
@@ -47,8 +54,9 @@ export function useNativeChatStructuredComposerTransport(args: {
           }))
           return options ? controller.send(text, images, options) : controller.send(text, images)
         }),
-      dispatchCommand: (text: string) =>
-        dispatchStructuredAgentSessionComposerCommand(text, {
+      dispatchCommand: (text: string) => {
+        droidSessionCommands?.noteSubmit(text)
+        return dispatchStructuredAgentSessionComposerCommand(text, {
           agent: props.agent,
           snapshot: controller.optionSnapshot,
           invokeAction: async (id) => {
@@ -59,8 +67,10 @@ export function useNativeChatStructuredComposerTransport(args: {
           conversationCommands: controller.conversationCommands,
           runConversationCommand: controller.runConversationCommand,
           ...(setThreadGoalObjective ? { setThreadGoalObjective } : {}),
-          ...(props.agent === 'droid' ? { answerHostCommand: answerDroidHostCommand } : {})
-        }),
+          ...(props.agent === 'droid' ? { answerHostCommand: answerDroidHostCommand } : {}),
+          ...(droidSessionCommands ? { runHostCommand: droidSessionCommands.runHostCommand } : {})
+        })
+      },
       ...(setThreadGoalObjective ? { threadGoal: { setObjective: setThreadGoalObjective } } : {}),
       sendOut: controller.sendOut || starting,
       optionsSurface: controller.optionSurface,
@@ -83,6 +93,7 @@ export function useNativeChatStructuredComposerTransport(args: {
   }, [
     acceptsImages,
     controller,
+    droidSessionCommands,
     worktreeId,
     onError,
     onSubmitted,

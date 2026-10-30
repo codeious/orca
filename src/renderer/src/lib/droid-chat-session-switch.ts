@@ -1,9 +1,9 @@
-import { DROID_AUTONOMY_OPTION_ID } from '../../../shared/droid-autonomy-options'
+import { toast } from 'sonner'
+import { agentSessionWriteFailureText } from '@/components/native-chat/agent-session-write-notice-text'
 import {
-  DROID_SPEC_EFFORT_OPTION_ID,
-  DROID_SPEC_MODEL_OPTION_ID
-} from '../../../shared/droid-spec-pair-options'
-import { encodeStructuredAgentSessionOptionValue } from '../../../shared/structured-agent-session-option-codec'
+  droidFreshSessionOptionPicks,
+  type DroidFreshSessionSettings
+} from '../../../shared/droid-fresh-session-settings'
 import type { Tab } from '../../../shared/tab-types'
 import { newAgentLaunchRequestId } from '@/lib/agent-launch-request-id'
 import {
@@ -15,18 +15,6 @@ import { openStructuredAgentSessionProvisionalTab } from '@/lib/structured-agent
 import { structuredAgentSessionOwnerForTab } from '@/runtime/structured-agent-session-owner'
 import { useAppStore } from '@/store'
 import { findGroupForTab } from '@/store/slices/tab-group-state'
-
-/** What a new Droid session starts with. A missing field is left to the new-chat defaults. */
-export type DroidFreshSessionSettings = {
-  model?: string
-  effort?: string
-  autonomyLevel?: string
-  /** Droid's Spec interaction mode; `false` starts in Auto even if the saved defaults say Spec. */
-  spec?: boolean
-  /** A model id, or `DROID_SPEC_SAME_AS_MAIN` to run Spec on the main model. */
-  specModel?: string
-  specEffort?: string
-}
 
 export type DroidSessionSwitchTarget =
   /** A Droid session that already exists (rewind, Spec handoff, compress, Open fork). Without
@@ -71,25 +59,14 @@ function closeReplacedTab(sourceTabId: string, newTabId: string): void {
   state.closeUnifiedTab(source.id)
 }
 
-/** Model goes first: holding it drops the picks held under the model it replaces. */
 function holdFreshSettings(sessionId: string, settings: DroidFreshSessionSettings): void {
-  const picks: [string, string | undefined][] = [
-    ['model', settings.model],
-    ['effort', settings.effort],
-    [
-      'planMode',
-      settings.spec === undefined
-        ? undefined
-        : (encodeStructuredAgentSessionOptionValue('planMode', settings.spec) ?? undefined)
-    ],
-    [DROID_SPEC_MODEL_OPTION_ID, settings.specModel],
-    [DROID_SPEC_EFFORT_OPTION_ID, settings.specEffort],
-    [DROID_AUTONOMY_OPTION_ID, settings.autonomyLevel]
-  ]
-  for (const [id, encoded] of picks) {
-    if (encoded !== undefined) {
-      void holdStructuredAgentSessionLaunchOption(sessionId, id, encoded)
-    }
+  for (const [id, encoded] of droidFreshSessionOptionPicks(settings)) {
+    // A pick the host refuses leaves the session on its own default, so the person is told.
+    void holdStructuredAgentSessionLaunchOption(sessionId, id, encoded)?.then((outcome) => {
+      if (outcome.kind === 'refused') {
+        toast.error(agentSessionWriteFailureText(outcome.failure, 'option'))
+      }
+    })
   }
 }
 

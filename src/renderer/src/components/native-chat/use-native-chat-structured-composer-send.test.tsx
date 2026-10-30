@@ -44,6 +44,7 @@ function harness(
     structuredTransport.threadGoal = threadGoal
   }
   structuredTransport.onSubmitted = onSubmitted
+  const setDraft = vi.fn()
   const { result } = renderHook(() =>
     useNativeChatStructuredComposerSend({
       agent,
@@ -52,11 +53,11 @@ function harness(
       structuredTransport,
       isComposing: () => false,
       clearSkillOrigin: vi.fn(),
-      setDraft: vi.fn(),
+      setDraft,
       setCaret: vi.fn()
     })
   )
-  return { send: result.current, structuredTransport }
+  return { send: result.current, structuredTransport, setDraft }
 }
 
 // The guard exists because a host command sends no message, so its attachments
@@ -177,6 +178,25 @@ describe("says a host's answer to a command as information, never as an error", 
     expect(structuredTransport.onError).not.toHaveBeenCalledWith(expect.anything(), {
       kind: 'info'
     })
+  })
+
+  it('shows an ask as information and keeps the command in the box, so Enter again answers it', async () => {
+    const { send, structuredTransport, setDraft } = harness('droid')
+    structuredTransport.dispatchCommand = async () => ({
+      handled: true,
+      accepted: false,
+      error: null,
+      info: 'Run /clear again to start a new session.'
+    })
+    send('/clear', [])
+    await vi.waitFor(() =>
+      expect(structuredTransport.onError).toHaveBeenCalledWith(
+        'Run /clear again to start a new session.',
+        { kind: 'info' }
+      )
+    )
+    expect(setDraft).not.toHaveBeenCalled()
+    expect(structuredTransport.send).not.toHaveBeenCalled()
   })
 
   it('keeps a real error when an answer arrives with it', async () => {

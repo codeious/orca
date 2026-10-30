@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { toast } from 'sonner'
 import type * as LaunchModule from '@/lib/launch-structured-agent-session'
 import type * as RetirementModule from '@/runtime/structured-agent-session-tab-retirement'
 import type { StructuredAgentSessionLaunchIntent } from '@/lib/launch-structured-agent-session'
@@ -367,6 +368,65 @@ describe('switching a Droid chat to another Droid session', () => {
     await switched.settlement
 
     expect(optionPicks()).toEqual([['specModel', DROID_SPEC_SAME_AS_MAIN]])
+  })
+
+  describe('a carried pick the host refuses', () => {
+    const REFUSED_PICK_NOTICE =
+      "The setting wasn't changed. Orca on the computer running this chat has hit a request limit. Update Orca there, then try again."
+
+    function refuseKey(key: string): void {
+      mocks.call.mockImplementation(async (_target, _method, params) =>
+        params.key === key
+          ? {
+              ok: false,
+              refusal: { code: 'agent_session_operation_capacity', message: 'Not available' }
+            }
+          : { ok: true, value: { key: params.key, value: params.value } }
+      )
+    }
+
+    it('is said once as the refused-option notice, and the new session still opens', async () => {
+      refuseKey('effort')
+      const switched = switchDroidChatSession({
+        fromTabId: `agent-session:${OLD_CHAT}`,
+        placement: 'replace',
+        target: { kind: 'fresh', settings: { model: 'main-model', effort: 'xhigh', spec: true } }
+      })
+
+      const settled = await switched.settlement
+
+      await vi.waitFor(() => expect(toast.error).toHaveBeenCalledWith(REFUSED_PICK_NOTICE))
+      expect(toast.error).toHaveBeenCalledTimes(1)
+      expect(settled.kind).toBe('structured')
+      expect(tab(NEW_TAB)).toBeDefined()
+    })
+
+    it('is said for a session that resumes with settings too', async () => {
+      refuseKey('autonomyLevel')
+      const switched = switchDroidChatSession({
+        fromTabId: `agent-session:${OLD_CHAT}`,
+        placement: 'replace',
+        target: { kind: 'existing', droidSessionId: DROID_ID, settings: { autonomyLevel: 'high' } }
+      })
+
+      await switched.settlement
+
+      await vi.waitFor(() => expect(toast.error).toHaveBeenCalledWith(REFUSED_PICK_NOTICE))
+    })
+
+    it('stays silent when the host takes every carried pick', async () => {
+      const switched = switchDroidChatSession({
+        fromTabId: `agent-session:${OLD_CHAT}`,
+        placement: 'replace',
+        target: { kind: 'fresh', settings: { model: 'main-model', effort: 'low', spec: false } }
+      })
+
+      await switched.settlement
+      await Promise.resolve()
+
+      expect(optionPicks()).toHaveLength(3)
+      expect(toast.error).not.toHaveBeenCalled()
+    })
   })
 
   describe('with a first message and settings for an existing session', () => {

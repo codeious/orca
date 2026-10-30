@@ -18743,7 +18743,18 @@
         "reconnect": "Reconnect"
       },
       "droidCommands": {
-        "help": "Show the Droid commands and keys"
+        "help": "Show the Droid commands and keys",
+        "clear": "Start a new session that keeps these settings",
+        "new": "Start a new session with the settings of a new chat",
+        "quit": "Close this chat and keep it in Session History",
+        "exit": "Close this chat and keep it in Session History"
+      },
+      "droidSessionCommands": {
+        "confirmClear": "Run /clear again to start a new session that keeps these settings. This session stays in Session History.",
+        "confirmNew": "Run /new again to start a new session with the settings of a new chat. This session stays in Session History.",
+        "confirmClose": "Run /{{name}} again to close this chat. It stays in Session History.",
+        "noArguments": "Use /{{name}} without arguments.",
+        "failed": "Could not start the new Droid session. This chat is still open."
       },
       "droidHelp": {
         "commandsIntro": "Droid commands:",

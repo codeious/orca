@@ -9,6 +9,8 @@ import { getVerifiedNativeChatCommands } from '../../../../shared/native-chat-ag
 import { sessionSlashCommandSuggestions } from '../../../../shared/native-chat-slash-commands'
 import { structuredSlashCommands } from '../../../../shared/structured-agent-session-composer'
 
+const DROID_OWN_COMMANDS = ['help', 'clear', 'new', 'quit', 'exit']
+
 function transport(sessionCommands?: NativeChatStructuredComposerTransport['sessionCommands']) {
   return { sessionCommands } as NativeChatStructuredComposerTransport
 }
@@ -71,25 +73,40 @@ describe('composer catalog authority', () => {
     expect(unreported.result.current.agentCommands.map(({ name }) => name)).toEqual([
       'model',
       'effort',
-      'help'
+      ...DROID_OWN_COMMANDS
     ])
     const reported = renderHook(() =>
       useNativeChatComposerCatalog('droid', transport([{ name: 'my-command', kind: 'command' }]))
     )
     expect(reported.result.current.agentCommands.map(({ name }) => name)).toEqual([
       'my-command',
-      'help'
+      ...DROID_OWN_COMMANDS
     ])
     const empty = renderHook(() => useNativeChatComposerCatalog('droid', transport([])))
-    expect(empty.result.current.agentCommands.map(({ name }) => name)).toEqual(['help'])
-    const help = unreported.result.current.agentCommands.find(({ name }) => name === 'help')
-    expect(help?.description?.trim()).toBeTruthy()
+    expect(empty.result.current.agentCommands.map(({ name }) => name)).toEqual(DROID_OWN_COMMANDS)
+    for (const name of DROID_OWN_COMMANDS) {
+      const row = unreported.result.current.agentCommands.find((entry) => entry.name === name)
+      expect(row?.description?.trim()).toBeTruthy()
+    }
+  })
+  // The host lists /clear as a conversation command for every agent; for Droid it starts a session.
+  it('describes the Droid /clear as the Droid command, not as clearing the conversation context', () => {
+    const { result } = renderHook(() =>
+      useNativeChatComposerCatalog('droid', {
+        ...transport(),
+        conversationCommands: ['clear', 'compact']
+      })
+    )
+    const rows = result.current.agentCommands.filter(({ name }) => name === 'clear')
+    expect(rows).toEqual([
+      { name: 'clear', description: 'Start a new session that keeps these settings' }
+    ])
   })
   it('does not offer a Droid command twice when the host reports it too', () => {
     const { result } = renderHook(() =>
       useNativeChatComposerCatalog('droid', transport([{ name: 'help', kind: 'command' }]))
     )
-    expect(result.current.agentCommands.map(({ name }) => name)).toEqual(['help'])
+    expect(result.current.agentCommands.map(({ name }) => name)).toEqual(DROID_OWN_COMMANDS)
   })
   it.each(['claude', 'codex', 'omp', 'openclaude', 'pi'])(
     'offers %s no Droid command, reported or not',

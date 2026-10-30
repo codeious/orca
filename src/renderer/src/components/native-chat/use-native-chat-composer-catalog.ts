@@ -43,11 +43,16 @@ export function useNativeChatComposerCatalog(
     if (!structured) {
       return getVerifiedNativeChatCommands(agent)
     }
-    const offered =
+    const droid = agent === 'droid'
+    // Why: the host lists /clear for every agent, but a Droid chat's /clear starts a session.
+    const hostCommands = droid
+      ? conversationCommands?.filter((command) => command !== 'clear')
+      : conversationCommands
+    const commands =
       reported !== undefined
         ? sessionSlashCommandSuggestions(agent, reported)
-        : structuredSlashCommands(conversationCommands, agent)
-    return agent === 'droid' ? withDroidCommands(offered) : offered
+        : structuredSlashCommands(hostCommands, agent)
+    return droid ? withDroidCommands(commands) : commands
   }, [agent, conversationCommands, reported, structured])
   const sessionSkillNames = useMemo(
     () => (reported !== undefined ? sessionReportedSkillNames(reported) : undefined),

@@ -8,7 +8,27 @@ import type { SlashCommandSuggestion } from '../../../../shared/native-chat-slas
 // Typed by the registry's names, so a command registered there does not compile until it has words.
 const DESCRIPTIONS: Record<DroidHostCommandName, () => string> = {
   help: () =>
-    translate('components.native-chat.droidCommands.help', 'Show the Droid commands and keys')
+    translate('components.native-chat.droidCommands.help', 'Show the Droid commands and keys'),
+  clear: () =>
+    translate(
+      'components.native-chat.droidCommands.clear',
+      'Start a new session that keeps these settings'
+    ),
+  new: () =>
+    translate(
+      'components.native-chat.droidCommands.new',
+      'Start a new session with the settings of a new chat'
+    ),
+  quit: () =>
+    translate(
+      'components.native-chat.droidCommands.quit',
+      'Close this chat and keep it in Session History'
+    ),
+  exit: () =>
+    translate(
+      'components.native-chat.droidCommands.exit',
+      'Close this chat and keep it in Session History'
+    )
 }
 
 export function droidCommandSuggestions(): readonly SlashCommandSuggestion[] {

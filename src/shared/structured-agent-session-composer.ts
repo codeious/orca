@@ -3,7 +3,7 @@ import {
   getTextDrivenNativeChatCommands
 } from './native-chat-agent-profiles'
 import type { AgentType } from './agent-status-types'
-import { DROID_HOST_COMMAND_NAMES } from './droid-command-registry'
+import { DROID_HOST_COMMAND_NAMES, isDroidHostCommandName } from './droid-command-registry'
 import type { SessionOptionDescriptor, SessionOptionValue } from './native-chat-session-options'
 import type { SlashCommandSuggestion } from './native-chat-slash-commands'
 import type { AgentSessionConversationCommand } from './agent-session-conversation-command'
@@ -44,6 +44,12 @@ export type StructuredAgentSessionComposerOptions = {
   /** The host's own reply to a command it claims but has no action for, shown as information in
    *  place of the refusal; null keeps the refusal. The text is never sent to the model. */
   answerHostCommand?: (name: string) => string | null
+  /** Runs a Droid command the host carries out itself (a session switch, a quit), ahead of the
+   *  conversation commands of the same name. Null leaves the command to the shared handling. */
+  runHostCommand?: (
+    name: string,
+    argument: string
+  ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'> | null>
 }
 
 /** What the chat shows a refused command waiting on: the agent working, a pending prompt, its
@@ -187,6 +193,16 @@ export async function dispatchStructuredAgentSessionComposerCommand(
   }
   if (!command || !isStructuredAgentSessionComposerCommand(text, controller.agent)) {
     return { handled: false, accepted: false, error: null }
+  }
+  if (
+    controller.agent === 'droid' &&
+    controller.runHostCommand &&
+    isDroidHostCommandName(command.name)
+  ) {
+    const outcome = await controller.runHostCommand(command.name, command.argument)
+    if (outcome) {
+      return { handled: true, ...outcome }
+    }
   }
   if (command.name === 'clear' || command.name === 'compact') {
     if (command.argument) {
