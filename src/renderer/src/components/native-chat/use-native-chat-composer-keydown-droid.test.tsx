@@ -193,10 +193,21 @@ describe('Droid composer key map', () => {
     const { handler, callbacks } = setup({ agent: 'droid', withDroidKeys: false })
     expect(press(handler, KEYS.enter).prevented).toBe(true)
     expect(callbacks.send).toHaveBeenCalledOnce()
-    expect(press(handler, KEYS.escape).prevented).toBe(true)
-    expect(callbacks.interrupt).toHaveBeenCalledOnce()
     expect(press(handler, KEYS.ctrlL).prevented).toBe(false)
     expect(press(handler, KEYS.shiftTab).prevented).toBe(false)
+    expect(press(handler, KEYS.ctrlC).prevented).toBe(false)
+  })
+
+  it("never lets Escape stop a Droid turn, wired or not: that is Stop's job", () => {
+    const unwired = setup({ agent: 'droid', withDroidKeys: false })
+    expect(press(unwired.handler, KEYS.escape).prevented).toBe(true)
+    expect(unwired.callbacks.interrupt).not.toHaveBeenCalled()
+    expect(unwired.callbacks.send).not.toHaveBeenCalled()
+
+    const wired = setup({ agent: 'droid' })
+    press(wired.handler, KEYS.escape)
+    expect(wired.droidKeys.escape).toHaveBeenCalledOnce()
+    expect(wired.callbacks.interrupt).not.toHaveBeenCalled()
   })
 
   it('reads literal Ctrl on a Mac, and never Cmd', () => {

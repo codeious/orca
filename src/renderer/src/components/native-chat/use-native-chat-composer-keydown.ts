@@ -161,7 +161,10 @@ export function useNativeChatComposerKeyDown({
 
       if (event.key === 'Escape') {
         event.preventDefault()
-        interrupt()
+        // Only Stop ends a Droid turn, even when its Escape is not wired.
+        if (agent !== 'droid') {
+          interrupt()
+        }
         return
       }
       if (event.key === 'Enter' && !event.shiftKey) {

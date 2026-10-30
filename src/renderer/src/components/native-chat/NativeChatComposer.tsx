@@ -14,7 +14,7 @@ import { nativeChatImageSendBlock } from './native-chat-image-reattach'
 import { useNativeChatComposerHandle } from './use-native-chat-composer-handle'
 import { useNativeChatFileDrops } from './use-native-chat-file-drops'
 import { useNativeChatComposerKeyDown } from './use-native-chat-composer-keydown'
-import { useNativeChatDroidComposerKeys } from './use-native-chat-droid-composer-keys'
+import { useNativeChatComposerDroidKeys } from './use-native-chat-composer-droid-keys'
 import { useNativeChatSendLifecycle } from './use-native-chat-send-lifecycle'
 import { useNativeChatSessionOptions } from './use-native-chat-session-options'
 import { useNativeChatDictation } from './use-native-chat-dictation'
@@ -297,20 +297,25 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       setDraft,
       setCaret
     })
-    const droidKeys = useNativeChatDroidComposerKeys({
-      agent,
-      snapshot: sessionOptionsSnapshot,
-      surface: sessionOptionsSurface,
-      isWorking,
-      sendAfterReply
-    })
-
     const interrupt = useNativeChatComposerInterrupt({
       inert: inputOwnedByCard,
       cancelPendingSends,
       isWorking,
       onStop,
       resolveTarget
+    })
+    const droidKeys = useNativeChatComposerDroidKeys({
+      agent,
+      snapshot: sessionOptionsSnapshot,
+      surface: sessionOptionsSurface,
+      isWorking,
+      sendAfterReply,
+      inert: inputOwnedByCard,
+      stopTurn: isWorking && onStop ? interrupt : undefined,
+      input: textareaRef,
+      draft,
+      hasAttachments: imageAttachments.length > 0,
+      clear: { setDraft, setCaret, setActiveSuggestion, clearSkillOrigin, clearImageAttachments }
     })
 
     const dispatchPtyPickerCommand = useNativeChatPickerCommandDispatch({

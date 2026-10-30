@@ -19,6 +19,14 @@ export type NativeChatComposerInput = Pick<
   isCaretOnVisualEdge?: (edge: 'start' | 'end') => boolean
 }
 
+/** The selected text as the prompt reads it, pills included as their tokens; '' when none. */
+export function nativeChatComposerSelectedText(input: NativeChatComposerInput | null): string {
+  if (!input) {
+    return ''
+  }
+  return input.value.slice(input.selectionStart ?? 0, input.selectionEnd ?? 0)
+}
+
 export function insertNativeChatPastedText(
   input: NativeChatComposerInput | null,
   text: string

@@ -297,12 +297,12 @@ describe('the four mode keys while a Droid turn runs', () => {
     expect(spies.interrupt).not.toHaveBeenCalled()
   })
 
-  it('still lets Escape interrupt', () => {
+  it('no longer lets Escape interrupt; only Stop does', () => {
     render(<Composer agent="droid" isWorking={true} />)
 
     expect(press({ key: 'Escape', code: 'Escape' })).toBe(true)
 
-    expect(spies.interrupt).toHaveBeenCalledOnce()
+    expect(spies.interrupt).not.toHaveBeenCalled()
   })
 
   it('still sends on Enter and leaves Ctrl+C alone', () => {

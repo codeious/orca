@@ -25,6 +25,10 @@ export const DROID_COMPOSER_KEY_CHORDS: Record<DroidComposerKey, string> = {
   escape: 'Escape'
 }
 
+/** Esc pressed three times on an empty composer opens rewind only while each gap between presses
+ *  is at most this long. Captured from Droid 0.251.0: 175 ms opened it, 200 ms did not. */
+export const DROID_ESC_REWIND_GAP_MS = 175
+
 /** The Droid key a keydown is, read by the same layout-aware matcher the main window uses. */
 export function matchDroidComposerKey(
   input: KeybindingInput,

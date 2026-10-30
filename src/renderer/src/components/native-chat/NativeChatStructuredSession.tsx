@@ -115,6 +115,7 @@ export function NativeChatStructuredSession(
     tabId: props.tabId,
     groupId: props.groupId,
     isVisible: props.isVisible,
+    agent: props.agent,
     rootRef,
     composerRef,
     questionAnswerInputRef,
