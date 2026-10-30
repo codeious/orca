@@ -23,7 +23,10 @@ vi.mock('@/runtime/structured-agent-session-client', () => ({
     method === 'agentSession.createSupport' ? mocks.createSupport() : new Promise(() => undefined)
 }))
 
-import { beginStructuredAgentSessionProvisionalLaunch } from './structured-agent-session-provisional-tab'
+import {
+  beginStructuredAgentSessionProvisionalLaunch,
+  openStructuredAgentSessionProvisionalTab
+} from './structured-agent-session-provisional-tab'
 
 function planSettlingAs(settlement: StructuredAgentLaunchSettlement): AgentSessionLaunchPlan {
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: begin() is the only member this path calls.
@@ -66,6 +69,51 @@ describe('a provisional structured chat tab', () => {
       'wt-1',
       'agent-session',
       expect.objectContaining({ executionHostId: 'local', targetGroupId: 'group-2' })
+    )
+  })
+
+  it('opens another agent’s chat with exactly the tab fields it always had', () => {
+    openStructuredAgentSessionProvisionalTab({
+      worktreeId: 'wt-1',
+      executionHostId: 'local',
+      sessionId: 'claude_1',
+      agent: 'claude'
+    })
+
+    const init: object = mocks.createUnifiedTab.mock.calls[0]?.[2]
+    expect(Object.keys(init).sort()).toEqual([
+      'activate',
+      'agentSessionAgent',
+      'entityId',
+      'executionHostId',
+      'id',
+      'label'
+    ])
+  })
+
+  it('places a chat after a given tab and carries its name, colour and pin', () => {
+    openStructuredAgentSessionProvisionalTab({
+      worktreeId: 'wt-1',
+      executionHostId: 'local',
+      sessionId: 'droid_2',
+      agent: 'droid',
+      placement: {
+        afterTabId: 'agent-session:droid_1',
+        customLabel: 'Fix auth',
+        color: 'blue',
+        isPinned: true
+      }
+    })
+
+    expect(mocks.createUnifiedTab).toHaveBeenCalledWith(
+      'wt-1',
+      'agent-session',
+      expect.objectContaining({
+        afterTabId: 'agent-session:droid_1',
+        customLabel: 'Fix auth',
+        color: 'blue',
+        isPinned: true
+      })
     )
   })
 })
