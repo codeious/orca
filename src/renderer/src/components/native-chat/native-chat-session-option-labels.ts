@@ -106,7 +106,11 @@ export function nativeChatOptionsPillLabel(
   descriptors: readonly SessionOptionDescriptor[]
 ): string {
   const effort = descriptors.find((descriptor) => descriptor.id === 'effort')
+  const fallback = effort
+    ? nativeChatSessionOptionLabel(effort)
+    : translate('components.native-chat.composer.options', 'Options')
   const labels: string[] = []
+  let specIsOn = false
   for (const descriptor of descriptors) {
     if (descriptor.valueSource === 'unknown' || isDefaultServiceTier(descriptor)) {
       continue
@@ -124,6 +128,7 @@ export function nativeChatOptionsPillLabel(
         )
       )
     } else if (descriptor.kind.type === 'boolean' && descriptor.kind.currentValue === true) {
+      specIsOn ||= descriptor.id === 'planMode'
       labels.push(
         descriptor.id === 'fastMode'
           ? translate('components.native-chat.composer.optionValue.fast', 'Fast')
@@ -131,12 +136,10 @@ export function nativeChatOptionsPillLabel(
       )
     }
   }
+  // Spec is a marker after a value, so a pill with nothing else to say keeps its name before it.
+  if (specIsOn && labels.length === 1) {
+    labels.unshift(fallback)
+  }
   // Why: value-only pill (no "Effort:" prefix) — category lives on the tooltip.
-  if (labels.length > 0) {
-    return labels.join(' · ')
-  }
-  if (effort) {
-    return nativeChatSessionOptionLabel(effort)
-  }
-  return translate('components.native-chat.composer.options', 'Options')
+  return labels.length > 0 ? labels.join(' · ') : fallback
 }

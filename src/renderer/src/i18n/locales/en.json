@@ -18332,7 +18332,14 @@
         "attachmentUnreadable": "Couldn't read the dropped files.",
         "tooManyAttachments": "Attach {{value0}} or fewer files at a time.",
         "pasteFailed": "Paste failed.",
-        "commandAttachmentsUnsupported": "Remove attachments before using a chat-session command."
+        "commandAttachmentsUnsupported": "Remove attachments before using a chat-session command.",
+        "specPairValue": "Spec: {{value0}}",
+        "specModel": "Spec model",
+        "specModelAndEffort": "Spec model and effort",
+        "specModelHeading": "Spec model",
+        "specSameAsMainModel": "Same as main model",
+        "specEffortHeading": "Spec effort",
+        "specSameAsMainEffort": "Same as main effort"
       },
       "tool": {
         "exitCode": "exit {{value0}}",

@@ -1,4 +1,8 @@
 import type { AgentSessionOptionsResult } from '../../../shared/agent-session-wire'
+import {
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_MODEL_OPTION_ID
+} from '../../../shared/droid-spec-pair-options'
 import type { StructuredAgentSessionAdapter } from './structured-agent-session-adapter'
 import { encodeStructuredAgentSessionOptionValue } from '../../../shared/structured-agent-session-option-codec'
 
@@ -36,6 +40,8 @@ export function nativeSessionOptionsFromReport(input: {
   delete restored.fastMode
   delete restored.serviceTier
   delete restored.planMode
+  delete restored[DROID_SPEC_MODEL_OPTION_ID]
+  delete restored[DROID_SPEC_EFFORT_OPTION_ID]
   for (const key of input.restoreSkipped) {
     delete restored[key]
   }
@@ -53,6 +59,8 @@ export function nativeSessionOptionsFromReport(input: {
     ...(planMode !== undefined && planMode !== null ? { planMode } : {}),
     ...(reported.model ? { model: reported.model } : {}),
     ...(reported.effort ? { effort: reported.effort } : {}),
+    ...(reported.specModel ? { [DROID_SPEC_MODEL_OPTION_ID]: reported.specModel } : {}),
+    ...(reported.specEffort ? { [DROID_SPEC_EFFORT_OPTION_ID]: reported.specEffort } : {}),
     ...(fastMode !== undefined && fastMode !== null ? { fastMode } : {}),
     ...(reported.serviceTier ? { serviceTier: reported.serviceTier } : {})
   }

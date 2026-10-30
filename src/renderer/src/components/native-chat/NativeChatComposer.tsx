@@ -14,6 +14,7 @@ import { nativeChatImageSendBlock } from './native-chat-image-reattach'
 import { useNativeChatComposerHandle } from './use-native-chat-composer-handle'
 import { useNativeChatFileDrops } from './use-native-chat-file-drops'
 import { useNativeChatComposerKeyDown } from './use-native-chat-composer-keydown'
+import { useNativeChatDroidComposerKeys } from './use-native-chat-droid-composer-keys'
 import { useNativeChatSendLifecycle } from './use-native-chat-send-lifecycle'
 import { useNativeChatSessionOptions } from './use-native-chat-session-options'
 import { useNativeChatDictation } from './use-native-chat-dictation'
@@ -244,6 +245,11 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
     const sessionOptionsSurface = structuredTransport?.optionsSurface ?? ptySessionOptionsSurface
     const contextUsageSummary = useNativeChatContextUsageSummary(structuredTransport)
     const sessionOptionsSnapshot = structuredTransport?.optionSnapshot ?? ptySessionOptionsSnapshot
+    const droidKeys = useNativeChatDroidComposerKeys({
+      agent,
+      snapshot: sessionOptionsSnapshot,
+      surface: sessionOptionsSurface
+    })
 
     const { send: sendStructured, fieldProps: queue } = useNativeChatHeldQueueComposerSend({
       agent,
@@ -327,6 +333,7 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       recall: recall.recall,
       isComposing: imeEnterGesture.isComposing,
       agent,
+      droidKeys,
       completePickerItem: goalMode.interceptPick(completeItem),
       dispatchPickerCommand: goalMode.interceptPick(dispatchPickerCommand),
       dismissPicker: dismiss,

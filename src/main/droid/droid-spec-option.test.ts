@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { DROID_SPEC_SAME_AS_MAIN } from '../../shared/droid-spec-pair-options'
 import { isAgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
 import { nativeSessionOptionsFromReport } from '../native-chat/agent-session-wire/structured-agent-session-option-restoration'
 import {
@@ -121,7 +122,7 @@ async function framesOfResume(options: Readonly<Record<string, string>>) {
 }
 
 describe('Droid Spec option', () => {
-  it('reports Spec off and the main model when Droid starts in auto', async () => {
+  it('reports Spec off and the main model when Droid starts in auto, with the Spec pair apart', async () => {
     const h = await startFromRecording()
 
     const options = await h.adapter.readOptions({ sessionId: DROID_RIG_SESSION, fence: FENCE })
@@ -130,11 +131,13 @@ describe('Droid Spec option', () => {
       planMode: false,
       model: MAIN,
       effort: 'xhigh',
+      specModel: SPEC,
+      specEffort: 'xhigh',
       confirmed: ['planMode', 'model', 'effort']
     })
   })
 
-  it('turns Spec on by changing the interaction mode alone, and reads back the Spec model', async () => {
+  it('turns Spec on by changing the interaction mode alone, and keeps the main model and the Spec pair apart', async () => {
     const h = await startFromRecording(['r8'])
 
     const options = await h.adapter.setOption({
@@ -148,13 +151,19 @@ describe('Droid Spec option', () => {
       method: 'droid.update_session_settings',
       params: { interactionMode: 'spec' }
     })
-    expect(options).toEqual({ planMode: 'true', model: SPEC, effort: 'xhigh' })
+    expect(options).toEqual({
+      planMode: 'true',
+      model: MAIN,
+      effort: 'xhigh',
+      specModel: SPEC,
+      specEffort: 'xhigh'
+    })
     await expect(
       h.adapter.readOptions({ sessionId: DROID_RIG_SESSION, fence: FENCE })
-    ).resolves.toMatchObject({ current: { planMode: true, model: SPEC } })
+    ).resolves.toMatchObject({ current: { planMode: true, model: MAIN, specModel: SPEC } })
   })
 
-  it('returns to the main model when Spec is turned off again', async () => {
+  it('returns to Spec off with the main model and the Spec pair unchanged', async () => {
     const h = await startFromRecording(['r8', 'r9'])
     const pick = (value: string) =>
       h.adapter.setOption({ sessionId: DROID_RIG_SESSION, key: 'planMode', value, fence: FENCE })
@@ -164,7 +173,9 @@ describe('Droid Spec option', () => {
     await expect(pick('false')).resolves.toEqual({
       planMode: 'false',
       model: MAIN,
-      effort: 'xhigh'
+      effort: 'xhigh',
+      specModel: SPEC,
+      specEffort: 'xhigh'
     })
   })
 
@@ -236,36 +247,52 @@ describe('Droid model and effort picks while Spec is on', () => {
     model: (value: string) =>
       h.adapter.setOption({ sessionId: DROID_RIG_SESSION, key: 'model', value, fence: FENCE }),
     effort: (value: string) =>
-      h.adapter.setOption({ sessionId: DROID_RIG_SESSION, key: 'effort', value, fence: FENCE })
+      h.adapter.setOption({ sessionId: DROID_RIG_SESSION, key: 'effort', value, fence: FENCE }),
+    specModel: (value: string) =>
+      h.adapter.setOption({ sessionId: DROID_RIG_SESSION, key: 'specModel', value, fence: FENCE }),
+    specEffort: (value: string) =>
+      h.adapter.setOption({ sessionId: DROID_RIG_SESSION, key: 'specEffort', value, fence: FENCE })
   })
 
-  it('sends a model and an effort pick under the Spec keys Droid itself writes, not the main ones', async () => {
+  it('sends a model and an effort pick under the main keys, and leaves the Spec pair to its own control', async () => {
     const h = await startInSpecFromRecording()
 
     // The recording's reply to every update holds the main model and `low` as Spec's, so that is what Droid reports back.
-    const whole = { planMode: 'true', model: MAIN, effort: 'low' }
+    const whole = {
+      planMode: 'true',
+      model: MAIN,
+      effort: 'low',
+      specModel: MAIN,
+      specEffort: 'low'
+    }
     await expect(pick(h).model(MAIN)).resolves.toEqual(whole)
     await expect(pick(h).effort('low')).resolves.toEqual(whole)
 
     expect(h.connection.requests.slice(-2).map(({ params }) => params)).toEqual([
-      { specModeModelId: MAIN },
-      { specModeReasoningEffort: 'low' }
+      { modelId: MAIN },
+      { reasoningEffort: 'low' }
     ])
     await expect(
       h.adapter.readOptions({ sessionId: DROID_RIG_SESSION, fence: FENCE })
     ).resolves.toMatchObject({ current: { planMode: true, model: MAIN, effort: 'low' } })
   })
 
-  it("stores Spec, its model and its effort in the chat's options, so the next start resumes in Spec on them", async () => {
+  it("stores Spec and the pair it runs on in the chat's options, so the next start resumes in Spec on them", async () => {
     const h = await startHeldDroid('auto')
 
     const stored = await storePicks(h, [
       ['planMode', 'true'],
-      ['model', 'spec-2'],
-      ['effort', 'xhigh']
+      ['specModel', 'spec-2'],
+      ['specEffort', 'xhigh']
     ])
 
-    expect(stored).toEqual({ planMode: 'true', model: 'spec-2', effort: 'xhigh' })
+    expect(stored).toEqual({
+      planMode: 'true',
+      model: 'main',
+      effort: 'low',
+      specModel: 'spec-2',
+      specEffort: 'xhigh'
+    })
     await expect(framesOfResume(stored)).resolves.toEqual([
       { method: 'droid.load_session', params: { sessionId: 'droid-session-9' } },
       {
@@ -274,22 +301,33 @@ describe('Droid model and effort picks while Spec is on', () => {
       },
       {
         method: 'droid.update_session_settings',
-        params: { specModeModelId: 'spec-2', specModeReasoningEffort: 'xhigh' }
+        params: {
+          modelId: 'main',
+          reasoningEffort: 'low',
+          specModeModelId: 'spec-2',
+          specModeReasoningEffort: 'xhigh'
+        }
       }
     ])
   })
 
-  it('resumes in auto on the main pair after Spec is turned off', async () => {
+  it('resumes in auto on the main pair after Spec is turned off, with the Spec pair kept', async () => {
     const h = await startHeldDroid('auto')
 
     const stored = await storePicks(h, [
       ['planMode', 'true'],
-      ['model', 'spec-2'],
-      ['effort', 'xhigh'],
+      ['specModel', 'spec-2'],
+      ['specEffort', 'xhigh'],
       ['planMode', 'false']
     ])
 
-    expect(stored).toEqual({ planMode: 'false', model: 'main', effort: 'low' })
+    expect(stored).toEqual({
+      planMode: 'false',
+      model: 'main',
+      effort: 'low',
+      specModel: 'spec-2',
+      specEffort: 'xhigh'
+    })
     await expect(framesOfResume(stored)).resolves.toEqual([
       { method: 'droid.load_session', params: { sessionId: 'droid-session-9' } },
       {
@@ -298,7 +336,12 @@ describe('Droid model and effort picks while Spec is on', () => {
       },
       {
         method: 'droid.update_session_settings',
-        params: { modelId: 'main', reasoningEffort: 'low' }
+        params: {
+          modelId: 'main',
+          reasoningEffort: 'low',
+          specModeModelId: 'spec-2',
+          specModeReasoningEffort: 'xhigh'
+        }
       }
     ])
   })
@@ -320,8 +363,8 @@ describe('Droid model and effort picks while Spec is on', () => {
 
       const stored = await storePicks(h, [
         ['planMode', 'true'],
-        ['model', 'spec-2'],
-        ['effort', 'xhigh']
+        ['specModel', 'spec-2'],
+        ['specEffort', 'xhigh']
       ])
 
       await expect(rewrittenBy(h, stored)).resolves.toEqual(stored)
@@ -330,20 +373,36 @@ describe('Droid model and effort picks while Spec is on', () => {
     it('returns the map a read already rewrote the chat to when a pick follows it', async () => {
       const h = await startHeldDroid('spec')
       const rewritten = await rewrittenBy(h, {})
-      expect(rewritten).toEqual({ planMode: 'true', model: 'spec-1', effort: 'high' })
+      expect(rewritten).toEqual({
+        planMode: 'true',
+        model: 'main',
+        effort: 'low',
+        specModel: 'spec-1',
+        specEffort: 'high'
+      })
 
-      const picked = await setOption(h, 'model', 'spec-2')
+      const picked = await setOption(h, 'specModel', 'spec-2')
 
-      expect(picked).toEqual({ ...rewritten, model: 'spec-2' })
+      expect(picked).toEqual({ ...rewritten, specModel: 'spec-2' })
       await expect(rewrittenBy(h, picked)).resolves.toEqual(picked)
+    })
+
+    it('drops the Spec pair a read finds cleared, rather than restoring the one saved before', async () => {
+      const h = await startHeldDroid('spec')
+      const stored = await storePicks(h, [['specModel', DROID_SPEC_SAME_AS_MAIN]])
+      expect(stored).not.toHaveProperty('specModel')
+
+      await expect(
+        rewrittenBy(h, { planMode: 'true', specModel: 'spec-1', specEffort: 'high' })
+      ).resolves.toEqual({ planMode: 'true', model: 'main', effort: 'low' })
     })
   })
 
-  it('shows the main model and effort again when Spec is turned off after a Spec pick', async () => {
+  it('shows the main model and effort again when Spec is turned off after a Spec pair pick', async () => {
     const h = await startHeldDroid('spec')
 
-    await pick(h).model('spec-2')
-    await pick(h).effort('xhigh')
+    await pick(h).specModel('spec-2')
+    await pick(h).specEffort('xhigh')
 
     await expect(
       h.adapter.setOption({
@@ -352,7 +411,13 @@ describe('Droid model and effort picks while Spec is on', () => {
         value: 'false',
         fence: FENCE
       })
-    ).resolves.toEqual({ planMode: 'false', model: 'main', effort: 'low' })
+    ).resolves.toEqual({
+      planMode: 'false',
+      model: 'main',
+      effort: 'low',
+      specModel: 'spec-2',
+      specEffort: 'xhigh'
+    })
   })
 })
 
@@ -363,20 +428,30 @@ describe('Droid model and effort picks while Spec is off', () => {
     await expect(setOption(h, 'effort', 'xhigh')).resolves.toEqual({
       planMode: 'false',
       model: 'main',
-      effort: 'xhigh'
+      effort: 'xhigh',
+      specModel: 'spec-1',
+      specEffort: 'high'
     })
     await expect(setOption(h, 'model', 'spec-2')).resolves.toEqual({
       planMode: 'false',
       model: 'spec-2',
-      effort: 'xhigh'
+      effort: 'xhigh',
+      specModel: 'spec-1',
+      specEffort: 'high'
     })
   })
 })
 
 describe('Droid saved picks on a resume', () => {
-  it('applies the saved model and effort to the Spec model when the chat resumes in Spec', async () => {
+  it('applies the saved main pair to the main model and the saved Spec pair to the Spec model when the chat resumes in Spec', async () => {
     await expect(
-      framesOfResume({ planMode: 'true', model: 'spec-2', effort: 'low' })
+      framesOfResume({
+        planMode: 'true',
+        model: 'main-2',
+        effort: 'low',
+        specModel: 'spec-2',
+        specEffort: 'high'
+      })
     ).resolves.toEqual([
       { method: 'droid.load_session', params: { sessionId: 'droid-session-9' } },
       {
@@ -385,7 +460,12 @@ describe('Droid saved picks on a resume', () => {
       },
       {
         method: 'droid.update_session_settings',
-        params: { specModeModelId: 'spec-2', specModeReasoningEffort: 'low' }
+        params: {
+          modelId: 'main-2',
+          reasoningEffort: 'low',
+          specModeModelId: 'spec-2',
+          specModeReasoningEffort: 'high'
+        }
       }
     ])
   })

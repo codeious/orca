@@ -4,6 +4,7 @@ const SPEC_MODE_OPTION: CatalogOption = {
   id: 'planMode',
   label: 'Spec',
   category: 'mode',
+  scope: 'session',
   kind: { type: 'boolean', defaultValue: false },
   apply: {}
 }

@@ -11,6 +11,11 @@ import {
   type AgentSessionOptionsResult
 } from '../../../shared/agent-session-wire'
 import type { AgentSessionRecord } from '../../../shared/agent-session-record'
+import {
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_MODEL_OPTION_ID,
+  droidSpecPairSavedOptionsAfterPick
+} from '../../../shared/droid-spec-pair-options'
 import { decodeStructuredAgentSessionOptionValue } from '../../../shared/structured-agent-session-option-codec'
 import type { AgentSessionRecordStore } from '../../runtime/agent-session-record-store'
 import { journalOpenReadRefusal } from '../agent-session-journal/journal-open-failure'
@@ -94,8 +99,24 @@ async function readStructuredAgentSessionOptionsAtRest(
       ...(model ? { model } : {}),
       ...(effort ? { effort } : {}),
       ...(typeof fastMode === 'boolean' ? { fastMode } : {}),
-      ...(saved.serviceTier ? { serviceTier: saved.serviceTier } : {})
+      ...(saved.serviceTier ? { serviceTier: saved.serviceTier } : {}),
+      ...(rules?.reportsSavedSpec ? savedSpecCurrent(saved) : {})
     }
+  }
+}
+
+/** Spec as the next start replays it: on only when saved on, with the pair only when saved. */
+function savedSpecCurrent(
+  saved: Readonly<Record<string, string>>
+): Pick<AgentSessionOptionsResult['current'], 'planMode' | 'specModel' | 'specEffort'> {
+  return {
+    planMode:
+      saved.planMode !== undefined &&
+      decodeStructuredAgentSessionOptionValue('planMode', saved.planMode) === true,
+    ...(saved[DROID_SPEC_MODEL_OPTION_ID] ? { specModel: saved[DROID_SPEC_MODEL_OPTION_ID] } : {}),
+    ...(saved[DROID_SPEC_EFFORT_OPTION_ID]
+      ? { specEffort: saved[DROID_SPEC_EFFORT_OPTION_ID] }
+      : {})
   }
 }
 
@@ -119,7 +140,7 @@ export async function recordStructuredAgentSessionOptionIntent(
       )
     }
   }
-  const options = { ...record.options, [input.key]: input.value }
+  const options = droidSpecPairSavedOptionsAfterPick(record.options ?? {}, input.key, input.value)
   await ctx.persistOptions(options)
   ctx.publish()
   return { ok: true, value: { ...input, options } }

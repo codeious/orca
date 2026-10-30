@@ -100,4 +100,47 @@ describe('nativeChatOptionsPillLabel', () => {
     expect(nativeChatOptionsPillLabel([speedDescriptor('ultrafast')])).toBe('Ultrafast')
     expect(nativeChatOptionsPillLabel([speedDescriptor('default')])).toBe('Options')
   })
+
+  describe('with the Spec switch', () => {
+    function specDescriptor(
+      currentValue: boolean,
+      valueSource: SessionOptionDescriptor['valueSource'] = 'dispatched'
+    ): SessionOptionDescriptor {
+      return {
+        id: 'planMode',
+        label: 'Spec',
+        category: 'mode',
+        valueSource,
+        transport: 'agent-session',
+        settable: true,
+        kind: { type: 'boolean', currentValue }
+      }
+    }
+    const effort: SessionOptionDescriptor = {
+      id: 'effort',
+      label: 'Effort',
+      valueSource: 'reported',
+      transport: 'agent-session',
+      settable: true,
+      kind: {
+        type: 'select',
+        currentValue: 'off',
+        choices: [{ value: 'off', label: 'Off' }]
+      }
+    }
+
+    it('follows the effort with · Spec', () => {
+      expect(nativeChatOptionsPillLabel([effort, specDescriptor(true)])).toBe('Off · Spec')
+    })
+
+    it('keeps · Spec as a suffix when the Spec switch is all the pill has to say', () => {
+      expect(nativeChatOptionsPillLabel([specDescriptor(true)])).toBe('Options · Spec')
+    })
+
+    it('leaves the marker out while Spec is off or not yet known', () => {
+      expect(nativeChatOptionsPillLabel([specDescriptor(false)])).toBe('Options')
+      expect(nativeChatOptionsPillLabel([specDescriptor(false, 'unknown')])).toBe('Options')
+      expect(nativeChatOptionsPillLabel([effort, specDescriptor(false)])).toBe('Off')
+    })
+  })
 })

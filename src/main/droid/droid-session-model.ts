@@ -8,6 +8,7 @@ import {
   droidOptionParams,
   droidOptionsAfterPick,
   droidReportedSessionOptions,
+  droidSpecPairParams,
   droidStartCatalogListing,
   type DroidSavedPicks
 } from './droid-model-options'
@@ -57,24 +58,17 @@ export class DroidSessionModel {
     return withLiveCatalogListing(this.reported)
   }
 
-  /** `spec` sends the pick under Droid's Spec keys; what is held here stays the main model's. */
-  async set(
-    request: Ask,
-    key: string,
-    value: string,
-    spec: boolean
-  ): Promise<Readonly<Record<string, string>>> {
+  /** The main model or effort only: the Spec pair has its own keys and is never moved by this. */
+  async set(request: Ask, key: string, value: string): Promise<Readonly<Record<string, string>>> {
     if (key !== 'model' && key !== 'effort') {
       throw new Error(`Droid has no session option named ${key}`)
     }
     await request(
       'droid.update_session_settings',
-      droidOptionParams(key === 'model' ? { model: value } : { effort: value }, spec),
+      droidOptionParams(key === 'model' ? { model: value } : { effort: value }),
       { timeoutMs: OPTION_REQUEST_TIMEOUT_MS }
     )
-    if (!spec) {
-      this.reported = droidOptionsAfterPick(this.reported, key, value)
-    }
+    this.reported = droidOptionsAfterPick(this.reported, key, value)
     return { [key]: value }
   }
 
@@ -82,21 +76,18 @@ export class DroidSessionModel {
   async applySaved(
     request: Ask,
     saved: DroidSavedPicks,
-    spec: boolean,
     warn: (error: unknown) => void
   ): Promise<void> {
-    if (!saved.model && !saved.effort) {
+    const params = { ...droidOptionParams(saved), ...droidSpecPairParams(saved) }
+    if (Object.keys(params).length === 0) {
       return
     }
     try {
-      await request('droid.update_session_settings', droidOptionParams(saved, spec), {
+      await request('droid.update_session_settings', params, {
         timeoutMs: OPTION_REQUEST_TIMEOUT_MS
       })
     } catch (error) {
       warn(error)
-      return
-    }
-    if (spec) {
       return
     }
     if (saved.model) {

@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import {
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_MODEL_OPTION_ID
+} from '../../shared/droid-spec-pair-options'
 import type {
   AgentSessionModelOption,
   AgentSessionOptionsResult
@@ -94,15 +98,20 @@ export function droidReportedSessionOptions(result: unknown): AgentSessionOption
 export type DroidSavedPicks = {
   model?: string
   effort?: string
+  /** The model and effort Spec runs on in place of the main pair. */
+  specModel?: string
+  specEffort?: string
   picked: ReadonlySet<string>
 }
 
-/** Model and effort saved on the chat. Anything else is not a Droid session option. */
+/** Model, effort and the Spec pair saved on the chat. Anything else is not a Droid session option. */
 export function droidSavedOptionPicks(
   options: Readonly<Record<string, string>> | undefined
 ): DroidSavedPicks {
   const model = options?.model
   const effort = options?.effort
+  const specModel = options?.[DROID_SPEC_MODEL_OPTION_ID]
+  const specEffort = options?.[DROID_SPEC_EFFORT_OPTION_ID]
   const picked = new Set<string>()
   if (model) {
     picked.add('model')
@@ -113,6 +122,8 @@ export function droidSavedOptionPicks(
   return {
     ...(model ? { model } : {}),
     ...(effort ? { effort } : {}),
+    ...(specModel ? { specModel } : {}),
+    ...(specEffort ? { specEffort } : {}),
     picked
   }
 }
@@ -121,7 +132,7 @@ type DroidOptionParams = Partial<
   Record<'modelId' | 'reasoningEffort' | 'specModeModelId' | 'specModeReasoningEffort', string>
 >
 
-/** Spec runs its own model and effort, so a pick made while it is on must not move the main ones. */
+/** `spec` names the pair under the keys Spec reads, so it never moves the main model or effort. */
 export function droidOptionParams(
   picks: Pick<DroidSavedPicks, 'model' | 'effort'>,
   spec = false
@@ -132,6 +143,19 @@ export function droidOptionParams(
       ? { [spec ? 'specModeReasoningEffort' : 'reasoningEffort']: picks.effort }
       : {})
   }
+}
+
+/** The saved Spec pair as Droid's own keys; empty when none was set. */
+export function droidSpecPairParams(
+  saved: Pick<DroidSavedPicks, 'specModel' | 'specEffort'>
+): DroidOptionParams {
+  return droidOptionParams(
+    {
+      ...(saved.specModel ? { model: saved.specModel } : {}),
+      ...(saved.specEffort ? { effort: saved.specEffort } : {})
+    },
+    true
+  )
 }
 
 /** A new session with no model pick teaches what it resolved. A resume or a restored pick does not. */

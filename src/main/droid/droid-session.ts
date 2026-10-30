@@ -11,7 +11,11 @@ import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
 import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
-import { droidOptionParams, droidSavedOptionPicks } from './droid-model-options'
+import {
+  droidOptionParams,
+  droidSavedOptionPicks,
+  droidSpecPairParams
+} from './droid-model-options'
 import { DroidPrompts } from './droid-prompts'
 import { DroidSessionModel } from './droid-session-model'
 import { DroidSessionOptions } from './droid-session-options'
@@ -174,7 +178,8 @@ export class DroidSession {
               cwd,
               interactionMode,
               autonomyLevel,
-              ...droidOptionParams(saved)
+              ...droidOptionParams(saved),
+              ...droidSpecPairParams(saved)
             },
             { timeoutMs: START_TIMEOUT_MS }
           ))

@@ -22,6 +22,9 @@ export type StructuredAgentDefinition = AgentSessionStoredAgent & {
     /** Wait for a cold catalog's listing instead of answering with no models; for an agent with no
      *  fallback list, because the client keeps an empty answer as final. */
     waitsForCatalogListing?: true
+    /** The at-rest answer names Spec, and the model and effort it runs on, from the saved picks:
+     *  a client that sees no Spec in an answer drops the Spec row and any Spec pick it holds. */
+    reportsSavedSpec?: true
   }
 }
 

@@ -14,6 +14,7 @@ import type {
 
 export * from './agent-session-wire-refusals'
 export * from './agent-session-queued-message-wire'
+export * from './agent-session-thread-goal-wire'
 export * from './agent-session-turn-completion-wire'
 import type { AgentSessionConversationCommand } from './agent-session-conversation-command'
 import type { AgentSessionContextUsage } from './agent-session-context-usage'
@@ -465,20 +466,6 @@ export type AgentSessionCommandsResult = {
   commands?: AgentSessionSlashCommand[]
 }
 
-/** Longest objective a client may send; matches the provider's own limit. */
-export const AGENT_SESSION_THREAD_GOAL_OBJECTIVE_MAX_LENGTH = 4000
-
-/** A client's change to the thread goal. `set` replaces the objective and makes
- *  it active, which the provider pursues without a separate turn. */
-export type AgentSessionThreadGoalChange =
-  | { kind: 'set'; objective: string }
-  | { kind: 'status'; status: 'active' | 'paused' }
-  | { kind: 'clear' }
-
-export type AgentSessionThreadGoalResult = {
-  change: AgentSessionThreadGoalChange['kind']
-}
-
 /** Provider-reported choices and effective next-turn values. Additive read-only
  *  surface so older hosts can reject it without changing structured v1 writes. */
 export type AgentSessionOptionsResult = {
@@ -505,6 +492,9 @@ export type AgentSessionOptionsResult = {
     serviceTier?: string
     /** Spec mode, from a provider that has one. Absent means the provider reports none, so no toggle. */
     planMode?: boolean
+    /** Droid only: the model and effort Spec runs on in place of the main ones. Absent means Spec runs the main pair. */
+    specModel?: string
+    specEffort?: string
     /** Provider-reported effective routing, distinct from the next-turn preference. */
     fastModeState?: AgentSessionFastModeState
     /**

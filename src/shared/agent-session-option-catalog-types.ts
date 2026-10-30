@@ -32,6 +32,9 @@ export type CatalogOption = {
   label: string
   description?: string
   category?: SessionOptionDescriptor['category']
+  /** The value belongs to the session, not a model: it can be set before any model is named and
+   *  survives a model change. */
+  scope?: 'session'
   kind:
     | {
         type: 'select'
@@ -79,6 +82,9 @@ export type AgentSessionOptionCatalog = {
   /** For a host too old to say so itself: its model listing names the model the account is
    *  configured to run, so a new chat may run the listed default. */
   hostListingNamesConfiguredModel?: true
+  /** The agent's session can switch Spec on before it has reported that it can, so a listed model
+   *  offers the switch from the first frame. */
+  offersSpecAtRest?: true
   listModels?: {
     command: string
     parse: (stdout: string) => CatalogModel[]

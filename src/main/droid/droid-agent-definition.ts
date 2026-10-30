@@ -1,3 +1,4 @@
+import { isDroidSpecPairOptionId } from '../../shared/droid-spec-pair-options'
 import type { DirectoryAccountAgentDefinition } from '../native-chat/agent-session-wire/structured-agent-definition'
 
 export const DROID_HANDLE_TRANSPORT = 'droid-stream-jsonrpc'
@@ -20,10 +21,11 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
     approvalEnforcement: 'provider'
   },
   restingOptions: {
-    // Model, effort and Spec are kept at rest and sent on the next start.
-    acceptsKey: (key) => key === 'model' || key === 'effort' || key === 'planMode',
+    acceptsKey: (key) =>
+      key === 'model' || key === 'effort' || key === 'planMode' || isDroidSpecPairOptionId(key),
     fallbackModels: () => null,
     effortDefaultsToModel: false,
-    waitsForCatalogListing: true
+    waitsForCatalogListing: true,
+    reportsSavedSpec: true
   }
 }

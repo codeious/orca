@@ -71,6 +71,8 @@ export function parseDroidSettings(value: unknown): DroidSettings {
 
 const KEPT_ANSWERS = 16
 
+export const SPEC_PAIR_SETTINGS = ['specModeModelId', 'specModeReasoningEffort'] as const
+
 /**
  * Droid sends the settings it holds as partial, unsolicited `settings_updated` reports, and one
  * more tagged with the `requestId` of the update that caused it, so each report merges over the last.
@@ -97,7 +99,24 @@ export class DroidReportedSettings {
 
   /** Settings an RPC result repeats; the unsolicited report can arrive before the result does. */
   adopt(settings: unknown): void {
-    this.reported = { ...this.reported, ...parseDroidSettings(settings) }
+    const next = { ...this.reported, ...parseDroidSettings(settings) }
+    const raw = settingsRecord.safeParse(settings)
+    for (const key of SPEC_PAIR_SETTINGS) {
+      // A report merges over the last, so only a null or empty value says the pair was cleared.
+      if (raw.success && key in raw.data && !nonEmptyText(raw.data[key])) {
+        delete next[key]
+      }
+    }
+    this.reported = next
+  }
+
+  /** The Spec pair after a clear Droid accepted but may not repeat: a stale value must not outlive it. */
+  forgetSpecPair(keys: readonly (typeof SPEC_PAIR_SETTINGS)[number][]): void {
+    const next = { ...this.reported }
+    for (const key of keys) {
+      delete next[key]
+    }
+    this.reported = next
   }
 
   /** What Droid held when it reported on this request, once. */

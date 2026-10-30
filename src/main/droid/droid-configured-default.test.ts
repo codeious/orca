@@ -449,7 +449,7 @@ describe('Droid options at rest on a cold profile', () => {
     const options = await restingChat(workspace('clean')).readOptions()
     expect(options.models.map((model) => model.id)).toEqual(MODEL_IDS)
     expect(options.models.some((model) => model.isDefault)).toBe(false)
-    expect(options.current).toEqual({})
+    expect(options.current).toEqual({ planMode: false })
   })
 
   it("keeps the probe's list when a cold chat's resting answer lands before the probe's catalog", async () => {

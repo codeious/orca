@@ -1,14 +1,21 @@
 import type { AgentSessionOptionsResult } from '../../shared/agent-session-wire'
+import {
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_SAME_AS_MAIN
+} from '../../shared/droid-spec-pair-options'
 import { encodeStructuredAgentSessionOptionValue } from '../../shared/structured-agent-session-option-codec'
 import { AgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
 import type { DroidSavedPicks } from './droid-model-options'
 import { DroidRpcError } from './droid-rpc-errors'
 import type { DroidSessionModel } from './droid-session-model'
-import type {
-  DroidInteractionMode,
-  DroidReportedSettings,
-  DroidSettings,
-  DroidStartSettings
+import {
+  parseDroidSettings,
+  SPEC_PAIR_SETTINGS,
+  type DroidInteractionMode,
+  type DroidReportedSettings,
+  type DroidSettings,
+  type DroidStartSettings
 } from './droid-session-settings'
 
 type DroidCurrentOptions = AgentSessionOptionsResult['current'] & { planMode: boolean }
@@ -25,25 +32,22 @@ function specIsOn(settings: DroidSettings, requested: DroidInteractionMode): boo
 }
 
 /**
- * Spec runs its own model and effort, so the model and effort a person sees follow the mode; where
- * Droid names none for Spec it runs the main ones, as the picks already held say, else as Droid
- * reports them. `requested` is the mode the start pinned, which stands until Droid reports one.
+ * The main model and effort are what the picks already held say, else as Droid reports them, in
+ * either mode. The Spec pair is reported apart, so naming one never moves the main pair a person
+ * sees. `requested` is the mode the start pinned, which stands until Droid reports one.
  */
 function droidCurrentOptions(
   settings: DroidSettings,
   requested: DroidInteractionMode,
   held: AgentSessionOptionsResult['current'] = {}
 ): DroidCurrentOptions {
-  const spec = specIsOn(settings, requested)
-  const specModel = spec ? settings.specModeModelId : undefined
-  const specEffort = spec ? settings.specModeReasoningEffort : undefined
-  const model = specModel ?? held.model ?? settings.modelId
-  const effort = specEffort ?? held.effort ?? settings.reasoningEffort
+  const model = held.model ?? settings.modelId
+  const effort = held.effort ?? settings.reasoningEffort
   const confirmed = new Set<string>(held.confirmed)
   const reported: [string, string | undefined][] = [
     ['planMode', settings.interactionMode],
-    ['model', specModel ?? settings.modelId],
-    ['effort', specEffort ?? settings.reasoningEffort]
+    ['model', settings.modelId],
+    ['effort', settings.reasoningEffort]
   ]
   for (const [key, value] of reported) {
     if (value) {
@@ -51,9 +55,11 @@ function droidCurrentOptions(
     }
   }
   return {
-    planMode: spec,
+    planMode: specIsOn(settings, requested),
     ...(model ? { model } : {}),
     ...(effort ? { effort } : {}),
+    ...(settings.specModeModelId ? { specModel: settings.specModeModelId } : {}),
+    ...(settings.specModeReasoningEffort ? { specEffort: settings.specModeReasoningEffort } : {}),
     confirmed: [...confirmed]
   }
 }
@@ -82,7 +88,10 @@ export class DroidSessionOptions {
    * Where Droid reported nothing for the pick, the picked value stands.
    */
   async set(key: string, value: string): Promise<Record<string, string>> {
-    const { request, settings, model, requested } = this.deps
+    if (key === DROID_SPEC_MODEL_OPTION_ID || key === DROID_SPEC_EFFORT_OPTION_ID) {
+      return this.setSpecPair(key, value)
+    }
+    const { request, settings, model } = this.deps
     const sent: { id?: string } = {}
     await model.set(
       (method, params, options) =>
@@ -93,12 +102,39 @@ export class DroidSessionOptions {
           }
         }),
       key,
-      value,
-      specIsOn(settings.current, requested)
+      value
     )
     const answer = sent.id === undefined ? undefined : settings.answerTo(sent.id)
     const picks = this.picks(answer ?? settings.current)
     return answer ? picks : { ...picks, [key]: value }
+  }
+
+  /** Clearing the Spec model clears the effort that belonged to it. Droid may report nothing after a
+   *  clear, so the stale value is dropped here instead of waiting for a report. */
+  private async setSpecPair(key: string, value: string): Promise<Record<string, string>> {
+    const { settings } = this.deps
+    const clear = value === DROID_SPEC_SAME_AS_MAIN
+    const forModel = key === DROID_SPEC_MODEL_OPTION_ID
+    const cleared: (typeof SPEC_PAIR_SETTINGS)[number][] = clear
+      ? forModel
+        ? [...SPEC_PAIR_SETTINGS]
+        : ['specModeReasoningEffort']
+      : []
+    const params = clear
+      ? Object.fromEntries(cleared.map((name) => [name, null]))
+      : { [forModel ? 'specModeModelId' : 'specModeReasoningEffort']: value }
+    const answer = await this.update(params)
+    const next: DroidSettings = { ...(answer ?? settings.current) }
+    if (clear) {
+      settings.forgetSpecPair(cleared)
+      for (const name of cleared) {
+        delete next[name]
+      }
+    } else if (!answer) {
+      settings.adopt(params)
+      Object.assign(next, parseDroidSettings(params))
+    }
+    return this.picks(next)
   }
 
   /**
@@ -125,13 +161,11 @@ export class DroidSessionOptions {
     warn: (error: unknown) => void
   ): Promise<DroidSettings['autonomyLevel']> {
     const reported = await this.update(wanted)
-    // Droid took the update, so the mode it pinned stands even if it reported nothing back.
-    const spec = specIsOn(reported ?? {}, wanted.interactionMode)
-    await this.deps.model.applySaved(this.deps.request, saved, spec, warn)
+    await this.deps.model.applySaved(this.deps.request, saved, warn)
     return reported?.autonomyLevel
   }
 
-  /** The Spec, model and effort picks the host stores for a chat Droid holds as `reported`. */
+  /** The Spec, model, effort and Spec pair picks the host stores for a chat Droid holds as `reported`. */
   private picks(reported: DroidSettings): Record<string, string> {
     const { model, requested } = this.deps
     const current = droidCurrentOptions(reported, requested, model.current)
@@ -139,12 +173,14 @@ export class DroidSessionOptions {
     return {
       ...(planMode === null ? {} : { planMode }),
       ...(current.model ? { model: current.model } : {}),
-      ...(current.effort ? { effort: current.effort } : {})
+      ...(current.effort ? { effort: current.effort } : {}),
+      ...(current.specModel ? { [DROID_SPEC_MODEL_OPTION_ID]: current.specModel } : {}),
+      ...(current.specEffort ? { [DROID_SPEC_EFFORT_OPTION_ID]: current.specEffort } : {})
     }
   }
 
   /** What Droid reported holding in answer to this update, if it reported at all. */
-  private async update(params: Partial<DroidStartSettings>): Promise<DroidSettings | undefined> {
+  private async update(params: object): Promise<DroidSettings | undefined> {
     const { request, settings, timeoutMs } = this.deps
     const sent: { id?: string } = {}
     await request('droid.update_session_settings', params, {

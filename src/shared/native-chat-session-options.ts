@@ -123,7 +123,20 @@ export type NativeChatSessionOptionSettingsMutation =
     }
   | { type: 'clear-model-if-missing'; agent: AgentType; availableModelIds: readonly string[] }
 
+/** Droid's Spec model and effort. Drawn beside the options and set through `setOption` under
+ *  `specModel` and `specEffort`, but never one of the snapshot's descriptors: neither is tracked
+ *  per model or remembered for the next launch. `null` is "same as main". */
+export type SessionOptionSpecPair = {
+  model: string | null
+  effort: string | null
+  modelChoices: SessionOptionSelectChoice[]
+  effortChoices: SessionOptionSelectChoice[]
+  settable: boolean
+}
+
 export type SessionOptionsSurface = {
+  /** Present only for an agent whose Spec runs on a model of its own. */
+  specPair?: SessionOptionSpecPair
   getSnapshot(): SessionOptionDescriptor[]
   /** Apply an absolute target; known flip-only options use their tracked baseline. */
   setOption(id: string, value: SessionOptionValue): Promise<SessionOptionSetResult>

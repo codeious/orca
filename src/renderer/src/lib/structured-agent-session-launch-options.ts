@@ -3,6 +3,15 @@ import type {
   AgentSessionMutationResult,
   AgentSessionOptionResult
 } from '../../../shared/agent-session-wire'
+import {
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_PAIR_OPTION_IDS,
+  DROID_SPEC_SAME_AS_MAIN,
+  droidSpecPairSavedOptionsAfterPick,
+  isDroidSessionSpecOptionId,
+  isDroidSpecPairOptionId
+} from '../../../shared/droid-spec-pair-options'
 import { STRUCTURED_LAUNCH_SEED_OPTION_IDS } from '../../../shared/native-chat-session-option-defaults'
 import {
   createStructuredAgentSessionOperationId,
@@ -43,6 +52,13 @@ export type StructuredLaunchOptionOutcome =
 
 type OptionReply = (outcome: StructuredLaunchOptionOutcome) => void
 
+/** Model first so an effort lands under the model it was picked against; Spec's pair last, since
+ *  its effort belongs to the Spec model before it. */
+const HELD_OPTION_APPLY_ORDER = [
+  ...STRUCTURED_LAUNCH_SEED_OPTION_IDS,
+  ...DROID_SPEC_PAIR_OPTION_IDS
+] as const
+
 const optionReplies = new WeakMap<StructuredLaunchState, Map<string, OptionReply>>()
 
 function repliesFor(state: StructuredLaunchState): Map<string, OptionReply> {
@@ -52,6 +68,21 @@ function repliesFor(state: StructuredLaunchState): Map<string, OptionReply> {
     optionReplies.set(state, replies)
   }
   return replies
+}
+
+/** A model pick drops picks held under the model it replaces; Spec's switch and pair are not under
+ *  it. Clearing the Spec model drops the Spec effort held for it, as the host does. */
+function heldKeysReplacedBy(
+  held: Readonly<Record<string, string>>,
+  id: string,
+  encoded: string
+): string[] {
+  if (id === 'model') {
+    return Object.keys(held).filter((key) => !isDroidSessionSpecOptionId(key))
+  }
+  return id === DROID_SPEC_MODEL_OPTION_ID && encoded === DROID_SPEC_SAME_AS_MAIN
+    ? [id, DROID_SPEC_EFFORT_OPTION_ID]
+    : [id]
 }
 
 /**
@@ -69,15 +100,13 @@ export function holdStructuredAgentSessionLaunchOption(
   }
   const replies = repliesFor(state)
   const { held } = state.selection
-  // A model pick drops picks held under the model it replaces.
-  for (const key of id === 'model' ? Object.keys(held) : [id]) {
+  const dropped = heldKeysReplacedBy(held, id, encoded)
+  for (const key of dropped) {
     replies.get(key)?.({ kind: 'superseded' })
     replies.delete(key)
   }
-  state.selection = {
-    ...state.selection,
-    held: id === 'model' ? { model: encoded } : { ...held, [id]: encoded }
-  }
+  const kept = Object.fromEntries(Object.entries(held).filter(([key]) => !dropped.includes(key)))
+  state.selection = { ...state.selection, held: { ...kept, [id]: encoded } }
   notifyStructuredLaunchListeners()
   return new Promise((resolve) => replies.set(id, resolve))
 }
@@ -120,6 +149,22 @@ async function setLaunchOption(
   }
 }
 
+function seedAfter(
+  seed: StructuredLaunchSelection['seed'],
+  id: string,
+  encoded: string,
+  outcome: StructuredLaunchOptionOutcome
+): StructuredLaunchSelection['seed'] {
+  if (outcome.kind !== 'accepted') {
+    return seed
+  }
+  const merged = { ...seed, ...outcome.options }
+  // A clear is the absence of a key, which a merge cannot say.
+  return isDroidSpecPairOptionId(id)
+    ? droidSpecPairSavedOptionsAfterPick(merged, id, encoded)
+    : merged
+}
+
 function settleHeldOption(
   state: StructuredLaunchState,
   id: string,
@@ -133,7 +178,7 @@ function settleHeldOption(
   // A pick made while this one was in flight superseded it and stays held for the next pass.
   const settled = current === encoded
   state.selection = {
-    seed: outcome.kind === 'accepted' ? { ...seed, ...outcome.options } : seed,
+    seed: seedAfter(seed, id, encoded, outcome),
     held: settled ? rest : state.selection.held
   }
   if (settled) {
@@ -169,7 +214,7 @@ export async function applyStructuredLaunchHeldOptions(
       throw new StructuredAgentSessionLaunchCancelledError()
     }
     const { held } = state.selection
-    const id = STRUCTURED_LAUNCH_SEED_OPTION_IDS.find((key) => held[key] !== undefined)
+    const id = HELD_OPTION_APPLY_ORDER.find((key) => held[key] !== undefined)
     const encoded = id ? held[id] : undefined
     if (!id || encoded === undefined) {
       return receipt
