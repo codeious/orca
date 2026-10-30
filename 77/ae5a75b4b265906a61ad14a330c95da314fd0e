@@ -1,0 +1,157 @@
+src/main/droid/droid-session-notifications.ts
+  s_0815929ac8bdb1::t_7855534e678537 64-70
+src/main/droid/droid-spec-approval.test.ts
+  s_0f8146f37120f5::t_c73f17cf0fb7ae 117-120
+  s_0815929ac8bdb1::t_47d5e1831d0ba7 162-168,170,172-173
+  s_0f8146f37120f5::t_cb7fed15b7a66f 98-116,122-123
+  s_0815929ac8bdb1::t_131b31dc962a34 1-55,66,73-74,76,88-91,96-97,121,124-161,169,171,174-208,264-337,345-410
+  s_0815929ac8bdb1::t_a0a54c7ccafe75 56-65,67-72,75,77-87,92-95
+  s_0f8146f37120f5::t_8a1ec65d2dc369 209-263
+  s_0815929ac8bdb1::t_5736edf04d8382 338-344
+src/main/runtime/rpc/methods/structured-agent-session-respond-params.test.ts
+  s_0815929ac8bdb1::t_1da168614238fb 93-114
+src/renderer/src/lib/droid-chat-session-switch.test.ts
+  s_0815929ac8bdb1::t_47d5e1831d0ba7 428-432
+  s_0815929ac8bdb1::t_532a21219f4286 415-416
+  s_0815929ac8bdb1::t_255d2061c67a84 372-414,417-427,433-434,439-442,446
+  s_0815929ac8bdb1::t_f14b794d039ec9 435-438,443-445
+  s_0815929ac8bdb1::t_d17e5a559e132d 13-16
+  s_0815929ac8bdb1::t_bdbd5d85372166 154
+  s_0815929ac8bdb1::t_55125f01be2e09 447-448
+src/main/droid/fixtures/spec-exit-spec-mode-handoff.jsonl
+  s_0815929ac8bdb1::t_82320b582a2194 1,54-55
+  s_0815929ac8bdb1::t_37759e43e71309 2-53,56-60
+src/main/droid/droid-spec-handoff.ts
+  s_0815929ac8bdb1::t_98b513e3d6cbe9 1-60
+src/renderer/src/components/native-chat/use-droid-spec-handoff.ts
+  s_0815929ac8bdb1::t_804f0985307fe9 1-4,8,10-18,20-43,45-54,57-59,62-82
+  s_0f8146f37120f5::t_5862339946c55f 5-7,9,19,44,55-56,60
+  s_0f8146f37120f5::t_bc30939afdc412 61
+src/shared/rpc-contract/structured-agent-session-params.ts
+  s_0815929ac8bdb1::t_725049f47462af 210-218,225-228
+src/renderer/src/i18n/locales/en.json
+  s_0815929ac8bdb1::t_81dff1f6155d05 18579-18580,18582-18585
+  s_0815929ac8bdb1::t_0c10951222f10d 18588-18589
+  s_0815929ac8bdb1::t_0ff2eaf3faf308 18590
+src/renderer/src/components/native-chat/structured-agent-session-prompt-response.ts
+  s_0815929ac8bdb1::t_bba33d5bb0d563 28-41
+  s_0815929ac8bdb1::t_5649bc2693b85b 3-5
+  s_0815929ac8bdb1::t_3d34012b06f4f5 2
+src/shared/agent-session-journal-spec-handoff.ts
+  s_0f8146f37120f5::t_ed7e11fbd3fd36 1-9
+src/shared/protocol-version.ts
+  s_0f8146f37120f5::t_f6951bc7019e1c 294
+  s_0f8146f37120f5::t_279541f046ec41 434
+  s_0815929ac8bdb1::t_ede56dba0b6ee6 292-293
+src/main/droid/droid-turns.ts
+  s_0815929ac8bdb1::t_d692480026e0fd 6
+  s_0815929ac8bdb1::t_5b32e06e981846 261-263
+  s_0815929ac8bdb1::t_a4893a46481a68 160-162
+  s_0815929ac8bdb1::t_ff9fda41ce6585 25-28
+src/main/native-chat/agent-session-wire/structured-agent-session-turns-prompt.ts
+  s_0815929ac8bdb1::t_e8cef9c13cb10e 56-66
+  s_0815929ac8bdb1::t_583d693600517b 113-119
+  s_0815929ac8bdb1::t_53179b69e14987 36-38
+src/renderer/src/components/native-chat/NativeChatStructuredSession.tsx
+  s_0815929ac8bdb1::t_c97a42e5ee56d5 100-105
+  s_0815929ac8bdb1::t_160b71a5622a86 367-368
+  s_0815929ac8bdb1::t_26d212910bf056 29
+src/renderer/src/components/native-chat/native-chat-interactive-prompt.ts
+  s_0815929ac8bdb1::t_2f942462b543e1 45-47,51-53,57-58
+src/renderer/src/components/native-chat/NativeChatApprovalCard.tsx
+  s_0815929ac8bdb1::t_1e85738ae1357b 182,189-196
+  s_0815929ac8bdb1::t_d3787d6b29b637 55
+  s_0815929ac8bdb1::t_0c5328354eea2a 140-153
+  s_0815929ac8bdb1::t_ab62d7066b9b54 25-26
+  s_0815929ac8bdb1::t_b7662a581902d7 13-19
+src/shared/agent-session-journal-types.ts
+  s_0f8146f37120f5::t_d65bf42cb60de5 22
+  s_0815929ac8bdb1::t_07ca4613e97266 239-242
+  s_0815929ac8bdb1::t_f1ae847f571c43 350-351
+src/shared/agent-session-journal-schemas.ts
+  s_0815929ac8bdb1::t_ac6d30b88e19b6 237-238
+  s_0815929ac8bdb1::t_cc0afc326e510c 268-276
+src/main/droid/droid-session.ts
+  s_0815929ac8bdb1::t_287d9272c2d26d 24
+  s_0815929ac8bdb1::t_beec9dc0138cfe 154
+  s_0815929ac8bdb1::t_fd7e6736d803d3 79
+  s_0815929ac8bdb1::t_67f653762c51f3 135-138
+src/main/native-chat/agent-session-wire/structured-agent-session-approval-notes.test.ts
+  s_0815929ac8bdb1::t_a33f2ca2fc5f40 6-9
+  s_0815929ac8bdb1::t_22fd2885399146 49,51
+  s_0815929ac8bdb1::t_d9360299d31427 1-5,10-48,50,52-109,113-121,126-134,139-151
+  s_0815929ac8bdb1::t_47d5e1831d0ba7 110-112,122-125,135-138
+src/renderer/src/components/native-chat/structured-agent-session-prompt-response.test.ts
+  s_0815929ac8bdb1::t_2247a27a570198 1-35,39-112
+  s_0815929ac8bdb1::t_47d5e1831d0ba7 36-38
+src/main/droid/droid-prompts.ts
+  s_0815929ac8bdb1::t_3d7691111d74cc 19-22
+  s_0815929ac8bdb1::t_8a0d3579c46875 40-43
+  s_0815929ac8bdb1::t_47d5e1831d0ba7 15
+  s_0815929ac8bdb1::t_845757e2bf1911 54
+src/renderer/src/components/native-chat/use-droid-spec-handoff.test.tsx
+  s_0815929ac8bdb1::t_47d5e1831d0ba7 23-26,30-33
+  s_0f8146f37120f5::t_7344caa3ce60ec 184
+  s_0f8146f37120f5::t_37db8cdf3765c5 167,172-183,185-187
+  s_0815929ac8bdb1::t_b679cf2c46acf3 1-4,7-22,27-29,34-166,188-202
+  s_0f8146f37120f5::t_c73f17cf0fb7ae 168-171
+  s_0f8146f37120f5::t_630434eee0b2f2 5-6
+src/shared/agent-session-question-answer.ts
+  s_0815929ac8bdb1::t_c848639e16eb29 22-28
+src/main/droid/droid-prompt-presentation.ts
+  s_0815929ac8bdb1::t_87d5ca9901732c 7
+  s_0815929ac8bdb1::t_000f604e25db12 16-21
+  s_0815929ac8bdb1::t_4ab0a11ff91829 22-23
+src/main/native-chat/agent-session-wire/structured-agent-session-mutation-plans.ts
+  s_0815929ac8bdb1::t_c3593767c95e8d 286-288
+src/renderer/src/components/native-chat/NativeChatApprovalNotes.tsx
+  s_0815929ac8bdb1::t_254982e533fef1 133
+  s_0815929ac8bdb1::t_73af91033f1aa7 72
+  s_0815929ac8bdb1::t_4bdf441ca35c14 1-40,47-71,73-132,134-136
+  s_0815929ac8bdb1::t_47d5e1831d0ba7 41-46
+src/renderer/src/lib/droid-chat-session-switch.ts
+  s_0815929ac8bdb1::t_36abc13424cbd4 32-34,44-45
+  s_0815929ac8bdb1::t_b610de17f0920b 115-117,123
+src/renderer/src/runtime/structured-agent-session-client.ts
+  s_0815929ac8bdb1::t_04dae343520e07 77-79
+  s_0f8146f37120f5::t_630434eee0b2f2 10,80
+  s_0f8146f37120f5::t_d1f9740d59c7c5 81-82
+src/main/native-chat/agent-session-wire/structured-agent-session-adopted-import.ts
+  s_0f8146f37120f5::t_e911f107b9ba03 124
+  s_0f8146f37120f5::t_4e6d6e565fecde 143-144
+src/renderer/src/components/native-chat/NativeChatApprovalCard.notes.test.tsx
+  s_0815929ac8bdb1::t_47d5e1831d0ba7 180-182
+  s_0815929ac8bdb1::t_249a91b0404b38 1-179,183-190
+src/main/droid/droid-permission-requests.ts
+  s_0f8146f37120f5::t_aa7bbce2fe08a3 83-93,96-99
+  s_0815929ac8bdb1::t_0a10cb69ed1e0f 107-123
+  s_0815929ac8bdb1::t_4bcbf58bb437f3 38-45,48-51,58-70
+  s_0f8146f37120f5::t_925cd97aaed50f 94
+  s_0f8146f37120f5::t_65248fc8c64c32 2
+  s_0815929ac8bdb1::t_e655b5def1bdad 6-10,12
+  s_0815929ac8bdb1::t_3c5505e7939b36 19-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "77ae5a75b4b265906a61ad14a330c95da314fd0e",
+  "prompts": {},
+  "sessions": {
+    "s_0815929ac8bdb1": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e361432f-855d-4a5a-91b4-4cf98ebfa9f6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_0f8146f37120f5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fb8c1d01-a3af-41e7-9b6d-f46b3621ba5b",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
