@@ -43,11 +43,13 @@ function setup(args: {
   agent: string
   snapshot: SessionOptionDescriptor[]
   autonomy?: SessionOptionAutonomy
+  refusedModelIds?: readonly string[]
   isWorking?: boolean
 }) {
   const setOption = vi.fn(async () => ({ snapshot: args.snapshot }))
   const surface: SessionOptionsSurface = {
     ...(args.autonomy ? { autonomy: args.autonomy } : {}),
+    ...(args.refusedModelIds ? { refusedModelIds: args.refusedModelIds } : {}),
     getSnapshot: () => args.snapshot,
     setOption,
     invokeAction: async () => ({ snapshot: args.snapshot }),
@@ -460,6 +462,60 @@ describe('useNativeChatDroidComposerKeys: Ctrl+N', () => {
     hook.result.current?.ctrlN?.()
 
     expect(setOption).toHaveBeenCalledExactlyOnceWith('model', 'opus')
+  })
+
+  it.each([
+    ['haiku', ['sonnet'], 'opus'],
+    ['opus', ['haiku'], 'sonnet'],
+    ['sonnet', ['opus'], 'haiku'],
+    ['haiku', ['sonnet', 'unlisted'], 'opus']
+  ] as const)(
+    'moves the model %s past the refused %j to %s, wrapping at the end',
+    (from, refused, to) => {
+      const { hook, setOption } = setup({
+        agent: 'droid',
+        snapshot: [selectRow('model', MODELS, from)],
+        refusedModelIds: refused
+      })
+
+      hook.result.current?.ctrlN?.()
+
+      expect(setOption).toHaveBeenCalledExactlyOnceWith('model', to)
+    }
+  )
+
+  it('starts a cold chat at the first model that was not refused', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('model', MODELS, undefined)],
+      refusedModelIds: ['haiku']
+    })
+
+    hook.result.current?.ctrlN?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('model', 'sonnet')
+  })
+
+  it('takes the key only while a model is left to move to', () => {
+    const { hook } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('model', MODELS, 'haiku')],
+      refusedModelIds: ['sonnet', 'opus']
+    })
+
+    expect(hook.result.current?.ctrlN).toBeUndefined()
+  })
+
+  it('leaves the effort cycle alone, whatever models were refused', () => {
+    const { hook, setOption } = setup({
+      agent: 'droid',
+      snapshot: [selectRow('model', MODELS, 'haiku'), selectRow('effort', EFFORTS, 'off')],
+      refusedModelIds: [...EFFORTS]
+    })
+
+    hook.result.current?.tab?.()
+
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('effort', 'low')
   })
 
   it('claims no key without a model row, with one model, or while the model cannot be set', () => {

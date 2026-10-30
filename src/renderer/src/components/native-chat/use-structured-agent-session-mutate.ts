@@ -40,8 +40,11 @@ export type StructuredAgentSessionWrite = <T>(
   ...args: WriteArgs
 ) => Promise<StructuredAgentSessionWriteOutcome<T>>
 
-/** A write whose failure is shown as a toast; the control that sent it is the way to try again. */
-export type StructuredAgentSessionMutate = <T>(...args: WriteArgs) => Promise<T | null>
+/** A write whose failure is shown as a toast; the control that sent it is the way to try again.
+ *  `onNotDone` hears the failure of a write that was shown, never one dropped for a moved fence. */
+export type StructuredAgentSessionMutate = <T>(
+  ...args: [...WriteArgs, onNotDone?: (failure: AgentSessionWriteFailure) => void]
+) => Promise<T | null>
 
 /** A Stop naming its turn or task; one naming neither acts on whatever runs when the host reaches
  *  it, so a second press is a Stop of its own. */
@@ -57,11 +60,16 @@ function namesWhatItStops(fingerprintMethod: string, fields: Record<string, unkn
 function notDone(
   failure: AgentSessionWriteFailure,
   fingerprintMethod: string,
-  fields: Record<string, unknown>
+  fields: Record<string, unknown>,
+  providerText?: string
 ): { kind: 'not-done'; notice: string; failure: AgentSessionWriteFailure } {
   return {
     kind: 'not-done',
-    notice: agentSessionWriteFailureText(failure, writeKind(fingerprintMethod, fields)),
+    notice: agentSessionWriteFailureText(
+      failure,
+      writeKind(fingerprintMethod, fields),
+      providerText
+    ),
     failure
   }
 }
@@ -150,7 +158,12 @@ export function useStructuredAgentSessionMutate(args: {
       }
       if (!result.ok) {
         return settlesHere()
-          ? notDone(agentSessionRefusalFailure(result.refusal), fingerprintMethod, fields)
+          ? notDone(
+              agentSessionRefusalFailure(result.refusal),
+              fingerprintMethod,
+              fields,
+              result.refusal.message
+            )
           : { kind: 'dropped' }
       }
       if (!settlesHere()) {
@@ -200,10 +213,13 @@ export function useStructuredAgentSessionMutate(args: {
   )
 
   const mutate = useCallback(
-    async <T>(...writeArgs: WriteArgs): Promise<T | null> => {
-      const outcome = await write<T>(...writeArgs)
+    async <T>(
+      ...[method, fingerprintMethod, fields, onNotDone]: Parameters<StructuredAgentSessionMutate>
+    ): Promise<T | null> => {
+      const outcome = await write<T>(method, fingerprintMethod, fields)
       if (outcome.kind === 'not-done') {
         toast.error(outcome.notice)
+        onNotDone?.(outcome.failure)
       }
       return outcome.kind === 'done' ? outcome.value : null
     },

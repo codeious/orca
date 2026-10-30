@@ -149,6 +149,8 @@ export type SessionOptionsSurface = {
   specPair?: SessionOptionSpecPair
   /** Present only for an agent that reports an autonomy level, once it has one to show. */
   autonomy?: SessionOptionAutonomy
+  /** Models the agent refused in this session with a reason; they stay listed, a cycling key skips them. */
+  refusedModelIds?: readonly string[]
   getSnapshot(): SessionOptionDescriptor[]
   /** Apply an absolute target; known flip-only options use their tracked baseline. */
   setOption(id: string, value: SessionOptionValue): Promise<SessionOptionSetResult>

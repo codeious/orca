@@ -6,7 +6,10 @@ import type {
   StructuredAgentSessionAcquireInput,
   StructuredAgentSessionAdapter
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
-import { AgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
+import {
+  AgentSessionOptionRejectedError,
+  isAgentSessionOptionRejectedError
+} from '../native-chat/agent-session-wire/structured-agent-session-option-error'
 import { isAgentSessionPreSpawnError } from '../native-chat/agent-session-wire/structured-agent-session-pre-spawn-error'
 import { buildDroidExecLaunch } from './droid-exec-launch'
 import { prepareDroidPrompt } from './droid-prompt'
@@ -114,7 +117,9 @@ export class DroidSessionAdapter
     try {
       return await options.set(input.key, input.value)
     } catch (error) {
-      throw new AgentSessionOptionRejectedError(error)
+      throw isAgentSessionOptionRejectedError(error)
+        ? error
+        : new AgentSessionOptionRejectedError(error)
     }
   }
 }

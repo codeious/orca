@@ -1,6 +1,7 @@
 // The one way a chat surface puts a write that did not happen into words.
 //
-// A refusal's `message` is never shown. Every code has at least one host emitter whose message is
+// A refusal's `message` is never shown, except a `providerRefusedOption`'s, which a caller passes to
+// `agentSessionWriteNoticeParts`. Every other code has at least one host emitter whose message is
 // written for a log or carries a marker (the census is pinned in the test), so the refusal's
 // reason, when the host names one, and otherwise its code, pick the copy with the write. A code's
 // own row names a cause only where every emitter of the code means it; it is also the words for a
@@ -10,6 +11,7 @@
 // something beside the words retries it.
 // Surfaces keep the fact and choose the words when they show it, so nothing saved carries copy.
 
+import { MAX_PROVIDER_DIAGNOSTIC_CHARS } from './agent-session-failure'
 import {
   agentSessionFailureSentence,
   type AgentSessionFailureWordsContext
@@ -92,12 +94,35 @@ function causeParts(
   return saysNotDone ? [cause] : [cause, NOT_DONE[write]]
 }
 
+/** Whether the provider refused an option and said why, in a message written for a person. */
+export function isProviderExplainedOptionRefusal(failure: AgentSessionWriteFailure): boolean {
+  return (
+    failure.kind === 'refused' &&
+    failure.code === 'agent_session_operation_invalid' &&
+    failure.details?.reason === 'providerRefusedOption'
+  )
+}
+
+/** The provider's sentence, capped, as a whole one so the sentence after it does not run on. */
+function providerSentence(text: string | undefined): string | undefined {
+  const sentence = text?.slice(0, MAX_PROVIDER_DIAGNOSTIC_CHARS).trim()
+  if (!sentence) {
+    return undefined
+  }
+  return /[.!?。！？]$/.test(sentence) ? sentence : `${sentence}.`
+}
+
 /** The notice a named reason has of its own; undefined leaves the code's words. */
 function reasonParts(
   failure: AgentSessionWriteRefusal,
   write: AgentSessionWriteKind,
-  context: AgentSessionFailureWordsContext
+  context: AgentSessionFailureWordsContext,
+  providerText?: string
 ): AgentSessionWriteNoticePart[] | undefined {
+  const quoted = providerSentence(providerText)
+  if (quoted && write === 'option' && isProviderExplainedOptionRefusal(failure)) {
+    return ['optionRejected', { text: quoted }, NOT_DONE[write]]
+  }
   if (
     failure.code === 'agent_session_operation_invalid' &&
     failure.details?.argumentProblem &&
@@ -164,11 +189,12 @@ export function agentSessionRefusalCauseParts(
 }
 
 /** `context.retryControl`: a Retry beside the words is the step for a reason whose action is to
- *  retry, and for sending again; any other step stays. */
+ *  retry, and for sending again; any other step stays. `providerText`: see the file header. */
 export function agentSessionWriteNoticeParts(
   failure: AgentSessionWriteFailure,
   write: AgentSessionWriteKind,
-  context: AgentSessionFailureWordsContext = {}
+  context: AgentSessionFailureWordsContext = {},
+  providerText?: string
 ): AgentSessionWriteNoticePart[] {
   const notDone = NOT_DONE[write]
   if (failure.kind === 'failed') {
@@ -177,7 +203,7 @@ export function agentSessionWriteNoticeParts(
   if (failure.kind === 'unconfirmed') {
     return ['outcomeUnknown']
   }
-  const byReason = reasonParts(failure, write, context)
+  const byReason = reasonParts(failure, write, context, providerText)
   if (byReason) {
     return byReason
   }

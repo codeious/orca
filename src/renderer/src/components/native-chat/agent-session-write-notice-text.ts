@@ -178,7 +178,8 @@ export function agentSessionWriteNoticeText(parts: readonly AgentSessionWriteNot
 
 export function agentSessionWriteFailureText(
   failure: AgentSessionWriteFailure,
-  write: AgentSessionWriteKind
+  write: AgentSessionWriteKind,
+  providerText?: string
 ): string {
-  return agentSessionWriteNoticeText(agentSessionWriteNoticeParts(failure, write))
+  return agentSessionWriteNoticeText(agentSessionWriteNoticeParts(failure, write, {}, providerText))
 }

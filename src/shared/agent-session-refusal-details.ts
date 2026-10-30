@@ -48,6 +48,7 @@ export const AGENT_SESSION_REFUSAL_REASONS = {
     // A prompt card or an option
     'promptGone',
     'optionRejected',
+    'providerRefusedOption',
     // The provider
     'providerStarting',
     'goalsUnsupported',

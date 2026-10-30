@@ -1,9 +1,6 @@
 import { toast } from 'sonner'
 import { useCallback, useMemo } from 'react'
-import type {
-  AgentSessionOptionResult,
-  AgentSessionOptionsResult
-} from '../../../../shared/agent-session-wire'
+import type { AgentSessionOptionsResult } from '../../../../shared/agent-session-wire'
 import type { AgentType } from '../../../../shared/agent-status-types'
 import { isDroidDraftOptionId } from '../../../../shared/droid-autonomy-view'
 import { commitStructuredAgentSessionPick } from '../../../../shared/droid-spec-pair-view'
@@ -24,6 +21,7 @@ import { encodeStructuredAgentSessionOptionValue } from '../../../../shared/stru
 import type { StructuredAgentSessionMutate } from './use-structured-agent-session-mutate'
 import { useHostModelCatalogUpgrade } from './use-host-model-catalog-upgrade'
 import { useStructuredAgentSessionOptionState } from './use-structured-agent-session-option-state'
+import { useStructuredAgentSessionRefusedModels } from './use-structured-agent-session-refused-models'
 import { agentSessionWriteFailureText } from './agent-session-write-notice-text'
 import {
   canSetStructuredSessionPick,
@@ -70,6 +68,11 @@ export function useStructuredAgentSessionOptions(args: {
   const acceptsPicks = !transportEnabled || fence !== null
   const optionCatalog = useMemo(() => structuredAgentSessionSeedCatalog(agent), [agent])
   const identity = `${agent}:${sessionId}`
+  const { refusedModelIds, mutateOption } = useStructuredAgentSessionRefusedModels({
+    agent,
+    runtimeKey: `${identity}:${fence}`,
+    mutate
+  })
   const {
     optionState,
     optionStateRef,
@@ -138,11 +141,7 @@ export function useStructuredAgentSessionOptions(args: {
       pendingOptionRef.current = id
       updateOptionState((current) => ({ ...current, pendingId: id }))
       try {
-        const result = await mutate<AgentSessionOptionResult>(
-          'agentSession.setOption',
-          'agentSession.setOption',
-          { key: id, value: encoded }
-        )
+        const result = await mutateOption(id, encoded, isCurrent)
         if (result && isCurrent()) {
           const committed = result.options ?? { [id]: encoded }
           updateOptionState((current) =>
@@ -189,7 +188,7 @@ export function useStructuredAgentSessionOptions(args: {
     [
       activeOptionRecordRef,
       launchSeedOptions,
-      mutate,
+      mutateOption,
       optionCatalog,
       optionMutationGeneration,
       optionStateRef,
@@ -294,9 +293,10 @@ export function useStructuredAgentSessionOptions(args: {
       invokeAction: async () => ({ snapshot: optionSnapshot }),
       subscribe: () => () => {},
       ...(specPair ? { specPair } : {}),
-      ...(autonomy ? { autonomy } : {})
+      ...(autonomy ? { autonomy } : {}),
+      ...(refusedModelIds.length > 0 ? { refusedModelIds } : {})
     }),
-    [setOption, optionSnapshot, specPair, autonomy]
+    [setOption, optionSnapshot, specPair, autonomy, refusedModelIds]
   )
 
   const support =

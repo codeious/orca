@@ -115,17 +115,24 @@ export class DroidSessionOptions {
     }
     const { request, settings, model } = this.deps
     const sent: { id?: string } = {}
-    await model.set(
-      (method, params, options) =>
-        request(method, params, {
-          ...options,
-          onId: (id) => {
-            sent.id = id
-          }
-        }),
-      key,
-      value
-    )
+    try {
+      await model.set(
+        (method, params, options) =>
+          request(method, params, {
+            ...options,
+            onId: (id) => {
+              sent.id = id
+            }
+          }),
+        key,
+        value
+      )
+    } catch (error) {
+      // Droid's own sentence says why a model or effort is refused (an organization's policy, say).
+      throw error instanceof DroidRpcError && error.code !== METHOD_NOT_FOUND
+        ? new AgentSessionOptionRejectedError(error, 'providerRefusedOption')
+        : error
+    }
     const answer = sent.id === undefined ? undefined : settings.answerTo(sent.id)
     const picks = this.picks(answer ?? settings.current)
     return answer ? picks : { ...picks, [key]: value }

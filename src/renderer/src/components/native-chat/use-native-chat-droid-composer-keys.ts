@@ -20,16 +20,25 @@ const HELD_KEYS: Partial<Record<DroidComposerKey, () => void>> = {
   ctrlN: holdKey
 }
 
-/** The choice after the current one, in the row's own order, wrapping. A value the row does not
- *  name (a cold chat, an effort nobody reported) starts at the first choice. */
-function nextChoiceValue(row: SessionOptionDescriptor | undefined): string | undefined {
+/** The choice after the current one, in the row's own order, wrapping, and past any in `skipped`.
+ *  A value the row does not name (a cold chat, an effort nobody reported) starts at the first
+ *  choice. */
+function nextChoiceValue(
+  row: SessionOptionDescriptor | undefined,
+  skipped: readonly string[] = []
+): string | undefined {
   if (!row || row.kind.type !== 'select' || !row.settable) {
     return undefined
   }
   const { choices, currentValue } = row.kind
-  const next =
-    choices[(choices.findIndex((choice) => choice.value === currentValue) + 1) % choices.length]
-  return next && next.value !== currentValue ? next.value : undefined
+  const from = choices.findIndex((choice) => choice.value === currentValue) + 1
+  for (let step = 0; step < choices.length; step++) {
+    const next = choices[(from + step) % choices.length]
+    if (next && next.value !== currentValue && !skipped.includes(next.value)) {
+      return next.value
+    }
+  }
+  return undefined
 }
 
 /**
@@ -40,7 +49,7 @@ function nextChoiceValue(row: SessionOptionDescriptor | undefined): string | und
 export function useNativeChatDroidComposerKeys(args: {
   agent: AgentType | undefined
   snapshot: readonly SessionOptionDescriptor[]
-  surface: Pick<SessionOptionsSurface, 'setOption' | 'autonomy'> | null
+  surface: Pick<SessionOptionsSurface, 'setOption' | 'autonomy' | 'refusedModelIds'> | null
   isWorking?: boolean | undefined
 }): Partial<Record<DroidComposerKey, () => void>> | undefined {
   const { agent, snapshot, surface, isWorking = false } = args
@@ -58,7 +67,10 @@ export function useNativeChatDroidComposerKeys(args: {
     ? nextChoiceValue(snapshot.find((row) => row.id === 'effort'))
     : undefined
   const modelToPick = isDroid
-    ? nextChoiceValue(snapshot.find((row) => row.id === 'model'))
+    ? nextChoiceValue(
+        snapshot.find((row) => row.id === 'model'),
+        surface?.refusedModelIds
+      )
     : undefined
   const held = isDroid && isWorking
   return useMemo(() => {

@@ -50,6 +50,7 @@ function causeWords(
   return step ? { cause, step, action } : { cause, action }
 }
 
+const OPTION_REJECTED = causeWords('optionRejected', 'retry')
 const AGENT_STARTING = causeWords('agentStarting', 'wait', 'waitForStart')
 const OWNER_UNPROVEN = causeWords('ownerUnproven', 'actFirst', 'reopenChat')
 // Only a terminal agent an older build recorded holds a claim; quitting it frees the chat.
@@ -88,7 +89,8 @@ const REASON_WORDS = {
     rewindRefused: codeWords('hostFinding'),
     rewindUnconfirmed: codeWords('hostFinding'),
     promptGone: causeWords('questionChanged', 'nothingLeft'),
-    optionRejected: causeWords('optionRejected', 'retry'),
+    optionRejected: OPTION_REJECTED,
+    providerRefusedOption: OPTION_REJECTED,
     providerStarting: AGENT_STARTING,
     goalsUnsupported: causeWords('goalsUnsupported', 'hostFinding'),
     providerRejected: causeWords('agentRefused', 'retry'),

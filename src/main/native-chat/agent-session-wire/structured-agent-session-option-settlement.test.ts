@@ -212,6 +212,29 @@ describe('structured session options and close', () => {
     expect(store.getRecord(SESSION)?.options).toEqual({ model: PICKED_MODEL })
   })
 
+  it('sends a refusal the provider explained under the reason that lets a client quote it', async () => {
+    optionFailure = new AgentSessionOptionRejectedError(
+      'Model not allowed by organization policy.',
+      'providerRefusedOption'
+    )
+    const fields = { key: 'model', value: PICKED_MODEL }
+
+    expect(
+      await host.setOption(CALLER, {
+        envelope: envelope('agentSession.setOption', fields),
+        ...fields
+      })
+    ).toMatchObject({
+      ok: false,
+      refusal: {
+        code: 'agent_session_operation_invalid',
+        message: 'Model not allowed by organization policy.',
+        details: { reason: 'providerRefusedOption' }
+      }
+    })
+    expect(store.getRecord(SESSION)?.options).not.toEqual({ model: PICKED_MODEL })
+  })
+
   // Closing a chat used to leave its provider child resident for the whole app session: the host's
   // session map had no delete and the only teardown was app quit.
   it('stops the provider child and forgets the session when the chat closes', async () => {
