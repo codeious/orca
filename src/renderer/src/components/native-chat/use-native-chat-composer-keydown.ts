@@ -123,6 +123,12 @@ export function useNativeChatComposerKeyDown({
           event.preventDefault()
           return
         }
+        // Why: Droid's Tab cycles effort, and a menu on screen outranks that even with no row to take it.
+        // The exact chord match leaves Ctrl, Alt and Meta+Tab to the window shortcuts.
+        if (agent === 'droid' && matchDroidComposerKey(event, getShortcutPlatform()) === 'tab') {
+          event.preventDefault()
+          return
+        }
         if (event.key === 'Escape') {
           event.preventDefault()
           dismissPicker(autocomplete.triggerKey)

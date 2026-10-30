@@ -12,7 +12,13 @@ import {
   type DroidComposerKey
 } from '../../../../shared/droid-composer-keys'
 import type { ComposerAutocomplete } from './native-chat-composer-state'
+import type {
+  SessionOptionDescriptor,
+  SessionOptionsSurface
+} from '../../../../shared/native-chat-session-options'
 import { useNativeChatComposerKeyDown } from './use-native-chat-composer-keydown'
+import { useNativeChatDroidComposerKeys } from './use-native-chat-droid-composer-keys'
+import type { NativeChatMentionFiles } from './use-native-chat-mention-files'
 
 const COMMAND = {
   kind: 'command' as const,
@@ -23,7 +29,7 @@ const COMMAND = {
   skillCollision: false
 }
 
-const SLASH_MENU: ComposerAutocomplete = {
+const SLASH_MENU: Extract<ComposerAutocomplete, { mode: 'slash' }> = {
   mode: 'slash',
   query: '',
   items: [COMMAND],
@@ -37,6 +43,48 @@ const SLASH_MENU: ComposerAutocomplete = {
 }
 
 const NO_MENU: ComposerAutocomplete = { mode: 'none' }
+
+const MENTION_MENU: ComposerAutocomplete = { mode: 'mention', query: 'zzzz', triggerKey: '@:0' }
+
+const NO_FILES: NativeChatMentionFiles = { files: [], loading: false, failed: false }
+
+type MenuWithoutRow = {
+  name: string
+  autocomplete: ComposerAutocomplete
+  mentionFiles: NativeChatMentionFiles
+}
+
+// Visible menus with no row for Tab to complete or highlight.
+const MENUS_WITHOUT_ROW: MenuWithoutRow[] = [
+  { name: 'an @ menu with no matching files', autocomplete: MENTION_MENU, mentionFiles: NO_FILES },
+  {
+    name: 'an @ menu that could not load files',
+    autocomplete: MENTION_MENU,
+    mentionFiles: { ...NO_FILES, failed: true }
+  },
+  {
+    name: 'a slash menu with no matching commands',
+    autocomplete: { ...SLASH_MENU, items: [] },
+    mentionFiles: NO_FILES
+  },
+  {
+    name: 'a slash menu still loading skills',
+    autocomplete: { ...SLASH_MENU, items: [], skillStatus: 'loading' },
+    mentionFiles: NO_FILES
+  },
+  {
+    name: 'a slash menu whose skills failed to load',
+    autocomplete: { ...SLASH_MENU, items: [], skillStatus: 'error' },
+    mentionFiles: NO_FILES
+  }
+]
+
+// Already swallows Enter and Tab for every agent: the files are on their way.
+const MENU_LOADING_FILES: MenuWithoutRow = {
+  name: 'an @ menu still loading files',
+  autocomplete: MENTION_MENU,
+  mentionFiles: { ...NO_FILES, loading: true }
+}
 
 type KeyInit = {
   key: string
@@ -62,11 +110,13 @@ const KEY_NAMES = DROID_COMPOSER_KEYS
 function setup({
   agent,
   autocomplete = NO_MENU,
+  mentionFiles = NO_FILES,
   composing = false,
   withDroidKeys = true
 }: {
   agent?: string
   autocomplete?: ComposerAutocomplete
+  mentionFiles?: NativeChatMentionFiles
   composing?: boolean
   withDroidKeys?: boolean
 } = {}) {
@@ -96,7 +146,7 @@ function setup({
       ...(agent ? { agent } : {}),
       ...(withDroidKeys ? { droidKeys } : {}),
       autocomplete,
-      mentionFiles: { files: [], loading: false, failed: false },
+      mentionFiles,
       activeSuggestion: 0,
       draft: '',
       isComposing: () => composing,
@@ -236,6 +286,138 @@ describe('Droid composer key map', () => {
       expect(pressKeyCalls(droidKeys)).toEqual([])
     })
   })
+
+  describe('an open menu with no row to take Tab', () => {
+    const VISIBLE_MENUS = [...MENUS_WITHOUT_ROW, MENU_LOADING_FILES]
+
+    it.each(VISIBLE_MENUS)(
+      'consumes Tab in $name and leaves the draft and the menu as they were',
+      ({ autocomplete, mentionFiles }) => {
+        const { handler, callbacks, droidKeys } = setup({
+          agent: 'droid',
+          autocomplete,
+          mentionFiles
+        })
+        expect(press(handler, KEYS.tab).prevented).toBe(true)
+        expect(pressKeyCalls(droidKeys)).toEqual([])
+        for (const callback of Object.values(callbacks)) {
+          expect(callback).not.toHaveBeenCalled()
+        }
+      }
+    )
+
+    it.each(VISIBLE_MENUS)(
+      'still runs the keys that menu does not take in $name',
+      ({ autocomplete, mentionFiles }) => {
+        const { handler, droidKeys } = setup({ agent: 'droid', autocomplete, mentionFiles })
+        press(handler, KEYS.shiftTab)
+        press(handler, KEYS.ctrlL)
+        press(handler, KEYS.ctrlN)
+        expect(pressKeyCalls(droidKeys)).toEqual(['shiftTab', 'ctrlL', 'ctrlN'])
+        expect(droidKeys.tab).not.toHaveBeenCalled()
+      }
+    )
+
+    it.each(['ctrlKey', 'altKey', 'metaKey'] as const)(
+      'leaves Tab with %s held to the browser and the window shortcuts',
+      (modifier) => {
+        const { handler, callbacks, droidKeys } = setup({
+          agent: 'droid',
+          autocomplete: MENTION_MENU
+        })
+        expect(press(handler, { ...KEYS.tab, [modifier]: true }).prevented).toBe(false)
+        expect(pressKeyCalls(droidKeys)).toEqual([])
+        expect(callbacks.completeMention).not.toHaveBeenCalled()
+      }
+    )
+
+    it('completes the highlighted file on Tab in an @ menu that has matches', () => {
+      const { handler, callbacks, droidKeys } = setup({
+        agent: 'droid',
+        autocomplete: MENTION_MENU,
+        mentionFiles: { ...NO_FILES, files: ['src/a.ts', 'src/b.ts'] }
+      })
+      expect(press(handler, KEYS.tab).prevented).toBe(true)
+      expect(callbacks.completeMention).toHaveBeenCalledExactlyOnceWith('src/a.ts')
+      expect(droidKeys.tab).not.toHaveBeenCalled()
+    })
+
+    it('runs the Tab action again once the menu is gone', () => {
+      const { handler, droidKeys } = setup({ agent: 'droid', autocomplete: NO_MENU })
+      expect(press(handler, KEYS.tab).prevented).toBe(true)
+      expect(droidKeys.tab).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe('with the effort key the composer wires', () => {
+    const EFFORT_ROW: SessionOptionDescriptor = {
+      id: 'effort',
+      label: 'Reasoning effort',
+      category: 'thought_level',
+      kind: {
+        type: 'select',
+        currentValue: 'off',
+        choices: [
+          { value: 'off', label: 'Off' },
+          { value: 'low', label: 'Low' }
+        ]
+      },
+      valueSource: 'default',
+      transport: 'agent-session',
+      settable: true
+    }
+
+    function setupWithEffortKey(
+      autocomplete: ComposerAutocomplete,
+      mentionFiles: NativeChatMentionFiles
+    ) {
+      const snapshot = [EFFORT_ROW]
+      const setOption = vi.fn(async () => ({ snapshot }))
+      const surface: SessionOptionsSurface = {
+        getSnapshot: () => snapshot,
+        setOption,
+        invokeAction: async () => ({ snapshot }),
+        subscribe: () => () => {}
+      }
+      const hook = renderHook(() => {
+        const droidKeys = useNativeChatDroidComposerKeys({ agent: 'droid', snapshot, surface })
+        return useNativeChatComposerKeyDown({
+          agent: 'droid',
+          droidKeys,
+          autocomplete,
+          mentionFiles,
+          activeSuggestion: 0,
+          draft: '@zzzz',
+          isComposing: () => false,
+          completeMention: vi.fn(),
+          completePickerItem: vi.fn(),
+          dispatchPickerCommand: vi.fn(),
+          dismissPicker: vi.fn(),
+          interrupt: vi.fn(),
+          send: vi.fn(),
+          setActiveSuggestion: vi.fn(),
+          setDraft: vi.fn(),
+          setCaret: vi.fn()
+        })
+      })
+      return { handler: hook.result.current, setOption }
+    }
+
+    it.each([...MENUS_WITHOUT_ROW, MENU_LOADING_FILES])(
+      'leaves the effort where it is when Tab meets $name',
+      ({ autocomplete, mentionFiles }) => {
+        const { handler, setOption } = setupWithEffortKey(autocomplete, mentionFiles)
+        expect(press(handler, KEYS.tab).prevented).toBe(true)
+        expect(setOption).not.toHaveBeenCalled()
+      }
+    )
+
+    it('moves the effort on Tab when no menu is open', () => {
+      const { handler, setOption } = setupWithEffortKey(NO_MENU, NO_FILES)
+      expect(press(handler, KEYS.tab).prevented).toBe(true)
+      expect(setOption).toHaveBeenCalledExactlyOnceWith('effort', 'low')
+    })
+  })
 })
 
 describe('keys of every agent but Droid', () => {
@@ -272,6 +454,26 @@ describe('keys of every agent but Droid', () => {
       press(handler, KEYS.tab)
       expect(callbacks.completePickerItem).toHaveBeenCalledWith(COMMAND)
       expect(pressKeyCalls(droidKeys)).toEqual([])
+    })
+
+    it.each(MENUS_WITHOUT_ROW)(
+      'leaves Tab to the browser in $name',
+      ({ autocomplete, mentionFiles }) => {
+        const { handler, callbacks, droidKeys } = setup({ agent, autocomplete, mentionFiles })
+        expect(press(handler, KEYS.tab).prevented).toBe(false)
+        expect(pressKeyCalls(droidKeys)).toEqual([])
+        for (const callback of Object.values(callbacks)) {
+          expect(callback).not.toHaveBeenCalled()
+        }
+      }
+    )
+
+    it('still swallows Tab while an @ menu waits for its files', () => {
+      const { autocomplete, mentionFiles } = MENU_LOADING_FILES
+      const { handler, callbacks, droidKeys } = setup({ agent, autocomplete, mentionFiles })
+      expect(press(handler, KEYS.tab).prevented).toBe(true)
+      expect(pressKeyCalls(droidKeys)).toEqual([])
+      expect(callbacks.completeMention).not.toHaveBeenCalled()
     })
 
     it('interrupts on Escape and sends on Enter', () => {
