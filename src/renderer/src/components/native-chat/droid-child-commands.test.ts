@@ -1,0 +1,321 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  DROID_COMPRESS_INSTRUCTIONS_MAX_LENGTH,
+  type DroidHostCommandResult
+} from '../../../../shared/droid-host-command'
+
+const mocks = vi.hoisted(() => ({
+  call: vi.fn(),
+  switchSession: vi.fn(),
+  toast: vi.fn(),
+  toastError: vi.fn()
+}))
+
+vi.mock('@/runtime/structured-agent-session-client', () => ({
+  callStructuredAgentSession: mocks.call
+}))
+vi.mock('@/lib/droid-chat-session-switch', () => ({ switchDroidChatSession: mocks.switchSession }))
+vi.mock('sonner', () => ({ toast: Object.assign(mocks.toast, { error: mocks.toastError }) }))
+
+import { runDroidChildCommand, type DroidChildCommandChat } from './droid-child-commands'
+
+const KEPT = { model: 'claude-haiku-5-5', spec: false }
+
+const CHAT: DroidChildCommandChat = {
+  tabId: 'agent-session:droid-old',
+  sessionId: 'session-1',
+  target: { kind: 'environment', environmentId: 'env-1' },
+  keptSettings: () => KEPT
+}
+
+const REPORT = {
+  model: 'claude-haiku-5-5',
+  usedTokens: 10501,
+  windowTokens: 250000,
+  percentage: 4,
+  categories: [
+    { name: 'System prompt', tokens: 1558 },
+    { name: 'System tools', tokens: 8862 },
+    { name: 'MCP tools', tokens: 0 },
+    { name: 'Custom agents', tokens: 81 }
+  ],
+  capturedAt: 1
+}
+
+function answers(result: DroidHostCommandResult | Error): void {
+  if (result instanceof Error) {
+    mocks.call.mockRejectedValue(result)
+  } else {
+    mocks.call.mockResolvedValue(result)
+  }
+}
+
+function settles(settled: unknown): void {
+  mocks.switchSession.mockReturnValue({ settlement: Promise.resolve(settled) })
+}
+
+const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0))
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  settles({ kind: 'structured', sessionId: 'session-new' })
+})
+
+describe('/context in a Droid chat', () => {
+  it("asks the chat's host once and says used, window and what is left, with the categories Droid gave", async () => {
+    answers({ name: 'context', report: REPORT })
+
+    const outcome = await runDroidChildCommand(CHAT, 'context', '')
+
+    expect(mocks.call).toHaveBeenCalledExactlyOnceWith(CHAT.target, 'agentSession.droidCommand', {
+      sessionId: 'session-1',
+      command: { name: 'context' }
+    })
+    expect(outcome).toEqual({
+      accepted: true,
+      error: null,
+      info: 'Context: 10,501 of 250,000 tokens used (4%), 239,499 left. By category: System tools 8,862 (3.5%), System prompt 1,558 (0.6%), Custom agents 81 (0%).'
+    })
+  })
+
+  it('leaves the category line out when Droid gave none', async () => {
+    answers({ name: 'context', report: { ...REPORT, categories: [] } })
+
+    expect((await runDroidChildCommand(CHAT, 'context', '')).info).toBe(
+      'Context: 10,501 of 250,000 tokens used (4%), 239,499 left.'
+    )
+  })
+
+  it('reads an over-limit session as nothing left, not a negative figure', async () => {
+    answers({
+      name: 'context',
+      report: { ...REPORT, usedTokens: 260000, percentage: 104, categories: [] }
+    })
+
+    expect((await runDroidChildCommand(CHAT, 'context', '')).info).toBe(
+      'Context: 260,000 of 250,000 tokens used (104%), 0 left.'
+    )
+  })
+
+  it('says so when Droid answered with nothing readable', async () => {
+    answers({ name: 'context', report: null })
+
+    expect(await runDroidChildCommand(CHAT, 'context', '')).toEqual({
+      accepted: false,
+      error: 'Droid did not report its context usage. Try again.'
+    })
+  })
+
+  it('refuses an argument without asking Droid', async () => {
+    expect(await runDroidChildCommand(CHAT, 'context', 'now')).toEqual({
+      accepted: false,
+      error: 'Use /context without arguments.'
+    })
+    expect(mocks.call).not.toHaveBeenCalled()
+  })
+})
+
+describe('/cost in a Droid chat', () => {
+  it('asks the host for the credits Droid reported, and calls no cost method', async () => {
+    answers({ name: 'credits', factoryCredits: 12.5 })
+
+    const outcome = await runDroidChildCommand(CHAT, 'cost', '')
+
+    expect(mocks.call).toHaveBeenCalledExactlyOnceWith(CHAT.target, 'agentSession.droidCommand', {
+      sessionId: 'session-1',
+      command: { name: 'credits' }
+    })
+    expect(mocks.call.mock.calls.map(([, method]) => method).join()).not.toMatch(/cost/i)
+    expect(outcome).toEqual({
+      accepted: true,
+      error: null,
+      info: 'Factory credits used in this session: 12.5.'
+    })
+  })
+
+  it('shows zero as a figure', async () => {
+    answers({ name: 'credits', factoryCredits: 0 })
+
+    expect((await runDroidChildCommand(CHAT, 'cost', '')).info).toBe(
+      'Factory credits used in this session: 0.'
+    )
+  })
+
+  it('invents no figure when Droid has reported none', async () => {
+    answers({ name: 'credits', factoryCredits: null })
+
+    expect(await runDroidChildCommand(CHAT, 'cost', '')).toEqual({
+      accepted: true,
+      error: null,
+      info: 'Droid has not reported Factory credits for this session yet.'
+    })
+  })
+
+  it('refuses an argument without asking Droid', async () => {
+    expect((await runDroidChildCommand(CHAT, 'cost', 'all')).error).toBe(
+      'Use /cost without arguments.'
+    )
+    expect(mocks.call).not.toHaveBeenCalled()
+  })
+})
+
+describe('/compress in a Droid chat', () => {
+  it('asks once, with no instructions when none were typed, and leaves the words to the chat row', async () => {
+    answers({ name: 'compress', removedCount: 3, newSessionId: null })
+
+    const outcome = await runDroidChildCommand(CHAT, 'compress', '')
+
+    expect(mocks.call).toHaveBeenCalledExactlyOnceWith(CHAT.target, 'agentSession.droidCommand', {
+      sessionId: 'session-1',
+      command: { name: 'compress' }
+    })
+    expect(outcome).toEqual({ accepted: true, error: null })
+    expect(mocks.switchSession).not.toHaveBeenCalled()
+  })
+
+  it('sends what follows the command as the instructions', async () => {
+    answers({ name: 'compress', removedCount: null, newSessionId: null })
+
+    await runDroidChildCommand(CHAT, 'compress', 'remember the word ok')
+
+    expect(mocks.call).toHaveBeenCalledExactlyOnceWith(CHAT.target, 'agentSession.droidCommand', {
+      sessionId: 'session-1',
+      command: { name: 'compress', instructions: 'remember the word ok' }
+    })
+  })
+
+  it('keeps the tab when Droid answers with its own session', async () => {
+    answers({ name: 'compress', removedCount: 0, newSessionId: null })
+
+    await runDroidChildCommand(CHAT, 'compress', '')
+    await flush()
+
+    expect(mocks.switchSession).not.toHaveBeenCalled()
+    expect(mocks.toast).not.toHaveBeenCalled()
+  })
+
+  it('moves the tab in place to a different session, keeping what the tab runs on', async () => {
+    answers({ name: 'compress', removedCount: null, newSessionId: 'droid-session-2' })
+
+    expect(await runDroidChildCommand(CHAT, 'compress', '')).toEqual({
+      accepted: true,
+      error: null
+    })
+    await flush()
+
+    expect(mocks.switchSession).toHaveBeenCalledExactlyOnceWith({
+      fromTabId: CHAT.tabId,
+      placement: 'replace',
+      target: { kind: 'existing', droidSessionId: 'droid-session-2', settings: KEPT }
+    })
+    expect(mocks.toast).toHaveBeenCalledExactlyOnceWith(
+      'Conversation compressed into a new Droid session. The earlier session stays in Session History.'
+    )
+  })
+
+  it('says so, once, when the new session could not be opened and nothing else did', async () => {
+    answers({ name: 'compress', removedCount: null, newSessionId: 'droid-session-2' })
+    settles({ kind: 'failed', notified: false })
+
+    await runDroidChildCommand(CHAT, 'compress', '')
+    await flush()
+
+    expect(mocks.toast).not.toHaveBeenCalled()
+    expect(mocks.toastError).toHaveBeenCalledExactlyOnceWith(
+      'Droid compressed the conversation into a new session, but Orca could not open it. The earlier session stays in Session History.'
+    )
+  })
+
+  it('stays quiet when the launch already told the person', async () => {
+    answers({ name: 'compress', removedCount: null, newSessionId: 'droid-session-2' })
+    settles({ kind: 'failed', notified: true })
+
+    await runDroidChildCommand(CHAT, 'compress', '')
+    await flush()
+
+    expect(mocks.toastError).not.toHaveBeenCalled()
+  })
+
+  it('says so when the switch cannot start at all', async () => {
+    answers({ name: 'compress', removedCount: null, newSessionId: 'droid-session-2' })
+    mocks.switchSession.mockImplementation(() => {
+      throw new Error('not a Droid chat')
+    })
+
+    expect(await runDroidChildCommand(CHAT, 'compress', '')).toEqual({
+      accepted: true,
+      error: null
+    })
+    expect(mocks.toastError).toHaveBeenCalledOnce()
+  })
+
+  it('refuses instructions longer than Droid is asked to weigh, without asking', async () => {
+    const outcome = await runDroidChildCommand(
+      CHAT,
+      'compress',
+      'x'.repeat(DROID_COMPRESS_INSTRUCTIONS_MAX_LENGTH + 1)
+    )
+
+    expect(outcome).toEqual({
+      accepted: false,
+      error: 'Keep the /compress instructions under 8000 characters.'
+    })
+    expect(mocks.call).not.toHaveBeenCalled()
+  })
+
+  it('takes a second /compress as busy while the first still runs', async () => {
+    let finish: (result: DroidHostCommandResult) => void = () => undefined
+    mocks.call.mockReturnValue(new Promise((resolve) => (finish = resolve)))
+
+    const first = runDroidChildCommand(CHAT, 'compress', '')
+    const second = await runDroidChildCommand(CHAT, 'compress', '')
+    finish({ name: 'compress', removedCount: 1, newSessionId: null })
+    await first
+
+    expect(second).toEqual({
+      accepted: false,
+      error: 'Droid is still compressing this conversation.'
+    })
+    expect(mocks.call).toHaveBeenCalledOnce()
+    expect(await runDroidChildCommand(CHAT, 'compress', '')).toMatchObject({ accepted: true })
+  })
+})
+
+describe('when the host cannot answer', () => {
+  it.each(['context', 'cost', 'compress'] as const)(
+    "shows the host's own sentence for /%s",
+    async (name) => {
+      answers(
+        new Error('Compacting the conversation needs a newer Droid. Update Droid and try again.')
+      )
+
+      expect(await runDroidChildCommand(CHAT, name, '')).toEqual({
+        accepted: false,
+        error: 'Compacting the conversation needs a newer Droid. Update Droid and try again.'
+      })
+    }
+  )
+
+  it.each([
+    ['an empty message', Object.assign(new Error('x'), { message: '' })],
+    ['only spaces', new Error('   ')]
+  ])('falls back to a plain sentence when the error has %s', async (_label, error) => {
+    answers(error)
+
+    expect(await runDroidChildCommand(CHAT, 'context', '')).toEqual({
+      accepted: false,
+      error: 'Could not run /context. Try again.'
+    })
+  })
+
+  it('lets /compress be tried again after a failure', async () => {
+    answers(new Error('boom'))
+    await runDroidChildCommand(CHAT, 'compress', '')
+    answers({ name: 'compress', removedCount: 1, newSessionId: null })
+
+    expect(await runDroidChildCommand(CHAT, 'compress', '')).toEqual({
+      accepted: true,
+      error: null
+    })
+  })
+})

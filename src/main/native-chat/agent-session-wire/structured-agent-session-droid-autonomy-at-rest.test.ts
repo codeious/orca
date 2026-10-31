@@ -33,7 +33,7 @@ async function readAtRest(options: Record<string, string>, launchArgs?: string[]
   const resting = {
     child: null,
     params: { provider: 'droid' },
-    journal: { context: { floor: () => null } }
+    journal: { contextUsage: () => null, context: { floor: () => null } }
   }
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the resting read touches only these members.
   const context = {

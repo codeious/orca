@@ -110,6 +110,14 @@ export class StructuredAgentSessionAdapterRouter implements StructuredAgentSessi
     return change(input)
   }
 
+  droidCommand: NonNullable<StructuredAgentSessionAdapter['droidCommand']> = (input) => {
+    const command = this.owner(input.sessionId).droidCommand
+    if (!command) {
+      return Promise.reject(new Error('Droid commands are unavailable for this chat.'))
+    }
+    return command(input)
+  }
+
   stopBackgroundTasks: NonNullable<StructuredAgentSessionAdapter['stopBackgroundTasks']> = (
     input
   ) => {

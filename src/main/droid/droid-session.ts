@@ -11,6 +11,7 @@ import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
 import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
+import { DroidContextUsage } from './droid-context-usage'
 import {
   droidOptionParams,
   droidSavedOptionPicks,
@@ -84,6 +85,9 @@ export class DroidSession {
   /** What a no-pick new session resolved, for the host catalog. Absent when the start listed none. */
   readonly model = new DroidSessionModel()
   readonly options: DroidSessionOptions
+  readonly context: DroidContextUsage
+  /** Droid's own id for the session this child holds, once the start has answered. */
+  droidSessionId: string | undefined
 
   /** Every request after the start goes through here, so a method this Droid lacks reads alike. */
   readonly request: DroidConnection['request'] = (method, params, options) =>
@@ -151,12 +155,21 @@ export class DroidSession {
       ...(begin.autonomyPicked ? { pickedAutonomy: begin.autonomyLevel } : {}),
       timeoutMs: START_TIMEOUT_MS
     })
+    this.context = new DroidContextUsage({
+      request: this.request,
+      apply: (events) => this.lane.apply(events),
+      warn: (message, fields) =>
+        deps.logger.warn(message, { scope: 'droid-context', sessionId, ...fields })
+    })
     this.turns = new DroidTurns({
       lane: this.lane,
       generation,
       request: this.request,
       settled: (id, outcome) => this.lifecycle.settle(id, outcome),
-      idle: () => deps.onIdle({ sessionId }),
+      idle: () => {
+        this.context.refreshInBackground()
+        deps.onIdle({ sessionId })
+      },
       settings: (report) => this.settings.receive(report),
       specHandoff: (notification) => this.handoffs.created(notification),
       rememberEcho: (clientMessageId, messageId) => {
@@ -209,6 +222,7 @@ export class DroidSession {
     this.refuseUnsupportedProtocol(true)
     const resume = resumeId ? { id: resumeId, cwd, realpath: this.deps.realpath } : null
     const { id, settings } = await readStartedSession(result, resume)
+    this.droidSessionId = id
     this.settings.adopt(settings)
     this.model.capture(result, saved, resumeId === null)
     let reportedLevel = this.settings.current.autonomyLevel
@@ -261,6 +275,7 @@ export class DroidSession {
       return
     }
     try {
+      this.context.receive(params)
       this.turns.receive(params)
     } catch (error) {
       this.fail(error instanceof Error ? error : new Error(String(error)))

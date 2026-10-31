@@ -8,10 +8,12 @@ import type { StructuredAgentLaunchSettlement } from '@/lib/structured-agent-lau
 const mocks = vi.hoisted(() => ({
   switchSession: vi.fn(),
   closeUnifiedTab: vi.fn(),
-  toastError: vi.fn()
+  toastError: vi.fn(),
+  runChild: vi.fn()
 }))
 
 vi.mock('@/lib/droid-chat-session-switch', () => ({ switchDroidChatSession: mocks.switchSession }))
+vi.mock('./droid-child-commands', () => ({ runDroidChildCommand: mocks.runChild }))
 vi.mock('@/store', () => ({
   useAppStore: { getState: () => ({ closeUnifiedTab: mocks.closeUnifiedTab }) }
 }))
@@ -20,6 +22,8 @@ vi.mock('sonner', () => ({ toast: { error: mocks.toastError } }))
 import { useDroidSessionCommands } from './use-droid-session-commands'
 
 const TAB = 'agent-session:droid-old'
+const SESSION = 'session-old'
+const TARGET = { kind: 'environment', environmentId: 'env-1' } as const
 
 const SNAPSHOT: SessionOptionDescriptor[] = [
   {
@@ -51,6 +55,8 @@ function mount(extra: Partial<HookArgs> = {}) {
   return renderHook(() =>
     useDroidSessionCommands({
       tabId: TAB,
+      sessionId: SESSION,
+      target: TARGET,
       agent: 'droid',
       optionSnapshot: SNAPSHOT,
       optionSurface: SURFACE,
@@ -279,6 +285,55 @@ describe('/quit and /exit in a Droid chat', () => {
     expect(await run(commands, '/exit')).toMatchObject({ accepted: false, info: askClose('exit') })
 
     expect(mocks.closeUnifiedTab).not.toHaveBeenCalled()
+  })
+})
+
+describe('/context, /cost and /compress in a Droid chat', () => {
+  it.each([
+    ['context', ''],
+    ['cost', ''],
+    ['compress', 'remember the word ok']
+  ] as const)('hands /%s to the Droid child at once, with what follows it', async (name, rest) => {
+    const answer = { accepted: true, error: null, info: 'answered' }
+    mocks.runChild.mockResolvedValue(answer)
+    const commands = mount()
+
+    expect(await run(commands, `/${name} ${rest}`.trimEnd())).toBe(answer)
+
+    expect(mocks.runChild).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ tabId: TAB, sessionId: SESSION, target: TARGET }),
+      name,
+      rest
+    )
+    expect(mocks.switchSession).not.toHaveBeenCalled()
+    expect(mocks.closeUnifiedTab).not.toHaveBeenCalled()
+  })
+
+  it('gives /compress the settings the tab runs on, to carry to a session it moves to', async () => {
+    mocks.runChild.mockResolvedValue({ accepted: true, error: null })
+    const commands = mount()
+
+    await run(commands, '/compress')
+
+    const [chat] = mocks.runChild.mock.calls[0] ?? []
+    expect(chat.keptSettings()).toEqual({
+      model: 'claude-haiku-5-5',
+      spec: true,
+      autonomyLevel: 'low',
+      specModel: 'spec-1',
+      specEffort: 'low'
+    })
+  })
+
+  it('does not count /context as the second submit that confirms /clear', async () => {
+    mocks.runChild.mockResolvedValue({ accepted: true, error: null })
+    const commands = mount()
+
+    await run(commands, '/clear')
+    await run(commands, '/context')
+
+    expect(await run(commands, '/clear')).toMatchObject({ accepted: false, info: ASK_CLEAR })
+    expect(mocks.switchSession).not.toHaveBeenCalled()
   })
 })
 

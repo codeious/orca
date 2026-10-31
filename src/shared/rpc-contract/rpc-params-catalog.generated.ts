@@ -496,6 +496,7 @@ import {
 } from './speech-params'
 import { RepoAddRemote, SshBrowseDir, SshTarget, SshTargetAdd, SshTargetUpdate } from './ssh-params'
 import { ContinueInterruptedParams } from './structured-agent-session-continue-params'
+import { DroidCommandParams } from './structured-agent-session-droid-command-params'
 import {
   AcknowledgeAttentionParams,
   AgentsParams,
@@ -637,6 +638,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSession.conversationOutline': OptionsParams,
   'agentSession.create': CreateParams,
   'agentSession.createSupport': CreateSupportParams,
+  'agentSession.droidCommand': DroidCommandParams,
   'agentSession.ensure': AttachParams,
   'agentSession.handoffStatus': HandoffStatusParams,
   'agentSession.history': HistoryParams,

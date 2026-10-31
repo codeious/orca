@@ -34,6 +34,8 @@ export function useNativeChatStructuredComposerTransport(args: {
   const { setOptionPickerRequest, onError, onSubmitted, queuedMessages } = args
   const droidSessionCommands = useDroidSessionCommands({
     tabId: props.tabId,
+    sessionId: props.sessionId,
+    target: props.target,
     agent: props.agent,
     optionSnapshot: controller.optionSnapshot,
     optionSurface: controller.optionSurface

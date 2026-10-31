@@ -20,7 +20,8 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
     rewind: false,
     compact: false,
     threadGoal: false,
-    contextUsage: false,
+    // The ring reads Droid's own context breakdown after each turn.
+    contextUsage: true,
     imagePrompts: false,
     steering: 'inject',
     approvalEnforcement: 'provider'

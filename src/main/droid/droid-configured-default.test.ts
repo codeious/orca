@@ -190,7 +190,7 @@ async function droidHost(opts: { listing?: Promise<void> } = {}) {
   const resting = {
     child: null,
     params: { provider: 'droid' },
-    journal: { context: { floor: () => null } }
+    journal: { contextUsage: () => null, context: { floor: () => null } }
   }
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the registry reads only the optional methods a declaration needs, and Droid declares none.
   const adapter = {} as StructuredAgentSessionAdapter

@@ -145,7 +145,8 @@ describe('a message sent while no Droid turn runs', () => {
       afterReply: true
     })
 
-    expect(connection.requests.slice(1).map(({ params }) => params)).toEqual([
+    const sent = connection.requests.filter(({ method }) => method === 'droid.add_user_message')
+    expect(sent.map(({ params }) => params)).toEqual([
       { text: 'idle-enter' },
       { text: 'idle-ctrl-enter' }
     ])

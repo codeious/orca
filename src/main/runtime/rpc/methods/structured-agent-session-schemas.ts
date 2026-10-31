@@ -34,6 +34,7 @@ export {
   UnsubscribeParams
 } from '../../../../shared/rpc-contract/structured-agent-session-params'
 export { ContinueInterruptedParams } from '../../../../shared/rpc-contract/structured-agent-session-continue-params'
+export { DroidCommandParams } from '../../../../shared/rpc-contract/structured-agent-session-droid-command-params'
 export {
   QueuedMessageUpdateParams,
   QueuedMessageEditHoldParams

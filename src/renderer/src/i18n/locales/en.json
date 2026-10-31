@@ -18747,7 +18747,24 @@
         "clear": "Start a new session that keeps these settings",
         "new": "Start a new session with the settings of a new chat",
         "quit": "Close this chat and keep it in Session History",
-        "exit": "Close this chat and keep it in Session History"
+        "exit": "Close this chat and keep it in Session History",
+        "context": "Show how much context is in use",
+        "cost": "Show the Factory credits this session has used",
+        "compress": "Summarize the conversation to free up context; add instructions to guide the summary"
+      },
+      "droidChildCommands": {
+        "contextUsed": "Context: {{used}} of {{window}} tokens used ({{percent}}%), {{left}} left.",
+        "contextRows": "By category: {{rows}}.",
+        "contextRow": "{{name}} {{tokens}} ({{percent}}%)",
+        "contextUnreadable": "Droid did not report its context usage. Try again.",
+        "credits": "Factory credits used in this session: {{credits}}.",
+        "creditsNone": "Droid has not reported Factory credits for this session yet.",
+        "compressBusy": "Droid is still compressing this conversation.",
+        "compressTooLong": "Keep the /compress instructions under {{max}} characters.",
+        "compressMoved": "Conversation compressed into a new Droid session. The earlier session stays in Session History.",
+        "compressMoveFailed": "Droid compressed the conversation into a new session, but Orca could not open it. The earlier session stays in Session History.",
+        "needsNewerServer": "Droid chat commands need a newer Orca server. Update the server and try again.",
+        "failed": "Could not run /{{name}}. Try again."
       },
       "droidSessionCommands": {
         "confirmClear": "Run /clear again to start a new session that keeps these settings. This session stays in Session History.",

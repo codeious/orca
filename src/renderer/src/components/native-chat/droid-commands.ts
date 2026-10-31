@@ -28,6 +28,18 @@ const DESCRIPTIONS: Record<DroidHostCommandName, () => string> = {
     translate(
       'components.native-chat.droidCommands.exit',
       'Close this chat and keep it in Session History'
+    ),
+  context: () =>
+    translate('components.native-chat.droidCommands.context', 'Show how much context is in use'),
+  cost: () =>
+    translate(
+      'components.native-chat.droidCommands.cost',
+      'Show the Factory credits this session has used'
+    ),
+  compress: () =>
+    translate(
+      'components.native-chat.droidCommands.compress',
+      'Summarize the conversation to free up context; add instructions to guide the summary'
     )
 }
 

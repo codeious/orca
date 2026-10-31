@@ -97,6 +97,8 @@ describe('the session commands of a Droid chat', () => {
 
     expect(mocks.commandsArgs).toHaveBeenCalledWith({
       tabId: 'tab-test',
+      sessionId: 'session-test',
+      target: { kind: 'local' },
       agent: 'droid',
       optionSnapshot: [],
       optionSurface: OPTION_SURFACE
@@ -116,6 +118,26 @@ describe('the session commands of a Droid chat', () => {
     })
 
     expect(commands.runHostCommand).toHaveBeenCalledWith('clear', '')
+    expect(runConversationCommand).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['/context', 'context', ''],
+    ['/cost', 'cost', ''],
+    ['/compress remember the word ok', 'compress', 'remember the word ok']
+  ])('claims %s for the host and sends no message', async (text, name, argument) => {
+    const commands = sessionCommands({ accepted: true, error: null, info: 'answered' })
+    mocks.commands = commands
+    const runConversationCommand = vi.fn(async () => ({ accepted: true, error: null }))
+
+    expect(await dispatch('droid', text, runConversationCommand)).toEqual({
+      handled: true,
+      accepted: true,
+      error: null,
+      info: 'answered'
+    })
+
+    expect(commands.runHostCommand).toHaveBeenCalledExactlyOnceWith(name, argument)
     expect(runConversationCommand).not.toHaveBeenCalled()
   })
 

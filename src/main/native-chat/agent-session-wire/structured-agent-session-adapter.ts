@@ -15,6 +15,7 @@ import type {
 // journal renders that as delivery unconfirmed instead of as failure.
 
 import type { AgentSessionBackgroundTaskStops } from '../../../shared/agent-child-work-stop-targets'
+import type { DroidHostCommand, DroidHostCommandResult } from '../../../shared/droid-host-command'
 import type {
   AgentJournalAnsweredTurnIdentity,
   AgentJournalItemIdentity,
@@ -338,6 +339,13 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
      *  start a new goal rather than rewrite that one's objective in place. */
     replacesGoal: boolean
   }): Promise<{ ok: true } | { ok: false; rejected: string }>
+  /** Answers a Droid chat command from the child with no message and no turn of its own. A throw
+   *  is the child's refusal, worded for the person. Absent where Droid is not the provider. */
+  droidCommand?(input: {
+    sessionId: string
+    fence: number
+    command: DroidHostCommand
+  }): Promise<DroidHostCommandResult>
   /** Stops exactly the tasks `taskIds` names, which the host resolves from its child records.
    *  `stillRunning` is the provider's own answer that one survived its stop; a throw leaves the
    *  effect unknown. */

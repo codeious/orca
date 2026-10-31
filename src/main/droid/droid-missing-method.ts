@@ -19,6 +19,7 @@ const ACTIONS: Readonly<Record<string, string>> = {
   'droid.execute_rewind': 'Rewinding the conversation',
   'droid.rename_session': 'Renaming the conversation',
   'droid.get_context_stats': 'Showing context usage',
+  'droid.get_context_breakdown': 'Showing context usage',
   'droid.change_working_directory': 'Changing the working folder',
   'droid.list_skills': 'Listing skills',
   'droid.set_skill_disabled': 'Turning a skill on or off',

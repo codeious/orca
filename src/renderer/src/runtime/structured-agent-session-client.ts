@@ -16,6 +16,7 @@ import {
   AGENT_SESSION_REPEATED_STOP_RUNTIME_CAPABILITY,
   type RuntimeCapability
 } from '../../../shared/protocol-version'
+import { AGENT_SESSION_DROID_COMMAND_RUNTIME_CAPABILITY } from '../../../shared/structured-agent-session-surface-capabilities'
 import { AGENT_SESSION_CREATE_MESSAGE_RUNTIME_CAPABILITY } from '../../../shared/agent-session-create-capabilities'
 import {
   callRuntimeRpc,
@@ -26,6 +27,7 @@ import {
   ensureLocalRuntimeCapabilities,
   readLocalRuntimeCapabilitiesOrUnknown
 } from './local-runtime-capabilities'
+import { translate } from '@/i18n/i18n'
 import { subscribeRuntimeRpc } from './runtime-rpc-subscribe'
 /** Read a capability through the runtime's existing status cache. A failed/unknown
  *  probe is treated as legacy so a newer call is never made before the host has
@@ -101,10 +103,37 @@ export async function readStructuredAgentSessionConversationOutline(
   )
 }
 
+/** Methods a remote host may not have: the capability it must advertise, and what to tell the person. */
+const REMOTE_HOST_METHOD_REQUIREMENTS: ReadonlyMap<
+  string,
+  { capability: RuntimeCapability; refusal: () => string }
+> = new Map([
+  [
+    'agentSession.rewind',
+    {
+      capability: AGENT_SESSION_REWIND_RUNTIME_CAPABILITY,
+      refusal: () => 'Rewinding requires a newer Orca server. Update the server and try again.'
+    }
+  ],
+  [
+    'agentSession.droidCommand',
+    {
+      capability: AGENT_SESSION_DROID_COMMAND_RUNTIME_CAPABILITY,
+      refusal: () =>
+        translate(
+          'components.native-chat.droidChildCommands.needsNewerServer',
+          'Droid chat commands need a newer Orca server. Update the server and try again.'
+        )
+    }
+  ]
+])
+
 const STRUCTURED_AGENT_SESSION_METHOD_TIMEOUT_MS: ReadonlyMap<string, number> = new Map([
   ['agentSession.conversationCommand', AGENT_SESSION_CONVERSATION_COMMAND_TIMEOUT_MS],
   // The host may start an agent at rest before rewinding it, as it does for a command.
   ['agentSession.rewind', 195_000],
+  // A compaction is a model call, and the host may start the agent at rest before it.
+  ['agentSession.droidCommand', 195_000],
   // A waiting catalog read lasts as long as the host's listing: Claude's is 60 s, after up to 15 s
   // for an account switch to settle and 5 s of login-shell environment.
   ['agentSession.modelCatalog', 90_000]
@@ -117,15 +146,13 @@ export async function callStructuredAgentSession<TResult>(
   /** For a caller that checked the remote host's compatibility itself, just before. */
   options: { skipCompatibilityCheck?: true } = {}
 ): Promise<TResult> {
+  const requirement = REMOTE_HOST_METHOD_REQUIREMENTS.get(method)
   if (
-    method === 'agentSession.rewind' &&
+    requirement &&
     target.kind === 'environment' &&
-    !(await runtimeEnvironmentSupportsCapability(
-      target.environmentId,
-      AGENT_SESSION_REWIND_RUNTIME_CAPABILITY
-    ))
+    !(await runtimeEnvironmentSupportsCapability(target.environmentId, requirement.capability))
   ) {
-    throw new Error('Rewinding requires a newer Orca server. Update the server and try again.')
+    throw new Error(requirement.refusal())
   }
   const timeoutMs = STRUCTURED_AGENT_SESSION_METHOD_TIMEOUT_MS.get(method)
   return timeoutMs === undefined && !options.skipCompatibilityCheck

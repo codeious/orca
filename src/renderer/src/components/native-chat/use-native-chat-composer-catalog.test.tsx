@@ -9,7 +9,7 @@ import { getVerifiedNativeChatCommands } from '../../../../shared/native-chat-ag
 import { sessionSlashCommandSuggestions } from '../../../../shared/native-chat-slash-commands'
 import { structuredSlashCommands } from '../../../../shared/structured-agent-session-composer'
 
-const DROID_OWN_COMMANDS = ['help', 'clear', 'new', 'quit', 'exit']
+const DROID_OWN_COMMANDS = ['help', 'clear', 'new', 'quit', 'exit', 'context', 'cost', 'compress']
 
 function transport(sessionCommands?: NativeChatStructuredComposerTransport['sessionCommands']) {
   return { sessionCommands } as NativeChatStructuredComposerTransport

@@ -2,9 +2,14 @@ import { useMemo, useRef } from 'react'
 import { toast } from 'sonner'
 import { translate } from '@/i18n/i18n'
 import { switchDroidChatSession } from '@/lib/droid-chat-session-switch'
+import type { RuntimeClientTarget } from '@/runtime/runtime-rpc-client'
 import { useAppStore } from '@/store'
 import type { AgentType } from '../../../../shared/agent-status-types'
-import type { DroidHostCommandName } from '../../../../shared/droid-command-registry'
+import {
+  isDroidChildCommandName,
+  type DroidChildCommandName,
+  type DroidHostCommandName
+} from '../../../../shared/droid-command-registry'
 import {
   DROID_NEW_SESSION_SETTINGS,
   droidSettingsKeptByClear,
@@ -15,8 +20,10 @@ import type {
   SessionOptionsSurface
 } from '../../../../shared/native-chat-session-options'
 import type { StructuredAgentSessionCommandOutcome } from '../../../../shared/structured-agent-session-composer'
+import { runDroidChildCommand } from './droid-child-commands'
 
-type SessionCommandName = Exclude<DroidHostCommandName, 'help'>
+// The commands answered by the Droid child are never asked twice.
+type SessionCommandName = Exclude<DroidHostCommandName, 'help' | DroidChildCommandName>
 type SessionCommandOutcome = Omit<StructuredAgentSessionCommandOutcome, 'handled'>
 
 // Typed by the registry's names, so a command registered there does not compile until it is asked.
@@ -87,14 +94,17 @@ export type DroidSessionCommands = {
 /**
  * `/clear`, `/new`, `/quit` and `/exit` of a Droid chat. Each asks again and acts on the second
  * submit of the same command: the TUI quits on one Enter, but a press here ends a chat.
+ * `/context`, `/cost` and `/compress` answer on the first submit, from the Droid child.
  */
 export function useDroidSessionCommands(args: {
   tabId: string
+  sessionId: string
+  target: RuntimeClientTarget
   agent: AgentType
   optionSnapshot: readonly SessionOptionDescriptor[]
   optionSurface: Pick<SessionOptionsSurface, 'specPair' | 'autonomy'> | undefined
 }): DroidSessionCommands | undefined {
-  const { tabId, agent, optionSnapshot, optionSurface } = args
+  const { tabId, sessionId, target, agent, optionSnapshot, optionSurface } = args
   const asked = useRef<SessionCommandName | null>(null)
   return useMemo((): DroidSessionCommands | undefined => {
     if (agent !== 'droid') {
@@ -107,6 +117,19 @@ export function useDroidSessionCommands(args: {
         }
       },
       runHostCommand: async (name, argument) => {
+        if (isDroidChildCommandName(name)) {
+          asked.current = null
+          return runDroidChildCommand(
+            {
+              tabId,
+              sessionId,
+              target,
+              keptSettings: () => droidSettingsKeptByClear(optionSnapshot, optionSurface)
+            },
+            name,
+            argument
+          )
+        }
         if (!isSessionCommand(name)) {
           return null
         }
@@ -138,5 +161,5 @@ export function useDroidSessionCommands(args: {
         )
       }
     }
-  }, [agent, optionSnapshot, optionSurface, tabId])
+  }, [agent, optionSnapshot, optionSurface, sessionId, tabId, target])
 }

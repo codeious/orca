@@ -12,6 +12,7 @@ import {
 } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
 import { isAgentSessionPreSpawnError } from '../native-chat/agent-session-wire/structured-agent-session-pre-spawn-error'
 import { buildDroidExecLaunch } from './droid-exec-launch'
+import { runDroidHostCommand } from './droid-host-commands'
 import { prepareDroidPrompt } from './droid-prompt'
 import { DroidSession, type DroidSessionDeps } from './droid-session'
 import { droidInteractionModeFromSavedOptions } from './droid-session-settings'
@@ -104,6 +105,8 @@ export class DroidSessionAdapter
       input.response,
       input.commit
     )
+  droidCommand: NonNullable<StructuredAgentSessionAdapter['droidCommand']> = (input) =>
+    runDroidHostCommand(this.session(input.sessionId, input.fence), input.command)
   readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = (input) =>
     this.session(input.sessionId, input.fence).options.read()
   setOption: StructuredAgentSessionAdapter['setOption'] = async (input) => {

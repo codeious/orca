@@ -253,7 +253,9 @@ describe('a steer sent while Droid is working', () => {
       'droid.initialize_session',
       'droid.add_user_message',
       'droid.add_user_message',
-      'droid.interrupt_session'
+      'droid.interrupt_session',
+      // The one read when the interrupted turn ended.
+      'droid.get_context_breakdown'
     ])
     expect(h.connection.requests[1]?.params).toEqual({
       text: expect.stringContaining('STEP1')

@@ -44,6 +44,8 @@ import { mutateWithChatStop } from './structured-agent-session-chat-stop'
 import { performSetOption } from './structured-agent-session-turns-options'
 export type { StructuredAgentSessionMutationContext } from './structured-agent-session-mutation-context'
 import type { StructuredAgentSessionCaller } from './structured-agent-session-host-types'
+import type { DroidHostCommand } from '../../../shared/droid-host-command'
+import { runStructuredAgentSessionDroidCommand } from './structured-agent-session-droid-command'
 import {
   readStructuredAgentSessionOptions,
   recordStructuredAgentSessionOptionIntent
@@ -246,6 +248,8 @@ export function structuredAgentSessionMutationDelegates(
       caller: StructuredAgentSessionCaller,
       params: Parameters<typeof changeStructuredAgentSessionThreadGoal>[2]
     ) => changeStructuredAgentSessionThreadGoal(context(), caller, params),
-    readOptions: (sessionId: string) => readStructuredAgentSessionOptions(context(), sessionId)
+    readOptions: (sessionId: string) => readStructuredAgentSessionOptions(context(), sessionId),
+    droidCommand: (sessionId: string, command: DroidHostCommand) =>
+      runStructuredAgentSessionDroidCommand(context(), sessionId, command)
   }
 }
