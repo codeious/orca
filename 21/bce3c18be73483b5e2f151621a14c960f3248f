@@ -1,0 +1,150 @@
+src/renderer/src/i18n/locales/en.json
+  s_0af43137683234::t_9a205b5cbd6aa4 18769-18782
+  s_0af43137683234::t_1362e40c5baac6 18753-18755
+src/renderer/src/components/native-chat/use-native-chat-droid-turn-keys.test.tsx
+  s_0af43137683234::t_28184df48a80a5 3-4
+src/renderer/src/components/native-chat/droid-commands.test.ts
+  s_0af43137683234::t_b08f7b0d4b3800 4-7
+  s_0af43137683234::t_5efac4d5af155e 39-41
+  s_0af43137683234::t_32343d9ad7ae7d 30-38,42-43
+src/shared/droid-host-command.ts
+  s_0af43137683234::t_e8567ff2ef6077 28-37
+  s_0af43137683234::t_a241f8e618e865 6-7,12-19
+src/shared/rpc-contract/structured-agent-session-droid-command-params.ts
+  s_0af43137683234::t_73dcd8ac3cf4fd 17-19
+src/shared/droid-command-registry.ts
+  s_0af43137683234::t_9c7f67d9bb4b62 2-8
+src/renderer/src/components/native-chat/use-droid-rewind.test.tsx
+  s_0af43137683234::t_78861bc43576fe 48
+  s_0af43137683234::t_10b8eeb2766ac5 102
+  s_0af43137683234::t_a15011da1fba84 1-4,6-9,14-47,49-101,103-155,157-163,165-166,170-254,258-453
+  s_0af43137683234::t_261bbf5fd2a017 156,164
+  s_0af43137683234::t_5bb6988ca4cc41 5,10-13
+  s_0af43137683234::t_5efac4d5af155e 167-169,255-257
+src/renderer/src/components/native-chat/native-chat-composer-types.ts
+  s_0af43137683234::t_4b41d9af4bf447 28-29
+  s_0af43137683234::t_48ab0066290be5 85-86
+src/renderer/src/components/native-chat/use-droid-rewind.ts
+  s_0af43137683234::t_6a5e8773ee4f9d 181
+  s_0af43137683234::t_9ce0363688d09d 252-253,256-260,266
+  s_0af43137683234::t_e445f4a1934ad6 1-18,20-66,70-96,98-180,182-251,254-255,261-265,267
+  s_0af43137683234::t_19cd7ea21c862e 67-69
+  s_0af43137683234::t_80dcba8b016d77 19
+  s_0af43137683234::t_153cbec23afc90 97
+src/renderer/src/components/native-chat/use-droid-session-commands.ts
+  s_0af43137683234::t_eb05a714dbe014 97,106-107,109-110
+  s_0af43137683234::t_e6e85f9c287614 168
+  s_0af43137683234::t_6531c07f2cca00 130-131
+  s_0af43137683234::t_c4e55b366846cb 23
+src/renderer/src/components/native-chat/NativeChatComposer.tsx
+  s_0af43137683234::t_248102903f9bf8 318-319
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-command.ts
+  s_0af43137683234::t_20cb826d06763c 4-9,11,20-36,40-41,48-49,51,55,65,71,78-80
+src/main/native-chat/agent-session-wire/structured-agent-session-host-mutations.ts
+  s_0af43137683234::t_d5d98e7a6ae31d 252
+  s_0af43137683234::t_e6ac917c5e7169 47
+src/shared/structured-agent-session-composer.ts
+  s_0af43137683234::t_197965c24edc05 70-71
+src/renderer/src/components/native-chat/NativeChatComposer.droid-turn-keys.test.tsx
+  s_0af43137683234::t_5efac4d5af155e 104,287-290,295-298
+  s_0af43137683234::t_ceb593e7fdebaa 285-286,291-292,294,299
+  s_0af43137683234::t_ad33ebb8d6373f 253-284,293,300-336
+  s_0af43137683234::t_0175713dde2b89 374-384
+  s_0af43137683234::t_0a8c9e86a39dee 82,84
+  s_0af43137683234::t_cb49daf77ef5f4 106
+src/main/droid/droid-fork-and-rewind.ts
+  s_0af43137683234::t_6a108411c3d4d8 1-18,24-103
+  s_0af43137683234::t_5efac4d5af155e 19-23
+src/renderer/src/components/native-chat/use-native-chat-composer-catalog.test.tsx
+  s_0af43137683234::t_6ee5a33e23589f 12-23
+src/renderer/src/components/native-chat/droid-commands.ts
+  s_0af43137683234::t_7f61870a1d7525 43-52
+src/renderer/src/components/native-chat/droid-child-command-words.ts
+  s_0af43137683234::t_5efac4d5af155e 54-58,68-74
+  s_0af43137683234::t_eee5e995cd5d8c 3
+  s_0af43137683234::t_c0f9d9d81f9386 50-53,59-67,75-77
+src/main/runtime/rpc/methods/structured-agent-session-droid-command.test.ts
+  s_0af43137683234::t_ea1609402a614f 26-28
+  s_0af43137683234::t_eee97bb91af85a 46-50
+src/main/droid/fixtures/fork-and-rewind.jsonl
+  s_0af43137683234::t_c7489310ab038d 1-10
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-send.test.tsx
+  s_0af43137683234::t_c44287267eeb3d 202-221
+src/main/droid/droid-fork-and-rewind.test.ts
+  s_0af43137683234::t_bc49d7e2926894 1-214
+src/renderer/src/components/native-chat/use-native-chat-composer-notice.ts
+  s_0af43137683234::t_1fa040e5e49736 14
+  s_0af43137683234::t_6fc7d611edc259 62-63
+  s_0af43137683234::t_34d54138e0743f 80-90
+src/renderer/src/components/native-chat/use-native-chat-composer-notice.test.tsx
+  s_0af43137683234::t_4c40d5f86a2e63 3
+  s_0af43137683234::t_e11cbce335beba 34-74
+src/main/droid/droid-host-commands.ts
+  s_0af43137683234::t_1d61e41dff90f6 65-68
+  s_0af43137683234::t_97fb48e27d6b07 3
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-send.ts
+  s_0af43137683234::t_b73668744aee29 104,106-109
+src/renderer/src/components/native-chat/use-droid-session-commands.test.tsx
+  s_0af43137683234::t_508ebded782c5c 291,295-297
+  s_0af43137683234::t_e838c72bfa908b 330-342
+src/shared/droid-rewind-message-id.ts
+  s_0af43137683234::t_eac1bd81339467 5-28,34-37
+  s_0af43137683234::t_5efac4d5af155e 1-4,29-33
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-command.test.ts
+  s_0af43137683234::t_6c92f4f82e86cb 32-48
+  s_0af43137683234::t_5efac4d5af155e 106-107,109,111-113
+  s_0af43137683234::t_e0c2e65711e07f 101-105
+  s_0af43137683234::t_321f0f6d345535 2-9,18-20
+  s_0af43137683234::t_cc327c6a2e69d8 138-193
+  s_0af43137683234::t_d90fc0a366ed6f 69
+src/renderer/src/components/native-chat/native-chat-composer-notice.ts
+  s_0af43137683234::t_30a907b6384a8f 23
+src/renderer/src/components/native-chat/droid-child-commands.ts
+  s_0af43137683234::t_365fad1b173c83 12-17,25,27-28,34-47,52-53,57-68,70-88,93
+  s_0af43137683234::t_6bccdb5d4a6d74 115,117-125,127-128
+  s_0af43137683234::t_c6b7673d460ade 152,162-171
+  s_0af43137683234::t_79105964e115a9 186,193,196
+  s_0af43137683234::t_f54858defd9ae4 114,116,126,129
+  s_0af43137683234::t_c42403399e8fc6 172
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.ts
+  s_0af43137683234::t_78b8747e59d387 9
+  s_0af43137683234::t_bfbbd7c2bf804e 98-109,115
+  s_0af43137683234::t_8816c033dede28 33-34,37-38,45-46
+src/shared/droid-rewind-message-id.test.ts
+  s_0af43137683234::t_bc196d2871a2b2 1-29,31-56
+  s_0af43137683234::t_1f0e41907b6efa 30
+src/renderer/src/components/native-chat/NativeChatStructuredSession.tsx
+  s_0af43137683234::t_85af68bd13f553 223,227
+  s_0af43137683234::t_3efc4cf5a54e72 52
+  s_0af43137683234::t_5efac4d5af155e 300-302
+src/renderer/src/components/native-chat/use-native-chat-composer-droid-keys.ts
+  s_0af43137683234::t_066355fc82d2d0 27-28,31,38
+src/renderer/src/components/native-chat/droid-child-commands.test.ts
+  s_0af43137683234::t_5efac4d5af155e 346-348,419-421
+  s_0af43137683234::t_b76f170af6a2bf 284-345,349-418,422-445,447
+src/renderer/src/components/native-chat/droid-session-switch-notice.ts
+  s_0af43137683234::t_e4de0cb7543c98 1-32
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.test.tsx
+  s_0af43137683234::t_a9590e7c25a6f8 32,34,37,56-57,67
+  s_0af43137683234::t_60c289d6748a99 135-137
+  s_0af43137683234::t_d80bdac85404bc 183-186,190-210,215-244
+  s_0af43137683234::t_6c74bed1b22378 45,59-60
+  s_0af43137683234::t_5efac4d5af155e 187-189,211-214
+  s_0af43137683234::t_54b277449e7a69 61-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "21bce3c18be73483b5e2f151621a14c960f3248f",
+  "prompts": {},
+  "sessions": {
+    "s_0af43137683234": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "81f99adc-04e6-4233-947d-e84103d64a77",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
