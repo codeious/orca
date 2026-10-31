@@ -50,6 +50,8 @@ export type NativeChatRole = (typeof NATIVE_CHAT_ROLES)[number]
 export type NativeChatTextBlock = AgentSessionHostText & {
   type: 'text'
   text: string
+  /** Optional provider-authored compaction prose under the status label. */
+  summaryText?: string
   /** Optional journal display hints; readers narrow only the values they know. */
   presentation?: string
   contextClear?: AgentSessionProviderContextBoundary

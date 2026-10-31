@@ -329,6 +329,8 @@ export type AgentJournalThreadGoalState =
 
 type AgentJournalStatusItemFields = AgentSessionHostText & {
   kind: 'status'
+  /** Droid's own compaction prose, stored beside the boundary label for replay. */
+  summaryText?: string
   /** Optional display hints; unknown values retain the ordinary text fallback. */
   presentation?: string
   contextClear?: AgentSessionProviderContextBoundary

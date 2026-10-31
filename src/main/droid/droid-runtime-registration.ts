@@ -1,9 +1,6 @@
-import { homedir } from 'node:os'
-import { isAbsolute, join } from 'node:path'
-import {
-  agentSessionAccountHome,
-  type LegacyAgentSessionAccountHome
-} from '../../shared/agent-session-account-home'
+import { isAbsolute } from 'node:path'
+import { resolveDroidAccountHome } from './droid-account-home'
+export { resolveDroidAccountHome } from './droid-account-home'
 import { isAgentSessionPreSpawnError } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { supportsSupervisedProviderChildLocation } from '../provider-process/supervised-provider-child-location'
 import type {
@@ -85,16 +82,6 @@ function launchedDroid({ env, commandSettings }: StructuredAgentLaunchCheckInput
     }
     throw error
   }
-}
-
-/** Droid reads its account from HOME and honours no variable that moves it; the pin is a label. */
-export function resolveDroidAccountHome({
-  launchEnv
-}: {
-  launchEnv: NodeJS.ProcessEnv
-}): LegacyAgentSessionAccountHome {
-  const home = launchEnv.HOME?.trim() || launchEnv.USERPROFILE?.trim() || homedir()
-  return agentSessionAccountHome(DROID_AGENT, join(home, '.factory'))
 }
 
 export const DROID_RUNTIME_REGISTRATION: StructuredAgentRuntimeRegistration = {

@@ -13,6 +13,10 @@ import type { ProviderProcessLaunch } from '../provider-process/provider-process
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
 import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
 import { DroidContextUsage } from './droid-context-usage'
+import {
+  readDroidCompactionSummary,
+  type DroidCompactionSummaryReader
+} from './droid-compaction-summary'
 import { DroidMcpSignIn, type DroidMcpSignInOpener } from './droid-mcp-sign-in'
 import {
   droidOptionParams,
@@ -46,6 +50,8 @@ export type DroidConnection = Pick<
 >
 
 export type DroidSessionDeps = {
+  /** Reads only this runtime's files, beside the child it spawns (also on orcad SSH hosts). */
+  readCompactionSummary?: DroidCompactionSummaryReader
   openConnection?: (
     launch: ProviderProcessLaunch,
     handlers: DroidAgentConnectionOptions
@@ -95,6 +101,7 @@ export class DroidSession {
   readonly options: DroidSessionOptions
   readonly context: DroidContextUsage
   readonly mcpSignIn: DroidMcpSignIn
+  readonly readCompactionSummary: (sessionId: string) => ReturnType<DroidCompactionSummaryReader>
   /** Droid's own id for the session this child holds, once the start has answered. */
   droidSessionId: string | undefined
   /** Where the chat was opened. A /cd stays inside it, so a load still finds the session here. */
@@ -118,6 +125,8 @@ export class DroidSession {
       throw new Error('Droid structured chat requires the shared timeline sink')
     }
     this.workspace = { folder: begin.cwd, realpath: deps.realpath ?? fsRealpath }
+    this.readCompactionSummary = (id) =>
+      (deps.readCompactionSummary ?? readDroidCompactionSummary)(launch, id)
     const sessionId = input.identity.sessionId
     this.lane = new JsonlRpcTimelineLane({
       sink,

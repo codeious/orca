@@ -44,6 +44,31 @@ function failure(textKey?: string, textParams = PARAMS) {
 }
 
 describe('Droid host copy reaches the reader through en.json', () => {
+  it('replays compression prose below the catalog label as assistant markdown', () => {
+    const textKey = `${PREFIX}compressMany`
+    i18n.addResource('en', 'translation', textKey, 'Catalog compression label.')
+    const replayed: unknown = AgentJournalItemBodySchema.parse(
+      JSON.parse(
+        JSON.stringify({
+          kind: 'status',
+          text: 'Older host fallback.',
+          textKey,
+          textParams: { removedCount: 7 },
+          summaryText:
+            '## Remembered context\n\nThe user asked for **ok**.\n\nThe assistant replied ok.'
+        })
+      )
+    )
+    if (!isAdmissibleAgentJournalItemBody(replayed) || replayed.kind !== 'status') {
+      throw new Error('Expected a status row')
+    }
+    render(<NativeChatNoticeRow block={structuredAgentSessionStatusBlock(replayed)} />)
+    expect(screen.getByText('Catalog compression label.')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Remembered context' })).toBeInTheDocument()
+    expect(screen.getByText('ok', { selector: 'strong' })).toBeInTheDocument()
+    expect(screen.getByText('The assistant replied ok.')).toBeInTheDocument()
+  })
+
   it('keeps every host fallback word-for-word equal to the English catalog', () => {
     expect(en.components['native-chat'].droidHost).toEqual(DROID_HOST_COPY)
   })

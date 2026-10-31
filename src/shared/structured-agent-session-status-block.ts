@@ -24,6 +24,7 @@ export function structuredAgentSessionStatusBlock(
   return {
     type: 'text',
     text: body.text,
+    ...(typeof body.summaryText === 'string' ? { summaryText: body.summaryText } : {}),
     ...readAgentSessionHostText(body),
     ...(presentation !== undefined ? { presentation } : {}),
     ...(body.contextClear !== undefined ? { contextClear: body.contextClear } : {}),

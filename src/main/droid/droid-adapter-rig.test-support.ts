@@ -132,7 +132,10 @@ export async function setupDroidAdapter(
   launch: Partial<DroidResolvedLaunch> = {},
   script?: (connection: FakeConnection) => void,
   extraDeps: Partial<
-    Pick<DroidSessionDeps, 'realpath' | 'onTitle' | 'logger' | 'openMcpSignIn'>
+    Pick<
+      DroidSessionDeps,
+      'realpath' | 'onTitle' | 'logger' | 'openMcpSignIn' | 'readCompactionSummary'
+    >
   > = {},
   /** The execution host the session is on: `local`, or a `runtime:<guid>` for a remote runtime. */
   hostId = 'local'
@@ -182,6 +185,7 @@ export async function setupDroidAdapter(
     onSettled: settled,
     onIdle: idle,
     logger: { warn: vi.fn(), error: vi.fn() },
+    readCompactionSummary: async () => null,
     ...extraDeps
   })
   cleanups.push(async () => {

@@ -18,6 +18,29 @@ afterEach(async () => {
   await i18n.changeLanguage('en')
 })
 
+it('renders a Droid compression summary from a plain status journal row', () => {
+  renderStatus(
+    {
+      kind: 'status',
+      text: 'Older compression label.',
+      textKey: 'components.native-chat.droidHost.compressMany',
+      textParams: { removedCount: 7 },
+      summaryText: '## Remembered context\n\nThe assistant replied **ok**.'
+    },
+    null,
+    false,
+    false,
+    'Droid'
+  )
+  expect(screen.getByRole('heading', { name: 'Remembered context' })).toBeInTheDocument()
+  expect(screen.getByText('ok', { selector: 'strong' })).toBeInTheDocument()
+  expect(
+    screen.getByText(
+      'Conversation compressed. 7 earlier messages were summarized to free up context.'
+    )
+  ).toBeInTheDocument()
+})
+
 it('keeps a skipped compaction warning truthful instead of showing the success separator', () => {
   renderStatus({
     kind: 'status',

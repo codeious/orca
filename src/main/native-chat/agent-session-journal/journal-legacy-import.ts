@@ -28,6 +28,10 @@ import {
   decodeOmpTranscriptLine
 } from '../transcript-line-decoders'
 import { decodeDroidTranscriptLine } from '../transcript-line-decoders-droid'
+import { droidSessionCompaction } from '../../droid/droid-session-file'
+import type { DroidCompactionSummary } from '../../droid/droid-compaction-summary'
+import { droidHostText } from '../../droid/droid-host-text'
+import { parseJsonObject } from '../../ai-vault/session-scanner-values'
 import { decodeTranscriptStream } from '../transcript-stream-lines'
 import { boundSubagentEntryId } from '../subagent-entry-id-bounds'
 import { createLegacyIdentityTracker } from './journal-legacy-identity'
@@ -116,7 +120,7 @@ export async function prepareLegacyTranscriptImport(input: {
     return { ok: false, error: err instanceof Error ? err.message : String(err) }
   }
 
-  let decoded: { messages: NativeChatMessage[]; identities: AgentJournalItemIdentity[] }
+  let decoded: Awaited<ReturnType<typeof decodeWithIdentities>>
   try {
     decoded = await decodeWithIdentities({
       filePath,
@@ -144,6 +148,23 @@ export async function prepareLegacyTranscriptImport(input: {
       observedAt: message.timestamp ?? undefined
     })
   }
+  // Insert backwards so every boundary keeps its position among the imported exchanges.
+  for (const { beforeMessageIndex, summary } of decoded.compactions.toReversed()) {
+    replacement.splice(beforeMessageIndex, 0, {
+      identity: {
+        provider: 'legacy',
+        agent: 'droid',
+        sessionId: input.sessionId,
+        recordId: `compressed:${summary.id}`
+      },
+      body: {
+        kind: 'status',
+        ...droidHostText('compressDone'),
+        summaryText: boundInlineText(summary.text, limits).text
+      },
+      turnScope: { kind: 'thread' }
+    })
+  }
   return { ok: true, items: replacement }
 }
 
@@ -163,7 +184,7 @@ async function decodeWithIdentities(input: {
   agent: AgentType
   sessionId: string
   decodedMessageIdentities?: true
-}): Promise<{ messages: NativeChatMessage[]; identities: AgentJournalItemIdentity[] }> {
+}) {
   const tracker = createLegacyIdentityTracker({
     transcriptAgent: input.transcriptAgent,
     agent: input.agent,
@@ -171,6 +192,7 @@ async function decodeWithIdentities(input: {
   })
   const decode = TRANSCRIPT_DECODERS[input.transcriptAgent]
   const identities: AgentJournalItemIdentity[] = []
+  const compactions: { beforeMessageIndex: number; summary: DroidCompactionSummary }[] = []
   let lineIndex = 0
 
   // Count raw bytes while reading: the source can grow after the stat check.
@@ -182,6 +204,12 @@ async function decodeWithIdentities(input: {
     (line, fallbackId) => {
       const trackedIdentity = tracker.identify(line, lineIndex)
       lineIndex += 1
+      if (input.agent === 'droid') {
+        const summary = droidSessionCompaction(parseJsonObject(line))
+        if (summary) {
+          compactions.push({ beforeMessageIndex: identities.length, summary })
+        }
+      }
       const message = decode(line, fallbackId)
       if (message) {
         identities.push(
@@ -200,7 +228,7 @@ async function decodeWithIdentities(input: {
     true,
     MAX_LEGACY_IMPORT_SOURCE_BYTES
   )
-  return { messages, identities }
+  return { messages, identities, compactions }
 }
 
 /**

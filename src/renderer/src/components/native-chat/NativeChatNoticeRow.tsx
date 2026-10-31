@@ -156,6 +156,16 @@ export function NativeChatNoticeRow({
         {Icon ? <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" /> : null}
         <p className="min-w-0 whitespace-pre-wrap break-words">{text}</p>
       </div>
+      {block.summaryText ? (
+        <NativeChatMarkdown
+          content={block.summaryText}
+          renderCodeBlock={NativeChatCodeBlock}
+          className="text-sm text-chat-foreground"
+          onLinkClick={onLinkClick}
+          allowFileUriLinks={allowFileUriLinks}
+          linkifyFilePaths={onLinkClick !== undefined}
+        />
+      ) : null}
       {claudeSignIn && isClaudeSignInFailureKind(block.failure?.kind) ? (
         <Button
           type="button"

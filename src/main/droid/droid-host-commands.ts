@@ -8,6 +8,7 @@ import { isDroidMethodNotFound } from './droid-missing-method'
 import type { DroidSession } from './droid-session'
 import { runDroidSkills } from './droid-skills'
 import { changeDroidWorkingFolder } from './droid-working-folder'
+import { boundedDroidSummaryRead, waitForDroidCompactionSummary } from './droid-compaction-summary'
 
 // A summary is a model call over the whole conversation.
 const COMPACT_TIMEOUT_MS = 120_000
@@ -28,9 +29,16 @@ function compressedWords(removedCount: number | null, moved: boolean) {
 }
 
 async function compress(
-  session: Pick<DroidSession, 'context' | 'request' | 'lane' | 'droidSessionId'>,
+  session: Pick<
+    DroidSession,
+    'context' | 'request' | 'lane' | 'droidSessionId' | 'readCompactionSummary'
+  >,
   instructions: string | undefined
 ): Promise<DroidHostCommandResult> {
+  const currentId = session.droidSessionId
+  const before = currentId
+    ? await boundedDroidSummaryRead(() => session.readCompactionSummary(currentId))
+    : null
   const answer = await session.request(
     'droid.compact_session',
     instructions ? { customInstructions: instructions } : {},
@@ -42,11 +50,22 @@ async function compress(
   // The same id is a compaction in place; only a different one moves the chat.
   const newSessionId =
     reported !== undefined && reported !== session.droidSessionId ? reported : null
+  const summarySessionId = newSessionId ?? session.droidSessionId
+  const summaryText = summarySessionId
+    ? await waitForDroidCompactionSummary(
+        () => session.readCompactionSummary(summarySessionId),
+        newSessionId ? null : before
+      )
+    : null
   session.lane.apply([
     {
       type: 'item.update',
       item: `compressed:${Date.now()}`,
-      body: { kind: 'status', ...compressedWords(removedCount, newSessionId !== null) }
+      body: {
+        kind: 'status',
+        ...compressedWords(removedCount, newSessionId !== null),
+        ...(summaryText ? { summaryText } : {})
+      }
     }
   ])
   // No turn ends after a compaction, so nothing else moves the ring off its pre-compaction figure.
@@ -96,7 +115,13 @@ async function rename(
 export async function runDroidHostCommand(
   session: Pick<
     DroidSession,
-    'context' | 'request' | 'lane' | 'droidSessionId' | 'workspace' | 'mcpSignIn'
+    | 'context'
+    | 'request'
+    | 'lane'
+    | 'droidSessionId'
+    | 'workspace'
+    | 'mcpSignIn'
+    | 'readCompactionSummary'
   >,
   command: DroidHostCommand
 ): Promise<DroidHostCommandResult> {

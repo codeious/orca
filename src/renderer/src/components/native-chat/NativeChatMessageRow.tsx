@@ -117,7 +117,10 @@ export const MessageRow = memo(function MessageRow(
   const notice = isSystem
     ? blocks.find(
         (block) =>
-          block.type === 'text' && (block.presentation !== undefined || block.tone !== undefined)
+          block.type === 'text' &&
+          (block.presentation !== undefined ||
+            block.tone !== undefined ||
+            block.summaryText !== undefined)
       )
     : undefined
   if (notice?.type === 'text') {
