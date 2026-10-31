@@ -62,6 +62,13 @@ const handledSchema = z.discriminatedUnion('type', [
     requestId: z.string().optional(),
     text: z.string().optional()
   }),
+  // A title is cosmetic, so a field of the wrong type costs the title and never the child.
+  z.looseObject({
+    type: z.literal('session_title_updated'),
+    title: z.string().optional().catch(undefined),
+    updateType: z.string().optional().catch(undefined),
+    requestId: z.string().optional().catch(undefined)
+  }),
   // Sent on the session that showed the plan; the client, not Droid, starts `newSessionId`.
   z.looseObject({
     type: z.literal('spec_handoff_session_created'),

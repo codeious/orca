@@ -8,6 +8,7 @@ import type { StructuredAgentLaunchSettlement } from '@/lib/structured-agent-lau
 const mocks = vi.hoisted(() => ({
   switchSession: vi.fn(),
   closeUnifiedTab: vi.fn(),
+  setTabCustomTitle: vi.fn(),
   toastError: vi.fn(),
   runChild: vi.fn()
 }))
@@ -15,7 +16,12 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@/lib/droid-chat-session-switch', () => ({ switchDroidChatSession: mocks.switchSession }))
 vi.mock('./droid-child-commands', () => ({ runDroidChildCommand: mocks.runChild }))
 vi.mock('@/store', () => ({
-  useAppStore: { getState: () => ({ closeUnifiedTab: mocks.closeUnifiedTab }) }
+  useAppStore: {
+    getState: () => ({
+      closeUnifiedTab: mocks.closeUnifiedTab,
+      setTabCustomTitle: mocks.setTabCustomTitle
+    })
+  }
 }))
 vi.mock('sonner', () => ({ toast: { error: mocks.toastError } }))
 
@@ -288,12 +294,13 @@ describe('/quit and /exit in a Droid chat', () => {
   })
 })
 
-describe('/context, /cost, /compress, /fork and /rewind-conversation in a Droid chat', () => {
+describe('/context, /cost, /compress, /fork, /rename and /rewind-conversation in a Droid chat', () => {
   it.each([
     ['context', ''],
     ['cost', ''],
     ['compress', 'remember the word ok'],
     ['fork', ''],
+    ['rename', 'Fix the login redirect'],
     ['rewind-conversation', '']
   ] as const)('hands /%s to the Droid child at once, with what follows it', async (name, rest) => {
     const answer = { accepted: true, error: null, info: 'answered' }
@@ -324,6 +331,20 @@ describe('/context, /cost, /compress, /fork and /rewind-conversation in a Droid 
       autonomyLevel: 'low',
       specModel: 'spec-1',
       specEffort: 'low'
+    })
+  })
+
+  it('gives /rename a way to title this tab, as the tab’s own rename does', async () => {
+    mocks.runChild.mockResolvedValue({ accepted: true, error: null })
+    const commands = mount()
+
+    await run(commands, '/rename Fix the login redirect')
+    const [chat] = mocks.runChild.mock.calls[0] ?? []
+    expect(mocks.setTabCustomTitle).not.toHaveBeenCalled()
+    chat.renameTab('Fix the login redirect')
+
+    expect(mocks.setTabCustomTitle).toHaveBeenCalledExactlyOnceWith(TAB, 'Fix the login redirect', {
+      recordInteraction: false
     })
   })
 

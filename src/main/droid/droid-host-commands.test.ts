@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { DroidHostCommand } from '../../shared/droid-host-command'
 import {
   DROID_RIG_SESSION,
@@ -273,5 +273,119 @@ describe('Droid /cost', () => {
   it('reports none before Droid has reported any', async () => {
     const { run } = await startedSession()
     expect(await run({ name: 'credits' })).toEqual({ name: 'credits', factoryCredits: null })
+  })
+})
+
+describe('Droid /rename', () => {
+  const renamingSession = async () => {
+    const onTitle = vi.fn()
+    const h = await setupDroidAdapter({}, undefined, { onTitle })
+    const { connection } = await h.start()
+    const run = (title: string) =>
+      h.adapter.droidCommand({
+        sessionId: DROID_RIG_SESSION,
+        fence: 7,
+        command: { name: 'rename', title }
+      })
+    return { h, connection, onTitle, run }
+  }
+
+  it('asks Droid to rename the session, and sends no message', async () => {
+    const { connection, run } = await renamingSession()
+
+    expect(await run('Fix the login redirect')).toEqual({
+      name: 'rename',
+      title: 'Fix the login redirect'
+    })
+
+    expect(connection.requests.filter(({ method }) => method === 'droid.rename_session')).toEqual([
+      { method: 'droid.rename_session', params: { title: 'Fix the login redirect' } }
+    ])
+    expect(methods(connection)).not.toContain('droid.add_user_message')
+  })
+
+  it('gives Droid, and answers with, the title on one line without the spaces around it', async () => {
+    const { connection, run } = await renamingSession()
+
+    expect(await run('  Two\nlines  ')).toEqual({ name: 'rename', title: 'Two lines' })
+
+    expect(connection.requests.filter(({ method }) => method === 'droid.rename_session')).toEqual([
+      { method: 'droid.rename_session', params: { title: 'Two lines' } }
+    ])
+  })
+
+  it('asks Droid nothing for a title with nothing to show', async () => {
+    const { connection, run } = await renamingSession()
+
+    await expect(run(' \u200b\n ')).rejects.toThrow('Give the chat a title to rename it to.')
+
+    expect(methods(connection)).not.toContain('droid.rename_session')
+  })
+
+  it('opens no turn', async () => {
+    const { h, run } = await renamingSession()
+
+    await run('Quiet')
+
+    expect(await h.rig.turns()).toHaveLength(0)
+    expect(h.idle).not.toHaveBeenCalled()
+  })
+
+  describe('as Droid 0.251.0 answered it', () => {
+    it('names the chat from the rename Droid reports, which comes before its answer', async () => {
+      const exchanges = await readDroidExchanges('rename-session')
+      const { connection, onTitle, run } = await renamingSession()
+      connection.replies.set('droid.rename_session', replayExchange(connection, exchanges, 'r1'))
+
+      expect(await run('Capture rename')).toEqual({ name: 'rename', title: 'Capture rename' })
+
+      expect(onTitle.mock.calls).toEqual([
+        [{ sessionId: DROID_RIG_SESSION, title: 'Capture rename' }]
+      ])
+    })
+  })
+
+  it('says so when Droid answers that it did not rename', async () => {
+    const { connection, run } = await renamingSession()
+    connection.replies.set('droid.rename_session', () => ({ success: false }))
+
+    await expect(run('Nope')).rejects.toThrow('Droid did not rename the conversation.')
+  })
+
+  it.each([
+    ['a verdict that is not true', { success: 'false' }],
+    ['a verdict of nothing', { success: null }]
+  ])('does not take %s as the rename it asked for', async (_label, answer) => {
+    const { connection, run } = await renamingSession()
+    connection.replies.set('droid.rename_session', () => answer)
+
+    await expect(run('Nope')).rejects.toThrow('Droid did not rename the conversation.')
+  })
+
+  it('takes an answer without a verdict as the rename it asked for', async () => {
+    const { connection, run } = await renamingSession()
+    connection.replies.set('droid.rename_session', () => ({}))
+
+    expect(await run('Fine')).toEqual({ name: 'rename', title: 'Fine' })
+  })
+
+  it('says Droid needs updating when it has no rename method', async () => {
+    const { connection, run } = await renamingSession()
+    connection.replies.set('droid.rename_session', () => {
+      throw new DroidRpcError(-32601, 'Method not found')
+    })
+
+    await expect(run('Old Droid')).rejects.toThrow(
+      'Renaming the conversation needs a newer Droid. Update Droid and try again.'
+    )
+  })
+
+  it('passes Droid’s own refusal on in its words', async () => {
+    const { connection, run } = await renamingSession()
+    connection.replies.set('droid.rename_session', () => {
+      throw new DroidRpcError(-32602, 'Invalid title')
+    })
+
+    await expect(run('Bad')).rejects.toThrow('Invalid title')
   })
 })

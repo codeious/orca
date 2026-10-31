@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { normalizeAgentSessionConversationName } from '../../shared/agent-session-conversation-name'
 import type { DroidHostCommand, DroidHostCommandResult } from '../../shared/droid-host-command'
 import { forkDroidSession, rewindDroidSession } from './droid-fork-and-rewind'
 import type { DroidSession } from './droid-session'
@@ -50,6 +51,25 @@ async function compress(
   return { name: 'compress', removedCount, newSessionId }
 }
 
+const renamedSchema = z.looseObject({ success: z.unknown() })
+
+async function rename(
+  session: Pick<DroidSession, 'request'>,
+  requested: string
+): Promise<DroidHostCommandResult> {
+  const title = normalizeAgentSessionConversationName(requested)
+  if (title === null) {
+    throw new Error('Give the chat a title to rename it to.')
+  }
+  const answer = await session.request('droid.rename_session', { title })
+  // An answer with no verdict at all is taken as the rename; any verdict that is not `true` is a refusal.
+  const verdict = renamedSchema.safeParse(answer).data?.success
+  if (verdict !== undefined && verdict !== true) {
+    throw new Error('Droid did not rename the conversation.')
+  }
+  return { name: 'rename', title }
+}
+
 /** Answers a command the host claims for a Droid chat from the child, without sending a message. */
 export async function runDroidHostCommand(
   session: Pick<DroidSession, 'context' | 'request' | 'lane' | 'droidSessionId'>,
@@ -64,6 +84,8 @@ export async function runDroidHostCommand(
       return compress(session, command.instructions)
     case 'fork':
       return forkDroidSession(session)
+    case 'rename':
+      return rename(session, command.title)
     case 'rewind':
       return rewindDroidSession(session, command.messageId)
   }

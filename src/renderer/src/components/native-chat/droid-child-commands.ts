@@ -1,6 +1,10 @@
 import { translate } from '@/i18n/i18n'
 import type { RuntimeClientTarget } from '@/runtime/runtime-rpc-client'
 import { callStructuredAgentSession } from '@/runtime/structured-agent-session-client'
+import {
+  AGENT_SESSION_CONVERSATION_NAME_MAX_LENGTH,
+  normalizeAgentSessionConversationName
+} from '../../../../shared/agent-session-conversation-name'
 import type { DroidChildCommandName } from '../../../../shared/droid-command-registry'
 import type { DroidFreshSessionSettings } from '../../../../shared/droid-fresh-session-settings'
 import {
@@ -24,6 +28,8 @@ export type DroidChildCommandChat = {
   target: RuntimeClientTarget
   /** What the tab runs on now, so a session that /compress, /fork or a rewind opens keeps it. */
   keptSettings: () => DroidFreshSessionSettings
+  /** Names this tab as the person did, so a title Droid reports later does not replace it. */
+  renameTab: (title: string) => void
   /** The chat's own rewind, which holds the journal and the confirmation /rewind-conversation needs. */
   rewindConversation?: () => Promise<DroidChildCommandOutcome>
 }
@@ -43,6 +49,8 @@ function hostCommand(name: AskedCommandName, argument: string): DroidHostCommand
       return { name: 'credits' }
     case 'fork':
       return { name: 'fork' }
+    case 'rename':
+      return { name: 'rename', title: normalizeAgentSessionConversationName(argument) ?? '' }
     case 'compress':
       return argument ? { name: 'compress', instructions: argument } : { name: 'compress' }
   }
@@ -127,10 +135,42 @@ function outcomeOf(
         }
       }
     }
+    case 'rename':
+      // The tab is named only once Droid has taken the title, so a refusal leaves both as they were.
+      chat.renameTab(result.title)
+      return {
+        accepted: true,
+        error: null,
+        info: translate(
+          'components.native-chat.droidChildCommands.renamed',
+          'Renamed this chat to “{{title}}”.',
+          { title: result.title }
+        )
+      }
   }
 }
 
+function renameRefusal(argument: string): string | null {
+  if (normalizeAgentSessionConversationName(argument) === null) {
+    return translate(
+      'components.native-chat.droidChildCommands.renameUsage',
+      'Use /rename followed by a title, for example /rename Fix the login redirect.'
+    )
+  }
+  // The shared normalizer cuts an over-long name silently, so the cap is checked on the spaced-out text first.
+  return argument.replace(/\s+/g, ' ').trim().length > AGENT_SESSION_CONVERSATION_NAME_MAX_LENGTH
+    ? translate(
+        'components.native-chat.droidChildCommands.renameTooLong',
+        'Keep the /rename title under {{max}} characters.',
+        { max: String(AGENT_SESSION_CONVERSATION_NAME_MAX_LENGTH) }
+      )
+    : null
+}
+
 function refusal(name: DroidChildCommandName, argument: string): string | null {
+  if (name === 'rename') {
+    return renameRefusal(argument)
+  }
   if (name !== 'compress') {
     return argument
       ? translate(
@@ -149,7 +189,7 @@ function refusal(name: DroidChildCommandName, argument: string): string | null {
     : null
 }
 
-/** `/context`, `/cost`, `/compress`, `/fork` and `/rewind-conversation`: none sends a message. */
+/** `/context`, `/cost`, `/compress`, `/fork`, `/rename` and `/rewind-conversation`: none sends a message. */
 export async function runDroidChildCommand(
   chat: DroidChildCommandChat,
   name: DroidChildCommandName,
@@ -193,7 +233,7 @@ export async function runDroidChildCommand(
     // The host words a method Droid lacks itself; an older server refuses a command it never heard of.
     return {
       accepted: false,
-      error: droidCommandFailureWords(error, name, name === 'fork')
+      error: droidCommandFailureWords(error, name, name === 'fork' || name === 'rename')
     }
   } finally {
     compressing.delete(chat.sessionId)

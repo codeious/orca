@@ -22,6 +22,7 @@ import { DroidPrompts } from './droid-prompts'
 import { DroidSessionModel } from './droid-session-model'
 import { DroidSessionOptions } from './droid-session-options'
 import { DroidReportedSettings, type DroidStartSettings } from './droid-session-settings'
+import { DroidChatTitle, type DroidTitleUpdate } from './droid-session-title'
 import { readStartedSession } from './droid-started-session'
 import { DroidSpecHandoffs } from './droid-spec-handoff'
 import { DroidTurns } from './droid-turns'
@@ -55,6 +56,8 @@ export type DroidSessionDeps = {
     outcome: AgentSessionDispatchOutcome
   }) => void
   onIdle: (input: { sessionId: string }) => void
+  /** The name Droid's own title report gives the chat; absent in tests that do not read it. */
+  onTitle?: (update: DroidTitleUpdate) => void
   logger: StructuredAgentSessionLogger
   /** Resolves a folder to its real path; replaced in tests. */
   realpath?: (path: string) => Promise<string>
@@ -79,6 +82,7 @@ export class DroidSession {
   readonly prompts: DroidPrompts
   private readonly echoed = new Map<string, string>()
   private readonly handoffs = new DroidSpecHandoffs()
+  private readonly chatTitle = new DroidChatTitle()
   private readonly lifecycle: JsonlRpcSessionLifecycle
   /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
   readonly settings = new DroidReportedSettings()
@@ -172,6 +176,12 @@ export class DroidSession {
       },
       settings: (report) => this.settings.receive(report),
       specHandoff: (notification) => this.handoffs.created(notification),
+      title: (notification) => {
+        const title = this.chatTitle.accept(notification)
+        if (title !== null) {
+          deps.onTitle?.({ sessionId, title })
+        }
+      },
       rememberEcho: (clientMessageId, messageId) => {
         this.echoed.set(clientMessageId, messageId)
       },

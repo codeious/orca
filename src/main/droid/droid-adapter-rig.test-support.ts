@@ -131,7 +131,7 @@ export type DroidAdapterRig = {
 export async function setupDroidAdapter(
   launch: Partial<DroidResolvedLaunch> = {},
   script?: (connection: FakeConnection) => void,
-  extraDeps: Pick<DroidSessionDeps, 'realpath'> = {}
+  extraDeps: Pick<DroidSessionDeps, 'realpath' | 'onTitle'> = {}
 ): Promise<DroidAdapterRig> {
   const rig = await openProviderTimelineRig({ agent: 'droid', sessionId: DROID_RIG_SESSION })
   const connections: FakeConnection[] = []

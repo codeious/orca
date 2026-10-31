@@ -19,6 +19,7 @@ const DROID_OWN_COMMANDS = [
   'cost',
   'compress',
   'fork',
+  'rename',
   'rewind-conversation'
 ]
 

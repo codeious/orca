@@ -25,6 +25,7 @@ describe('agentSession.droidCommand', () => {
     [{ name: 'compress' }],
     [{ name: 'compress', instructions: 'keep the schema' }],
     [{ name: 'fork' }],
+    [{ name: 'rename', title: 'Fix the login redirect' }],
     [{ name: 'rewind', itemId: 'droid:message-1' }]
   ])('hands %j to the host for the session and answers with its result', async (command) => {
     hostCalls.droidCommand.mockResolvedValueOnce({ name: 'credits', factoryCredits: 12 })
@@ -45,6 +46,11 @@ describe('agentSession.droidCommand', () => {
     ['instructions on a command that takes none', { name: 'credits', instructions: 'x' }],
     ['an empty command', {}],
     ['a title for the fork, which the host words itself', { name: 'fork', title: 'x' }],
+    ['a rename that names no title', { name: 'rename' }],
+    ['a rename to an empty title', { name: 'rename', title: '' }],
+    ['a rename to a title longer than a name can be', { name: 'rename', title: 'x'.repeat(201) }],
+    ['a rename to a title that is not text', { name: 'rename', title: 7 }],
+    ['a key beside the rename title', { name: 'rename', title: 'x', force: true }],
     ['a rewind that names no row', { name: 'rewind' }],
     ['a rewind to an empty row id', { name: 'rewind', itemId: '' }],
     ['a rewind that names the Droid message itself', { name: 'rewind', messageId: 'droid-1' }]

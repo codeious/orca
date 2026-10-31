@@ -94,7 +94,7 @@ export type DroidSessionCommands = {
 /**
  * `/clear`, `/new`, `/quit` and `/exit` of a Droid chat. Each asks again and acts on the second
  * submit of the same command: the TUI quits on one Enter, but a press here ends a chat.
- * `/context`, `/cost`, `/compress`, `/fork` and `/rewind-conversation` answer on the first submit.
+ * `/context`, `/cost`, `/compress`, `/fork`, `/rename` and `/rewind-conversation` answer on the first submit.
  */
 export function useDroidSessionCommands(args: {
   tabId: string
@@ -128,6 +128,10 @@ export function useDroidSessionCommands(args: {
               sessionId,
               target,
               keptSettings: () => droidSettingsKeptByClear(optionSnapshot, optionSurface),
+              renameTab: (title) =>
+                useAppStore
+                  .getState()
+                  .setTabCustomTitle(tabId, title, { recordInteraction: false }),
               ...(rewindConversation ? { rewindConversation } : {})
             },
             name,

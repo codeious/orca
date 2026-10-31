@@ -10,6 +10,7 @@ export type DroidHostCommand =
   | { name: 'credits' }
   | { name: 'compress'; instructions?: string }
   | { name: 'fork' }
+  | { name: 'rename'; title: string }
   | { name: 'rewind'; messageId: string }
 
 /** What a client asks. A rewind names a row of the chat; the host turns it into the message Droid
@@ -27,6 +28,8 @@ export type DroidHostCommandResult =
   | { name: 'compress'; removedCount: number | null; newSessionId: string | null }
   /** The fork Droid made; always a different session from the one the chat holds. */
   | { name: 'fork'; newSessionId: string }
+  /** The title Droid was given, flattened to the one line a chat name can be. */
+  | { name: 'rename'; title: string }
   /** `notRestoredCount` is every file Droid could not put back: evicted from its store, or failed. */
   | {
       name: 'rewind'

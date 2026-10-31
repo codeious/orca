@@ -18752,6 +18752,7 @@
         "cost": "Show the Factory credits this session has used",
         "compress": "Summarize the conversation to free up context; add instructions to guide the summary",
         "fork": "Copy this conversation into a new session you can open in its own tab",
+        "rename": "Give this chat the title you type after the command, in Orca and in Droid",
         "rewind-conversation": "Go back to before your latest message in a new session"
       },
       "droidChildCommands": {
@@ -18770,6 +18771,9 @@
         "forked": "Forked this conversation. This chat stays on the original session.",
         "forkOpen": "Open fork",
         "forkOpenFailed": "Droid forked the conversation, but Orca could not open the fork. This chat is still on the original session.",
+        "renamed": "Renamed this chat to “{{title}}”.",
+        "renameUsage": "Use /rename followed by a title, for example /rename Fix the login redirect.",
+        "renameTooLong": "Keep the /rename title under {{max}} characters.",
         "rewindUnavailable": "This chat cannot rewind."
       },
       "droidRewind": {

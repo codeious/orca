@@ -46,6 +46,11 @@ const DESCRIPTIONS: Record<DroidHostCommandName, () => string> = {
       'components.native-chat.droidCommands.fork',
       'Copy this conversation into a new session you can open in its own tab'
     ),
+  rename: () =>
+    translate(
+      'components.native-chat.droidCommands.rename',
+      'Give this chat the title you type after the command, in Orca and in Droid'
+    ),
   'rewind-conversation': () =>
     translate(
       'components.native-chat.droidCommands.rewind-conversation',

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { AGENT_SESSION_CONVERSATION_NAME_MAX_LENGTH } from '../agent-session-conversation-name'
 import { DROID_COMPRESS_INSTRUCTIONS_MAX_LENGTH } from '../droid-host-command'
 import { SessionId } from './structured-agent-session-params'
 
@@ -16,6 +17,12 @@ export const DroidCommandParams = z
         })
         .strict(),
       z.object({ name: z.literal('fork') }).strict(),
+      z
+        .object({
+          name: z.literal('rename'),
+          title: z.string().min(1).max(AGENT_SESSION_CONVERSATION_NAME_MAX_LENGTH)
+        })
+        .strict(),
       z.object({ name: z.literal('rewind'), itemId: z.string().min(1) }).strict()
     ])
   })

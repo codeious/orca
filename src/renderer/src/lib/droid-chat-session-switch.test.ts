@@ -195,6 +195,22 @@ describe('switching a Droid chat to another Droid session', () => {
     expect(store.getState().groupsByWorktree[WORKTREE]?.[0]?.activeTabId).toBe(NEW_TAB)
   })
 
+  it('keeps a title given with /rename, which sets the tab name as the tab strip does', async () => {
+    store.getState().setTabCustomTitle(`agent-session:${OLD_CHAT}`, 'Chosen with /rename', {
+      recordInteraction: false
+    })
+    expect(tab(`agent-session:${OLD_CHAT}`)?.customLabel).toBe('Chosen with /rename')
+
+    const switched = switchDroidChatSession({
+      fromTabId: `agent-session:${OLD_CHAT}`,
+      placement: 'replace',
+      target: { kind: 'existing', droidSessionId: DROID_ID }
+    })
+    await switched.settlement
+
+    expect(tab(NEW_TAB)?.customLabel).toBe('Chosen with /rename')
+  })
+
   it('leaves the old session in Session History by only releasing its view', async () => {
     const switched = switchDroidChatSession({
       fromTabId: `agent-session:${OLD_CHAT}`,

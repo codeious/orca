@@ -4,6 +4,7 @@ export const DROID_CHILD_COMMAND_NAMES = [
   'cost',
   'compress',
   'fork',
+  'rename',
   'rewind-conversation'
 ] as const
 

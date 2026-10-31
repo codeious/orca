@@ -21,11 +21,14 @@ import { runDroidChildCommand, type DroidChildCommandChat } from './droid-child-
 
 const KEPT = { model: 'claude-haiku-5-5', spec: false }
 
+const renameTab = vi.fn<DroidChildCommandChat['renameTab']>()
+
 const CHAT: DroidChildCommandChat = {
   tabId: 'agent-session:droid-old',
   sessionId: 'session-1',
   target: { kind: 'environment', environmentId: 'env-1' },
-  keptSettings: () => KEPT
+  keptSettings: () => KEPT,
+  renameTab
 }
 
 const REPORT = {
@@ -408,6 +411,119 @@ describe('/fork in a Droid chat', () => {
       accepted: false,
       error: 'Invalid params'
     })
+  })
+})
+
+describe('/rename in a Droid chat', () => {
+  const RENAME = (title: string) => ({
+    sessionId: 'session-1',
+    command: { name: 'rename', title }
+  })
+
+  it("asks the chat's host to rename once, then gives the tab the title the person chose", async () => {
+    answers({ name: 'rename', title: 'Fix the login redirect' })
+
+    const outcome = await runDroidChildCommand(CHAT, 'rename', 'Fix the login redirect')
+
+    expect(mocks.call).toHaveBeenCalledExactlyOnceWith(
+      CHAT.target,
+      'agentSession.droidCommand',
+      RENAME('Fix the login redirect')
+    )
+    expect(renameTab).toHaveBeenCalledExactlyOnceWith('Fix the login redirect')
+    expect(outcome).toEqual({
+      accepted: true,
+      error: null,
+      info: 'Renamed this chat to “Fix the login redirect”.'
+    })
+  })
+
+  it('leaves the tab as it was until Droid has agreed to the rename', async () => {
+    let agree: (result: DroidHostCommandResult) => void = () => {}
+    mocks.call.mockReturnValue(new Promise((resolve) => (agree = resolve)))
+
+    const running = runDroidChildCommand(CHAT, 'rename', 'Later')
+    await flush()
+    expect(renameTab).not.toHaveBeenCalled()
+
+    agree({ name: 'rename', title: 'Later' })
+    await running
+    expect(renameTab).toHaveBeenCalledExactlyOnceWith('Later')
+  })
+
+  it('leaves the tab alone, and says what the host said, when Droid cannot rename', async () => {
+    answers(new Error('Renaming the conversation needs a newer Droid. Update Droid and try again.'))
+
+    expect(await runDroidChildCommand(CHAT, 'rename', 'Old Droid')).toEqual({
+      accepted: false,
+      error: 'Renaming the conversation needs a newer Droid. Update Droid and try again.'
+    })
+    expect(renameTab).not.toHaveBeenCalled()
+  })
+
+  it('sends the title as the tab will show it: on one line, without the spaces around it', async () => {
+    answers({ name: 'rename', title: 'Fix the login redirect' })
+
+    await runDroidChildCommand(CHAT, 'rename', '  Fix   the\tlogin\nredirect  ')
+
+    expect(mocks.call.mock.calls[0]?.[2]).toEqual(RENAME('Fix the login redirect'))
+  })
+
+  it('gives the tab the title the host recorded, which is what the chat is named in Droid', async () => {
+    answers({ name: 'rename', title: 'Fix the login' })
+
+    await runDroidChildCommand(CHAT, 'rename', 'Fix the login redirect')
+
+    expect(renameTab).toHaveBeenCalledExactlyOnceWith('Fix the login')
+  })
+
+  it.each([
+    ['no title', ''],
+    ['a title of only spaces', '   '],
+    ['a title of only control characters', '\u0007\u200b']
+  ])('says how to use it, without asking Droid, for %s', async (_label, argument) => {
+    expect(await runDroidChildCommand(CHAT, 'rename', argument)).toEqual({
+      accepted: false,
+      error: 'Use /rename followed by a title, for example /rename Fix the login redirect.'
+    })
+    expect(mocks.call).not.toHaveBeenCalled()
+    expect(renameTab).not.toHaveBeenCalled()
+  })
+
+  it('refuses a title longer than a chat name can be, rather than cutting it', async () => {
+    expect(await runDroidChildCommand(CHAT, 'rename', 'x'.repeat(201))).toEqual({
+      accepted: false,
+      error: 'Keep the /rename title under 200 characters.'
+    })
+    expect(mocks.call).not.toHaveBeenCalled()
+    expect(renameTab).not.toHaveBeenCalled()
+  })
+
+  it('measures the title as the tab will show it, not as it was typed', async () => {
+    const spread = `Fix${' '.repeat(300)}the login`
+    answers({ name: 'rename', title: 'Fix the login' })
+
+    expect(await runDroidChildCommand(CHAT, 'rename', spread)).toMatchObject({ accepted: true })
+    expect(mocks.call.mock.calls[0]?.[2]).toEqual(RENAME('Fix the login'))
+  })
+
+  it('takes a title of exactly the longest length', async () => {
+    answers({ name: 'rename', title: 'x'.repeat(200) })
+
+    expect(await runDroidChildCommand(CHAT, 'rename', 'x'.repeat(200))).toMatchObject({
+      accepted: true
+    })
+    expect(renameTab).toHaveBeenCalledExactlyOnceWith('x'.repeat(200))
+  })
+
+  it('tells the person to update an older server that does not know the command', async () => {
+    answers(Object.assign(new Error('Invalid params'), { code: 'invalid_argument' }))
+
+    expect(await runDroidChildCommand(CHAT, 'rename', 'Old server')).toEqual({
+      accepted: false,
+      error: 'Droid chat commands need a newer Orca server. Update the server and try again.'
+    })
+    expect(renameTab).not.toHaveBeenCalled()
   })
 })
 

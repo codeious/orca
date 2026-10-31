@@ -21,6 +21,7 @@ import {
   resolveDroidCommand
 } from './droid-launch-resolution'
 import { DroidSessionAdapter } from './droid-session-adapter'
+import { recordDroidTitle } from './droid-session-title'
 import { createDroidLaunchResolver } from './droid-structured-launch-resolution'
 
 /** The environment every Droid child starts from: a chat's launch and a model listing alike. */
@@ -60,6 +61,11 @@ function createDroidAdapter(context: StructuredAgentAdapterContext): StructuredA
       })
     },
     onIdle: context.followUps.releaseUnansweredDispatches,
+    onTitle: recordDroidTitle({
+      store: context.store,
+      publish: (sessionId) => context.host()?.publishConversationName(sessionId),
+      logger: deps.logger
+    }),
     logger: deps.logger
   })
 }

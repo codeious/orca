@@ -26,6 +26,8 @@ export type DroidTurnDeps = {
   specHandoff?: (
     notification: Extract<DroidNotification, { type: 'spec_handoff_session_created' }>
   ) => ProviderTimelineEvent[]
+  /** A title Droid reported for the session; like the settings, it belongs to the session, not to a turn. */
+  title?: (notification: Extract<DroidNotification, { type: 'session_title_updated' }>) => void
   /** The echo's message id, recorded before the timeline admits the send. */
   rememberEcho?: (clientMessageId: string, messageId: string) => void
   warn?: (message: string, fields: { requestId: string }) => void
@@ -159,6 +161,9 @@ export class DroidTurns {
         return
       case 'spec_handoff_session_created':
         lane.apply(this.deps.specHandoff?.(notification) ?? [])
+        return
+      case 'session_title_updated':
+        this.deps.title?.(notification)
         return
       case 'error':
         this.lastError = notification.message ?? notification.error?.message
