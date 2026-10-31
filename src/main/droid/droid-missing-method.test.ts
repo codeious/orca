@@ -85,7 +85,8 @@ describe('a session method this Droid does not have', () => {
 
     await expect(sessionOf(h).request('droid.compact_session', {})).rejects.toMatchObject({
       name: 'DroidRpcError',
-      code: -32601
+      code: -32601,
+      textKey: 'components.native-chat.droidHost.newerCompact'
     })
   })
 

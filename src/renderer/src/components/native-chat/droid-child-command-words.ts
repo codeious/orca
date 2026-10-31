@@ -1,4 +1,6 @@
 import { translate } from '@/i18n/i18n'
+import { RuntimeRpcCallError } from '@/runtime/runtime-rpc-result'
+import { agentSessionHostText } from './agent-session-host-text'
 import type { AgentSessionContextReport } from '../../../../shared/agent-session-context-usage'
 import { hasRuntimeRpcErrorCode } from '../../../../shared/runtime-rpc-error-code'
 import { summarizeContextUsage } from './native-chat-context-usage-summary'
@@ -62,7 +64,14 @@ export function droidCommandFailureWords(
       'Droid chat commands need a newer Orca server. Update the server and try again.'
     )
   }
-  const words = error instanceof Error ? error.message.trim() : ''
+  const fallback = error instanceof Error ? error.message.trim() : ''
+  const metadata =
+    error instanceof RuntimeRpcCallError
+      ? error.response.error.data
+      : typeof error === 'object' && error !== null && 'data' in error
+        ? error.data
+        : error
+  const words = agentSessionHostText(fallback, metadata)
   return (
     words ||
     translate(

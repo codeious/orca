@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { DroidHostCommandResult } from '../../shared/droid-host-command'
+import { DroidHostTextError } from './droid-host-text'
 import type { DroidSession } from './droid-session'
 
 type ForkAndRewindSession = Pick<DroidSession, 'request' | 'droidSessionId'>
@@ -47,7 +48,7 @@ export async function forkDroidSession(
   const newSessionId = forkedSchema.safeParse(answer).data?.newSessionId
   // The same id would be the chat's own session, not a copy of it.
   if (newSessionId === undefined || newSessionId === session.droidSessionId) {
-    throw new Error('Droid did not return a new session for the fork. Try again.')
+    throw new DroidHostTextError('forkFailed')
   }
   return { name: 'fork', newSessionId }
 }
@@ -58,7 +59,7 @@ export async function rewindDroidSession(
 ): Promise<Extract<DroidHostCommandResult, { name: 'rewind' }>> {
   const sessionId = session.droidSessionId
   if (sessionId === undefined) {
-    throw new Error('Droid did not start for this chat. Send a message and try again.')
+    throw new DroidHostTextError('notStarted')
   }
   const info = rewindInfoSchema.safeParse(
     await session.request(
@@ -69,7 +70,7 @@ export async function rewindDroidSession(
   )
   // Rewinding without knowing which files it touches would leave them as they are, unannounced.
   if (!info.success) {
-    throw new Error('Droid could not say which files the rewind changes. Nothing was rewound.')
+    throw new DroidHostTextError('rewindUnknownFiles')
   }
   const { availableFiles, createdFiles, evictedFiles } = info.data
   const answer = await session.request(
@@ -89,9 +90,7 @@ export async function rewindDroidSession(
   )
   const done = rewoundSchema.safeParse(answer).data
   if (done?.newSessionId === undefined || done.newSessionId === sessionId) {
-    throw new Error(
-      'Droid rewound the conversation but did not return a new session. Open Session History to find it.'
-    )
+    throw new DroidHostTextError('rewindNoSession')
   }
   return {
     name: 'rewind',

@@ -11,7 +11,8 @@ import {
 } from '../../shared/droid-spec-pair-options'
 import { encodeStructuredAgentSessionOptionValue } from '../../shared/structured-agent-session-option-codec'
 import { AgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
-import { isDroidMethodNotFound, needsNewerDroidSentence } from './droid-missing-method'
+import { isDroidMethodNotFound } from './droid-missing-method'
+import { DroidHostTextError } from './droid-host-text'
 import type { DroidSavedPicks } from './droid-model-options'
 import { DroidRpcError } from './droid-rpc-errors'
 import type { DroidSessionModel } from './droid-session-model'
@@ -139,7 +140,7 @@ export class DroidSessionOptions {
   /** Droid may run a lower level than asked for, so the stored level is the one it reports. */
   private async setAutonomy(value: string): Promise<Record<string, string>> {
     if (!isDroidAutonomyLevel(value)) {
-      throw new Error(`Droid has no autonomy level named ${value}`)
+      throw new DroidHostTextError('autonomyUnknown', { value })
     }
     const { settings } = this.deps
     let answer: DroidSettings | undefined
@@ -149,7 +150,7 @@ export class DroidSessionOptions {
       // The sentence is Orca's own, written for a person, so a client may quote it.
       throw isDroidMethodNotFound(error)
         ? new AgentSessionOptionRejectedError(
-            new Error(needsNewerDroidSentence('Changing the autonomy level')),
+            new DroidHostTextError('newerAutonomy'),
             'providerRefusedOption'
           )
         : error

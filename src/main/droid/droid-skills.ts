@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { DroidHostCommandResult } from '../../shared/droid-host-command'
+import { DroidHostTextError } from './droid-host-text'
 import type { DroidSession } from './droid-session'
 
 type Skills = Extract<DroidHostCommandResult, { name: 'skills' }>['skills']
@@ -15,7 +16,7 @@ async function listSkills(session: Pick<DroidSession, 'request'>): Promise<Skill
   const answer = await session.request('droid.list_skills', { includeContent: false })
   const listed = listedSchema.safeParse(answer)
   if (!listed.success) {
-    throw new Error('Droid did not list its skills. Try again.')
+    throw new DroidHostTextError('skillsUnreadable')
   }
   return listed.data.skills.map(({ name, enabled }) => ({ name, enabled }))
 }
@@ -30,10 +31,9 @@ export async function runDroidSkills(
     return { name: 'skills', skills: before, changed: null }
   }
   const { skillName, disabled } = toggle
-  const state = disabled ? 'off' : 'on'
   // Droid accepts any name and records it, so a typo would be written to the settings.
   if (!before.some((skill) => skill.name === skillName)) {
-    throw new Error(`Droid has no skill named ${skillName}.`)
+    throw new DroidHostTextError('skillUnknown', { skillName })
   }
   const answer = await session.request('droid.set_skill_disabled', {
     skillName,
@@ -43,13 +43,13 @@ export async function runDroidSkills(
   // An answer with no verdict at all is taken as done; any verdict that is not `true` is a refusal.
   const verdict = toggledSchema.safeParse(answer).data?.success
   if (verdict !== undefined && verdict !== true) {
-    throw new Error(`Droid did not turn ${skillName} ${state}.`)
+    throw new DroidHostTextError(disabled ? 'skillNotOff' : 'skillNotOn', { skillName })
   }
   // A setting at another level can keep a skill as it was, so the new listing is what is believed.
   const skills = await listSkills(session)
   const now = skills.find((skill) => skill.name === skillName)
   if (now && now.enabled === disabled) {
-    throw new Error(`Droid still lists ${skillName} as ${now.enabled ? 'on' : 'off'}.`)
+    throw new DroidHostTextError(now.enabled ? 'skillStillOn' : 'skillStillOff', { skillName })
   }
   return { name: 'skills', skills, changed: { skillName, disabled } }
 }

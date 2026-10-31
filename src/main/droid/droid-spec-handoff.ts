@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { isDroidAutonomyLevel, type DroidAutonomyLevel } from '../../shared/droid-autonomy-options'
 import type { ProviderTimelineEvent } from '../native-chat/agent-session-timeline/provider-timeline-event'
+import { droidHostText } from './droid-host-text'
 import type { DroidNotification } from './droid-session-notifications'
 
 const HANDOFF_OPTION = 'proceed_new_session'
@@ -46,7 +47,7 @@ export class DroidSpecHandoffs {
         item: `spec-handoff:${specHandoffId}`,
         body: {
           kind: 'status',
-          text: 'Continuing in a new Droid session',
+          ...droidHostText('specHandoff'),
           specHandoff: {
             newSessionId,
             initialPrompt,

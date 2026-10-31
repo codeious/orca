@@ -1,6 +1,7 @@
 // The sentences a chat notice is made of, each whole so desktop can translate it on its own.
 
 import type { AgentSessionFailureFact } from './agent-session-failure'
+import type { AgentSessionHostText } from './agent-session-host-text'
 import {
   AGENT_STARTING,
   AGENT_STILL_WORKING,
@@ -104,7 +105,7 @@ export type AgentSessionWriteNoticeFailurePart = {
  *  provider's, or a host's sentence with no fact beside it. */
 export type AgentSessionWriteNoticePart =
   | AgentSessionWriteNoticeSentence
-  | { text: string }
+  | ({ text: string } & AgentSessionHostText)
   | AgentSessionWriteNoticeFailurePart
 
 /** Causes that already say the history can't be read here, so no sentence after them says it

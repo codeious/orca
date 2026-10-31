@@ -7,6 +7,7 @@ import type {
   DroidHostCommandResult
 } from '../../../shared/droid-host-command'
 import { droidMessageIdOfJournalItem } from '../../../shared/droid-rewind-message-id'
+import { DroidHostTextError } from '../../droid/droid-host-text'
 import { journalOpenReadRefusal } from '../agent-session-journal/journal-open-failure'
 import type { StructuredAgentSessionHostSession } from './structured-agent-session-host-types'
 import type { StructuredAgentSessionMutationContext } from './structured-agent-session-mutation-context'
@@ -28,7 +29,7 @@ function childCommand(
   const { submissions } = session.journal.snapshot()
   const messageId = droidMessageIdOfJournalItem(command.itemId, submissions)
   if (messageId === null) {
-    throw new Error('Droid has no record of this message to rewind to.')
+    throw new DroidHostTextError('rewindUnknownMessage')
   }
   return { name: 'rewind', messageId }
 }
@@ -60,7 +61,7 @@ async function childFence(
   }
   const started = (await context.openConversation(sessionId))?.child
   if (!started) {
-    throw new Error('Droid did not start for this chat. Send a message and try again.')
+    throw new DroidHostTextError('notStarted')
   }
   return { fence: started.fence, command }
 }
@@ -72,7 +73,7 @@ export async function runStructuredAgentSessionDroidCommand(
 ): Promise<DroidHostCommandResult> {
   const { adapter } = context.deps
   if (!adapter.droidCommand) {
-    throw new Error('Droid commands are unavailable for this chat.')
+    throw new DroidHostTextError('commandsUnavailable')
   }
   // Only the fence is read under the session queue: a summary is a model call a Stop must not wait behind.
   const { fence, command } = await context.serialize(sessionId, () =>

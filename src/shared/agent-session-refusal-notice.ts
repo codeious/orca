@@ -12,6 +12,7 @@
 // Surfaces keep the fact and choose the words when they show it, so nothing saved carries copy.
 
 import { MAX_PROVIDER_DIAGNOSTIC_CHARS } from './agent-session-failure'
+import { readAgentSessionHostText } from './agent-session-host-text'
 import {
   agentSessionFailureSentence,
   type AgentSessionFailureWordsContext
@@ -121,7 +122,11 @@ function reasonParts(
 ): AgentSessionWriteNoticePart[] | undefined {
   const quoted = providerSentence(providerText)
   if (quoted && write === 'option' && isProviderExplainedOptionRefusal(failure)) {
-    return ['optionRejected', { text: quoted }, NOT_DONE[write]]
+    return [
+      'optionRejected',
+      { text: quoted, ...readAgentSessionHostText(failure.details) },
+      NOT_DONE[write]
+    ]
   }
   if (
     failure.code === 'agent_session_operation_invalid' &&

@@ -43,6 +43,43 @@ function renderMessage(
 }
 
 describe('MessageRow control visibility', () => {
+  it.each([
+    ['specHandoff', undefined, 'Continuing in a new Droid session'],
+    [
+      'compressMany',
+      { removedCount: 7 },
+      'Conversation compressed. 7 earlier messages were summarized to free up context.'
+    ],
+    [undefined, undefined, 'Original host fallback.'],
+    ['unknownFutureSentence', undefined, 'Original host fallback.']
+  ])('resolves an untoned host status through its normal row (%s)', (key, textParams, expected) => {
+    render(
+      <MessageRow
+        message={{
+          id: 'status',
+          role: 'system',
+          timestamp: null,
+          source: 'transcript',
+          blocks: [
+            {
+              type: 'text',
+              text: 'Original host fallback.',
+              ...(key ? { textKey: `components.native-chat.droidHost.${key}` } : {}),
+              ...(textParams ? { textParams } : {})
+            }
+          ]
+        }}
+        expandSignal={false}
+        onScrollMessageToTop={vi.fn()}
+      />
+    )
+    expect(screen.getByText(expected)).toBeInTheDocument()
+    expect(screen.getByText(expected).closest('[data-native-chat-message-tone]')).toHaveAttribute(
+      'data-native-chat-message-tone',
+      'faint'
+    )
+  })
+
   it('renders and copies a fenced code block through the markdown path', async () => {
     const writeClipboardText = vi.fn().mockResolvedValue(undefined)
     Object.assign(window, { api: { ui: { writeClipboardText } } })

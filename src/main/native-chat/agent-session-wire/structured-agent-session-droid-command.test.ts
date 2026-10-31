@@ -19,8 +19,10 @@ const DROID_ROW = agentJournalItemKey({ provider: 'droid', messageId: 'droid-mes
 const SEND_ROW = agentJournalSubmissionKey('client-1')
 const OTHER_ROW = agentJournalItemKey({ provider: 'claude', sessionId: 's', uuid: 'u' })
 
-function rig(options: { child?: boolean; attached?: boolean; adapter?: boolean } = {}) {
-  const { child = true, attached = true, adapter = true } = options
+function rig(
+  options: { child?: boolean; attached?: boolean; adapter?: boolean; starts?: boolean } = {}
+) {
+  const { child = true, attached = true, adapter = true, starts = true } = options
   let held = false
   const log: string[] = []
   const droidCommand = vi.fn(async (_input: Parameters<StructuredAgentSessionDroidCommand>[0]) => {
@@ -47,7 +49,7 @@ function rig(options: { child?: boolean; attached?: boolean; adapter?: boolean }
     journal
   } as unknown as StructuredAgentSessionHostSession
   const ensureAgent = vi.fn(async () => {
-    session.child = { ...CHILD }
+    session.child = starts ? { ...CHILD } : null
     return { ok: true as const }
   })
   const context = {
@@ -130,9 +132,20 @@ describe('a Droid chat command on the host', () => {
   it('says so when the agent behind the chat has no Droid commands', async () => {
     const { run } = rig({ adapter: false })
 
-    await expect(run({ name: 'context' })).rejects.toThrow(
-      'Droid commands are unavailable for this chat.'
-    )
+    await expect(run({ name: 'context' })).rejects.toMatchObject({
+      message: 'Droid commands are unavailable for this chat.',
+      textKey: 'components.native-chat.droidHost.commandsUnavailable'
+    })
+  })
+
+  it('keys a start that prepared successfully but left no child', async () => {
+    const { run, droidCommand } = rig({ child: false, starts: false })
+
+    await expect(run({ name: 'context' })).rejects.toMatchObject({
+      message: 'Droid did not start for this chat. Send a message and try again.',
+      textKey: 'components.native-chat.droidHost.notStarted'
+    })
+    expect(droidCommand).not.toHaveBeenCalled()
   })
 
   it('hands /fork to the child as it is, with no row of the chat named', async () => {
@@ -176,9 +189,10 @@ describe('a Droid chat command on the host', () => {
     ])('refuses %s, and asks the child nothing', async (_name, itemId) => {
       const { run, droidCommand } = rig()
 
-      await expect(run({ name: 'rewind', itemId })).rejects.toThrow(
-        'Droid has no record of this message to rewind to.'
-      )
+      await expect(run({ name: 'rewind', itemId })).rejects.toMatchObject({
+        message: 'Droid has no record of this message to rewind to.',
+        textKey: 'components.native-chat.droidHost.rewindUnknownMessage'
+      })
       expect(droidCommand).not.toHaveBeenCalled()
     })
 

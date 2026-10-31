@@ -209,7 +209,11 @@ describe('Droid /mcp', () => {
     const { connection, run } = await sessionIn()
     await recorded(connection, ['r3'])
 
-    await expect(run(ADD_LOCAL)).rejects.toThrow(`Droid already has an MCP server named ${SERVER}.`)
+    await expect(run(ADD_LOCAL)).rejects.toMatchObject({
+      message: `Droid already has an MCP server named ${SERVER}.`,
+      textKey: 'components.native-chat.droidHost.mcpDuplicate',
+      textParams: { serverName: SERVER }
+    })
 
     expect(asked(connection, ADD)).toEqual([])
   })
@@ -226,7 +230,11 @@ describe('Droid /mcp', () => {
     const { connection, run } = await sessionIn()
     await recorded(connection, ['r3'])
 
-    await expect(run(action)).rejects.toThrow('Droid has no MCP server named nope.')
+    await expect(run(action)).rejects.toMatchObject({
+      message: 'Droid has no MCP server named nope.',
+      textKey: 'components.native-chat.droidHost.mcpUnknown',
+      textParams: { serverName: 'nope' }
+    })
 
     expect(asked(connection, method)).toEqual([])
   })
@@ -236,7 +244,11 @@ describe('Droid /mcp', () => {
     await recorded(connection, ['r1'])
     connection.replies.set(ADD, () => ({ success: false }))
 
-    await expect(run(ADD_LOCAL)).rejects.toThrow(`Droid did not add ${SERVER}.`)
+    await expect(run(ADD_LOCAL)).rejects.toMatchObject({
+      message: `Droid did not add ${SERVER}.`,
+      textKey: 'components.native-chat.droidHost.mcpNotAdded',
+      textParams: { serverName: SERVER }
+    })
   })
 
   it('says so when Droid gives no verdict on a removal', async () => {
@@ -244,41 +256,50 @@ describe('Droid /mcp', () => {
     await recorded(connection, ['r3'])
     connection.replies.set(REMOVE, () => ({}))
 
-    await expect(run({ kind: 'remove', serverName: SERVER })).rejects.toThrow(
-      `Droid did not remove ${SERVER}.`
-    )
+    await expect(run({ kind: 'remove', serverName: SERVER })).rejects.toMatchObject({
+      message: `Droid did not remove ${SERVER}.`,
+      textKey: 'components.native-chat.droidHost.mcpNotRemoved',
+      textParams: { serverName: SERVER }
+    })
   })
 
   it.each([
-    ['adding', ['r1', 'r1'], ADD_LOCAL, `Droid did not add ${SERVER}.`, 'r2'],
+    ['adding', ['r1', 'r1'], ADD_LOCAL, `Droid did not add ${SERVER}.`, 'r2', 'mcpNotAdded'],
     [
       'removing',
       ['r3', 'r3'],
       { kind: 'remove', serverName: SERVER } as const,
       `Droid still lists ${SERVER}.`,
-      'r7'
+      'r7',
+      'mcpStillListed'
     ],
     [
       'turning off',
       ['r3', 'r3'],
       { kind: 'toggle', serverName: SERVER, enabled: false } as const,
       `Droid still lists ${SERVER} as on.`,
-      'r4'
+      'r4',
+      'mcpStillOn'
     ],
     [
       'turning on',
       ['r5', 'r5'],
       { kind: 'toggle', serverName: SERVER, enabled: true } as const,
       `Droid still lists ${SERVER} as off.`,
-      'r6'
+      'r6',
+      'mcpStillOff'
     ]
   ] as const)(
     'says so when, after %s, the next listing still shows the server as it was',
-    async (_label, listings, action, words, change) => {
+    async (_label, listings, action, words, change, key) => {
       const { connection, run } = await sessionIn()
       await recorded(connection, [...listings], change)
 
-      await expect(run(action)).rejects.toThrow(words)
+      await expect(run(action)).rejects.toMatchObject({
+        message: words,
+        textKey: `components.native-chat.droidHost.${key}`,
+        textParams: { serverName: SERVER }
+      })
     }
   )
 
@@ -291,9 +312,25 @@ describe('Droid /mcp', () => {
     const { connection, run } = await sessionIn()
     connection.replies.set(LIST, () => answer)
 
-    await expect(run({ kind: 'list' })).rejects.toThrow(
-      'Droid did not list its MCP servers. Try again.'
-    )
+    await expect(run({ kind: 'list' })).rejects.toMatchObject({
+      message: 'Droid did not list its MCP servers. Try again.',
+      textKey: 'components.native-chat.droidHost.mcpUnreadable'
+    })
+  })
+
+  it.each([
+    [true, 'mcpNotOn', `Droid did not turn ${SERVER} on.`],
+    [false, 'mcpNotOff', `Droid did not turn ${SERVER} off.`]
+  ] as const)('keys a refused toggle to %s', async (enabled, key, message) => {
+    const { connection, run } = await sessionIn()
+    await recorded(connection, ['r3'])
+    connection.replies.set(TOGGLE, () => ({ success: false }))
+
+    await expect(run({ kind: 'toggle', serverName: SERVER, enabled })).rejects.toMatchObject({
+      message,
+      textKey: `components.native-chat.droidHost.${key}`,
+      textParams: { serverName: SERVER }
+    })
   })
 
   it('says Droid needs updating when it has no listing method', async () => {

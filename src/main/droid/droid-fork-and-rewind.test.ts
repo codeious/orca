@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { DroidHostCommand } from '../../shared/droid-host-command'
 import {
   DROID_RIG_SESSION,
@@ -7,6 +7,7 @@ import {
   type FakeConnection
 } from './droid-adapter-rig.test-support'
 import { readDroidExchanges, replayExchange } from './droid-recording.test-support'
+import { rewindDroidSession } from './droid-fork-and-rewind'
 import { DroidRpcError } from './droid-rpc-errors'
 
 afterEach(runDroidRigCleanups)
@@ -56,9 +57,10 @@ describe('Droid /fork', () => {
     const { connection, run } = await startedSession()
     connection.replies.set('droid.fork_session', () => ({ newSessionId: RECORDED_SESSION }))
 
-    await expect(run({ name: 'fork' })).rejects.toThrow(
-      'Droid did not return a new session for the fork. Try again.'
-    )
+    await expect(run({ name: 'fork' })).rejects.toMatchObject({
+      message: 'Droid did not return a new session for the fork. Try again.',
+      textKey: 'components.native-chat.droidHost.forkFailed'
+    })
   })
 
   it('fails when Droid names no session at all', async () => {
@@ -195,9 +197,34 @@ describe('Droid rewind', () => {
       failedDeleteCount: 0
     }))
 
-    await expect(rewind(run)).rejects.toThrow(
-      'Droid rewound the conversation but did not return a new session. Open Session History to find it.'
-    )
+    await expect(rewind(run)).rejects.toMatchObject({
+      message:
+        'Droid rewound the conversation but did not return a new session. Open Session History to find it.',
+      textKey: 'components.native-chat.droidHost.rewindNoSession'
+    })
+  })
+
+  it('keys an unstarted rewind without asking Droid to touch files', async () => {
+    const request = vi.fn()
+
+    await expect(
+      rewindDroidSession({ request, droidSessionId: undefined }, RECORDED_MESSAGE)
+    ).rejects.toMatchObject({
+      message: 'Droid did not start for this chat. Send a message and try again.',
+      textKey: 'components.native-chat.droidHost.notStarted'
+    })
+    expect(request).not.toHaveBeenCalled()
+  })
+
+  it('keys unreadable rewind file information without executing the rewind', async () => {
+    const { connection, run } = await startedSession()
+    connection.replies.set('droid.get_rewind_info', () => null)
+
+    await expect(rewind(run)).rejects.toMatchObject({
+      message: 'Droid could not say which files the rewind changes. Nothing was rewound.',
+      textKey: 'components.native-chat.droidHost.rewindUnknownFiles'
+    })
+    expect(calls(connection, 'droid.execute_rewind')).toEqual([])
   })
 
   it('executes nothing when Droid cannot say what the rewind touches', async () => {

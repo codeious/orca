@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { normalizeAgentSessionConversationName } from '../../shared/agent-session-conversation-name'
 import type { DroidHostCommand, DroidHostCommandResult } from '../../shared/droid-host-command'
 import { forkDroidSession, rewindDroidSession } from './droid-fork-and-rewind'
+import { droidHostText, DroidHostTextError } from './droid-host-text'
 import { runDroidMcp } from './droid-mcp'
 import { isDroidMethodNotFound } from './droid-missing-method'
 import type { DroidSession } from './droid-session'
@@ -16,14 +17,14 @@ const compactedSchema = z.looseObject({
   removedCount: z.number().int().nonnegative().optional()
 })
 
-function compressedWords(removedCount: number | null, moved: boolean): string {
+function compressedWords(removedCount: number | null, moved: boolean) {
   if (moved) {
-    return 'Conversation compressed into a new Droid session. The earlier session stays in Session History.'
+    return droidHostText('compressMoved')
   }
   if (!removedCount) {
-    return 'Conversation compressed to free up context.'
+    return droidHostText('compressDone')
   }
-  return `Conversation compressed. ${removedCount} earlier ${removedCount === 1 ? 'message was' : 'messages were'} summarized to free up context.`
+  return droidHostText(removedCount === 1 ? 'compressOne' : 'compressMany', { removedCount })
 }
 
 async function compress(
@@ -45,7 +46,7 @@ async function compress(
     {
       type: 'item.update',
       item: `compressed:${Date.now()}`,
-      body: { kind: 'status', text: compressedWords(removedCount, newSessionId !== null) }
+      body: { kind: 'status', ...compressedWords(removedCount, newSessionId !== null) }
     }
   ])
   // No turn ends after a compaction, so nothing else moves the ring off its pre-compaction figure.
@@ -80,13 +81,13 @@ async function rename(
 ): Promise<DroidHostCommandResult> {
   const title = normalizeAgentSessionConversationName(requested)
   if (title === null) {
-    throw new Error('Give the chat a title to rename it to.')
+    throw new DroidHostTextError('renameEmpty')
   }
   const answer = await session.request('droid.rename_session', { title })
   // An answer with no verdict at all is taken as the rename; any verdict that is not `true` is a refusal.
   const verdict = renamedSchema.safeParse(answer).data?.success
   if (verdict !== undefined && verdict !== true) {
-    throw new Error('Droid did not rename the conversation.')
+    throw new DroidHostTextError('renameRefused')
   }
   return { name: 'rename', title }
 }

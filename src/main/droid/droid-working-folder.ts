@@ -5,6 +5,7 @@ import {
   resolveRuntimePath
 } from '../../shared/cross-platform-path'
 import type { DroidHostCommandResult } from '../../shared/droid-host-command'
+import { DroidHostTextError } from './droid-host-text'
 import type { DroidSession } from './droid-session'
 
 const movedSchema = z.looseObject({ resolvedPath: z.string().min(1).optional() })
@@ -32,7 +33,7 @@ export async function changeDroidWorkingFolder(
 ): Promise<DroidHostCommandResult> {
   const requested = typed.trim()
   if (requested === '') {
-    throw new Error('Give a folder to change to.')
+    throw new DroidHostTextError('cwdEmpty')
   }
   const { folder, realpath } = session.workspace
   const named = resolveRuntimePath(folder, requested)
@@ -42,7 +43,7 @@ export async function changeDroidWorkingFolder(
   ])
   const target = real ?? named
   if (!isPathInsideOrEqual(root, target)) {
-    throw new Error(`Choose a folder inside this workspace (${folder}). ${target} is outside it.`)
+    throw new DroidHostTextError('cwdOutside', { folder, target })
   }
   const answer = await session.request('droid.change_working_directory', {
     workingDirectory: target

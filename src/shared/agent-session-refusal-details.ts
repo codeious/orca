@@ -7,6 +7,7 @@
 // older host, and the reader falls back to what it does for the code.
 
 import type { AgentSessionAccountKind } from './agent-session-availability'
+import { readAgentSessionHostText, type AgentSessionHostText } from './agent-session-host-text'
 import type { AgentJournalResolution } from './agent-session-journal-types'
 import {
   readAgentSessionArgumentProblem,
@@ -193,7 +194,9 @@ type AgentSessionRefusalFactsByCode = {
 
 /** A durably failed create says whether anything still runs for it, whichever code it failed
  *  with: `exited` proves nothing does, so a new operation cannot collide with this one. */
-type AgentSessionRefusalCommonFacts = { ownerVerdict?: AgentSessionOwnerVerdict }
+type AgentSessionRefusalCommonFacts = AgentSessionHostText & {
+  ownerVerdict?: AgentSessionOwnerVerdict
+}
 
 export type AgentSessionRefusalFacts<C extends AgentSessionWireRefusalCode> =
   AgentSessionRefusalFactsByCode[C] & AgentSessionRefusalCommonFacts
@@ -308,6 +311,7 @@ export function readAgentSessionRefusalDetails<C extends AgentSessionWireRefusal
       ? readAgentSessionArgumentProblem(value.argumentProblem)
       : undefined
   const read = {
+    ...readAgentSessionHostText(value),
     ...(isAgentSessionRefusalReason(code, value.reason) ? { reason: value.reason } : {}),
     ...facts,
     ...(code === 'structured_agent_session_unsupported' && value.reason === 'versionUnsupported'

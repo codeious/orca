@@ -21,6 +21,7 @@ import type { AgentSessionProviderHandle } from './agent-session-provider-handle
 import type { NativeChatBlock, NativeChatRole } from './native-chat-types'
 import type { AgentMessageSource } from './agent-session-message-source'
 import type { AgentJournalSpecHandoff } from './agent-session-journal-spec-handoff'
+import type { AgentSessionHostText } from './agent-session-host-text'
 
 export { type AgentType }
 
@@ -326,7 +327,7 @@ export type AgentJournalThreadGoalState =
   | { state: 'set'; goal: AgentJournalThreadGoal }
   | { state: 'cleared' }
 
-type AgentJournalStatusItemFields = {
+type AgentJournalStatusItemFields = AgentSessionHostText & {
   kind: 'status'
   /** Optional display hints; unknown values retain the ordinary text fallback. */
   presentation?: string
@@ -358,12 +359,10 @@ export type AgentJournalPlainStatusItem = AgentJournalStatusItemFields & {
   failure?: undefined
 }
 
-export type AgentJournalStatusItem =
-  | AgentJournalPlainStatusItem
-  | (AgentJournalStatusItemFields &
-      /** A row that reports a failure: what failed, typed, beside the sentence older clients print,
-       *  both from `agentSessionFailureWords`. Absent on rows from older hosts. */
-      AgentSessionFailureRowWords)
+/** A row that reports a failure: what failed, typed, beside the sentence older clients print,
+ *  both from `agentSessionFailureWords`. Absent on rows from older hosts. */
+export type AgentJournalStatusItem = AgentJournalStatusItemFields &
+  (AgentJournalPlainStatusItem | AgentSessionFailureRowWords)
 
 /** The durable record of one root turn. `running` exposes cancellation while
  *  the provider can still accept it; the item is revised to a terminal state,

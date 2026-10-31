@@ -355,6 +355,8 @@ describe('Droid Spec handoff', () => {
     await vi.waitFor(async () => {
       expect(await handoffRow(h)).toMatchObject([
         {
+          text: 'Continuing in a new Droid session',
+          textKey: 'components.native-chat.droidHost.specHandoff',
           specHandoff: {
             newSessionId: '00000000-0000-4000-8000-000000000007',
             initialPrompt: expect.stringMatching(/^Implement the following plan:/),

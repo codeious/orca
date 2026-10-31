@@ -5,6 +5,7 @@ import type {
   AgentSessionExecutionLocation
 } from '../../../shared/agent-session-record'
 import type { StructuredAgentSessionAdapter } from './structured-agent-session-adapter'
+import { DroidHostTextError } from '../../droid/droid-host-text'
 import { readNativeSessionOptions } from './structured-agent-session-option-restoration'
 import type {
   StructuredAgentRegistration,
@@ -113,7 +114,7 @@ export class StructuredAgentSessionAdapterRouter implements StructuredAgentSessi
   droidCommand: NonNullable<StructuredAgentSessionAdapter['droidCommand']> = (input) => {
     const command = this.owner(input.sessionId).droidCommand
     if (!command) {
-      return Promise.reject(new Error('Droid commands are unavailable for this chat.'))
+      return Promise.reject(new DroidHostTextError('commandsUnavailable'))
     }
     return command(input)
   }

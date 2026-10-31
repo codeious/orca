@@ -1,10 +1,14 @@
 import { translate } from '@/i18n/i18n'
 import { isStoppedBeforeStartBlock } from '../../../../shared/native-chat-stopped-before-start'
 import type { NativeChatBlock } from '../../../../shared/native-chat-types'
+import { agentSessionHostText } from './agent-session-host-text'
 
-/** The row after a send a Stop took back, in this client's words, drawn as any other status line. */
+/** Host-authored rows in this client's words, without changing how the status line is drawn. */
 export function nativeChatBlocksInOwnWords(blocks: NativeChatBlock[]): NativeChatBlock[] {
-  return blocks.some(isStoppedBeforeStartBlock)
+  return blocks.some(
+    (block) =>
+      isStoppedBeforeStartBlock(block) || (block.type === 'text' && block.textKey !== undefined)
+  )
     ? blocks.map((block) =>
         isStoppedBeforeStartBlock(block)
           ? {
@@ -14,7 +18,9 @@ export function nativeChatBlocksInOwnWords(blocks: NativeChatBlock[]): NativeCha
                 'Stopped manually'
               )
             }
-          : block
+          : block.type === 'text' && block.textKey !== undefined
+            ? { ...block, text: agentSessionHostText(block.text, block) }
+            : block
       )
     : blocks
 }

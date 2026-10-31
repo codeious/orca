@@ -63,6 +63,24 @@ describe('StructuredAgentSessionAdapterRouter.releaseAcquisition', () => {
   })
 })
 
+describe('StructuredAgentSessionAdapterRouter.droidCommand', () => {
+  it('keys the unavailable command while preserving its English for older clients', async () => {
+    const claude = adapterOf(vi.fn(async () => true))
+    const router = claudeAndCodexRouter(
+      { claude, codex: adapterOf(vi.fn(async () => false)) },
+      async () => {}
+    )
+    await router.acquire({ identity: claudeIdentity('session-1'), fence: 1, spawnToken: 'spawn-1' })
+
+    await expect(
+      router.droidCommand({ sessionId: 'session-1', fence: 1, command: { name: 'context' } })
+    ).rejects.toMatchObject({
+      message: 'Droid commands are unavailable for this chat.',
+      textKey: 'components.native-chat.droidHost.commandsUnavailable'
+    })
+  })
+})
+
 describe('StructuredAgentSessionAdapterRouter.readAcquisitionOptions', () => {
   it('keeps the existing live read for providers without acquisition options', async () => {
     const claude = adapterOf(vi.fn(async () => true))

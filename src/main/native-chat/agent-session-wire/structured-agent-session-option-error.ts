@@ -1,5 +1,13 @@
+import {
+  readAgentSessionHostText,
+  type AgentSessionHostText
+} from '../../../shared/agent-session-host-text'
+
 /** Option validation failed before the provider session was mutated. */
-export class AgentSessionOptionRejectedError extends Error {
+export class AgentSessionOptionRejectedError extends Error implements AgentSessionHostText {
+  declare readonly textKey?: string
+  declare readonly textParams?: Record<string, string | number>
+
   constructor(
     cause: unknown,
     /** `providerStarting`: nothing is wrong with the value; the session cannot take it yet.
@@ -11,6 +19,7 @@ export class AgentSessionOptionRejectedError extends Error {
   ) {
     super(cause instanceof Error ? cause.message : String(cause), { cause })
     this.name = 'AgentSessionOptionRejectedError'
+    Object.assign(this, readAgentSessionHostText(cause))
   }
 }
 

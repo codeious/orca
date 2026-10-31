@@ -30,6 +30,73 @@ class LineageError extends Error {
 }
 
 describe('mapRuntimeError', () => {
+  it('carries optional host text beside the unchanged runtime error message', () => {
+    const message = 'Setting refused.'
+    const error = Object.assign(new Error(message), {
+      textKey: 'future.host.settingRefused',
+      textParams: { model: 'custom-model', count: 2 }
+    })
+    expect(mapRuntimeError('r', { runtimeId: 'host' }, error).error).toEqual({
+      code: 'runtime_error',
+      message,
+      data: {
+        textKey: 'future.host.settingRefused',
+        textParams: { model: 'custom-model', count: 2 }
+      }
+    })
+    expect(mapRuntimeError('r', { runtimeId: 'host' }, new Error(message)).error).toEqual({
+      code: 'runtime_error',
+      message
+    })
+  })
+
+  it('drops malformed host text and bounds primitive parameters without changing legacy errors', () => {
+    const message = 'Setting refused.'
+    for (const metadata of [
+      { textKey: 3 },
+      { textKey: '' },
+      { textKey: ' ' },
+      { textKey: 'k'.repeat(257) },
+      { textParams: { count: 1 } }
+    ]) {
+      expect(
+        mapRuntimeError('r', { runtimeId: 'host' }, Object.assign(new Error(message), metadata))
+          .error
+      ).toEqual({ code: 'runtime_error', message })
+    }
+    const error = Object.assign(new Error(message), {
+      textKey: 'future.host.settingRefused',
+      textParams: {
+        model: 'custom-model',
+        count: 2,
+        nested: {},
+        array: [],
+        enabled: true,
+        infinite: Infinity,
+        nan: Number.NaN,
+        long: 'x'.repeat(4097),
+        ['x'.repeat(129)]: 'bad'
+      }
+    })
+    expect(mapRuntimeError('r', { runtimeId: 'host' }, error).error.data).toEqual({
+      textKey: 'future.host.settingRefused',
+      textParams: { model: 'custom-model', count: 2 }
+    })
+    expect(
+      mapRuntimeError(
+        'r',
+        { runtimeId: 'host' },
+        Object.assign(new Error(message), {
+          textKey: 'future.host.settingRefused',
+          textParams: Object.fromEntries(Array.from({ length: 40 }, (_, i) => [`p${i}`, i]))
+        })
+      ).error.data
+    ).toEqual({
+      textKey: 'future.host.settingRefused',
+      textParams: Object.fromEntries(Array.from({ length: 32 }, (_, i) => [`p${i}`, i]))
+    })
+  })
+
   it('names a deferred fork with its own code and reason', () => {
     expect(
       mapRuntimeError(

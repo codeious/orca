@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import type { DroidHostCopyKey } from '../../shared/droid-host-copy'
+import { DroidHostTextError } from './droid-host-text'
 
 // The sign-in link goes to the opener and no further: it is never stored, logged, journaled or
 // answered, and Droid's `message` (which may repeat it) is never read.
@@ -27,7 +29,7 @@ type DroidMcpSignInDeps = {
 }
 
 /** A sign-in that ended before Droid answered it; its words never carry Droid's text. */
-export class DroidMcpSignInStopped extends Error {}
+export class DroidMcpSignInStopped extends DroidHostTextError {}
 
 export class DroidMcpSignIn {
   private readonly waiting = new Set<Waiting>()
@@ -100,25 +102,22 @@ export class DroidMcpSignIn {
     this.deps.warn('Droid asked to sign in to an MCP server and the link could not be opened', {
       serverName
     })
-    this.stopWaiting(
-      serverName,
-      `Orca could not open the sign-in link for ${serverName} on this host.`
-    )
+    this.stopWaiting(serverName, 'mcpLinkNotOpened')
   }
 
   private finish({ serverName, outcome }: z.infer<typeof completedSchema>): void {
     this.opened.delete(serverName)
     if (outcome === 'cancelled') {
-      this.stopWaiting(serverName, `Sign-in to ${serverName} was cancelled.`)
+      this.stopWaiting(serverName, 'mcpSignInCancelled')
     } else if (outcome !== 'success') {
-      this.stopWaiting(serverName, `Sign-in to ${serverName} did not finish.`)
+      this.stopWaiting(serverName, 'mcpSignInIncomplete')
     }
   }
 
-  private stopWaiting(serverName: string, sentence: string): void {
+  private stopWaiting(serverName: string, key: DroidHostCopyKey): void {
     for (const entry of this.waiting) {
       if (entry.serverName === serverName) {
-        entry.stop(new DroidMcpSignInStopped(sentence))
+        entry.stop(new DroidMcpSignInStopped(key, { serverName }))
       }
     }
   }

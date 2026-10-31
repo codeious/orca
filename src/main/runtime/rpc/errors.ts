@@ -8,6 +8,7 @@ import {
   type AgentSessionRefusalError
 } from '../../../shared/agent-session-wire-refusals'
 import type { RpcEnvelopeMeta, RpcFailure, RpcSuccess } from './core'
+import { readAgentSessionHostText } from '../../../shared/agent-session-host-text'
 import { ORCHESTRATION_SESSION_CALLER_ERROR_CODES } from '../../../shared/orchestration-session-caller-codes'
 import { computerUseErrorRecoveryData } from '../../../shared/computer-use-error-recovery'
 import { COMPUTER_ERROR_CODES } from '../../../shared/runtime-types'
@@ -248,7 +249,8 @@ export function mapRuntimeError(id: string, meta: RpcEnvelopeMeta, error: unknow
   if (message === 'invalid_terminal_send') {
     return errorResponse(id, meta, 'invalid_argument', 'Missing terminal send payload')
   }
-  return errorResponse(id, meta, 'runtime_error', message)
+  const hostText = readAgentSessionHostText(error)
+  return errorResponse(id, meta, 'runtime_error', message, hostText.textKey ? hostText : undefined)
 }
 
 /**

@@ -255,6 +255,9 @@ const KnownItemBody = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('status'),
     text: z.string(),
+    // Optional annotations must not make a readable journal fail admission.
+    textKey: z.unknown().optional(),
+    textParams: z.unknown().optional(),
     presentation: z.string().optional(),
     contextClear: z
       .object({

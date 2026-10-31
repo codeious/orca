@@ -9,6 +9,8 @@ import {
   type FakeConnection
 } from './droid-adapter-rig.test-support'
 import { readDroidExchanges, replayExchange } from './droid-recording.test-support'
+import { DroidHostTextError } from './droid-host-text'
+import { DroidMcpSignInStopped } from './droid-mcp-sign-in'
 import {
   DroidConnectionClosedError,
   DroidRequestTimeoutError,
@@ -145,10 +147,14 @@ describe.each([
     const failure = await run(SIGN_IN).catch((error: unknown) => error)
 
     expect(open).toHaveBeenCalledOnce()
-    expect(failure).toEqual(
-      new Error('Orca could not open the sign-in link for remote on this host.')
-    )
-    expect(leaks(await whatTheHostWrote(h, logger, String(failure)))).toBe(false)
+    expect(failure).toBeInstanceOf(DroidMcpSignInStopped)
+    expect(failure).toBeInstanceOf(DroidHostTextError)
+    expect(failure).toMatchObject({
+      message: 'Orca could not open the sign-in link for remote on this host.',
+      textKey: 'components.native-chat.droidHost.mcpLinkNotOpened',
+      textParams: { serverName: 'remote' }
+    })
+    expect(leaks(await whatTheHostWrote(h, logger, failure))).toBe(false)
   })
 
   it('keeps a link out of the logs when the open throws with it in the message', async () => {
@@ -162,10 +168,12 @@ describe.each([
 
     const failure = await run(SIGN_IN).catch((error: unknown) => error)
 
-    expect(failure).toEqual(
-      new Error('Orca could not open the sign-in link for remote on this host.')
-    )
-    expect(leaks(await whatTheHostWrote(h, logger, String(failure)))).toBe(false)
+    expect(failure).toMatchObject({
+      message: 'Orca could not open the sign-in link for remote on this host.',
+      textKey: 'components.native-chat.droidHost.mcpLinkNotOpened',
+      textParams: { serverName: 'remote' }
+    })
+    expect(leaks(await whatTheHostWrote(h, logger, failure))).toBe(false)
   })
 
   it('opens the link of a challenge Droid raises on its own, and only once for one state', async () => {
@@ -241,11 +249,12 @@ describe('Droid /mcp sign-in refusals', () => {
       (error: unknown) => error
     )
 
-    expect(failure).toEqual(
-      new Error(
-        'Droid could not sign in to parmcp-local. Sign-in works only for remote (HTTP or SSE) servers that ask for it.'
-      )
-    )
+    expect(failure).toMatchObject({
+      message:
+        'Droid could not sign in to parmcp-local. Sign-in works only for remote (HTTP or SSE) servers that ask for it.',
+      textKey: 'components.native-chat.droidHost.mcpSignInStdio',
+      textParams: { serverName: 'parmcp-local' }
+    })
     expect(open).not.toHaveBeenCalled()
     expect(connection.requests.map(({ method }) => method)).not.toContain(SUBMIT_CODE)
     expect(leaks(await whatTheHostWrote(h, logger, String(failure)))).toBe(false)
@@ -261,6 +270,12 @@ describe('Droid /mcp sign-in refusals', () => {
 
     expect(String(failure).includes('auth.example.invalid')).toBe(false)
     expect(failure).toBeInstanceOf(Error)
+    expect(failure).toMatchObject({
+      message: 'Droid could not sign in to remote.',
+      textKey: 'components.native-chat.droidHost.mcpSignInFailed',
+      textParams: { serverName: 'remote' }
+    })
+    expect(leaks(JSON.stringify(failure))).toBe(false)
   })
 
   it('has no opener on a host that cannot open a link, and says so without the link', async () => {
@@ -272,23 +287,31 @@ describe('Droid /mcp sign-in refusals', () => {
 
     const failure = await run(SIGN_IN).catch((error: unknown) => error)
 
-    expect(failure).toEqual(
-      new Error('Orca could not open the sign-in link for remote on this host.')
-    )
-    expect(leaks(await whatTheHostWrote(h, logger, String(failure)))).toBe(false)
+    expect(failure).toMatchObject({
+      message: 'Orca could not open the sign-in link for remote on this host.',
+      textKey: 'components.native-chat.droidHost.mcpLinkNotOpened',
+      textParams: { serverName: 'remote' }
+    })
+    expect(leaks(await whatTheHostWrote(h, logger, failure))).toBe(false)
   })
 
   it.each([
-    ['cancelled', 'Sign-in to remote was cancelled.'],
-    ['failed', 'Sign-in to remote did not finish.']
-  ] as const)('words a %s sign-in from the outcome alone', async (outcome, words) => {
+    ['cancelled', 'Sign-in to remote was cancelled.', 'mcpSignInCancelled'],
+    ['failed', 'Sign-in to remote did not finish.', 'mcpSignInIncomplete']
+  ] as const)('words a %s sign-in from the outcome alone', async (outcome, words, key) => {
     const { h, connection, run, logger } = await sessionIn()
     raisesChallenge(connection, outcome)
 
     const failure = await run(SIGN_IN).catch((error: unknown) => error)
 
-    expect(failure).toEqual(new Error(words))
-    expect(leaks(await whatTheHostWrote(h, logger, String(failure)))).toBe(false)
+    expect(failure).toBeInstanceOf(DroidMcpSignInStopped)
+    expect(failure).toBeInstanceOf(DroidHostTextError)
+    expect(failure).toMatchObject({
+      message: words,
+      textKey: `components.native-chat.droidHost.${key}`,
+      textParams: { serverName: 'remote' }
+    })
+    expect(leaks(await whatTheHostWrote(h, logger, failure))).toBe(false)
   })
 
   it('says the sign-in is still waiting when Droid does not answer in time', async () => {
@@ -297,9 +320,26 @@ describe('Droid /mcp sign-in refusals', () => {
       throw new DroidRequestTimeoutError(AUTHENTICATE)
     })
 
-    await expect(run(SIGN_IN)).rejects.toThrow(
-      'Sign-in to remote has not finished. Finish it in your browser, then run /mcp to check.'
-    )
+    await expect(run(SIGN_IN)).rejects.toMatchObject({
+      message:
+        'Sign-in to remote has not finished. Finish it in your browser, then run /mcp to check.',
+      textKey: 'components.native-chat.droidHost.mcpSignInPending',
+      textParams: { serverName: 'remote' }
+    })
+  })
+
+  it('keys a sign-in Droid refused without returning its answer', async () => {
+    const { connection, run } = await sessionIn()
+    connection.replies.set(AUTHENTICATE, () => ({ success: false, message: SIGN_IN_URL }))
+
+    const failure = await run(SIGN_IN).catch((error: unknown) => error)
+
+    expect(failure).toMatchObject({
+      message: 'Droid did not sign in to remote.',
+      textKey: 'components.native-chat.droidHost.mcpSignInRefused',
+      textParams: { serverName: 'remote' }
+    })
+    expect(leaks(JSON.stringify(failure))).toBe(false)
   })
 
   it('does not tell the person to finish in the browser when Droid itself went away', async () => {
@@ -320,7 +360,11 @@ describe('Droid /mcp sign-in refusals', () => {
       throw new DroidRpcError(-32603, 'boom')
     })
 
-    await expect(run(SIGN_IN)).rejects.toThrow(new Error('Droid could not sign in to remote.'))
+    await expect(run(SIGN_IN)).rejects.toMatchObject({
+      message: 'Droid could not sign in to remote.',
+      textKey: 'components.native-chat.droidHost.mcpSignInFailed',
+      textParams: { serverName: 'remote' }
+    })
   })
 
   it('opens the same state again for a later sign-in, so a closed tab can be reopened', async () => {
