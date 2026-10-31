@@ -97,6 +97,13 @@ export const STRUCTURED_CALLS: {
     hostMethod: 'changeThreadGoal',
     result: { ok: true, replayed: false }
   },
+  // Clients call this only on a host advertising `agent-session.droid-command.v1`; an older host
+  // answers `method_not_found`.
+  {
+    method: 'agentSession.droidCommand',
+    hostMethod: 'droidCommand',
+    result: { name: 'context', report: null }
+  },
   {
     method: 'agentSession.handoffStatus',
     hostMethod: 'handoffStatus',

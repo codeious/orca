@@ -83,6 +83,7 @@ export function structuredHostStub(
     respondToPrompt: vi.fn(async () => ({ ok: true, replayed: false })),
     setOption: vi.fn(async () => ({ ok: true, replayed: false })),
     changeThreadGoal: vi.fn(async () => ({ ok: true, replayed: false })),
+    droidCommand: vi.fn(async () => ({ name: 'context', report: null })),
     handoffStatus: vi.fn(async () => ({ owner: 'native' })),
     readOptions: vi.fn(async () => ({ models: [], current: { model: 'gpt-live' } })),
     modelCatalog: vi.fn(() => ({ origin: 'unknown' as const })),
