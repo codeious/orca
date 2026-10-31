@@ -1,0 +1,23 @@
+tests/e2e/cross-version-wire/structured-agent-session-surface-calls.ts
+  s_2e12d8931abbd5::t_cd6ab6e28bd38a 100-106
+tests/e2e/cross-version-wire/structured-agent-session-surface-manifest.ts
+  s_2e12d8931abbd5::t_0189ee35fdf68f 179-180
+tests/e2e/cross-version-wire/structured-agent-session-host-fixture.ts
+  s_2e12d8931abbd5::t_e8670cc1f886ee 86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ebf22824e99257dd7d8afd454f936d60b79b61f6",
+  "prompts": {},
+  "sessions": {
+    "s_2e12d8931abbd5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "0693bdff-ae70-4405-94b4-077856a32972",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
