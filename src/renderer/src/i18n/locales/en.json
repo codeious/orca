@@ -12708,7 +12708,7 @@
           "resultChat": "New Droid sessions open in Chat UI, whatever the Chat UI switch says.",
           "resultFollowOn": "New Droid sessions open in Chat UI, because the Chat UI switch in Experimental is on.",
           "resultFollowOff": "New Droid sessions open in the terminal, because the Chat UI switch in Experimental is off.",
-          "fallbackNote": "Droid always opens in the terminal on WSL and SSH workspaces, and when it is older than {{value0}}."
+          "fallbackNote": "Droid supports Chat UI on SSH hosts served by orcad, including recipe VMs. It opens in the terminal on WSL, on SSH hosts without orcad, or when it is older than {{value0}}."
         }
       },
       "right": {

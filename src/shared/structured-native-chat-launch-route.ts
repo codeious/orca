@@ -63,9 +63,6 @@ export type StructuredNativeChatSupportInput = {
   /** The agents the host listed through `agentSession.agents`. Absent: none learned, so only
    *  Claude and Codex, which every structured host runs, can be offered. */
   hostStructuredAgents?: readonly string[]
-  /** For a `runtime:` host: `true` when it is the managed Orca server of an SSH host, `'unknown'`
-   *  when the environment catalog cannot say. Absent: a paired server that is not an SSH host. */
-  sshOwnedRuntime?: true | 'unknown'
 }
 
 /** The Chat UI switch alone. A launch decision reads `resolveNativeChatLaunchChoice` instead. */
@@ -114,15 +111,9 @@ function clientChoosesStructuredLaunches(capabilities: readonly string[] | undef
 export function resolveStructuredNativeChatSupport(
   input: StructuredNativeChatSupportInput
 ): StructuredNativeChatSupport {
-  // A paired Orca server runs structured sessions itself and answers for them below. An SSH host
-  // has no Orca runtime of its own to run one.
+  // Paired servers, including orcad SSH hosts, own structured execution; relay SSH hosts do not.
   const host = parseExecutionHostId(input.executionHostId)
   if (host?.kind !== 'local' && host?.kind !== 'runtime') {
-    return { supported: false, blocker: 'remote-execution-host' }
-  }
-  // Droid always opens in the terminal on an SSH host, which orcad turns into a `runtime:` host. A
-  // server whose owner is not known yet gets no benefit of the doubt.
-  if (host.kind === 'runtime' && input.agent === 'droid' && input.sshOwnedRuntime !== undefined) {
     return { supported: false, blocker: 'remote-execution-host' }
   }
   if (input.reusesTerminal === true) {

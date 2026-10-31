@@ -139,9 +139,8 @@ describe('agents beyond Claude and Codex', () => {
   })
 })
 
-// Droid always opens in the terminal on an SSH host. A managed Orca server on that host is a
-// `runtime:` host, which this route otherwise admits as a paired server.
-describe('Droid on a runtime host that is an SSH host', () => {
+// orcad SSH hosts use the same negotiated structured-session support as other paired servers.
+describe('Droid on a paired runtime host, including orcad SSH', () => {
   const RUNTIME_CAPABILITIES = [
     STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
     STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY,
@@ -160,32 +159,45 @@ describe('Droid on a runtime host that is an SSH host', () => {
       ...overrides
     })
 
-  it('is offered by a paired server that is not an SSH host', () => {
+  it('is offered when host and client negotiate structured launches', () => {
     expect(runtimeHost()).toEqual({ supported: true })
   })
 
-  it('is refused on a server managed for an SSH host', () => {
-    expect(runtimeHost({ sshOwnedRuntime: true })).toEqual({
+  it.each(['claude', 'codex', 'pi', 'grok', 'droid'] as const)(
+    'keeps unknown runtime capabilities closed for %s',
+    (agent) => {
+      expect(runtimeHost({ agent, hostStructuredAgents: [agent], hostCapabilities: null })).toEqual(
+        { supported: false, blocker: 'runtime-capability-unknown' }
+      )
+    }
+  )
+
+  it('keeps Droid on a relay SSH host or WSL in the terminal', () => {
+    expect(runtimeHost({ executionHostId: 'ssh:host-a' })).toEqual({
       supported: false,
       blocker: 'remote-execution-host'
     })
+    expect(
+      runtimeHost({
+        projectRuntime: {
+          status: 'resolved',
+          runtime: {
+            kind: 'wsl',
+            hostPlatform: 'wsl',
+            projectId: 'repo-1',
+            distro: 'Ubuntu',
+            reason: 'project-override',
+            cacheKey: 'wsl'
+          }
+        }
+      })
+    ).toEqual({ supported: false, blocker: 'project-runtime' })
   })
 
-  it('is refused while it is unknown whether the server is an SSH host', () => {
-    expect(runtimeHost({ sshOwnedRuntime: 'unknown' })).toEqual({
-      supported: false,
-      blocker: 'remote-execution-host'
-    })
-  })
-
-  it.each([true, 'unknown'] as const)(
-    'leaves Claude, Codex and pi offered when the runtime is %s as an SSH host',
-    (sshOwnedRuntime) => {
-      for (const agent of ['claude', 'codex', 'pi'] as const) {
-        expect(runtimeHost({ agent, hostStructuredAgents: [agent], sshOwnedRuntime })).toEqual({
-          supported: true
-        })
-      }
+  it.each(['claude', 'codex', 'pi', 'grok'] as const)(
+    'leaves %s offered on a negotiated runtime host',
+    (agent) => {
+      expect(runtimeHost({ agent, hostStructuredAgents: [agent] })).toEqual({ supported: true })
     }
   )
 
@@ -194,8 +206,7 @@ describe('Droid on a runtime host that is an SSH host', () => {
       support({
         agent: 'droid',
         hostCapabilities: RUNTIME_CAPABILITIES,
-        hostStructuredAgents: ['droid'],
-        sshOwnedRuntime: true
+        hostStructuredAgents: ['droid']
       })
     ).toEqual({ supported: true })
   })

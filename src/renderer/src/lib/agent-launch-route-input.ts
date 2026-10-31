@@ -5,10 +5,7 @@ import {
 } from '../../../shared/execution-host'
 import type { AppState } from '@/store/types'
 import { findWorktreeById } from '@/store/slices/worktree-helpers'
-import {
-  getManagedOrcadSshTargetId,
-  type ManagedOrcadEnvironmentSummary
-} from '../../../shared/managed-orcad-execution-host'
+import type { ManagedOrcadEnvironmentSummary } from '../../../shared/managed-orcad-execution-host'
 import { requestsCwdOutsideWorkspaceRootForWorkspace } from '../../../shared/terminal-startup-cwd'
 import type { TuiAgent } from '../../../shared/tui-agent'
 import { workspaceKindForWorktreeId } from '../../../shared/workspace-launch-kind'
@@ -137,25 +134,6 @@ function hostStructuredAgentsInput(
   return agents ? { hostStructuredAgents: agents.map((row) => row.agent) } : {}
 }
 
-/** Only the environment catalog says whether a paired server is an SSH host's managed Orca server;
- *  a server it has not loaded or does not list has an unknown owner. */
-function sshOwnedRuntimeInput(
-  store: AgentLaunchRouteStore,
-  executionHostId: string
-): Pick<AgentLaunchRoutingInput, 'sshOwnedRuntime'> {
-  const host = parseExecutionHostId(executionHostId)
-  if (host?.kind !== 'runtime') {
-    return {}
-  }
-  const environment = store.runtimeEnvironments?.find((row) => row.id === host.environmentId)
-  if (environment && getManagedOrcadSshTargetId(environment)) {
-    return { sshOwnedRuntime: true }
-  }
-  return environment && store.runtimeEnvironmentCatalogHydrated === true
-    ? {}
-    : { sshOwnedRuntime: 'unknown' }
-}
-
 /** The one place that gathers what a launch route decision needs; only the planner resolves on it. */
 export function buildAgentLaunchRouteInput(
   store: AgentLaunchRouteStore,
@@ -196,7 +174,6 @@ export function buildAgentLaunchRouteInput(
       resolveFolderWorkspacePath: (folderWorkspaceId) =>
         store.folderWorkspaces?.find((entry) => entry.id === folderWorkspaceId)?.folderPath
     }),
-    ...hostStructuredAgentsInput(store, executionHostId),
-    ...sshOwnedRuntimeInput(store, executionHostId)
+    ...hostStructuredAgentsInput(store, executionHostId)
   }
 }

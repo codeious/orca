@@ -62,7 +62,7 @@ export function getAgentLaunchModeResult({
 export function getAgentLaunchModeFallbackNote(): string {
   return translate(
     'auto.components.settings.agent-launch-mode-copy.fallbackNote',
-    'Droid always opens in the terminal on WSL and SSH workspaces, and when it is older than {{value0}}.',
+    'Droid supports Chat UI on SSH hosts served by orcad, including recipe VMs. It opens in the terminal on WSL, on SSH hosts without orcad, or when it is older than {{value0}}.',
     { value0: DROID_CHAT_VERSION_FLOOR }
   )
 }

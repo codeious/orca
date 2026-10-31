@@ -43,9 +43,9 @@ describe('the Droid launch mode words', () => {
     expect(getAgentLaunchModeResult({ preference, chatUiSwitchOn })).toBe(words)
   })
 
-  it('names the release from the constant the launch check uses', () => {
+  it('names orcad SSH chat support, terminal-only hosts, and the shared version floor', () => {
     expect(getAgentLaunchModeFallbackNote()).toBe(
-      `Droid always opens in the terminal on WSL and SSH workspaces, and when it is older than ${DROID_CHAT_VERSION_FLOOR}.`
+      `Droid supports Chat UI on SSH hosts served by orcad, including recipe VMs. It opens in the terminal on WSL, on SSH hosts without orcad, or when it is older than ${DROID_CHAT_VERSION_FLOOR}.`
     )
   })
 

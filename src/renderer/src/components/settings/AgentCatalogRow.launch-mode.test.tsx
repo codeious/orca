@@ -76,7 +76,7 @@ describe('a Droid row with a launch mode', () => {
 
       expect(markup).toContain(sentence)
       expect(markup).toContain(
-        `Droid always opens in the terminal on WSL and SSH workspaces, and when it is older than ${DROID_CHAT_VERSION_FLOOR}.`
+        `Droid supports Chat UI on SSH hosts served by orcad, including recipe VMs. It opens in the terminal on WSL, on SSH hosts without orcad, or when it is older than ${DROID_CHAT_VERSION_FLOOR}.`
       )
     }
   )

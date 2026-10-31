@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../shared/constants'
 import {
   STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY,
+  STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY,
   STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY
 } from '../../../shared/protocol-version'
 import type { ProjectExecutionRuntimeResolution } from '../../../shared/project-execution-runtime'
@@ -13,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   getLocalProjectExecutionRuntimeContext: vi.fn(),
   getLocalRepoProjectExecutionRuntimeContext: vi.fn(),
   readLocalRuntimeCapabilitiesOrUnknown: vi.fn(),
+  readHostStructuredAgents: vi.fn(),
   isWebClientLocation: vi.fn(() => false)
 }))
 
@@ -34,6 +36,10 @@ vi.mock('@/lib/web-client-location', () => ({
 }))
 vi.mock('@/runtime/local-runtime-capabilities', () => ({
   readLocalRuntimeCapabilitiesOrUnknown: mocks.readLocalRuntimeCapabilitiesOrUnknown
+}))
+vi.mock('@/runtime/host-structured-agents', () => ({
+  readHostStructuredAgents: mocks.readHostStructuredAgents,
+  relearnHostStructuredAgents: vi.fn().mockResolvedValue(undefined)
 }))
 // Why: the planner is the only route consumer; its settle loop is out of scope here.
 vi.mock('@/lib/structured-agent-launch-settlement', () => ({
@@ -82,6 +88,7 @@ function store(settings: Record<string, unknown> = STRUCTURED_SETTINGS): AgentLa
 
 function stageLocalStructuredHost(): void {
   vi.clearAllMocks()
+  mocks.readHostStructuredAgents.mockReturnValue(undefined)
   mocks.getExecutionHostIdForWorktree.mockReturnValue('local')
   mocks.getConnectionIdFromState.mockReturnValue(null)
   mocks.getLocalProjectExecutionRuntimeContext.mockReturnValue(undefined)
@@ -411,27 +418,30 @@ describe('buildAgentLaunchRouteInput', () => {
       }
     })
 
-    // Droid opens in the terminal on an SSH host; the managed server of one is a `runtime:` host.
-    describe('whether the server is an SSH host', () => {
+    describe('chat routing regardless of SSH ownership', () => {
+      beforeEach(() => {
+        mocks.readHostStructuredAgents.mockReturnValue([{ agent: 'droid', capabilities: {} }])
+      })
       const catalogStore = (
         runtimeEnvironments: NonNullable<AgentLaunchRouteStore['runtimeEnvironments']>,
         hydrated = true
       ): AgentLaunchRouteStore => ({
-        ...pairedStore(CURRENT_SERVER),
+        ...pairedStore([
+          ...CURRENT_SERVER,
+          STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY
+        ]),
         runtimeEnvironments,
         runtimeEnvironmentCatalogHydrated: hydrated
       })
-      const sshOwnershipOf = (appStore: AgentLaunchRouteStore) =>
-        buildAgentLaunchRouteInput(appStore, { ...args, agent: 'droid' }).sshOwnedRuntime
+      const droidRoute = (appStore: AgentLaunchRouteStore) =>
+        routeFor(appStore, { ...args, agent: 'droid' })
 
-      it('marks the managed server of an SSH host', () => {
+      it('opens Droid chat on the managed server of an SSH host', () => {
         const managed = catalogStore([
           { id: 'other' },
           { id: 'server-1', orcadDeployment: { sshTargetId: 'lima-desktop' } }
         ])
-        expect(sshOwnershipOf(managed)).toBe(true)
-        // The mark describes the host: every agent's input carries it, only Droid reads it.
-        expect(buildAgentLaunchRouteInput(managed, args).sshOwnedRuntime).toBe(true)
+        expect(droidRoute(managed)).toBe('structured-native-chat')
         expect(routeFor(managed, args)).toBe('structured-native-chat')
       })
 
@@ -439,36 +449,30 @@ describe('buildAgentLaunchRouteInput', () => {
         ['has no managed deployment', [{ id: 'server-1' }]],
         ['has a blank SSH target', [{ id: 'server-1', orcadDeployment: { sshTargetId: ' ' } }]],
         ['has a null deployment', [{ id: 'server-1', orcadDeployment: null }]]
-      ])('leaves a server that %s unmarked', (_name, environments) => {
-        const input = buildAgentLaunchRouteInput(catalogStore(environments), {
-          ...args,
-          agent: 'droid'
-        })
-        expect(input).not.toHaveProperty('sshOwnedRuntime')
+      ])('opens Droid chat when the server %s', (_name, environments) => {
+        expect(droidRoute(catalogStore(environments))).toBe('structured-native-chat')
       })
 
-      it('reads the owner as unknown until the catalog has loaded', () => {
-        expect(sshOwnershipOf(pairedStore(CURRENT_SERVER))).toBe('unknown')
-        expect(sshOwnershipOf(catalogStore([{ id: 'server-1' }], false))).toBe('unknown')
-        expect(routeFor(pairedStore(CURRENT_SERVER), args)).toBe('structured-native-chat')
+      it('opens Droid chat before the catalog has loaded', () => {
+        expect(
+          droidRoute(
+            pairedStore([
+              ...CURRENT_SERVER,
+              STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY
+            ])
+          )
+        ).toBe('structured-native-chat')
+        expect(droidRoute(catalogStore([{ id: 'server-1' }], false))).toBe('structured-native-chat')
       })
 
-      it('reads the owner as unknown for a server the loaded catalog does not list', () => {
-        expect(sshOwnershipOf(catalogStore([{ id: 'other' }]))).toBe('unknown')
-        expect(sshOwnershipOf(catalogStore([]))).toBe('unknown')
+      it('opens Droid chat when the loaded catalog does not list the server', () => {
+        expect(droidRoute(catalogStore([{ id: 'other' }]))).toBe('structured-native-chat')
+        expect(droidRoute(catalogStore([]))).toBe('structured-native-chat')
       })
 
-      it.each(['local', 'ssh:build-box'])('never marks a %s host', (hostId) => {
-        mocks.getExecutionHostIdForWorktree.mockReturnValue(hostId)
-        const managed = catalogStore([
-          { id: 'server-1', orcadDeployment: { sshTargetId: 'lima-desktop' } }
-        ])
-        expect(buildAgentLaunchRouteInput(managed, { ...args, agent: 'droid' })).not.toHaveProperty(
-          'sshOwnedRuntime'
-        )
-        expect(buildAgentLaunchRouteInput(store(), { ...args, agent: 'droid' })).not.toHaveProperty(
-          'sshOwnedRuntime'
-        )
+      it('keeps Droid on a relay SSH host in the terminal', () => {
+        mocks.getExecutionHostIdForWorktree.mockReturnValue('ssh:build-box')
+        expect(droidRoute(catalogStore([]))).toBe('terminal-tui')
       })
     })
 

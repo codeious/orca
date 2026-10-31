@@ -148,7 +148,7 @@ describe('structured launch of a host-registered agent', () => {
   })
 })
 
-// Droid always opens in the terminal on an SSH host, including one a managed Orca server serves.
+// The execution host's capabilities, not its SSH ownership, determine chat support.
 describe('Droid on a paired server', () => {
   const LISTS_DROID = {
     agents: [...LISTS_GROK.agents, { agent: 'droid', capabilities: {} }]
@@ -185,12 +185,12 @@ describe('Droid on a paired server', () => {
   })
 
   it.each(MODES)(
-    'opens the terminal under %s on the managed server of an SSH host',
+    'opens a chat under %s on the managed server of an SSH host',
     (_name, settings) => {
-      expect(routeFor(loadedCatalog(settings, SSH_OWNED), 'droid', PAIRED)).toBe('terminal-tui')
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining('droid opens terminal-tui: remote-execution-host')
+      expect(routeFor(loadedCatalog(settings, SSH_OWNED), 'droid', PAIRED)).toBe(
+        'structured-native-chat'
       )
+      expect(warn).not.toHaveBeenCalled()
     }
   )
 
@@ -203,20 +203,34 @@ describe('Droid on a paired server', () => {
     }
   )
 
-  // Ownership is unknown until the catalog has loaded; a chat must not open on a guess.
   it.each(MODES)(
-    'opens the terminal under %s before the server catalog has loaded',
+    'opens a chat under %s before the server catalog has loaded',
     (_name, settings) => {
-      expect(routeFor(store({ settings }), 'droid', PAIRED)).toBe('terminal-tui')
+      expect(routeFor(store({ settings }), 'droid', PAIRED)).toBe('structured-native-chat')
       expect(routeFor(store({ settings, runtimeEnvironments: NOT_SSH }), 'droid', PAIRED)).toBe(
-        'terminal-tui'
+        'structured-native-chat'
       )
       expect(routeFor(store({ settings: FOLLOW }), 'claude', PAIRED)).toBe('structured-native-chat')
     }
   )
 
-  it('opens the terminal when the loaded catalog does not list the server', () => {
-    expect(routeFor(loadedCatalog(FOLLOW, [{ id: 'env-2' }]), 'droid', PAIRED)).toBe('terminal-tui')
+  it('opens a chat when the loaded catalog does not list the server', () => {
+    expect(routeFor(loadedCatalog(FOLLOW, [{ id: 'env-2' }]), 'droid', PAIRED)).toBe(
+      'structured-native-chat'
+    )
+  })
+
+  it.each(MODES)('opens a chat under %s on a recipe VM', (_name, settings) => {
+    const recipeVm = [{ id: 'env-1', orcadDeployment: { sshTargetId: 'runtime-ssh-recipe-vm' } }]
+    expect(routeFor(loadedCatalog(settings, recipeVm), 'droid', PAIRED)).toBe(
+      'structured-native-chat'
+    )
+  })
+
+  it('keeps Follow with the Chat UI switch off in the terminal on SSH', () => {
+    expect(
+      routeFor(loadedCatalog({ experimentalNativeChat: false }, SSH_OWNED), 'droid', PAIRED)
+    ).toBe('terminal-tui')
   })
 
   it('keeps a local Droid chat whatever the server catalog holds', async () => {
