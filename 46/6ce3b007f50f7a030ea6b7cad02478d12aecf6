@@ -1,0 +1,129 @@
+src/main/ipc/external-http-url.ts
+  s_86e07460e87ec4::t_671f07689d7381 1-10
+src/main/runtime/orca-runtime-state-fields.ts
+  s_86e07460e87ec4::t_0dff39ce4ad4fe 4
+  s_86e07460e87ec4::t_085ac5dcc4f360 124-125
+  s_86e07460e87ec4::t_fdedf3c730c55b 282
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_86e07460e87ec4::t_0d910d875ddc04 134-136
+  s_86e07460e87ec4::t_59ec797a22004c 152
+  s_86e07460e87ec4::t_09a2bb6b005d45 137-138
+src/shared/droid-command-registry.ts
+  s_86e07460e87ec4::t_450f95e4976d87 11
+src/main/runtime/orca-runtime-get-worktree-ps.ts
+  s_86e07460e87ec4::t_df60707686fdb6 254
+src/shared/rpc-contract/structured-agent-session-droid-command-params.ts
+  s_86e07460e87ec4::t_2b3594ee77d1d7 5-8,14-39
+  s_86e07460e87ec4::t_356ccf7e3677d9 78
+src/renderer/src/components/native-chat/droid-mcp-commands.ts
+  s_86e07460e87ec4::t_47b0cdffaaea82 141-142
+  s_86e07460e87ec4::t_fd650866ca0f0b 1-15,18-140,143-215
+  s_86e07460e87ec4::t_ef4c423b67ab3c 16-17
+  s_86e07460e87ec4::t_4cdce5b724f898 216-223
+src/renderer/src/components/native-chat/use-droid-session-commands.test.tsx
+  s_86e07460e87ec4::t_0151c14328ca6d 307
+  s_86e07460e87ec4::t_a521c52e89efce 297
+src/main/startup/mcp-sign-in-opener.ts
+  s_86e07460e87ec4::t_cd2cbc7d90a350 2,5-6,8-9
+  s_86e07460e87ec4::t_138e3a4ce3801f 1,3-4,7,10-18
+src/renderer/src/components/native-chat/droid-commands.ts
+  s_86e07460e87ec4::t_1f07baf8185a07 69-73
+src/renderer/src/components/native-chat/droid-mcp-commands.test.ts
+  s_86e07460e87ec4::t_b9168408f2c598 1-248
+  s_86e07460e87ec4::t_59cd19cb91f15d 249-262
+src/main/ipc/shell.ts
+  s_86e07460e87ec4::t_fc33f50cd95c28 172-173
+  s_86e07460e87ec4::t_01daf0e67e69e9 21
+src/main/droid/droid-missing-method.ts
+  s_86e07460e87ec4::t_7f494efc4fd731 26
+src/main/runtime/structured-agent-session-runtime.ts
+  s_86e07460e87ec4::t_de05a51079e3a3 107-108
+src/main/startup/main-process-runtime-service.ts
+  s_86e07460e87ec4::t_a608eb25e25cbc 28
+  s_86e07460e87ec4::t_d129866c1f8ece 153-154
+src/main/droid/droid-mcp-sign-in.ts
+  s_86e07460e87ec4::t_0c9d0702f2de89 34
+  s_86e07460e87ec4::t_bf813b9181ad50 1-2,5-18,20-28,30-33,35-38,40-43,45-48,50-52,54-61,63-66,68-70,72-79,81-92,94-97,100-102,104-105,108,110,112-114,116-117,119-122
+  s_86e07460e87ec4::t_50410fb6e0284d 3-4,19,29,39,44,49,53,62,67,71,80,93,98-99,103,106-107,109,111,115,118
+  s_86e07460e87ec4::t_b3ef08ffe1c0d4 123-125
+src/renderer/src/i18n/locales/en.json
+  s_86e07460e87ec4::t_8f0fd409cf3739 18792-18797,18799-18805
+  s_86e07460e87ec4::t_f07547db61b091 18759
+  s_86e07460e87ec4::t_b5bf17992e866e 18798
+src/main/startup/mcp-sign-in-opener.test.ts
+  s_86e07460e87ec4::t_e6d013d010f9df 1-2,7-49
+  s_86e07460e87ec4::t_75cb2737fee42b 3-6
+src/main/droid/droid-session.ts
+  s_86e07460e87ec4::t_2f70ae3dcd914b 302
+  s_86e07460e87ec4::t_5b6109892fe402 176-180
+  s_86e07460e87ec4::t_8c48b68ada3a11 66-67
+  s_86e07460e87ec4::t_6a1222964eb2e2 97
+  s_86e07460e87ec4::t_04294f8d98d5c0 16
+src/main/droid/droid-mcp.test.ts
+  s_86e07460e87ec4::t_f3e005fc018516 1-329
+  s_86e07460e87ec4::t_03c9904dbf57e1 330-333
+src/main/droid/droid-mcp.ts
+  s_86e07460e87ec4::t_208ee7c9a62549 65,98-99,101
+  s_86e07460e87ec4::t_3e64a37da64032 1-10,12-15,19,22-40,42-52,54,56-59,66,73-75,93,96-97,102-159,161,163-168,173-174,176
+  s_86e07460e87ec4::t_4aa37669165ccb 11,17-18,41,76-77,79-80,160,162,175
+  s_86e07460e87ec4::t_3b8eca2366ea74 16,20-21,53,55,60-64,67-72,78,81-92,94-95,100,169-172
+  s_86e07460e87ec4::t_1d12e51be7fc99 177-179
+src/main/ipc/external-http-url.test.ts
+  s_86e07460e87ec4::t_5d36de9d1c66b8 1-15
+src/main/droid/droid-host-commands.ts
+  s_86e07460e87ec4::t_cb8f68d6bdd7dd 78-81
+  s_86e07460e87ec4::t_81fea64c2bbc4f 99-100
+  s_86e07460e87ec4::t_08acd51d1f11a1 5
+src/main/droid/droid-runtime-registration.ts
+  s_86e07460e87ec4::t_756313b08dda0c 51
+src/renderer/src/components/native-chat/use-native-chat-composer-catalog.test.tsx
+  s_86e07460e87ec4::t_634b6f7216be87 26
+  s_86e07460e87ec4::t_07f530515837d0 138
+src/shared/droid-host-command.ts
+  s_86e07460e87ec4::t_c9d3bf319fc5a8 10-29,40,43-54,84
+  s_86e07460e87ec4::t_fc872de0d65026 55-57,83
+src/renderer/src/components/native-chat/droid-commands.test.ts
+  s_86e07460e87ec4::t_c4d419aa6ab8b2 31,41,45
+  s_86e07460e87ec4::t_49b5f600d4185a 46-53
+src/main/runtime/orca-runtime-preserved-branch-cleanup.ts
+  s_86e07460e87ec4::t_d379155ef67360 5
+  s_86e07460e87ec4::t_741fe0e8fdbe1e 164-165
+src/main/droid/droid-mcp-sign-in.test.ts
+  s_86e07460e87ec4::t_559082a54e084e 320-323,332-336
+  s_86e07460e87ec4::t_73e95818821cc3 12-16
+  s_86e07460e87ec4::t_23d62fc759b070 37-41,46
+  s_86e07460e87ec4::t_511174ae653d97 1-11,17-36,42-45,47-175,177-186,189,191-192,197-258,260-288,290-294,340-352
+  s_86e07460e87ec4::t_4ee9e96e900032 176,187-188,190,193-196
+  s_86e07460e87ec4::t_d81e5fc031f0e3 259
+  s_86e07460e87ec4::t_1433454842f81a 289,295-319,324-331,337-339
+  s_86e07460e87ec4::t_763142759e48b0 353-360
+src/main/droid/fixtures/mcp.jsonl
+  s_86e07460e87ec4::t_8c5bdf73efcdf2 1-21
+src/renderer/src/components/native-chat/droid-child-commands.ts
+  s_86e07460e87ec4::t_b8ecfb9b35efbb 29
+  s_86e07460e87ec4::t_f01f709a8599ea 213-215
+  s_86e07460e87ec4::t_3f42a1cbcdf197 81-82
+  s_86e07460e87ec4::t_708546c7f4202b 234
+  s_86e07460e87ec4::t_836ff7c2a20d5a 52-53
+  s_86e07460e87ec4::t_f68ad8282505c3 181-182
+src/main/runtime/rpc/methods/structured-agent-session-droid-command.test.ts
+  s_86e07460e87ec4::t_6c5fe3f9456474 106-139
+  s_86e07460e87ec4::t_63a9bf9d79b795 33-52
+  s_86e07460e87ec4::t_499fe8abe7a8d8 53-56,140-157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "466ce3b007f50f7a030ea6b7cad02478d12aecf6",
+  "prompts": {},
+  "sessions": {
+    "s_86e07460e87ec4": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "63e9ede5-1b92-47ea-9139-42e059e61105",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
