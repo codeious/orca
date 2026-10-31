@@ -1,0 +1,35 @@
+src/main/droid/droid-account-home.ts
+  s_d28e882351607a::t_615b40f1378775 1-17
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_d28e882351607a::t_a6318478126ec4 135-138,188
+src/main/droid/droid-compaction-summary.test.ts
+  s_d28e882351607a::t_d45c03e754f9f8 1-100
+src/main/droid/droid-compress-summary.test.ts
+  s_d28e882351607a::t_e30bc46a8b6e3d 1-195
+src/main/droid/droid-host-commands.ts
+  s_d28e882351607a::t_03a148e07db154 11,32-35,38-41,53-59,64-68,118-124
+src/main/droid/droid-session.ts
+  s_d28e882351607a::t_0e301ed3b3a046 16-19,53-54,104,128-129
+src/renderer/src/components/native-chat/NativeChatMessageRow.tsx
+  s_d28e882351607a::t_7bbbfb713cdf0e 120-123
+src/renderer/src/components/native-chat/NativeChatNoticeRow.test.tsx
+  s_d28e882351607a::t_554ca931bda9fb 21-43
+src/renderer/src/components/native-chat/droid-host-text.test.tsx
+  s_d28e882351607a::t_7d241d7e239b48 47-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b941dd19bdf502f4be597fe806f60587a0607e4c",
+  "prompts": {},
+  "sessions": {
+    "s_d28e882351607a": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4db225e9-3a1d-4e1d-8d96-9583870516fe",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
