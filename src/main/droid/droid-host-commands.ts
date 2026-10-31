@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { DroidHostCommand, DroidHostCommandResult } from '../../shared/droid-host-command'
+import { forkDroidSession, rewindDroidSession } from './droid-fork-and-rewind'
 import type { DroidSession } from './droid-session'
 
 // A summary is a model call over the whole conversation.
@@ -61,5 +62,9 @@ export async function runDroidHostCommand(
       return { name: 'credits', factoryCredits: session.context.credits ?? null }
     case 'compress':
       return compress(session, command.instructions)
+    case 'fork':
+      return forkDroidSession(session)
+    case 'rewind':
+      return rewindDroidSession(session, command.messageId)
   }
 }

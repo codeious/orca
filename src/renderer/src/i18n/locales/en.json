@@ -18750,7 +18750,9 @@
         "exit": "Close this chat and keep it in Session History",
         "context": "Show how much context is in use",
         "cost": "Show the Factory credits this session has used",
-        "compress": "Summarize the conversation to free up context; add instructions to guide the summary"
+        "compress": "Summarize the conversation to free up context; add instructions to guide the summary",
+        "fork": "Copy this conversation into a new session you can open in its own tab",
+        "rewind-conversation": "Go back to before your latest message in a new session"
       },
       "droidChildCommands": {
         "contextUsed": "Context: {{used}} of {{window}} tokens used ({{percent}}%), {{left}} left.",
@@ -18764,7 +18766,20 @@
         "compressMoved": "Conversation compressed into a new Droid session. The earlier session stays in Session History.",
         "compressMoveFailed": "Droid compressed the conversation into a new session, but Orca could not open it. The earlier session stays in Session History.",
         "needsNewerServer": "Droid chat commands need a newer Orca server. Update the server and try again.",
-        "failed": "Could not run /{{name}}. Try again."
+        "failed": "Could not run /{{name}}. Try again.",
+        "forked": "Forked this conversation. This chat stays on the original session.",
+        "forkOpen": "Open fork",
+        "forkOpenFailed": "Droid forked the conversation, but Orca could not open the fork. This chat is still on the original session.",
+        "rewindUnavailable": "This chat cannot rewind."
+      },
+      "droidRewind": {
+        "busy": "Wait for Droid to finish before rewinding.",
+        "nothingToRewind": "There is no message to rewind to.",
+        "inFlight": "Droid is already rewinding this conversation.",
+        "confirmation": "Go back to before this message? Droid opens a new session with the conversation up to here, puts back the files it changed since, and deletes the files it created. This session stays in Session History.",
+        "rewound": "Rewound the conversation. The earlier session stays in Session History.",
+        "rewoundWithFilesLeft": "Rewound the conversation. Files Droid could not put back: {{count}}. The earlier session stays in Session History.",
+        "moveFailed": "Droid rewound the conversation into a new session, but Orca could not open it. The earlier session stays in Session History."
       },
       "droidSessionCommands": {
         "confirmClear": "Run /clear again to start a new session that keeps these settings. This session stays in Session History.",

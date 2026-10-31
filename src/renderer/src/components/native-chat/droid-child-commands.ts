@@ -1,6 +1,4 @@
-import { toast } from 'sonner'
 import { translate } from '@/i18n/i18n'
-import { switchDroidChatSession } from '@/lib/droid-chat-session-switch'
 import type { RuntimeClientTarget } from '@/runtime/runtime-rpc-client'
 import { callStructuredAgentSession } from '@/runtime/structured-agent-session-client'
 import type { DroidChildCommandName } from '../../../../shared/droid-command-registry'
@@ -11,7 +9,12 @@ import {
   type DroidHostCommandResult
 } from '../../../../shared/droid-host-command'
 import type { StructuredAgentSessionCommandOutcome } from '../../../../shared/structured-agent-session-composer'
-import { droidContextWords, droidCreditsWords } from './droid-child-command-words'
+import {
+  droidCommandFailureWords,
+  droidContextWords,
+  droidCreditsWords
+} from './droid-child-command-words'
+import { switchDroidSessionWithNotice } from './droid-session-switch-notice'
 
 type DroidChildCommandOutcome = Omit<StructuredAgentSessionCommandOutcome, 'handled'>
 
@@ -19,59 +22,75 @@ export type DroidChildCommandChat = {
   tabId: string
   sessionId: string
   target: RuntimeClientTarget
-  /** What the tab runs on now, so a session that /compress moves to keeps it. */
+  /** What the tab runs on now, so a session that /compress, /fork or a rewind opens keeps it. */
   keptSettings: () => DroidFreshSessionSettings
+  /** The chat's own rewind, which holds the journal and the confirmation /rewind-conversation needs. */
+  rewindConversation?: () => Promise<DroidChildCommandOutcome>
 }
 
 /** Chats with a /compress under way: a summary is a model call, and a second would stack on it. */
 const compressing = new Set<string>()
 
-function hostCommand(name: DroidChildCommandName, argument: string): DroidHostCommand {
-  if (name === 'context') {
-    return { name: 'context' }
+// A rewind names a row of the chat and runs from the chat's own rewind, never from here.
+type AskedCommandName = Exclude<DroidChildCommandName, 'rewind-conversation'>
+type AskedCommandResult = Exclude<DroidHostCommandResult, { name: 'rewind' }>
+
+function hostCommand(name: AskedCommandName, argument: string): DroidHostCommand {
+  switch (name) {
+    case 'context':
+      return { name: 'context' }
+    case 'cost':
+      return { name: 'credits' }
+    case 'fork':
+      return { name: 'fork' }
+    case 'compress':
+      return argument ? { name: 'compress', instructions: argument } : { name: 'compress' }
   }
-  if (name === 'cost') {
-    return { name: 'credits' }
-  }
-  return argument ? { name: 'compress', instructions: argument } : { name: 'compress' }
 }
 
 function moveToCompressedSession(chat: DroidChildCommandChat, droidSessionId: string): void {
-  const failed = (): void => {
-    toast.error(
-      translate(
-        'components.native-chat.droidChildCommands.compressMoveFailed',
-        'Droid compressed the conversation into a new session, but Orca could not open it. The earlier session stays in Session History.'
-      )
-    )
-  }
-  try {
-    const { settlement } = switchDroidChatSession({
+  void switchDroidSessionWithNotice(
+    {
       fromTabId: chat.tabId,
       placement: 'replace',
       target: { kind: 'existing', droidSessionId, settings: chat.keptSettings() }
-    })
-    void settlement.then((settled) => {
-      if (settled.kind === 'structured') {
-        // The earlier tab, and the chat row that says what happened, is closed by now.
-        toast(
-          translate(
-            'components.native-chat.droidChildCommands.compressMoved',
-            'Conversation compressed into a new Droid session. The earlier session stays in Session History.'
-          )
+    },
+    {
+      // The earlier tab, and the chat row that says what happened, is closed by now.
+      opened: () =>
+        translate(
+          'components.native-chat.droidChildCommands.compressMoved',
+          'Conversation compressed into a new Droid session. The earlier session stays in Session History.'
+        ),
+      failed: () =>
+        translate(
+          'components.native-chat.droidChildCommands.compressMoveFailed',
+          'Droid compressed the conversation into a new session, but Orca could not open it. The earlier session stays in Session History.'
         )
-      } else if (settled.kind === 'failed' && !settled.notified) {
-        failed()
-      }
-    }, failed)
-  } catch {
-    failed()
-  }
+    }
+  )
+}
+
+function openFork(chat: DroidChildCommandChat, droidSessionId: string): void {
+  void switchDroidSessionWithNotice(
+    {
+      fromTabId: chat.tabId,
+      placement: 'beside',
+      target: { kind: 'existing', droidSessionId, settings: chat.keptSettings() }
+    },
+    {
+      failed: () =>
+        translate(
+          'components.native-chat.droidChildCommands.forkOpenFailed',
+          'Droid forked the conversation, but Orca could not open the fork. This chat is still on the original session.'
+        )
+    }
+  )
 }
 
 function outcomeOf(
   chat: DroidChildCommandChat,
-  result: DroidHostCommandResult
+  result: AskedCommandResult
 ): DroidChildCommandOutcome {
   switch (result.name) {
     case 'context':
@@ -92,6 +111,22 @@ function outcomeOf(
         moveToCompressedSession(chat, result.newSessionId)
       }
       return { accepted: true, error: null }
+    case 'fork': {
+      // The tab stays on the original session; the person opens the fork when they want it.
+      const { newSessionId } = result
+      return {
+        accepted: true,
+        error: null,
+        info: translate(
+          'components.native-chat.droidChildCommands.forked',
+          'Forked this conversation. This chat stays on the original session.'
+        ),
+        infoAction: {
+          label: translate('components.native-chat.droidChildCommands.forkOpen', 'Open fork'),
+          onClick: () => openFork(chat, newSessionId)
+        }
+      }
+    }
   }
 }
 
@@ -114,7 +149,7 @@ function refusal(name: DroidChildCommandName, argument: string): string | null {
     : null
 }
 
-/** `/context`, `/cost` and `/compress`: each is asked of the Droid child and sends no message. */
+/** `/context`, `/cost`, `/compress`, `/fork` and `/rewind-conversation`: none sends a message. */
 export async function runDroidChildCommand(
   chat: DroidChildCommandChat,
   name: DroidChildCommandName,
@@ -123,6 +158,17 @@ export async function runDroidChildCommand(
   const refused = refusal(name, argument)
   if (refused) {
     return { accepted: false, error: refused }
+  }
+  if (name === 'rewind-conversation') {
+    return (
+      chat.rewindConversation?.() ?? {
+        accepted: false,
+        error: translate(
+          'components.native-chat.droidChildCommands.rewindUnavailable',
+          'This chat cannot rewind.'
+        )
+      }
+    )
   }
   if (name === 'compress') {
     if (compressing.has(chat.sessionId)) {
@@ -137,24 +183,17 @@ export async function runDroidChildCommand(
     compressing.add(chat.sessionId)
   }
   try {
-    const result = await callStructuredAgentSession<DroidHostCommandResult>(
+    const result = await callStructuredAgentSession<AskedCommandResult>(
       chat.target,
       'agentSession.droidCommand',
       { sessionId: chat.sessionId, command: hostCommand(name, argument) }
     )
     return outcomeOf(chat, result)
   } catch (error) {
-    // The host words a method Droid lacks, and an older host, itself.
-    const words = error instanceof Error ? error.message.trim() : ''
+    // The host words a method Droid lacks itself; an older server refuses a command it never heard of.
     return {
       accepted: false,
-      error:
-        words ||
-        translate(
-          'components.native-chat.droidChildCommands.failed',
-          'Could not run /{{name}}. Try again.',
-          { name }
-        )
+      error: droidCommandFailureWords(error, name, name === 'fork')
     }
   } finally {
     compressing.delete(chat.sessionId)

@@ -20,6 +20,7 @@ export type NativeChatComposerNotice = NativeChatComposerNoticeContent & {
 /** A chat's last send or command line: an error, or with `kind: 'info'` the host's answer. */
 export type NativeChatComposerLine = NativeChatComposerNoticeContent & {
   kind?: 'info'
+  action?: { label: string; onClick: () => void }
   onDismiss: () => void
 }
 

@@ -11,7 +11,7 @@ import type {
 import type { StructuredConversationCommandCauses } from './structured-conversation-command-send'
 
 type ComposerErrorLine = NativeChatComposerNoticeContent &
-  Pick<NativeChatComposerErrorDetail, 'refusedWhile' | 'kind'>
+  Pick<NativeChatComposerErrorDetail, 'refusedWhile' | 'kind' | 'action'>
 
 /** The composer's own paste and attachment notice, after the chat's notices. */
 export function useNativeChatComposerNotice(chatNotices?: readonly NativeChatComposerNotice[]): {
@@ -59,7 +59,8 @@ export function useNativeChatComposerError(causes: StructuredConversationCommand
               text,
               ...(detail?.errorText ? { errorText: detail.errorText } : {}),
               ...(detail?.refusedWhile ? { refusedWhile: detail.refusedWhile } : {}),
-              ...(detail?.kind ? { kind: detail.kind } : {})
+              ...(detail?.kind ? { kind: detail.kind } : {}),
+              ...(detail?.action ? { action: detail.action } : {})
             }
       ),
     []
@@ -76,6 +77,17 @@ export function useNativeChatComposerError(causes: StructuredConversationCommand
             text: shown.text,
             ...(shown.errorText ? { errorText: shown.errorText } : {}),
             ...(shown.kind ? { kind: shown.kind } : {}),
+            ...(shown.action
+              ? {
+                  action: {
+                    label: shown.action.label,
+                    onClick: () => {
+                      setLine(null)
+                      shown.action?.onClick()
+                    }
+                  }
+                }
+              : {}),
             onDismiss: () => setLine(null)
           }
         : null,

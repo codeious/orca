@@ -67,6 +67,8 @@ export type StructuredAgentSessionCommandOutcome = {
   error: string | null
   /** What the host answered the command with: said as information, where `error` is a failure. */
   info?: string
+  /** A button beside `info`; running it takes the line away. */
+  infoAction?: { label: string; onClick: () => void }
   /** The refusal is said only while this still holds. */
   refusedWhile?: StructuredAgentSessionCommandRefusalCause
 }

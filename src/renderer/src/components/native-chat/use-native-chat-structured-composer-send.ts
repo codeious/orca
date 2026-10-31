@@ -101,9 +101,12 @@ export function useNativeChatStructuredComposerSend({
         attachments,
         options
       )
-        .then(({ accepted, error, info, refusedWhile, revealsTranscript }) => {
+        .then(({ accepted, error, info, infoAction, refusedWhile, revealsTranscript }) => {
           if (info && !error) {
-            structuredTransport.onError(info, { kind: 'info' })
+            structuredTransport.onError(
+              info,
+              infoAction ? { kind: 'info', action: infoAction } : { kind: 'info' }
+            )
           } else {
             structuredTransport.onError(error, refusedWhile ? { refusedWhile } : undefined)
           }

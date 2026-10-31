@@ -281,8 +281,170 @@ describe('/compress in a Droid chat', () => {
   })
 })
 
+describe('/fork in a Droid chat', () => {
+  const FORK_COMMAND = { sessionId: 'session-1', command: { name: 'fork' } }
+
+  async function fork() {
+    const outcome = await runDroidChildCommand(CHAT, 'fork', '')
+    if (!outcome.infoAction) {
+      throw new Error('the fork offered no action')
+    }
+    return { outcome, open: outcome.infoAction.onClick }
+  }
+
+  it('asks the host for a fork with no title of ours and no session id, and offers Open fork', async () => {
+    answers({ name: 'fork', newSessionId: 'droid-session-fork' })
+
+    const { outcome } = await fork()
+
+    expect(mocks.call).toHaveBeenCalledExactlyOnceWith(
+      CHAT.target,
+      'agentSession.droidCommand',
+      FORK_COMMAND
+    )
+    expect(outcome).toEqual({
+      accepted: true,
+      error: null,
+      info: 'Forked this conversation. This chat stays on the original session.',
+      infoAction: { label: 'Open fork', onClick: expect.any(Function) }
+    })
+  })
+
+  it('leaves the tab on the original session until Open fork is pressed', async () => {
+    answers({ name: 'fork', newSessionId: 'droid-session-fork' })
+
+    await fork()
+    await flush()
+
+    expect(mocks.switchSession).not.toHaveBeenCalled()
+  })
+
+  it('opens the fork as a new tab beside this one, as an existing session, keeping the settings', async () => {
+    answers({ name: 'fork', newSessionId: 'droid-session-fork' })
+    const { open } = await fork()
+
+    open()
+    await flush()
+
+    expect(mocks.switchSession).toHaveBeenCalledExactlyOnceWith({
+      fromTabId: CHAT.tabId,
+      placement: 'beside',
+      target: { kind: 'existing', droidSessionId: 'droid-session-fork', settings: KEPT }
+    })
+    expect(mocks.toastError).not.toHaveBeenCalled()
+  })
+
+  it('gives a second /fork its own action, for its own session', async () => {
+    answers({ name: 'fork', newSessionId: 'droid-session-fork-1' })
+    const first = await fork()
+    answers({ name: 'fork', newSessionId: 'droid-session-fork-2' })
+    const second = await fork()
+
+    second.open()
+    first.open()
+
+    expect(
+      mocks.switchSession.mock.calls.map(([request]) => request.target.droidSessionId)
+    ).toEqual(['droid-session-fork-2', 'droid-session-fork-1'])
+  })
+
+  it('says so, once, when the fork could not be opened and nothing else did', async () => {
+    answers({ name: 'fork', newSessionId: 'droid-session-fork' })
+    const { open } = await fork()
+    settles({ kind: 'failed', notified: false })
+
+    open()
+    await flush()
+
+    expect(mocks.toastError).toHaveBeenCalledExactlyOnceWith(
+      'Droid forked the conversation, but Orca could not open the fork. This chat is still on the original session.'
+    )
+  })
+
+  it('stays quiet when the launch already told the person', async () => {
+    answers({ name: 'fork', newSessionId: 'droid-session-fork' })
+    const { open } = await fork()
+    settles({ kind: 'failed', notified: true })
+
+    open()
+    await flush()
+
+    expect(mocks.toastError).not.toHaveBeenCalled()
+  })
+
+  it('says so when the switch cannot start at all', async () => {
+    answers({ name: 'fork', newSessionId: 'droid-session-fork' })
+    const { open } = await fork()
+    mocks.switchSession.mockImplementation(() => {
+      throw new Error('not a Droid chat')
+    })
+
+    open()
+
+    expect(mocks.toastError).toHaveBeenCalledOnce()
+  })
+
+  it('refuses an argument without asking Droid', async () => {
+    expect(await runDroidChildCommand(CHAT, 'fork', 'a title')).toEqual({
+      accepted: false,
+      error: 'Use /fork without arguments.'
+    })
+    expect(mocks.call).not.toHaveBeenCalled()
+  })
+
+  it('tells the person to update an older server that does not know the command', async () => {
+    answers(Object.assign(new Error('Invalid params'), { code: 'invalid_argument' }))
+
+    expect(await runDroidChildCommand(CHAT, 'fork', '')).toEqual({
+      accepted: false,
+      error: 'Droid chat commands need a newer Orca server. Update the server and try again.'
+    })
+  })
+
+  it('leaves the other commands to say what their host said, whatever its code', async () => {
+    answers(Object.assign(new Error('Invalid params'), { code: 'invalid_argument' }))
+
+    expect(await runDroidChildCommand(CHAT, 'context', '')).toEqual({
+      accepted: false,
+      error: 'Invalid params'
+    })
+  })
+})
+
+describe('/rewind-conversation in a Droid chat', () => {
+  it('runs the rewind the chat built, and asks the host for nothing itself', async () => {
+    const outcome = { accepted: true, error: null }
+    const rewindConversation = vi.fn(async () => outcome)
+
+    expect(
+      await runDroidChildCommand({ ...CHAT, rewindConversation }, 'rewind-conversation', '')
+    ).toBe(outcome)
+
+    expect(rewindConversation).toHaveBeenCalledOnce()
+    expect(mocks.call).not.toHaveBeenCalled()
+    expect(mocks.switchSession).not.toHaveBeenCalled()
+  })
+
+  it('says so when the chat has no rewind to run', async () => {
+    expect(await runDroidChildCommand(CHAT, 'rewind-conversation', '')).toEqual({
+      accepted: false,
+      error: 'This chat cannot rewind.'
+    })
+    expect(mocks.call).not.toHaveBeenCalled()
+  })
+
+  it('refuses an argument without running the rewind', async () => {
+    const rewindConversation = vi.fn(async () => ({ accepted: true, error: null }))
+
+    expect(
+      await runDroidChildCommand({ ...CHAT, rewindConversation }, 'rewind-conversation', 'now')
+    ).toEqual({ accepted: false, error: 'Use /rewind-conversation without arguments.' })
+    expect(rewindConversation).not.toHaveBeenCalled()
+  })
+})
+
 describe('when the host cannot answer', () => {
-  it.each(['context', 'cost', 'compress'] as const)(
+  it.each(['context', 'cost', 'compress', 'fork'] as const)(
     "shows the host's own sentence for /%s",
     async (name) => {
       answers(

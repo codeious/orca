@@ -29,12 +29,12 @@ type TransportArgs = Parameters<typeof useNativeChatStructuredComposerTransport>
 
 const OPTION_SURFACE = { autonomy: undefined, specPair: undefined }
 
-function dispatch(
+function mountTransport(
   agent: string,
-  text: string,
+  extra: Partial<TransportArgs> = {},
   runConversationCommand = vi.fn(async () => ({ accepted: true, error: null }))
 ) {
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: a test double; dispatch reads only the members stubbed here.
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: a test double; the transport reads only the members stubbed here.
   const controller = {
     optionSnapshot: [],
     optionSurface: OPTION_SURFACE,
@@ -42,7 +42,7 @@ function dispatch(
     conversationCommands: ['clear', 'compact'],
     runConversationCommand
   } as unknown as TransportArgs['controller']
-  const { result } = renderHook(() =>
+  return renderHook(() =>
     useNativeChatStructuredComposerTransport({
       props: { agent, tabId: 'tab-test', sessionId: 'session-test', target: { kind: 'local' } },
       controller,
@@ -53,10 +53,18 @@ function dispatch(
       setOptionPickerRequest: vi.fn(),
       onError: vi.fn(),
       onSubmitted: vi.fn(),
-      queuedMessages: { queueHold: undefined, queueResume: undefined }
+      queuedMessages: { queueHold: undefined, queueResume: undefined },
+      ...extra
     })
-  )
-  return result.current.dispatchCommand(text)
+  ).result
+}
+
+function dispatch(
+  agent: string,
+  text: string,
+  runConversationCommand = vi.fn(async () => ({ accepted: true, error: null }))
+) {
+  return mountTransport(agent, {}, runConversationCommand).current.dispatchCommand(text)
 }
 
 const dispatchHelp = (agent: string) => dispatch(agent, '/help')
@@ -124,7 +132,9 @@ describe('the session commands of a Droid chat', () => {
   it.each([
     ['/context', 'context', ''],
     ['/cost', 'cost', ''],
-    ['/compress remember the word ok', 'compress', 'remember the word ok']
+    ['/compress remember the word ok', 'compress', 'remember the word ok'],
+    ['/fork', 'fork', ''],
+    ['/rewind-conversation', 'rewind-conversation', '']
   ])('claims %s for the host and sends no message', async (text, name, argument) => {
     const commands = sessionCommands({ accepted: true, error: null, info: 'answered' })
     mocks.commands = commands
@@ -168,5 +178,67 @@ describe('the session commands of a Droid chat', () => {
 
     expect(commands.runHostCommand).not.toHaveBeenCalled()
     expect(runConversationCommand).toHaveBeenCalledWith('clear')
+  })
+})
+
+describe('the rewind of a Droid chat', () => {
+  const surface = { disabledReason: null, request: vi.fn() }
+
+  function rewindOf(
+    outcome: Awaited<ReturnType<NonNullable<TransportArgs['droidRewind']>['open']>>
+  ) {
+    return { surface, open: vi.fn(async () => outcome) }
+  }
+
+  it('is handed to the session commands, for /rewind-conversation', () => {
+    const droidRewind = rewindOf({ accepted: true, error: null })
+
+    mountTransport('droid', { droidRewind })
+
+    expect(mocks.commandsArgs).toHaveBeenCalledWith(
+      expect.objectContaining({ rewindConversation: droidRewind.open })
+    )
+  })
+
+  it('gives the session commands none when the chat built none', () => {
+    mountTransport('droid')
+
+    expect(mocks.commandsArgs.mock.calls[0]?.[0]).not.toHaveProperty('rewindConversation')
+  })
+
+  it('opens from the composer, and says in the composer what stopped it', async () => {
+    const onError = vi.fn()
+    const droidRewind = rewindOf({
+      accepted: false,
+      error: 'Wait for Droid to finish before rewinding.'
+    })
+    const transport = mountTransport('droid', { droidRewind, onError })
+
+    transport.current.openRewind?.()
+
+    await vi.waitFor(() =>
+      expect(onError).toHaveBeenCalledExactlyOnceWith('Wait for Droid to finish before rewinding.')
+    )
+    expect(droidRewind.open).toHaveBeenCalledOnce()
+  })
+
+  it.each([
+    ['a rewind that ran', { accepted: true, error: null }],
+    ['a rewind the person cancelled', { accepted: false, error: null }]
+  ])('says nothing in the composer for %s', async (_label, outcome) => {
+    const onError = vi.fn()
+    const droidRewind = rewindOf(outcome)
+    const transport = mountTransport('droid', { droidRewind, onError })
+
+    transport.current.openRewind?.()
+    await vi.waitFor(() => expect(droidRewind.open).toHaveBeenCalledOnce())
+    await Promise.resolve()
+
+    expect(onError).not.toHaveBeenCalled()
+  })
+
+  it('offers the composer no Esc rewind when the chat has none', () => {
+    expect(mountTransport('droid').current.openRewind).toBeUndefined()
+    expect(mountTransport('claude').current.openRewind).toBeUndefined()
   })
 })

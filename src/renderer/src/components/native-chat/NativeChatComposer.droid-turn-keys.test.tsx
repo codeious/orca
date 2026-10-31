@@ -79,8 +79,9 @@ const ESCAPE = { key: 'Escape', code: 'Escape', keyCode: 27 }
 const ENTER = { key: 'Enter', code: 'Enter', keyCode: 13 }
 const CTRL_ENTER = { ...ENTER, ctrlKey: true }
 
-function transport(): NativeChatStructuredComposerTransport {
+function transport(openRewind?: () => void): NativeChatStructuredComposerTransport {
   return {
+    ...(openRewind ? { openRewind } : {}),
     send: vi.fn(() => true),
     dispatchCommand: vi.fn(async () => PASS_THROUGH),
     optionsSurface: {
@@ -100,9 +101,9 @@ function transport(): NativeChatStructuredComposerTransport {
 let paneCounter = 0
 const writeClipboardText = vi.fn()
 
-function renderComposer(args: { agent: AgentType; isWorking: boolean }) {
+function renderComposer(args: { agent: AgentType; isWorking: boolean; openRewind?: () => void }) {
   paneCounter += 1
-  const structured = transport()
+  const structured = transport(args.openRewind)
   const onStop = vi.fn()
   const element = (isWorking: boolean) => (
     <NativeChatComposer
@@ -249,6 +250,90 @@ describe('Droid composer Esc', () => {
   })
 })
 
+describe('Droid composer Esc three times', () => {
+  const START = 1_000_000
+
+  /** One press, then one more after each gap, on a clock the test sets. */
+  function escapes(input: Element, gaps: readonly number[]): void {
+    let now = START
+    vi.spyOn(Date, 'now').mockImplementation(() => now)
+    press(input, ESCAPE)
+    for (const gap of gaps) {
+      now += gap
+      press(input, ESCAPE)
+    }
+  }
+
+  it.each([
+    ['100 ms apart', [100, 100]],
+    ['exactly 175 ms apart', [175, 175]]
+  ])('opens rewind once when three presses come %s on an empty composer', (_label, gaps) => {
+    const openRewind = vi.fn()
+    const { onStop, structured, input } = renderComposer({
+      agent: 'droid',
+      isWorking: false,
+      openRewind
+    })
+
+    escapes(input, gaps)
+
+    expect(openRewind).toHaveBeenCalledOnce()
+    expect(onStop).not.toHaveBeenCalled()
+    expect(structured.send).not.toHaveBeenCalled()
+  })
+
+  it('counts the next three afresh, so six quick presses open it twice and five once', () => {
+    const six = vi.fn()
+    escapes(
+      renderComposer({ agent: 'droid', isWorking: false, openRewind: six }).input,
+      [100, 100, 100, 100, 100]
+    )
+    expect(six).toHaveBeenCalledTimes(2)
+    cleanup()
+
+    const five = vi.fn()
+    escapes(
+      renderComposer({ agent: 'droid', isWorking: false, openRewind: five }).input,
+      [100, 100, 100, 100]
+    )
+    expect(five).toHaveBeenCalledOnce()
+  })
+
+  it.each([
+    ['one press', []],
+    ['two presses', [100]],
+    ['a 200 ms gap before the third', [100, 200]],
+    ['a 200 ms gap before the second', [200, 100]],
+    ['a 300 ms gap', [300, 300]]
+  ])('does not open rewind after %s', (_label, gaps) => {
+    const openRewind = vi.fn()
+    const { input } = renderComposer({ agent: 'droid', isWorking: false, openRewind })
+
+    escapes(input, gaps)
+
+    expect(openRewind).not.toHaveBeenCalled()
+  })
+
+  it('does not count the press that cleared the draft', () => {
+    const openRewind = vi.fn()
+    const { input } = renderComposer({ agent: 'droid', isWorking: false, openRewind })
+    changePrompt(input, 'discard-me')
+
+    escapes(input, [100, 100])
+
+    expect(promptValue(input)).toBe('')
+    expect(openRewind).not.toHaveBeenCalled()
+  })
+
+  it('does nothing with three presses when the chat offers no rewind', () => {
+    const { input, onStop } = renderComposer({ agent: 'droid', isWorking: false })
+
+    escapes(input, [100, 100])
+
+    expect(onStop).not.toHaveBeenCalled()
+  })
+})
+
 describe('a Droid composer that does not have the key', () => {
   it.each([
     ['Enter', ENTER],
@@ -284,6 +369,17 @@ describe.each(NON_DROID_AGENTS)('the %s composer keeps its own Esc and Ctrl+C', 
     press(idle.input, ESCAPE)
     expect(idle.onStop).not.toHaveBeenCalled()
     expect(promptValue(idle.input)).toBe('keep-me')
+  })
+
+  it('never opens rewind on three quick Esc presses', () => {
+    const openRewind = vi.fn()
+    const { input } = renderComposer({ agent, isWorking: false, openRewind })
+
+    press(input, ESCAPE)
+    press(input, ESCAPE)
+    press(input, ESCAPE)
+
+    expect(openRewind).not.toHaveBeenCalled()
   })
 
   it('leaves Ctrl+C to the browser: no stop, no copy of its own, key not claimed', () => {

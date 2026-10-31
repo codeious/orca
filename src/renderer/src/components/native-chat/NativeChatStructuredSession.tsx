@@ -49,6 +49,7 @@ import { nativeChatStructuredStopControls } from './native-chat-structured-stop-
 import { chatApprovalFromJournal } from './native-chat-interactive-prompt'
 import { useAppStore } from '../../store'
 import { structuredAgentLabel } from '@/lib/structured-agent-session-launch-label'
+import { useDroidRewind } from './use-droid-rewind'
 import { useNativeChatStructuredComposerTransport } from './use-native-chat-structured-composer-transport'
 import { NativeChatThreadGoalBanner } from './NativeChatThreadGoalBanner'
 import { structuredAgentSessionReadFailureNotice } from './structured-agent-session-read-failure-notice'
@@ -219,9 +220,11 @@ export function NativeChatStructuredSession(
   })
   const questionBody = prompt?.body.kind === 'question' ? prompt.body : null
   const questions = questionBody ? agentSessionPromptQuestions(questionBody) : []
+  const droidRewind = useDroidRewind({ props, controller })
   const structuredTransport = useNativeChatStructuredComposerTransport({
     props,
     controller,
+    droidRewind,
     sendThroughLaunch,
     starting: provisionalLaunch.starting,
     worktreeId: ownerWorktreeId ?? undefined,
@@ -294,7 +297,9 @@ export function NativeChatStructuredSession(
         ) : viewState.kind === 'empty' ? (
           <NativeChatEmptyState kind="empty" agent={props.agent} />
         ) : (
-          <NativeChatRewindContext.Provider value={controller.rewind.surface}>
+          <NativeChatRewindContext.Provider
+            value={droidRewind?.surface ?? controller.rewind.surface}
+          >
             <NativeChatOrcaStopContext.Provider value={continuation.view}>
               <NativeChatClaudeSignInContext.Provider value={claudeSignIn}>
                 <NativeChatMessageList

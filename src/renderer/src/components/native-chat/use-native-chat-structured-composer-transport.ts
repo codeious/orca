@@ -6,6 +6,7 @@ import type {
   NativeChatStructuredComposerTransport
 } from './native-chat-composer-types'
 import { answerDroidHostCommand } from './droid-help-keys'
+import type { DroidRewind } from './use-droid-rewind'
 import { useDroidSessionCommands } from './use-droid-session-commands'
 import type { NativeChatStructuredViewProps } from './native-chat-view-types'
 import type { useStructuredAgentSession } from './use-structured-agent-session'
@@ -29,16 +30,20 @@ export function useNativeChatStructuredComposerTransport(args: {
   onError: NativeChatStructuredComposerTransport['onError']
   onSubmitted: () => void
   queuedMessages: Pick<StructuredAgentSessionQueuedMessagesController, 'queueHold' | 'queueResume'>
+  /** A Droid chat's rewind, for `/rewind-conversation` and Esc three times. */
+  droidRewind?: Pick<DroidRewind, 'open'> | undefined
 }): NativeChatStructuredComposerTransport {
   const { props, controller, sendThroughLaunch, starting, worktreeId, optionPickerRequest } = args
-  const { setOptionPickerRequest, onError, onSubmitted, queuedMessages } = args
+  const { setOptionPickerRequest, onError, onSubmitted, queuedMessages, droidRewind } = args
+  const rewindConversation = droidRewind?.open
   const droidSessionCommands = useDroidSessionCommands({
     tabId: props.tabId,
     sessionId: props.sessionId,
     target: props.target,
     agent: props.agent,
     optionSnapshot: controller.optionSnapshot,
-    optionSurface: controller.optionSurface
+    optionSurface: controller.optionSurface,
+    ...(rewindConversation ? { rewindConversation } : {})
   })
   const acceptsImages = useStructuredAgentAcceptsImages(props.target, props.agent)
   return useMemo((): NativeChatStructuredComposerTransport => {
@@ -90,12 +95,24 @@ export function useNativeChatStructuredComposerTransport(args: {
       runtimeEnvironmentId:
         props.target.kind === 'local' ? null : (props.target.environmentId ?? null),
       queueHold: queuedMessages.queueHold,
-      queueResume: queuedMessages.queueResume
+      queueResume: queuedMessages.queueResume,
+      ...(rewindConversation
+        ? {
+            // What stopped it is said in the composer; a confirmed rewind or a cancel says nothing.
+            openRewind: () =>
+              void rewindConversation().then(({ error }) => {
+                if (error) {
+                  onError(error)
+                }
+              })
+          }
+        : {})
     }
   }, [
     acceptsImages,
     controller,
     droidSessionCommands,
+    rewindConversation,
     worktreeId,
     onError,
     onSubmitted,

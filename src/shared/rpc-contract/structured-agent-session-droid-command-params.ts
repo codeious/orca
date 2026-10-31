@@ -14,7 +14,9 @@ export const DroidCommandParams = z
           name: z.literal('compress'),
           instructions: z.string().max(DROID_COMPRESS_INSTRUCTIONS_MAX_LENGTH).optional()
         })
-        .strict()
+        .strict(),
+      z.object({ name: z.literal('fork') }).strict(),
+      z.object({ name: z.literal('rewind'), itemId: z.string().min(1) }).strict()
     ])
   })
   .strict()

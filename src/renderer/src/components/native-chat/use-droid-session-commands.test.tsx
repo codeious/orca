@@ -288,11 +288,13 @@ describe('/quit and /exit in a Droid chat', () => {
   })
 })
 
-describe('/context, /cost and /compress in a Droid chat', () => {
+describe('/context, /cost, /compress, /fork and /rewind-conversation in a Droid chat', () => {
   it.each([
     ['context', ''],
     ['cost', ''],
-    ['compress', 'remember the word ok']
+    ['compress', 'remember the word ok'],
+    ['fork', ''],
+    ['rewind-conversation', '']
   ] as const)('hands /%s to the Droid child at once, with what follows it', async (name, rest) => {
     const answer = { accepted: true, error: null, info: 'answered' }
     mocks.runChild.mockResolvedValue(answer)
@@ -323,6 +325,19 @@ describe('/context, /cost and /compress in a Droid chat', () => {
       specModel: 'spec-1',
       specEffort: 'low'
     })
+  })
+
+  it('gives /rewind-conversation the rewind the chat built, and none when it built none', async () => {
+    mocks.runChild.mockResolvedValue({ accepted: true, error: null })
+    const open = vi.fn(async () => ({ accepted: true, error: null }))
+
+    await run(mount({ rewindConversation: open }), '/rewind-conversation')
+    const [withRewind] = mocks.runChild.mock.calls[0] ?? []
+    expect(withRewind.rewindConversation).toBe(open)
+
+    await run(mount(), '/rewind-conversation')
+    const [without] = mocks.runChild.mock.calls[1] ?? []
+    expect(without.rewindConversation).toBeUndefined()
   })
 
   it('does not count /context as the second submit that confirms /clear', async () => {

@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { act, renderHook } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   useNativeChatComposerError,
   useNativeChatComposerNotice
@@ -29,6 +29,47 @@ describe('useNativeChatComposerError', () => {
     act(() => result.current.reportComposerError('the key list', { kind: 'info' }))
     act(() => result.current.composerError?.onDismiss())
     expect(result.current.composerError).toBeNull()
+  })
+
+  describe('an informational line with an action beside it', () => {
+    it('shows the action, runs it once, and takes the line away so it cannot run twice', () => {
+      const onClick = vi.fn()
+      const { result } = renderHook(() => useNativeChatComposerError(NO_CAUSES))
+      act(() =>
+        result.current.reportComposerError('Forked.', {
+          kind: 'info',
+          action: { label: 'Open fork', onClick }
+        })
+      )
+      expect(result.current.composerError).toMatchObject({
+        text: 'Forked.',
+        kind: 'info',
+        action: { label: 'Open fork' }
+      })
+
+      act(() => result.current.composerError?.action?.onClick())
+
+      expect(onClick).toHaveBeenCalledOnce()
+      expect(result.current.composerError).toBeNull()
+    })
+
+    it('leaves the line when the next report replaces it', () => {
+      const { result } = renderHook(() => useNativeChatComposerError(NO_CAUSES))
+      act(() =>
+        result.current.reportComposerError('Forked.', {
+          kind: 'info',
+          action: { label: 'Open fork', onClick: vi.fn() }
+        })
+      )
+      act(() => result.current.reportComposerError('the key list', { kind: 'info' }))
+      expect(result.current.composerError).not.toHaveProperty('action')
+    })
+
+    it('gives a line with no action no action', () => {
+      const { result } = renderHook(() => useNativeChatComposerError(NO_CAUSES))
+      act(() => result.current.reportComposerError('the key list', { kind: 'info' }))
+      expect(result.current.composerError).not.toHaveProperty('action')
+    })
   })
 
   it('gives a line with no kind no kind, so it stays the error it always was', () => {

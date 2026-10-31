@@ -199,6 +199,26 @@ describe("says a host's answer to a command as information, never as an error", 
     expect(structuredTransport.send).not.toHaveBeenCalled()
   })
 
+  it('passes the action a command offers beside its answer, and still sends no message', async () => {
+    const onClick = vi.fn()
+    const { send, structuredTransport } = harness('droid')
+    structuredTransport.dispatchCommand = async () => ({
+      handled: true,
+      accepted: true,
+      error: null,
+      info: 'Forked this conversation.',
+      infoAction: { label: 'Open fork', onClick }
+    })
+    send('/fork', [])
+    await vi.waitFor(() =>
+      expect(structuredTransport.onError).toHaveBeenCalledWith('Forked this conversation.', {
+        kind: 'info',
+        action: { label: 'Open fork', onClick }
+      })
+    )
+    expect(structuredTransport.send).not.toHaveBeenCalled()
+  })
+
   it('keeps a real error when an answer arrives with it', async () => {
     const { send, structuredTransport } = harness('droid')
     structuredTransport.dispatchCommand = async () => ({

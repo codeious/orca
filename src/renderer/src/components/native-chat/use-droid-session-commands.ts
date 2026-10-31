@@ -20,7 +20,7 @@ import type {
   SessionOptionsSurface
 } from '../../../../shared/native-chat-session-options'
 import type { StructuredAgentSessionCommandOutcome } from '../../../../shared/structured-agent-session-composer'
-import { runDroidChildCommand } from './droid-child-commands'
+import { runDroidChildCommand, type DroidChildCommandChat } from './droid-child-commands'
 
 // The commands answered by the Droid child are never asked twice.
 type SessionCommandName = Exclude<DroidHostCommandName, 'help' | DroidChildCommandName>
@@ -94,7 +94,7 @@ export type DroidSessionCommands = {
 /**
  * `/clear`, `/new`, `/quit` and `/exit` of a Droid chat. Each asks again and acts on the second
  * submit of the same command: the TUI quits on one Enter, but a press here ends a chat.
- * `/context`, `/cost` and `/compress` answer on the first submit, from the Droid child.
+ * `/context`, `/cost`, `/compress`, `/fork` and `/rewind-conversation` answer on the first submit.
  */
 export function useDroidSessionCommands(args: {
   tabId: string
@@ -103,8 +103,11 @@ export function useDroidSessionCommands(args: {
   agent: AgentType
   optionSnapshot: readonly SessionOptionDescriptor[]
   optionSurface: Pick<SessionOptionsSurface, 'specPair' | 'autonomy'> | undefined
+  /** The chat's own rewind, which holds the confirmation `/rewind-conversation` asks. */
+  rewindConversation?: DroidChildCommandChat['rewindConversation']
 }): DroidSessionCommands | undefined {
-  const { tabId, sessionId, target, agent, optionSnapshot, optionSurface } = args
+  const { tabId, sessionId, target, agent, optionSnapshot, optionSurface, rewindConversation } =
+    args
   const asked = useRef<SessionCommandName | null>(null)
   return useMemo((): DroidSessionCommands | undefined => {
     if (agent !== 'droid') {
@@ -124,7 +127,8 @@ export function useDroidSessionCommands(args: {
               tabId,
               sessionId,
               target,
-              keptSettings: () => droidSettingsKeptByClear(optionSnapshot, optionSurface)
+              keptSettings: () => droidSettingsKeptByClear(optionSnapshot, optionSurface),
+              ...(rewindConversation ? { rewindConversation } : {})
             },
             name,
             argument
@@ -161,5 +165,5 @@ export function useDroidSessionCommands(args: {
         )
       }
     }
-  }, [agent, optionSnapshot, optionSurface, sessionId, tabId, target])
+  }, [agent, optionSnapshot, optionSurface, rewindConversation, sessionId, tabId, target])
 }

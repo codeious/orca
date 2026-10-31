@@ -1,5 +1,6 @@
 import { translate } from '@/i18n/i18n'
 import type { AgentSessionContextReport } from '../../../../shared/agent-session-context-usage'
+import { hasRuntimeRpcErrorCode } from '../../../../shared/runtime-rpc-error-code'
 import { summarizeContextUsage } from './native-chat-context-usage-summary'
 
 // Exact figures, so a person can set them beside what Droid reported.
@@ -44,6 +45,34 @@ export function droidContextWords(report: AgentSessionContextReport): string {
     { rows: listed }
   )
   return `${used} ${byCategory}`
+}
+
+/**
+ * What a Droid command that failed tells the person: the host's own sentence. `newCommand` is for
+ * a command an older server has not heard of, which its schema refuses without a sentence of ours.
+ */
+export function droidCommandFailureWords(
+  error: unknown,
+  name: string,
+  newCommand: boolean
+): string {
+  if (newCommand && hasRuntimeRpcErrorCode(error, 'invalid_argument')) {
+    return translate(
+      'components.native-chat.droidChildCommands.needsNewerServer',
+      'Droid chat commands need a newer Orca server. Update the server and try again.'
+    )
+  }
+  const words = error instanceof Error ? error.message.trim() : ''
+  return (
+    words ||
+    translate(
+      'components.native-chat.droidChildCommands.failed',
+      'Could not run /{{name}}. Try again.',
+      {
+        name
+      }
+    )
+  )
 }
 
 /** Null when Droid has reported no credits: no figure is made up. */

@@ -1,5 +1,11 @@
 /** Commands the host answers by asking the Droid child, which sends nothing as a message. */
-export const DROID_CHILD_COMMAND_NAMES = ['context', 'cost', 'compress'] as const
+export const DROID_CHILD_COMMAND_NAMES = [
+  'context',
+  'cost',
+  'compress',
+  'fork',
+  'rewind-conversation'
+] as const
 
 /** The slash commands a Droid chat answers on the host, so their text never reaches the model. */
 export const DROID_HOST_COMMAND_NAMES = [

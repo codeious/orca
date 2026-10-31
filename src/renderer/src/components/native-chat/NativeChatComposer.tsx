@@ -315,7 +315,8 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       input: textareaRef,
       draft,
       hasAttachments: imageAttachments.length > 0,
-      clear: { setDraft, setCaret, setActiveSuggestion, clearSkillOrigin, clearImageAttachments }
+      clear: { setDraft, setCaret, setActiveSuggestion, clearSkillOrigin, clearImageAttachments },
+      openRewind: structuredTransport?.openRewind
     })
 
     const dispatchPtyPickerCommand = useNativeChatPickerCommandDispatch({

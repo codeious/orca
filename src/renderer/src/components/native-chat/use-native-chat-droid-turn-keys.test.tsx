@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 
-// The seam for rewind-by-Esc: three Esc presses on an empty composer, each gap within 175 ms. Nothing
-// in the app passes `openRewind` yet, so this is the one place the limit is pinned.
+// The seam for rewind-by-Esc: three Esc presses on an empty composer, each gap within 175 ms. The
+// composer passes `openRewind` from a Droid chat's rewind; this is where the limit is pinned.
 
 import { renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'

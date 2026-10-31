@@ -40,6 +40,16 @@ const DESCRIPTIONS: Record<DroidHostCommandName, () => string> = {
     translate(
       'components.native-chat.droidCommands.compress',
       'Summarize the conversation to free up context; add instructions to guide the summary'
+    ),
+  fork: () =>
+    translate(
+      'components.native-chat.droidCommands.fork',
+      'Copy this conversation into a new session you can open in its own tab'
+    ),
+  'rewind-conversation': () =>
+    translate(
+      'components.native-chat.droidCommands.rewind-conversation',
+      'Go back to before your latest message in a new session'
     )
 }
 

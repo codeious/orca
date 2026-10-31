@@ -24,15 +24,18 @@ export function useNativeChatComposerDroidKeys(
       clearSkillOrigin: () => void
       clearImageAttachments: () => void
     }
+    /** Esc three times on an empty composer; absent where the chat has no rewind. */
+    openRewind?: (() => void) | undefined
   }
 ): ReturnType<typeof useNativeChatDroidTurnKeys> {
-  const { inert, stopTurn, input, draft, hasAttachments, clear, ...modeArgs } = args
+  const { inert, stopTurn, input, draft, hasAttachments, clear, openRewind, ...modeArgs } = args
   const keys = useNativeChatDroidComposerKeys(modeArgs)
   return useNativeChatDroidTurnKeys({
     agent: args.agent,
     keys,
     inert,
     stopTurn,
+    openRewind,
     selectedText: () => nativeChatComposerSelectedText(input.current),
     hasContent: draft !== '' || hasAttachments,
     clearComposer: () => {

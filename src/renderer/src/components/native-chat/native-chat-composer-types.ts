@@ -25,6 +25,8 @@ export type NativeChatComposerErrorDetail = {
   refusedWhile?: StructuredAgentSessionCommandRefusalCause
   /** `info`: the line is the host's answer to a command, not a failure. */
   kind?: 'info'
+  /** A button beside an `info` line; running it takes the line away. */
+  action?: { label: string; onClick: () => void }
 }
 
 export type NativeChatOptionPickerRequest = {
@@ -80,6 +82,8 @@ export type NativeChatStructuredComposerTransport = {
   /** Present while the host holds the queue and no turn runs: an empty composer's primary
    *  action becomes Resume, which releases it. */
   queueResume?: NativeChatQueueResume
+  /** Present only in a Droid chat that can rewind: Esc three times on an empty composer calls it. */
+  openRewind?: () => void
 }
 
 export type NativeChatOptimisticSendOutcome = {
