@@ -3,6 +3,8 @@ import { normalizeAgentSessionConversationName } from '../../shared/agent-sessio
 import type { DroidHostCommand, DroidHostCommandResult } from '../../shared/droid-host-command'
 import { forkDroidSession, rewindDroidSession } from './droid-fork-and-rewind'
 import type { DroidSession } from './droid-session'
+import { runDroidSkills } from './droid-skills'
+import { changeDroidWorkingFolder } from './droid-working-folder'
 
 // A summary is a model call over the whole conversation.
 const COMPACT_TIMEOUT_MS = 120_000
@@ -72,7 +74,7 @@ async function rename(
 
 /** Answers a command the host claims for a Droid chat from the child, without sending a message. */
 export async function runDroidHostCommand(
-  session: Pick<DroidSession, 'context' | 'request' | 'lane' | 'droidSessionId'>,
+  session: Pick<DroidSession, 'context' | 'request' | 'lane' | 'droidSessionId' | 'workspace'>,
   command: DroidHostCommand
 ): Promise<DroidHostCommandResult> {
   switch (command.name) {
@@ -86,6 +88,10 @@ export async function runDroidHostCommand(
       return forkDroidSession(session)
     case 'rename':
       return rename(session, command.title)
+    case 'cwd':
+      return changeDroidWorkingFolder(session, command.path)
+    case 'skills':
+      return runDroidSkills(session, command.toggle)
     case 'rewind':
       return rewindDroidSession(session, command.messageId)
   }

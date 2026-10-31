@@ -26,6 +26,10 @@ describe('agentSession.droidCommand', () => {
     [{ name: 'compress', instructions: 'keep the schema' }],
     [{ name: 'fork' }],
     [{ name: 'rename', title: 'Fix the login redirect' }],
+    [{ name: 'cwd', path: 'packages/app' }],
+    [{ name: 'skills' }],
+    [{ name: 'skills', toggle: { skillName: 'review', disabled: true } }],
+    [{ name: 'skills', toggle: { skillName: 'review', disabled: false } }],
     [{ name: 'rewind', itemId: 'droid:message-1' }]
   ])('hands %j to the host for the session and answers with its result', async (command) => {
     hostCalls.droidCommand.mockResolvedValueOnce({ name: 'credits', factoryCredits: 12 })
@@ -51,6 +55,30 @@ describe('agentSession.droidCommand', () => {
     ['a rename to a title longer than a name can be', { name: 'rename', title: 'x'.repeat(201) }],
     ['a rename to a title that is not text', { name: 'rename', title: 7 }],
     ['a key beside the rename title', { name: 'rename', title: 'x', force: true }],
+    ['the /cd spelling, which the client sends as cwd', { name: 'cd', path: 'sub' }],
+    ['a cwd that names no folder', { name: 'cwd' }],
+    ['a cwd to an empty folder', { name: 'cwd', path: '' }],
+    ['a cwd folder that is not text', { name: 'cwd', path: 7 }],
+    ['a cwd folder longer than a path can be', { name: 'cwd', path: 'x'.repeat(4097) }],
+    ['a key beside the cwd folder', { name: 'cwd', path: 'sub', force: true }],
+    ['a key beside skills', { name: 'skills', all: true }],
+    ['a skills toggle that names no skill', { name: 'skills', toggle: { disabled: true } }],
+    [
+      'a skills toggle of an empty skill name',
+      { name: 'skills', toggle: { skillName: '', disabled: true } }
+    ],
+    [
+      'a skills toggle that says nothing about on or off',
+      { name: 'skills', toggle: { skillName: 'review' } }
+    ],
+    [
+      'a skills toggle whose on or off is not a boolean',
+      { name: 'skills', toggle: { skillName: 'review', disabled: 'yes' } }
+    ],
+    [
+      'a key beside the skills toggle, such as a settings level',
+      { name: 'skills', toggle: { skillName: 'review', disabled: true, settingsLevel: 'project' } }
+    ],
     ['a rewind that names no row', { name: 'rewind' }],
     ['a rewind to an empty row id', { name: 'rewind', itemId: '' }],
     ['a rewind that names the Droid message itself', { name: 'rewind', messageId: 'droid-1' }]

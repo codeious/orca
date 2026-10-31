@@ -20,6 +20,9 @@ const DROID_OWN_COMMANDS = [
   'compress',
   'fork',
   'rename',
+  'cwd',
+  'cd',
+  'skills',
   'rewind-conversation'
 ]
 
@@ -131,6 +134,14 @@ describe('composer catalog authority', () => {
         sessionSlashCommandSuggestions(agent, reported)
       )
       expect(unreported.result.current.agentCommands.map(({ name }) => name)).not.toContain('help')
+      for (const droidOnly of ['cwd', 'cd', 'skills']) {
+        expect(unreported.result.current.agentCommands.map(({ name }) => name)).not.toContain(
+          droidOnly
+        )
+        expect(withReport.result.current.agentCommands.map(({ name }) => name)).not.toContain(
+          droidOnly
+        )
+      }
     }
   )
   it('respects empty catalogs and command-only catalogs without reviving disk skills', () => {

@@ -14,9 +14,12 @@ const FIXTURE_FOLDERS = [
   }
 ]
 
+// `privateText` flags "skill" to keep a person's skill names out; skills.jsonl lists skills, so only that word is exempt there.
+const SKILL_LISTING = 'skills.jsonl'
+
 /** Every line of a `.jsonl` recording, or the whole document of a `.meta.json` one. */
-async function recordedDocuments(): Promise<{ label: string; text: string }[]> {
-  const documents: { label: string; text: string }[] = []
+async function recordedDocuments(): Promise<{ label: string; name: string; text: string }[]> {
+  const documents: { label: string; name: string; text: string }[] = []
   for (const { directory, accepts } of FIXTURE_FOLDERS) {
     const names = (await readdir(directory)).filter(
       (name) => accepts(name) && (name.endsWith('.jsonl') || name.endsWith('.meta.json'))
@@ -27,6 +30,7 @@ async function recordedDocuments(): Promise<{ label: string; text: string }[]> {
       for (const [index, text] of parts.entries()) {
         documents.push({
           label: `${directory.pathname.split('/').slice(-3).join('/')}${name}:${index + 1}`,
+          name,
           text
         })
       }
@@ -39,13 +43,16 @@ describe('Droid recording privacy', () => {
   it('contains no personal metadata or home-directory paths in any decoded fixture', async () => {
     const documents = await recordedDocuments()
     expect(documents.length).toBeGreaterThan(0)
-    for (const { label, text } of documents) {
+    for (const { label, name, text } of documents) {
       // Thinking blocks keep `"signature":"<elided>"` and `"signatureProvider":"openai"`; those key names are not private.
       const recorded: unknown = JSON.parse(text, (key, value) =>
         key === 'signatureProvider' || value === '<elided>' ? undefined : value
       )
+      const subject = name === SKILL_LISTING ? / ?skills?/gi : null
       expect(
-        decodedStrings(recorded).some((value) => privateText.test(value)),
+        decodedStrings(recorded).some((value) =>
+          privateText.test(subject ? value.replace(subject, ' ') : value)
+        ),
         label
       ).toBe(false)
     }

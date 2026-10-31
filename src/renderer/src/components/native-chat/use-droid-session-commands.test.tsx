@@ -294,13 +294,16 @@ describe('/quit and /exit in a Droid chat', () => {
   })
 })
 
-describe('/context, /cost, /compress, /fork, /rename and /rewind-conversation in a Droid chat', () => {
+describe('/context, /cost, /compress, /fork, /rename, /cwd, /cd, /skills and /rewind-conversation in a Droid chat', () => {
   it.each([
     ['context', ''],
     ['cost', ''],
     ['compress', 'remember the word ok'],
     ['fork', ''],
     ['rename', 'Fix the login redirect'],
+    ['cwd', 'packages/app'],
+    ['cd', 'packages/app'],
+    ['skills', 'disable review'],
     ['rewind-conversation', '']
   ] as const)('hands /%s to the Droid child at once, with what follows it', async (name, rest) => {
     const answer = { accepted: true, error: null, info: 'answered' }

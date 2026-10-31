@@ -248,6 +248,28 @@ describe('Droid session start', () => {
       expect(acquired.link).toMatchObject({ handle: { nativeId: 'droid-session-9' } })
     })
 
+    it('accepts a session that /cd moved into a folder inside the workspace', async () => {
+      const h = await setup({ previous, cwd: '/host/folder' })
+      loadReplying(h, { session: { messages: [] }, cwd: '/host/folder/packages/app' })
+
+      const { acquired } = await h.start()
+
+      expect(acquired.link).toMatchObject({ handle: { nativeId: 'droid-session-9' } })
+    })
+
+    it.each([
+      ['a sibling that only shares the workspace name', '/host/folder-other'],
+      ['the folder above the workspace', '/host'],
+      ['a folder that backs out of the workspace', '/host/folder/../other']
+    ])('closes the child when Droid reports %s', async (_label, reported) => {
+      const h = await setup({ previous, cwd: '/host/folder' })
+      loadReplying(h, { session: { messages: [] }, cwd: reported })
+
+      await expect(h.start()).rejects.toThrow(/folder/)
+
+      expect(h.connections[0]?.closed).toBe(true)
+    })
+
     it('refuses a load that names no folder, since it cannot be compared', async () => {
       const h = await setup({ previous })
       loadReplying(h, { session: { messages: [] } })

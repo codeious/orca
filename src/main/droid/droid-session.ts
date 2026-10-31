@@ -1,3 +1,4 @@
+import { realpath as fsRealpath } from 'node:fs/promises'
 import { JsonlRpcSessionLifecycle } from '../jsonl-rpc/session-lifecycle'
 import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
 import { providerTimelineSink } from '../native-chat/agent-session-timeline/provider-timeline-plan'
@@ -92,6 +93,8 @@ export class DroidSession {
   readonly context: DroidContextUsage
   /** Droid's own id for the session this child holds, once the start has answered. */
   droidSessionId: string | undefined
+  /** Where the chat was opened. A /cd stays inside it, so a load still finds the session here. */
+  readonly workspace: { folder: string; realpath: (path: string) => Promise<string> }
 
   /** Every request after the start goes through here, so a method this Droid lacks reads alike. */
   readonly request: DroidConnection['request'] = (method, params, options) =>
@@ -110,6 +113,7 @@ export class DroidSession {
     if (!sink) {
       throw new Error('Droid structured chat requires the shared timeline sink')
     }
+    this.workspace = { folder: begin.cwd, realpath: deps.realpath ?? fsRealpath }
     const sessionId = input.identity.sessionId
     this.lane = new JsonlRpcTimelineLane({
       sink,

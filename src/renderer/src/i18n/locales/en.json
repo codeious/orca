@@ -18753,6 +18753,9 @@
         "compress": "Summarize the conversation to free up context; add instructions to guide the summary",
         "fork": "Copy this conversation into a new session you can open in its own tab",
         "rename": "Give this chat the title you type after the command, in Orca and in Droid",
+        "cwd": "Move Droid to a folder inside this workspace",
+        "cd": "Move Droid to a folder inside this workspace, like /cwd",
+        "skills": "List Droid’s skills; add disable or enable and a name to turn one off or on",
         "rewind-conversation": "Go back to before your latest message in a new session"
       },
       "droidChildCommands": {
@@ -18774,6 +18777,17 @@
         "renamed": "Renamed this chat to “{{title}}”.",
         "renameUsage": "Use /rename followed by a title, for example /rename Fix the login redirect.",
         "renameTooLong": "Keep the /rename title under {{max}} characters.",
+        "cwdUsage": "Use /{{name}} followed by a folder inside this workspace, for example /{{name}} packages/app.",
+        "cwdTooLong": "Keep the /{{name}} folder under {{max}} characters.",
+        "cwdChanged": "Working folder is now {{path}}.",
+        "skillsUsage": "Use /skills to list skills, /skills disable <name> to turn one off, or /skills enable <name> to turn one on.",
+        "skillsNone": "Droid reports no skills.",
+        "skillsSummary": "Skills: {{on}} on, {{off}} off.",
+        "skillsOn": "On: {{names}}.",
+        "skillsOff": "Off: {{names}}.",
+        "skillsHint": "Turn one off or on with /skills disable <name> or /skills enable <name>.",
+        "skillsTurnedOff": "Turned off the {{name}} skill. {{on}} of {{total}} skills are on.",
+        "skillsTurnedOn": "Turned on the {{name}} skill. {{on}} of {{total}} skills are on.",
         "rewindUnavailable": "This chat cannot rewind."
       },
       "droidRewind": {

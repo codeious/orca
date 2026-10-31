@@ -51,6 +51,21 @@ const DESCRIPTIONS: Record<DroidHostCommandName, () => string> = {
       'components.native-chat.droidCommands.rename',
       'Give this chat the title you type after the command, in Orca and in Droid'
     ),
+  cwd: () =>
+    translate(
+      'components.native-chat.droidCommands.cwd',
+      'Move Droid to a folder inside this workspace'
+    ),
+  cd: () =>
+    translate(
+      'components.native-chat.droidCommands.cd',
+      'Move Droid to a folder inside this workspace, like /cwd'
+    ),
+  skills: () =>
+    translate(
+      'components.native-chat.droidCommands.skills',
+      'List Droid’s skills; add disable or enable and a name to turn one off or on'
+    ),
   'rewind-conversation': () =>
     translate(
       'components.native-chat.droidCommands.rewind-conversation',

@@ -1,6 +1,6 @@
 import { realpath as fsRealpath } from 'node:fs/promises'
 import { z } from 'zod'
-import { normalizeRuntimePathForComparison } from '../../shared/cross-platform-path'
+import { isPathInsideOrEqual, resolveRuntimePath } from '../../shared/cross-platform-path'
 
 type ResolveRealPath = (path: string) => Promise<string>
 
@@ -50,7 +50,8 @@ async function refuseSessionFromOtherFolder(
     realpath(workspace).catch(() => workspace),
     realpath(reported).catch(() => reported)
   ])
-  if (normalizeRuntimePathForComparison(expected) !== normalizeRuntimePathForComparison(actual)) {
+  // /cd moves a session into a folder of the workspace, and a load reports the folder it is in now.
+  if (!isPathInsideOrEqual(expected, resolveRuntimePath(expected, actual))) {
     throw new Error('Droid loaded the session from another folder than this workspace')
   }
 }

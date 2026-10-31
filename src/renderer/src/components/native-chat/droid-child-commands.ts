@@ -18,6 +18,14 @@ import {
   droidContextWords,
   droidCreditsWords
 } from './droid-child-command-words'
+import {
+  cwdHostCommand,
+  cwdRefusal,
+  cwdWords,
+  skillsHostCommand,
+  skillsRefusal,
+  skillsWords
+} from './droid-cwd-and-skills-commands'
 import { switchDroidSessionWithNotice } from './droid-session-switch-notice'
 
 type DroidChildCommandOutcome = Omit<StructuredAgentSessionCommandOutcome, 'handled'>
@@ -33,6 +41,15 @@ export type DroidChildCommandChat = {
   /** The chat's own rewind, which holds the journal and the confirmation /rewind-conversation needs. */
   rewindConversation?: () => Promise<DroidChildCommandOutcome>
 }
+
+/** Commands an older server's schema refuses without a sentence of its own. */
+const ADDED_AFTER_FIRST_SERVERS: readonly DroidChildCommandName[] = [
+  'fork',
+  'rename',
+  'cwd',
+  'cd',
+  'skills'
+]
 
 /** Chats with a /compress under way: a summary is a model call, and a second would stack on it. */
 const compressing = new Set<string>()
@@ -53,6 +70,12 @@ function hostCommand(name: AskedCommandName, argument: string): DroidHostCommand
       return { name: 'rename', title: normalizeAgentSessionConversationName(argument) ?? '' }
     case 'compress':
       return argument ? { name: 'compress', instructions: argument } : { name: 'compress' }
+    case 'cwd':
+    case 'cd':
+      return cwdHostCommand(argument)
+    case 'skills':
+      // A request the refusal turned away never gets here.
+      return skillsHostCommand(argument) ?? { name: 'skills' }
   }
 }
 
@@ -147,6 +170,10 @@ function outcomeOf(
           { title: result.title }
         )
       }
+    case 'cwd':
+      return { accepted: true, error: null, info: cwdWords(result.resolvedPath) }
+    case 'skills':
+      return { accepted: true, error: null, info: skillsWords(result) }
   }
 }
 
@@ -171,6 +198,12 @@ function refusal(name: DroidChildCommandName, argument: string): string | null {
   if (name === 'rename') {
     return renameRefusal(argument)
   }
+  if (name === 'cwd' || name === 'cd') {
+    return cwdRefusal(name, argument)
+  }
+  if (name === 'skills') {
+    return skillsRefusal(argument)
+  }
   if (name !== 'compress') {
     return argument
       ? translate(
@@ -189,7 +222,7 @@ function refusal(name: DroidChildCommandName, argument: string): string | null {
     : null
 }
 
-/** `/context`, `/cost`, `/compress`, `/fork`, `/rename` and `/rewind-conversation`: none sends a message. */
+/** `/context`, `/cost`, `/compress`, `/fork`, `/rename`, `/cwd`, `/cd`, `/skills` and `/rewind-conversation`: none sends a message. */
 export async function runDroidChildCommand(
   chat: DroidChildCommandChat,
   name: DroidChildCommandName,
@@ -233,7 +266,7 @@ export async function runDroidChildCommand(
     // The host words a method Droid lacks itself; an older server refuses a command it never heard of.
     return {
       accepted: false,
-      error: droidCommandFailureWords(error, name, name === 'fork' || name === 'rename')
+      error: droidCommandFailureWords(error, name, ADDED_AFTER_FIRST_SERVERS.includes(name))
     }
   } finally {
     compressing.delete(chat.sessionId)

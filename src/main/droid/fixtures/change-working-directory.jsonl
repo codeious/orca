@@ -1,0 +1,6 @@
+{"t":0,"dir":"out","frame":{"jsonrpc":"2.0","type":"request","factoryApiVersion":"1.0.0","factoryProtocolVersion":"1.269.0","id":"r1","method":"droid.change_working_directory","params":{"workingDirectory":"/work/probe/sub"}}}
+{"t":1,"dir":"in","frame":{"jsonrpc":"2.0","type":"response","factoryApiVersion":"1.0.0","factoryProtocolVersion":"1.289.0","id":"r1","result":{"resolvedPath":"/work/probe/sub"}}}
+{"t":2,"dir":"out","frame":{"jsonrpc":"2.0","type":"request","factoryApiVersion":"1.0.0","factoryProtocolVersion":"1.269.0","id":"r2","method":"droid.change_working_directory","params":{"workingDirectory":"/work/probe/untrusted"}}}
+{"t":3,"dir":"in","frame":{"jsonrpc":"2.0","type":"response","factoryApiVersion":"1.0.0","factoryProtocolVersion":"1.289.0","id":"r2","error":{"code":-32600,"message":"Folder is not trusted: /work/probe/untrusted. Open it in the Droid CLI and accept the trust prompt, then try again."}}}
+{"t":4,"dir":"out","frame":{"jsonrpc":"2.0","type":"request","factoryApiVersion":"1.0.0","factoryProtocolVersion":"1.269.0","id":"r3","method":"droid.change_working_directory","params":{"workingDirectory":"/work/probe/missing"}}}
+{"t":5,"dir":"in","frame":{"jsonrpc":"2.0","type":"response","factoryApiVersion":"1.0.0","factoryProtocolVersion":"1.289.0","id":"r3","error":{"code":-32603,"message":"Working directory does not exist"}}}
