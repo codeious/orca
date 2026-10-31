@@ -1,6 +1,8 @@
 // @vitest-environment happy-dom
 
 import { renderHook } from '@testing-library/react'
+import { createElement, type ReactNode } from 'react'
+import { ConfirmationDialogContext } from '@/components/confirmation-dialog-context'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SessionOptionDescriptor } from '../../../../shared/native-chat-session-options'
 import type { StructuredAgentLaunchSettlement } from '@/lib/structured-agent-launch-settlement'
@@ -10,9 +12,14 @@ const mocks = vi.hoisted(() => ({
   closeUnifiedTab: vi.fn(),
   setTabCustomTitle: vi.fn(),
   toastError: vi.fn(),
-  runChild: vi.fn()
+  runChild: vi.fn(),
+  confirm: vi.fn(),
+  call: vi.fn()
 }))
 
+vi.mock('@/runtime/structured-agent-session-client', () => ({
+  callStructuredAgentSession: mocks.call
+}))
 vi.mock('@/lib/droid-chat-session-switch', () => ({ switchDroidChatSession: mocks.switchSession }))
 vi.mock('./droid-child-commands', () => ({ runDroidChildCommand: mocks.runChild }))
 vi.mock('@/store', () => ({
@@ -58,16 +65,21 @@ const SURFACE: NonNullable<HookArgs['optionSurface']> = {
 }
 
 function mount(extra: Partial<HookArgs> = {}) {
-  return renderHook(() =>
-    useDroidSessionCommands({
-      tabId: TAB,
-      sessionId: SESSION,
-      target: TARGET,
-      agent: 'droid',
-      optionSnapshot: SNAPSHOT,
-      optionSurface: SURFACE,
-      ...extra
-    })
+  return renderHook(
+    () =>
+      useDroidSessionCommands({
+        tabId: TAB,
+        sessionId: SESSION,
+        target: TARGET,
+        agent: 'droid',
+        optionSnapshot: SNAPSHOT,
+        optionSurface: SURFACE,
+        ...extra
+      }),
+    {
+      wrapper: ({ children }: { children: ReactNode }) =>
+        createElement(ConfirmationDialogContext.Provider, { value: mocks.confirm }, children)
+    }
   ).result
 }
 
@@ -384,4 +396,40 @@ describe('a chat that is not Droid', () => {
       expect(mount({ agent }).current).toBeUndefined()
     }
   )
+})
+
+describe('/bug in a Droid chat', () => {
+  it('sends only the confirmed comment to the fake host, and never echoes it in the outcome', async () => {
+    mocks.confirm.mockResolvedValue(true)
+    mocks.call.mockResolvedValue({ name: 'bug', submitted: true })
+
+    expect(await run(mount(), '/bug harness check')).toEqual({
+      accepted: true,
+      error: null,
+      info: 'Bug report sent to Factory.'
+    })
+    expect(mocks.call).toHaveBeenCalledExactlyOnceWith(TARGET, 'agentSession.droidCommand', {
+      sessionId: SESSION,
+      command: { name: 'bug', userComment: 'harness check' }
+    })
+    expect(mocks.runChild).not.toHaveBeenCalled()
+  })
+
+  it('asks before submitting, and declining sends nothing and leaves the chat open', async () => {
+    mocks.confirm.mockResolvedValue(false)
+
+    expect(await run(mount(), '/bug harness check')).toEqual({ accepted: false, error: null })
+
+    expect(mocks.confirm).toHaveBeenCalledExactlyOnceWith({
+      title: 'Send a bug report to Factory?',
+      description:
+        'Droid will send this comment and session diagnostics to Factory. The comment is not saved in this chat.',
+      confirmLabel: 'Send report',
+      cancelLabel: 'Cancel',
+      cancelVariant: 'ghost'
+    })
+    expect(mocks.call).not.toHaveBeenCalled()
+    expect(mocks.runChild).not.toHaveBeenCalled()
+    expect(mocks.closeUnifiedTab).not.toHaveBeenCalled()
+  })
 })

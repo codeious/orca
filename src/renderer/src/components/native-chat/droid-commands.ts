@@ -7,6 +7,11 @@ import type { SlashCommandSuggestion } from '../../../../shared/native-chat-slas
 
 // Typed by the registry's names, so a command registered there does not compile until it has words.
 const DESCRIPTIONS: Record<DroidHostCommandName, () => string> = {
+  bug: () =>
+    translate(
+      'components.native-chat.droidCommands.bug',
+      'Send a bug report to Factory after confirmation; add a comment'
+    ),
   help: () =>
     translate('components.native-chat.droidCommands.help', 'Show the Droid commands and keys'),
   clear: () =>

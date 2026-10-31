@@ -2,7 +2,7 @@
 // A value the field sets on the editor comes from the draft store, so the editor never saves it
 // back: an echo would make another window's draft, or a late-loaded one, a change of this window.
 import { createElement, createRef } from 'react'
-import { act, cleanup, render } from '@testing-library/react'
+import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type * as DraftStore from './native-chat-composer-draft-store'
 import type * as DraftCache from './native-chat-draft-cache'
@@ -32,21 +32,31 @@ async function open(options: { hydrate?: boolean } = {}): Promise<Renderer> {
 
 /** The editor, plus the field's effect that sets the store's draft on it. */
 async function mountEditor(
-  renderer: Renderer
-): Promise<{ stopSync: () => void; input: () => NativeChatComposerInput; unmount: () => void }> {
+  renderer: Renderer,
+  droid = false
+): Promise<{
+  stopSync: () => void
+  input: () => NativeChatComposerInput
+  unmount: () => void
+  textbox: HTMLElement
+}> {
   const { NativeChatPromptEditor } = await import('./NativeChatPromptEditor')
+  const { useNativeChatDraft } = await import('./use-native-chat-draft')
   const inputRef = createRef<NativeChatComposerInput>()
-  const view = render(
-    createElement(NativeChatPromptEditor, {
+  function Composer(): React.JSX.Element {
+    const { draft, setDraft } = useNativeChatDraft(SCOPE, () => false)
+    return createElement(NativeChatPromptEditor, {
       scopeKey: SCOPE,
+      mirrorDroidComposerFocus: droid,
       inputRef,
-      initialValue: renderer.drafts.readNativeChatDraftCache(SCOPE),
+      initialValue: draft,
       disabled: false,
       placeholder: 'Message',
-      onChange: () => {},
+      onChange: (input) => setDraft(input.value),
       onSelect: () => {}
     })
-  )
+  }
+  const view = render(createElement(Composer))
   await vi.waitFor(() => expect(inputRef.current).not.toBeNull())
   const stopSync = renderer.store.subscribeToNativeChatComposerDraft(SCOPE, () => {
     // Like the field's layout effect, after the store change returns.
@@ -57,7 +67,12 @@ async function mountEditor(
       }
     })
   })
-  return { stopSync, input: () => inputRef.current!, unmount: view.unmount }
+  return {
+    stopSync,
+    input: () => inputRef.current!,
+    unmount: view.unmount,
+    textbox: view.getByRole('textbox')
+  }
 }
 
 const SKILL_DOCUMENT = {
@@ -75,6 +90,13 @@ const SKILL_DOCUMENT = {
 
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+function typeText(input: NativeChatComposerInput, text: string): void {
+  if (!input.insertText) {
+    throw new Error('The prompt editor must support text insertion')
+  }
+  input.insertText(text)
+}
+
 beforeEach(() => {
   localStorage.clear()
   storage = createMemoryNativeChatComposerDraftStorage()
@@ -88,6 +110,97 @@ afterEach(() => {
 })
 
 describe('the editor and the draft store', () => {
+  it.each([
+    [false, 'typed'],
+    [true, 'typed'],
+    [false, 'pasted'],
+    [true, 'pasted']
+  ] as const)(
+    'keeps a Droid /bug comment and continued edits only in memory (image: %s, %s)',
+    async (withImage, entry) => {
+      const renderer = await open()
+      const images = withImage ? [{ id: 'shot', path: '/repo/fake-shot.png' }] : []
+      renderer.drafts.appendNativeChatAttachmentCache(SCOPE, images)
+      await renderer.store.nativeChatComposerDraftWritesSettled()
+      const editor = await mountEditor(renderer, true)
+      act(() => {
+        if (entry === 'pasted') {
+          fireEvent.paste(editor.textbox, {
+            clipboardData: { getData: () => '/bug fake-private-comment' }
+          })
+        } else {
+          for (const character of '/bug fake-private-comment') {
+            typeText(editor.input(), character)
+          }
+        }
+      })
+      renderer.store.flushNativeChatComposerDrafts()
+      await renderer.store.nativeChatComposerDraftWritesSettled()
+
+      expect(renderer.drafts.readNativeChatDraftCache(SCOPE)).toBe('/bug fake-private-comment')
+      expect(JSON.stringify(storage.drafts.get(SCOPE) ?? null)).not.toContain(
+        'fake-private-comment'
+      )
+      expect(storage.drafts.get(SCOPE)?.document).toBeUndefined()
+
+      // Keep the next storage write unconfirmed so pagehide must journal it.
+      storage.write = () => new Promise(() => {})
+      storage.remove = () => new Promise(() => {})
+      act(() => {
+        fireEvent.paste(editor.textbox, {
+          clipboardData: { getData: () => '\ncontinued-private-comment' }
+        })
+        typeText(editor.input(), ' edited')
+      })
+      window.dispatchEvent(new Event('pagehide'))
+      const text = '/bug fake-private-comment\ncontinued-private-comment edited'
+      expect(editor.input().value).toBe(text)
+      expect(renderer.drafts.readNativeChatDraftCache(SCOPE)).toBe(text)
+      expect(JSON.stringify(renderer.drafts.readNativeChatDraftDocument(SCOPE, text))).toContain(
+        'continued-private-comment edited'
+      )
+      const journal = localStorage.getItem('orca:nativeChatComposerDraftJournal:v1') ?? ''
+      expect(journal).not.toBe('')
+      expect(journal).not.toContain('private-comment')
+      expect(journal).not.toContain('"document"')
+      editor.stopSync()
+      editor.unmount()
+      const remounted = await mountEditor(renderer, true)
+      expect(remounted.input().value).toBe(text)
+      remounted.stopSync()
+    }
+  )
+
+  it.each([
+    [false, '/bug'],
+    [true, '/buggy']
+  ] as const)('still saves other drafts (Droid: %s, command: %s)', async (droid, command) => {
+    const renderer = await open()
+    const editor = await mountEditor(renderer, droid)
+    act(() => {
+      fireEvent.paste(editor.textbox, {
+        clipboardData: { getData: () => `${command} fake-private-comment` }
+      })
+      typeText(editor.input(), '\ncontinued-private-comment edited')
+    })
+    renderer.store.flushNativeChatComposerDrafts()
+    await renderer.store.nativeChatComposerDraftWritesSettled()
+    const text = `${command} fake-private-comment\ncontinued-private-comment edited`
+    expect(storage.drafts.get(SCOPE)?.text).toBe(text)
+    expect(JSON.stringify(storage.drafts.get(SCOPE)?.document)).toContain(
+      'continued-private-comment edited'
+    )
+
+    storage.write = () => new Promise(() => {})
+    act(() => typeText(editor.input(), ' again'))
+    window.dispatchEvent(new Event('pagehide'))
+    const journal = localStorage.getItem('orca:nativeChatComposerDraftJournal:v1') ?? ''
+    expect(journal).toContain('fake-private-comment')
+    expect(journal).toContain('continued-private-comment edited again')
+    expect(journal).toContain('"document"')
+    editor.stopSync()
+  })
+
   it('saves nothing when a draft that loads late is set on the editor', async () => {
     storage.drafts.set(SCOPE, { text: 'saved before the restart', images: [], savedAt: 1 })
     const renderer = await open({ hydrate: false })

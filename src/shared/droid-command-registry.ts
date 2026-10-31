@@ -19,6 +19,7 @@ export const DROID_HOST_COMMAND_NAMES = [
   'new',
   'quit',
   'exit',
+  'bug',
   ...DROID_CHILD_COMMAND_NAMES
 ] as const
 

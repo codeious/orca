@@ -512,7 +512,10 @@ describe('native-chat composer draft store', () => {
       unsaved: true
     })
     modules.drafts.writeNativeChatDraftDocument('tab-1:pane', 'https://example.com/issue/1', {
-      type: 'doc'
+      type: 'doc',
+      content: [
+        { type: 'paragraph', content: [{ type: 'text', text: 'https://example.com/issue/1' }] }
+      ]
     })
     modules.store.flushNativeChatComposerDrafts()
 
@@ -520,6 +523,7 @@ describe('native-chat composer draft store', () => {
       'https://example.com/issue/1'
     )
     expect(storedDraft('tab-1:pane')).toMatchObject({ text: '', images: IMAGES })
+    expect(storedDraft('tab-1:pane')?.document).toBeUndefined()
     modules.drafts.writeNativeChatDraftCache('tab-1:pane', 'https://example.com/issue/1 please')
     modules.store.flushNativeChatComposerDrafts()
     const reloaded = await reload()

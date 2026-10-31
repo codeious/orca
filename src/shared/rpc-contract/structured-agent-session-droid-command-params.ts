@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { AGENT_SESSION_CONVERSATION_NAME_MAX_LENGTH } from '../agent-session-conversation-name'
 import {
   DROID_COMPRESS_INSTRUCTIONS_MAX_LENGTH,
+  DROID_BUG_COMMENT_MAX_LENGTH,
   DROID_MCP_ARGS_MAX,
   DROID_MCP_ARG_MAX_LENGTH,
   DROID_MCP_NAME_MAX_LENGTH,
@@ -76,6 +77,12 @@ export const DroidCommandParams = z
         })
         .strict(),
       z.object({ name: z.literal('mcp'), action: McpAction }).strict(),
+      z
+        .object({
+          name: z.literal('bug'),
+          userComment: z.string().max(DROID_BUG_COMMENT_MAX_LENGTH).optional()
+        })
+        .strict(),
       z.object({ name: z.literal('rewind'), itemId: z.string().min(1) }).strict()
     ])
   })

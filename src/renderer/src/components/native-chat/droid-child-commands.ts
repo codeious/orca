@@ -58,7 +58,7 @@ const compressing = new Set<string>()
 
 // A rewind names a row of the chat and runs from the chat's own rewind, never from here.
 type AskedCommandName = Exclude<DroidChildCommandName, 'rewind-conversation'>
-type AskedCommandResult = Exclude<DroidHostCommandResult, { name: 'rewind' }>
+type AskedCommandResult = Exclude<DroidHostCommandResult, { name: 'rewind' | 'bug' }>
 
 function hostCommand(name: AskedCommandName, argument: string): DroidHostCommand {
   switch (name) {

@@ -3,6 +3,7 @@ import { normalizeAgentSessionConversationName } from '../../shared/agent-sessio
 import type { DroidHostCommand, DroidHostCommandResult } from '../../shared/droid-host-command'
 import { forkDroidSession, rewindDroidSession } from './droid-fork-and-rewind'
 import { runDroidMcp } from './droid-mcp'
+import { isDroidMethodNotFound } from './droid-missing-method'
 import type { DroidSession } from './droid-session'
 import { runDroidSkills } from './droid-skills'
 import { changeDroidWorkingFolder } from './droid-working-folder'
@@ -55,6 +56,23 @@ async function compress(
 }
 
 const renamedSchema = z.looseObject({ success: z.unknown() })
+const bugReportSchema = z.looseObject({ bugReportId: z.string().min(1) })
+
+async function submitBug(
+  session: Pick<DroidSession, 'request'>,
+  userComment = ''
+): Promise<DroidHostCommandResult> {
+  try {
+    const answer = await session.request('droid.submit_bug_report', { userComment })
+    return { name: 'bug', submitted: bugReportSchema.safeParse(answer).success }
+  } catch (error) {
+    if (isDroidMethodNotFound(error)) {
+      throw error
+    }
+    // A report error may echo its body. Nothing of it belongs in chat or logs.
+    return { name: 'bug', submitted: false }
+  }
+}
 
 async function rename(
   session: Pick<DroidSession, 'request'>,
@@ -98,6 +116,8 @@ export async function runDroidHostCommand(
       return runDroidSkills(session, command.toggle)
     case 'mcp':
       return runDroidMcp(session, command.action)
+    case 'bug':
+      return submitBug(session, command.userComment)
     case 'rewind':
       return rewindDroidSession(session, command.messageId)
   }

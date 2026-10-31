@@ -15,6 +15,7 @@ const DROID_OWN_COMMANDS = [
   'new',
   'quit',
   'exit',
+  'bug',
   'context',
   'cost',
   'compress',
@@ -135,7 +136,7 @@ describe('composer catalog authority', () => {
         sessionSlashCommandSuggestions(agent, reported)
       )
       expect(unreported.result.current.agentCommands.map(({ name }) => name)).not.toContain('help')
-      for (const droidOnly of ['cwd', 'cd', 'skills', 'mcp']) {
+      for (const droidOnly of ['cwd', 'cd', 'skills', 'mcp', 'bug']) {
         expect(unreported.result.current.agentCommands.map(({ name }) => name)).not.toContain(
           droidOnly
         )

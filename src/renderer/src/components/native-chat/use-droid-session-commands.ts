@@ -21,9 +21,10 @@ import type {
 } from '../../../../shared/native-chat-session-options'
 import type { StructuredAgentSessionCommandOutcome } from '../../../../shared/structured-agent-session-composer'
 import { runDroidChildCommand, type DroidChildCommandChat } from './droid-child-commands'
+import { useDroidBugCommand } from './use-droid-bug-command'
 
 // The commands answered by the Droid child are never asked twice.
-type SessionCommandName = Exclude<DroidHostCommandName, 'help' | DroidChildCommandName>
+type SessionCommandName = Exclude<DroidHostCommandName, 'help' | 'bug' | DroidChildCommandName>
 type SessionCommandOutcome = Omit<StructuredAgentSessionCommandOutcome, 'handled'>
 
 // Typed by the registry's names, so a command registered there does not compile until it is asked.
@@ -109,6 +110,7 @@ export function useDroidSessionCommands(args: {
   const { tabId, sessionId, target, agent, optionSnapshot, optionSurface, rewindConversation } =
     args
   const asked = useRef<SessionCommandName | null>(null)
+  const bug = useDroidBugCommand({ agent, sessionId, target })
   return useMemo((): DroidSessionCommands | undefined => {
     if (agent !== 'droid') {
       return undefined
@@ -120,6 +122,10 @@ export function useDroidSessionCommands(args: {
         }
       },
       runHostCommand: async (name, argument) => {
+        if (name === 'bug') {
+          asked.current = null
+          return bug(argument)
+        }
         if (isDroidChildCommandName(name)) {
           asked.current = null
           return runDroidChildCommand(
@@ -169,5 +175,5 @@ export function useDroidSessionCommands(args: {
         )
       }
     }
-  }, [agent, optionSnapshot, optionSurface, rewindConversation, sessionId, tabId, target])
+  }, [agent, bug, optionSnapshot, optionSurface, rewindConversation, sessionId, tabId, target])
 }

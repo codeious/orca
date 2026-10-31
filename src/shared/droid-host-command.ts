@@ -2,6 +2,7 @@ import type { AgentSessionContextReport } from './agent-session-context-usage'
 
 /** What a person may type after /compress; the host refuses more than Droid is asked to weigh. */
 export const DROID_COMPRESS_INSTRUCTIONS_MAX_LENGTH = 8_000
+export const DROID_BUG_COMMENT_MAX_LENGTH = 8_000
 
 /** What the wire accepts as a typed folder and as a skill name. */
 export const DROID_WORKING_FOLDER_MAX_LENGTH = 4_096
@@ -38,6 +39,7 @@ export type DroidHostCommand =
   | { name: 'cwd'; path: string }
   | { name: 'skills'; toggle?: { skillName: string; disabled: boolean } }
   | { name: 'mcp'; action: DroidMcpAction }
+  | { name: 'bug'; userComment?: string }
   | { name: 'rewind'; messageId: string }
 
 /** One MCP server as `/mcp` shows it. Droid's error text and pending sign-in link are never carried. */
@@ -82,6 +84,8 @@ export type DroidHostCommandResult =
     }
   /** The servers Droid lists once any change is made; `changed` is the change that was just made. */
   | { name: 'mcp'; servers: DroidMcpServer[]; changed: DroidMcpChange | null }
+  /** Neither the comment nor Factory's report id is returned or journaled. */
+  | { name: 'bug'; submitted: boolean }
   /** `notRestoredCount` is every file Droid could not put back: evicted from its store, or failed. */
   | {
       name: 'rewind'

@@ -610,8 +610,11 @@ describe('Droid session end', () => {
   it('ignores a notification of a kind it does not know', async () => {
     const h = await setup()
     const { connection } = await h.start()
-    connection.notify({ type: 'settings_updated', settings: {} })
+    connection.notify({ type: 'future_unrecognized_droid_notification', unknownField: true })
     expect(connection.closed).toBe(false)
+    await expect(
+      h.adapter.setOption({ sessionId, key: 'effort', value: 'high', fence: 7 })
+    ).resolves.toMatchObject({ effort: 'high' })
   })
 })
 

@@ -86,13 +86,18 @@ export function readNativeChatDraftDocument(
 export function writeNativeChatDraftDocument(
   scopeKey: string,
   text: string,
-  document: JSONContent
+  document: JSONContent,
+  options?: { unsaved?: boolean }
 ): void {
   if (!text) {
     writeNativeChatDraftCache(scopeKey, '')
     return
   }
-  updateNativeChatComposerDraft(scopeKey, { text, document }, 'deferred')
+  updateNativeChatComposerDraft(
+    scopeKey,
+    { text, document, ...(options?.unsaved ? { unsavedText: text } : {}) },
+    'deferred'
+  )
 }
 
 export function readNativeChatAttachmentCache(

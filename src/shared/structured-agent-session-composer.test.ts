@@ -102,6 +102,15 @@ describe('isStructuredAgentSessionComposerCommand', () => {
     (name) => {
       expect(isStructuredAgentSessionComposerCommand(`/${name}`, 'droid')).toBe(true)
       expect(isStructuredAgentSessionComposerCommand(`/${name} and more`, 'droid')).toBe(true)
+      expect(
+        isStructuredAgentSessionComposerCommand(`/${name} first\nprivate second`, 'droid')
+      ).toBe(true)
+      expect(
+        isStructuredAgentSessionComposerCommand(
+          `  /${name.toUpperCase()} first\nprivate second `,
+          'droid'
+        )
+      ).toBe(true)
     }
   )
 
@@ -338,6 +347,52 @@ describe('a command the host runs itself for the agent', () => {
 
     expect(runHostCommand).toHaveBeenCalledWith('new', 'and more words')
   })
+
+  it.each(['/bug first\nprivate  second', '  /BUG  first\nprivate  second  '])(
+    'keeps a multiline bug comment on the host: %j',
+    async (text) => {
+      const runHostCommand = vi.fn(async () => ({
+        accepted: false,
+        error: null,
+        info: 'Confirm before sending this report.'
+      }))
+
+      expect(
+        await dispatchStructuredAgentSessionComposerCommand(text, {
+          ...controller,
+          runHostCommand
+        })
+      ).toEqual({
+        handled: true,
+        accepted: false,
+        error: null,
+        info: 'Confirm before sending this report.'
+      })
+      expect(runHostCommand).toHaveBeenCalledWith('bug', 'first\nprivate  second')
+    }
+  )
+
+  it.each(['claude', 'codex', 'pi', 'omp', 'openclaude'] as const)(
+    'preserves %s parsing of multiline slash text',
+    async (agent) => {
+      const runHostCommand = vi.fn(async () => ({ accepted: true, error: null }))
+      for (const text of [
+        '/bug first\nprivate second',
+        '  /BUG first\nprivate second ',
+        '/clear first\nprivate second'
+      ]) {
+        expect(isStructuredAgentSessionComposerCommand(text, agent)).toBe(false)
+        expect(
+          await dispatchStructuredAgentSessionComposerCommand(text, {
+            ...controller,
+            agent,
+            runHostCommand
+          })
+        ).toEqual({ handled: false, accepted: false, error: null })
+      }
+      expect(runHostCommand).not.toHaveBeenCalled()
+    }
+  )
 
   it('leaves the command to the shared handling when the host does not take it', async () => {
     const runConversationCommand = vi.fn(async () => ({ accepted: true, error: null }))

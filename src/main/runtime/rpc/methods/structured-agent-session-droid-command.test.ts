@@ -21,6 +21,8 @@ afterEach(() => {
 describe('agentSession.droidCommand', () => {
   it.each([
     [{ name: 'context' }],
+    [{ name: 'bug' }],
+    [{ name: 'bug', userComment: 'fake comment' }],
     [{ name: 'credits' }],
     [{ name: 'compress' }],
     [{ name: 'compress', instructions: 'keep the schema' }],
@@ -73,6 +75,9 @@ describe('agentSession.droidCommand', () => {
     ['a key it does not know', { name: 'context', verbose: true }],
     ['instructions on a command that takes none', { name: 'credits', instructions: 'x' }],
     ['an empty command', {}],
+    ['a bug comment that is not text', { name: 'bug', userComment: 7 }],
+    ['an overlong bug comment', { name: 'bug', userComment: 'x'.repeat(8001) }],
+    ['client logs on a bug report', { name: 'bug', clientLogs: 'not allowed' }],
     ['a title for the fork, which the host words itself', { name: 'fork', title: 'x' }],
     ['a rename that names no title', { name: 'rename' }],
     ['a rename to an empty title', { name: 'rename', title: '' }],

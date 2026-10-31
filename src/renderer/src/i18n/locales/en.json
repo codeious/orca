@@ -18743,6 +18743,7 @@
         "reconnect": "Reconnect"
       },
       "droidCommands": {
+        "bug": "Send a bug report to Factory after confirmation; add a comment",
         "help": "Show the Droid commands and keys",
         "clear": "Start a new session that keeps these settings",
         "new": "Start a new session with the settings of a new chat",
@@ -18813,6 +18814,15 @@
         "rewound": "Rewound the conversation. The earlier session stays in Session History.",
         "rewoundWithFilesLeft": "Rewound the conversation. Files Droid could not put back: {{count}}. The earlier session stays in Session History.",
         "moveFailed": "Droid rewound the conversation into a new session, but Orca could not open it. The earlier session stays in Session History."
+      },
+      "droidBug": {
+        "title": "Send a bug report to Factory?",
+        "description": "Droid will send this comment and session diagnostics to Factory. The comment is not saved in this chat.",
+        "confirm": "Send report",
+        "cancel": "Cancel",
+        "sent": "Bug report sent to Factory.",
+        "failed": "Could not send the bug report. Try again.",
+        "tooLong": "Keep the /bug comment under {{max}} characters."
       },
       "droidSessionCommands": {
         "confirmClear": "Run /clear again to start a new session that keeps these settings. This session stays in Session History.",

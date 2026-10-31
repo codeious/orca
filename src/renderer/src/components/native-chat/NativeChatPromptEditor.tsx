@@ -122,11 +122,11 @@ export function NativeChatPromptEditor({
           (!transaction.getMeta('preventUpdate') ||
             hasUnsavedNativeChatComposerDraftChange(scopeKey))
         ) {
-          writeNativeChatDraftDocument(
-            scopeKey,
-            promptTextMap(current.state.doc).text,
-            current.getJSON()
-          )
+          const text = promptTextMap(current.state.doc).text
+          // A report comment stays in this run, including every edit before confirmation.
+          writeNativeChatDraftDocument(scopeKey, text, current.getJSON(), {
+            unsaved: mirrorDroidComposerFocus && /^\/bug(?:\s|$)/i.test(text.trimStart())
+          })
         }
       },
       onUpdate: () => {

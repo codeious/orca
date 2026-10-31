@@ -73,7 +73,14 @@ export type StructuredAgentSessionCommandOutcome = {
   refusedWhile?: StructuredAgentSessionCommandRefusalCause
 }
 
-function commandParts(text: string): { name: string; argument: string } | null {
+function commandParts(text: string, agent?: AgentType): { name: string; argument: string } | null {
+  if (agent === 'droid') {
+    // Droid's host-owned text must never fall through to the model, even with multiline arguments.
+    const match = /^\/([^\s]+)(?:\s+(.*))?$/s.exec(text.trim())
+    if (match && isDroidHostCommandName(match[1]!.toLowerCase())) {
+      return { name: match[1]!.toLowerCase(), argument: match[2]?.trim() ?? '' }
+    }
+  }
   if (!text.startsWith('/')) {
     return null
   }
@@ -125,7 +132,7 @@ export function isStructuredAgentSessionComposerCommand(
   text: string,
   agent: AgentType = 'codex'
 ): boolean {
-  const command = commandParts(text)
+  const command = commandParts(text, agent)
   return Boolean(
     command && structuredRecognizedCommands(agent).some((entry) => entry.name === command.name)
   )
@@ -181,7 +188,7 @@ export async function dispatchStructuredAgentSessionComposerCommand(
   text: string,
   controller: StructuredAgentSessionComposerOptions
 ): Promise<StructuredAgentSessionCommandOutcome> {
-  const command = commandParts(text)
+  const command = commandParts(text, controller.agent)
   if (command?.name === 'goal' && controller.setThreadGoalObjective) {
     if (!command.argument) {
       return { handled: true, accepted: false, error: 'Describe the goal after /goal.' }

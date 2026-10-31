@@ -9,6 +9,7 @@ import type { ExecutionHostId } from '../../../shared/execution-host'
 import type { Tab } from '../../../shared/tab-types'
 import { DROID_SPEC_SAME_AS_MAIN } from '../../../shared/droid-spec-pair-options'
 import { structuredAgentSessionTabId } from '../../../shared/structured-agent-session-projection'
+import { structuredChatDisplayName } from '../../../shared/structured-chat-row-name'
 import type { TabsSlice } from '../store/slices/tabs/tabs-slice-contract'
 import { createTestStore } from '../store/slices/store-test-helpers'
 import {
@@ -210,6 +211,46 @@ describe('switching a Droid chat to another Droid session', () => {
 
     expect(tab(NEW_TAB)?.customLabel).toBe('Chosen with /rename')
   })
+
+  it.each([
+    ['replace', 'Fix auth', 'Fix auth'],
+    ['replace', null, 'New Droid title'],
+    ['beside', 'Fix auth', 'New Droid title'],
+    ['beside', null, 'New Droid title']
+  ] as const)(
+    'resolves the new host title after a %s switch from a tab named %j',
+    async (placement, customLabel, expectedTitle) => {
+      store.getState().setTabCustomLabel(`agent-session:${OLD_CHAT}`, customLabel)
+      store.getState().setTabLabel(`agent-session:${OLD_CHAT}`, 'Earlier Droid title')
+
+      const switched = switchDroidChatSession({
+        fromTabId: `agent-session:${OLD_CHAT}`,
+        placement,
+        target: { kind: 'existing', droidSessionId: DROID_ID }
+      })
+      await switched.settlement
+
+      const switchedTab = tab(NEW_TAB)
+      expect(switchedTab).toBeDefined()
+      if (!switchedTab) {
+        throw new Error('The replacement tab did not publish')
+      }
+      // The title feed owns notifications; apply its saved names to the actual switched tab.
+      expect(
+        structuredChatDisplayName(switchedTab.customLabel, 'New Droid title', switchedTab.label)
+      ).toBe(expectedTitle)
+      expect(
+        structuredChatDisplayName(switchedTab.customLabel, 'Later Droid title', switchedTab.label)
+      ).toBe(placement === 'replace' && customLabel ? 'Fix auth' : 'Later Droid title')
+      expect(tab(`agent-session:${OLD_CHAT}`)?.customLabel).toBe(
+        placement === 'beside' ? customLabel : undefined
+      )
+      expect(mocks.createIntent).toHaveBeenCalledTimes(1)
+      expect(mocks.launch).toHaveBeenCalledTimes(1)
+      expect(getStructuredAgentSessionPendingSends(NEW_CHAT)).toEqual([])
+      expect(getStructuredAgentSessionPendingSends(OLD_CHAT)).toEqual([])
+    }
+  )
 
   it('leaves the old session in Session History by only releasing its view', async () => {
     const switched = switchDroidChatSession({

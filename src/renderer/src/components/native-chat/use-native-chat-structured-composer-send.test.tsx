@@ -67,7 +67,9 @@ describe('attachment guard follows what the host claims', () => {
   it.each([
     ['claude', '/clear'],
     ['claude', '/model'],
-    ['codex', '/permissions']
+    ['codex', '/permissions'],
+    ['droid', '/bug first\nprivate second'],
+    ['droid', '  /BUG first\nprivate second ']
   ] as const)('refuses attachments on the host-claimed %s command %s', (agent, text) => {
     const { send, structuredTransport } = harness(agent)
     send(text)
@@ -151,6 +153,45 @@ describe('reports the sends that bring the latest into view', () => {
 })
 
 describe("says a host's answer to a command as information, never as an error", () => {
+  it('keeps a multiline /bug out of the message transport while asking for confirmation', async () => {
+    const { send, structuredTransport, setDraft } = harness('droid')
+    const runHostCommand = vi.fn(async () => ({
+      accepted: false,
+      error: null,
+      info: 'Confirm before sending this report.'
+    }))
+    structuredTransport.dispatchCommand = (text) =>
+      dispatchStructuredAgentSessionComposerCommand(text, {
+        agent: 'droid',
+        snapshot: [],
+        invokeAction: async () => true,
+        setOption: async () => true,
+        runHostCommand
+      })
+
+    await send('  /BUG first\nprivate  second ', [])
+
+    expect(runHostCommand).toHaveBeenCalledWith('bug', 'first\nprivate  second')
+    expect(structuredTransport.onError).toHaveBeenCalledWith(
+      'Confirm before sending this report.',
+      { kind: 'info' }
+    )
+    expect(structuredTransport.send).not.toHaveBeenCalled()
+    expect(setDraft).not.toHaveBeenCalled()
+  })
+
+  it.each(['claude', 'codex'] as const)(
+    'still sends multiline /bug text unchanged to %s',
+    async (agent) => {
+      const { send, structuredTransport } = harness(agent)
+      const text = '/bug first\nprivate second'
+
+      await send(text, [])
+
+      expect(structuredTransport.send).toHaveBeenCalledWith(text, [])
+    }
+  )
+
   it("reports Droid's /help key list as information and sends no message", async () => {
     const { send, structuredTransport } = harness(
       'droid',

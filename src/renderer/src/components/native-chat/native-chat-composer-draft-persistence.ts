@@ -54,12 +54,12 @@ export function isKeptLocalPaste(image: NativeChatComposerDraftImage): boolean {
   return !image.connectionId && isNativeChatKeptPastePath(image.path)
 }
 
-/** What storage keeps: not an unsaved launch-seed copy, and a paste outside Orca's paste folder
+/** What storage keeps: not unsaved text or its document, and a paste outside Orca's paste folder
  *  (over SSH, or from before it) only by name. A paste a paired server stored for the chat stays
  *  whole: the server keeps it, and its claim at send refuses one it no longer has. Null when
  *  nothing is left. */
 function savedForm(record: DraftRecord): StoredNativeChatComposerDraft | null {
-  const { unsavedText, ...saved } = record
+  const { unsavedText, document, ...saved } = record
   const images = saved.images.map((image) =>
     isNativeChatPastedImagePath(image.path) &&
     !isKeptLocalPaste(image) &&
@@ -71,7 +71,12 @@ function savedForm(record: DraftRecord): StoredNativeChatComposerDraft | null {
   if (text === '' && images.length === 0) {
     return null
   }
-  return { ...saved, text, images }
+  return {
+    ...saved,
+    text,
+    ...(saved.text !== unsavedText && document ? { document } : {}),
+    images
+  }
 }
 
 function confirm(scopeKey: string, change: UnconfirmedDraftChange): void {
