@@ -1,0 +1,37 @@
+src/main/droid/droid-fork-and-rewind.test.ts
+  s_8ca34d33aa92f9::t_edfe14727d00fb 1,10,60-63,200-227
+src/main/droid/droid-host-command-text.test.ts
+  s_8ca34d33aa92f9::t_37528f8a9e011c 1-171
+src/main/droid/droid-mcp-sign-in.test.ts
+  s_8ca34d33aa92f9::t_3ba2c15838429b 12-13,150-157,171-176,252-257,273-278,290-295,299-301,307-314,323-342,363-367
+src/renderer/src/components/native-chat/NativeChatMessageRow.test.tsx
+  s_753d7a80eab98a::t_9022ce0ece9b1c 46-82
+src/renderer/src/components/native-chat/native-chat-stopped-before-start-row.ts
+  s_753d7a80eab98a::t_77b467624fe2ba 4,6,8-11,21-23
+src/shared/droid-host-copy.ts
+  s_753d7a80eab98a::t_1ebbee553077f5 1-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8fee50a61a1c16a50cc9248080a8ea89b89a23b3",
+  "prompts": {},
+  "sessions": {
+    "s_753d7a80eab98a": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fc92fe97-a469-4fba-8ca2-8f2a49e31a20",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_8ca34d33aa92f9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad7f605b-9b2e-4def-9c58-b926a1279f49",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
