@@ -13,6 +13,7 @@ import type { ProviderProcessLaunch } from '../provider-process/provider-process
 import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
 import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
 import { DroidContextUsage } from './droid-context-usage'
+import { DroidMcpSignIn, type DroidMcpSignInOpener } from './droid-mcp-sign-in'
 import {
   droidOptionParams,
   droidSavedOptionPicks,
@@ -62,6 +63,8 @@ export type DroidSessionDeps = {
   logger: StructuredAgentSessionLogger
   /** Resolves a folder to its real path; replaced in tests. */
   realpath?: (path: string) => Promise<string>
+  /** Opens an MCP sign-in link on the machine Orca runs on. Absent on a host with no way to. */
+  openMcpSignIn?: DroidMcpSignInOpener
 }
 
 /** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. A picked
@@ -91,6 +94,7 @@ export class DroidSession {
   readonly model = new DroidSessionModel()
   readonly options: DroidSessionOptions
   readonly context: DroidContextUsage
+  readonly mcpSignIn: DroidMcpSignIn
   /** Droid's own id for the session this child holds, once the start has answered. */
   droidSessionId: string | undefined
   /** Where the chat was opened. A /cd stays inside it, so a load still finds the session here. */
@@ -168,6 +172,11 @@ export class DroidSession {
       apply: (events) => this.lane.apply(events),
       warn: (message, fields) =>
         deps.logger.warn(message, { scope: 'droid-context', sessionId, ...fields })
+    })
+    this.mcpSignIn = new DroidMcpSignIn({
+      ...(deps.openMcpSignIn ? { open: deps.openMcpSignIn } : {}),
+      warn: (message, fields) =>
+        deps.logger.warn(message, { scope: 'droid-mcp', sessionId, ...fields })
     })
     this.turns = new DroidTurns({
       lane: this.lane,
@@ -290,6 +299,7 @@ export class DroidSession {
     }
     try {
       this.context.receive(params)
+      this.mcpSignIn.receive(params)
       this.turns.receive(params)
     } catch (error) {
       this.fail(error instanceof Error ? error : new Error(String(error)))

@@ -23,6 +23,7 @@ const ACTIONS: Readonly<Record<string, string>> = {
   'droid.change_working_directory': 'Changing the working folder',
   'droid.list_skills': 'Listing skills',
   'droid.set_skill_disabled': 'Turning a skill on or off',
+  'droid.list_mcp_servers': 'Listing MCP servers',
   'droid.add_mcp_server': 'Adding an MCP server',
   'droid.remove_mcp_server': 'Removing an MCP server',
   'droid.toggle_mcp_server': 'Turning an MCP server on or off',

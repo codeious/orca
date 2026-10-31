@@ -18756,6 +18756,7 @@
         "cwd": "Move Droid to a folder inside this workspace",
         "cd": "Move Droid to a folder inside this workspace, like /cwd",
         "skills": "List Droid’s skills; add disable or enable and a name to turn one off or on",
+        "mcp": "List Droid’s MCP servers; add, remove, enable, disable or signin and a name to change one",
         "rewind-conversation": "Go back to before your latest message in a new session"
       },
       "droidChildCommands": {
@@ -18788,6 +18789,20 @@
         "skillsHint": "Turn one off or on with /skills disable <name> or /skills enable <name>.",
         "skillsTurnedOff": "Turned off the {{name}} skill. {{on}} of {{total}} skills are on.",
         "skillsTurnedOn": "Turned on the {{name}} skill. {{on}} of {{total}} skills are on.",
+        "mcpUsage": "Use /mcp to list MCP servers, or /mcp add <name> <command> [arguments], /mcp add <name> http <address>, /mcp enable <name>, /mcp disable <name>, /mcp remove <name> or /mcp signin <name>.",
+        "mcpNone": "No MCP servers are set up. Add one with /mcp add <name> <command>.",
+        "mcpNoneLeft": "No MCP servers are left.",
+        "mcpServers": "MCP servers: {{servers}}.",
+        "mcpServer": "{{name}} ({{details}})",
+        "mcpToolOne": "1 tool",
+        "mcpToolMany": "{{tools}} tools",
+        "mcpNeedsSignIn": "needs sign-in",
+        "mcpHint": "Change one with /mcp add, /mcp remove, /mcp disable, /mcp enable or /mcp signin <name>.",
+        "mcpAdded": "Added the {{name}} MCP server.",
+        "mcpEnabled": "Turned on the {{name}} MCP server.",
+        "mcpDisabled": "Turned off the {{name}} MCP server.",
+        "mcpRemoved": "Removed the {{name}} MCP server.",
+        "mcpSignedIn": "Signed in to the {{name}} MCP server.",
         "rewindUnavailable": "This chat cannot rewind."
       },
       "droidRewind": {

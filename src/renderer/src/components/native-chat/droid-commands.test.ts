@@ -28,7 +28,7 @@ describe('the Droid command registry in the slash menu', () => {
   })
 
   // A child command acts on its first submit; only the session commands ask a second time.
-  it('registers /fork, /rename, /cwd, /cd, /skills and /rewind-conversation as child commands, after /compress', () => {
+  it('registers /fork, /rename, /cwd, /cd, /skills, /mcp and /rewind-conversation as child commands, after /compress', () => {
     expect(DROID_CHILD_COMMAND_NAMES).toEqual([
       'context',
       'cost',
@@ -38,10 +38,19 @@ describe('the Droid command registry in the slash menu', () => {
       'cwd',
       'cd',
       'skills',
+      'mcp',
       'rewind-conversation'
     ])
     expect(DROID_HOST_COMMAND_NAMES).toEqual(
-      expect.arrayContaining(['fork', 'rename', 'cwd', 'cd', 'skills', 'rewind-conversation'])
+      expect.arrayContaining([
+        'fork',
+        'rename',
+        'cwd',
+        'cd',
+        'skills',
+        'mcp',
+        'rewind-conversation'
+      ])
     )
   })
 

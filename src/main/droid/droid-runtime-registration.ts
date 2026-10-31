@@ -48,6 +48,7 @@ function createDroidAdapter(context: StructuredAgentAdapterContext): StructuredA
         : {})
     }),
     ...(deps.openDroidConnection ? { openConnection: deps.openDroidConnection } : {}),
+    ...(deps.openMcpSignIn ? { openMcpSignIn: deps.openMcpSignIn } : {}),
     ...(deps.readProcessStartTime ? { readProcessStartTime: deps.readProcessStartTime } : {}),
     onLifecycle: context.deliverLifecycle,
     onSettled: ({ sessionId, clientMessageId, outcome }) => {

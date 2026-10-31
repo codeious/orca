@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { normalizeAgentSessionConversationName } from '../../shared/agent-session-conversation-name'
 import type { DroidHostCommand, DroidHostCommandResult } from '../../shared/droid-host-command'
 import { forkDroidSession, rewindDroidSession } from './droid-fork-and-rewind'
+import { runDroidMcp } from './droid-mcp'
 import type { DroidSession } from './droid-session'
 import { runDroidSkills } from './droid-skills'
 import { changeDroidWorkingFolder } from './droid-working-folder'
@@ -74,7 +75,10 @@ async function rename(
 
 /** Answers a command the host claims for a Droid chat from the child, without sending a message. */
 export async function runDroidHostCommand(
-  session: Pick<DroidSession, 'context' | 'request' | 'lane' | 'droidSessionId' | 'workspace'>,
+  session: Pick<
+    DroidSession,
+    'context' | 'request' | 'lane' | 'droidSessionId' | 'workspace' | 'mcpSignIn'
+  >,
   command: DroidHostCommand
 ): Promise<DroidHostCommandResult> {
   switch (command.name) {
@@ -92,6 +96,8 @@ export async function runDroidHostCommand(
       return changeDroidWorkingFolder(session, command.path)
     case 'skills':
       return runDroidSkills(session, command.toggle)
+    case 'mcp':
+      return runDroidMcp(session, command.action)
     case 'rewind':
       return rewindDroidSession(session, command.messageId)
   }

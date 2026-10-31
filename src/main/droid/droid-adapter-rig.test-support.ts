@@ -131,7 +131,11 @@ export type DroidAdapterRig = {
 export async function setupDroidAdapter(
   launch: Partial<DroidResolvedLaunch> = {},
   script?: (connection: FakeConnection) => void,
-  extraDeps: Pick<DroidSessionDeps, 'realpath' | 'onTitle'> = {}
+  extraDeps: Partial<
+    Pick<DroidSessionDeps, 'realpath' | 'onTitle' | 'logger' | 'openMcpSignIn'>
+  > = {},
+  /** The execution host the session is on: `local`, or a `runtime:<guid>` for a remote runtime. */
+  hostId = 'local'
 ): Promise<DroidAdapterRig> {
   const rig = await openProviderTimelineRig({ agent: 'droid', sessionId: DROID_RIG_SESSION })
   const connections: FakeConnection[] = []
@@ -145,7 +149,7 @@ export async function setupDroidAdapter(
     identity: {
       sessionId: DROID_RIG_SESSION,
       workspaceId: 'folder-1',
-      hostId: 'local',
+      hostId,
       agent: 'droid',
       providerHandle: null
     },

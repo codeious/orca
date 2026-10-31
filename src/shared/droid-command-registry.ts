@@ -8,6 +8,7 @@ export const DROID_CHILD_COMMAND_NAMES = [
   'cwd',
   'cd',
   'skills',
+  'mcp',
   'rewind-conversation'
 ] as const
 

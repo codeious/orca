@@ -104,6 +104,8 @@ export type StructuredAgentSessionRuntimeDeps = {
   resolveClaudeCommand?: () => string
   openPiConnection?: PiRpcSessionDeps['openConnection']
   openDroidConnection?: DroidSessionDeps['openConnection']
+  /** Opens a Droid MCP sign-in link on this machine; absent on a host with no way to. */
+  openMcpSignIn?: DroidSessionDeps['openMcpSignIn']
   /** Which version-gated flags a Claude CLI takes; absent never passes one. */
   claudeCliFlags?: ClaudeCliFlagSupport
   /** Gives each chat a visuals folder and the skill that teaches it, and sweeps folders whose chat

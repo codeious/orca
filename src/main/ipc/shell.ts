@@ -18,6 +18,7 @@ import {
 } from '../external-editor-launch'
 import { resolveVsCodeSshAuthority } from '../ssh/vscode-ssh-authority'
 import { parseRoutableExecutionHostId, toSshExecutionHostId } from '../../shared/execution-host'
+import { parseExternalHttpUrl } from './external-http-url'
 
 export { EXTERNAL_EDITOR_CLI_COMMAND }
 
@@ -168,14 +169,8 @@ export function registerShellHandlers(store: Store): void {
   )
 
   ipcMain.handle('shell:openUrl', (_event, rawUrl: string) => {
-    let parsed: URL
-    try {
-      parsed = new URL(rawUrl)
-    } catch {
-      return
-    }
-
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+    const parsed = parseExternalHttpUrl(rawUrl)
+    if (!parsed) {
       return
     }
 

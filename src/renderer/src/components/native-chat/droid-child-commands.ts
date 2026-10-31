@@ -26,6 +26,7 @@ import {
   skillsRefusal,
   skillsWords
 } from './droid-cwd-and-skills-commands'
+import { mcpHostCommand, mcpRefusal, mcpWords } from './droid-mcp-commands'
 import { switchDroidSessionWithNotice } from './droid-session-switch-notice'
 
 type DroidChildCommandOutcome = Omit<StructuredAgentSessionCommandOutcome, 'handled'>
@@ -48,7 +49,8 @@ const ADDED_AFTER_FIRST_SERVERS: readonly DroidChildCommandName[] = [
   'rename',
   'cwd',
   'cd',
-  'skills'
+  'skills',
+  'mcp'
 ]
 
 /** Chats with a /compress under way: a summary is a model call, and a second would stack on it. */
@@ -76,6 +78,8 @@ function hostCommand(name: AskedCommandName, argument: string): DroidHostCommand
     case 'skills':
       // A request the refusal turned away never gets here.
       return skillsHostCommand(argument) ?? { name: 'skills' }
+    case 'mcp':
+      return mcpHostCommand(argument) ?? { name: 'mcp', action: { kind: 'list' } }
   }
 }
 
@@ -174,6 +178,8 @@ function outcomeOf(
       return { accepted: true, error: null, info: cwdWords(result.resolvedPath) }
     case 'skills':
       return { accepted: true, error: null, info: skillsWords(result) }
+    case 'mcp':
+      return { accepted: true, error: null, info: mcpWords(result) }
   }
 }
 
@@ -204,6 +210,9 @@ function refusal(name: DroidChildCommandName, argument: string): string | null {
   if (name === 'skills') {
     return skillsRefusal(argument)
   }
+  if (name === 'mcp') {
+    return mcpRefusal(argument)
+  }
   if (name !== 'compress') {
     return argument
       ? translate(
@@ -222,7 +231,7 @@ function refusal(name: DroidChildCommandName, argument: string): string | null {
     : null
 }
 
-/** `/context`, `/cost`, `/compress`, `/fork`, `/rename`, `/cwd`, `/cd`, `/skills` and `/rewind-conversation`: none sends a message. */
+/** `/context`, `/cost`, `/compress`, `/fork`, `/rename`, `/cwd`, `/cd`, `/skills`, `/mcp` and `/rewind-conversation`: none sends a message. */
 export async function runDroidChildCommand(
   chat: DroidChildCommandChat,
   name: DroidChildCommandName,

@@ -23,6 +23,7 @@ const DROID_OWN_COMMANDS = [
   'cwd',
   'cd',
   'skills',
+  'mcp',
   'rewind-conversation'
 ]
 
@@ -134,7 +135,7 @@ describe('composer catalog authority', () => {
         sessionSlashCommandSuggestions(agent, reported)
       )
       expect(unreported.result.current.agentCommands.map(({ name }) => name)).not.toContain('help')
-      for (const droidOnly of ['cwd', 'cd', 'skills']) {
+      for (const droidOnly of ['cwd', 'cd', 'skills', 'mcp']) {
         expect(unreported.result.current.agentCommands.map(({ name }) => name)).not.toContain(
           droidOnly
         )

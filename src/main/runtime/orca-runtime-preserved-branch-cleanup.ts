@@ -2,6 +2,7 @@
 import { OrcaRuntimeWithTerminalDrivers } from './orca-runtime-terminal-drivers'
 import { confirmRunTerminalShellAlone, readRunTerminalClientUse } from './run-terminal-client-use'
 import { ALL_EXECUTION_HOSTS_SCOPE, type ExecutionHostScope } from '../../shared/execution-host'
+import type { DroidMcpSignInOpener } from '../droid/droid-mcp-sign-in'
 import { RuntimePreservedBranchCleanup } from './runtime-preserved-branch-cleanup'
 import type { IPtyProvider } from '../providers/types'
 import type {
@@ -159,6 +160,8 @@ export class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeWithTermin
     | null
 
   protected readonly prepareCodexCatalogProbeHomeFn: ((homePath: string) => void) | null
+
+  protected readonly openMcpSignInFn: DroidMcpSignInOpener | null
 
   protected readonly agentSessionClaimSigner: AgentSessionClaimSigner
 

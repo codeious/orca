@@ -66,6 +66,11 @@ const DESCRIPTIONS: Record<DroidHostCommandName, () => string> = {
       'components.native-chat.droidCommands.skills',
       'List Droid’s skills; add disable or enable and a name to turn one off or on'
     ),
+  mcp: () =>
+    translate(
+      'components.native-chat.droidCommands.mcp',
+      'List Droid’s MCP servers; add, remove, enable, disable or signin and a name to change one'
+    ),
   'rewind-conversation': () =>
     translate(
       'components.native-chat.droidCommands.rewind-conversation',
