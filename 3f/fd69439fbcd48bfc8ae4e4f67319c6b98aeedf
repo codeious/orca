@@ -1,0 +1,34 @@
+mobile/src/tasks/agent-launch-request.test.ts
+  h_476903bd8a47d9 91-124
+mobile/src/tasks/agent-launch-request.ts
+  h_476903bd8a47d9 25,122
+src/main/agent-launch/agent-launch-mode.ts
+  h_476903bd8a47d9 28-29,246
+src/main/native-chat/structured-agent-session-create-support.ts
+  h_476903bd8a47d9 4,6
+src/renderer/src/lib/agent-launch-through-host.test.ts
+  h_476903bd8a47d9 2,39-40,108-109,167-192
+src/renderer/src/lib/agent-launch-through-host.ts
+  h_476903bd8a47d9 23,119-121
+src/renderer/src/lib/structured-agent-session-host-admission.ts
+  h_476903bd8a47d9 5-8,37,63,66-70
+src/renderer/src/lib/structured-agent-session-launch-admission.test.ts
+  h_476903bd8a47d9 36,43-47,74-86,89,282-332
+src/renderer/src/lib/structured-agent-session-launch-admission.ts
+  h_476903bd8a47d9 18-19,193-201
+src/renderer/src/lib/unsupported-agent-version-toast.ts
+  h_476903bd8a47d9 1-26
+src/shared/unsupported-agent-version.ts
+  h_476903bd8a47d9 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3ffd69439fbcd48bfc8ae4e4f67319c6b98aeedf",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
