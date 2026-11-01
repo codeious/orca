@@ -1,0 +1,22 @@
+src/main/acp/acp-launch-specs.ts
+  h_476903bd8a47d9 5,201
+src/main/pi/rpc-launch.ts
+  h_476903bd8a47d9 2,76
+src/main/runtime/structured-child-pane-env-scrub.ts
+  h_476903bd8a47d9 1-17
+src/main/runtime/structured-session-child-launch-env.test.ts
+  h_476903bd8a47d9 1-106
+src/main/runtime/structured-session-child-launch-env.ts
+  h_476903bd8a47d9 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e7bcbea49ad072be19c63d8c792fb2582ffc6287",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
