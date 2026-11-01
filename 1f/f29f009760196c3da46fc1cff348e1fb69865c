@@ -1,0 +1,44 @@
+src/main/acp/acp-dialects/grok-background-task-stop.ts
+  h_476903bd8a47d9 2,18
+src/main/acp/acp-dialects/grok-requests.ts
+  h_476903bd8a47d9 6,32,68-71,111
+src/main/acp/acp-dialects/grok-subagent-stop.ts
+  h_476903bd8a47d9 2,18
+src/main/acp/acp-dialects/omp-dialect.ts
+  h_476903bd8a47d9 2
+src/main/acp/acp-errors.ts
+  h_476903bd8a47d9 4-13,39,64
+src/main/acp/acp-incoming-request-start.test.ts
+  h_476903bd8a47d9 1-83
+src/main/acp/acp-incoming-requests.ts
+  h_476903bd8a47d9 1-6,8,25-29,46,53,57,72-84,87-90,108,111-114
+src/main/acp/acp-json-rpc-peer-dialect.test.ts
+  h_476903bd8a47d9 1-206
+src/main/acp/acp-json-rpc-peer.ts
+  h_476903bd8a47d9 11-13,15,23,34-35,39-46,53-54,109,119,121-122,167,172,253,266-271,283,293,298-300,304,313
+src/main/acp/acp-oversized-lines.ts
+  h_476903bd8a47d9 3,23
+src/main/acp/acp-peer-dialect.ts
+  h_476903bd8a47d9 1-28,30-55,57-63
+src/main/acp/acp-rpc-envelope.ts
+  h_476903bd8a47d9 19-25,38,40,46-47,50
+src/main/acp/acp-session-runtime.ts
+  h_476903bd8a47d9 112,266,273
+src/main/acp/acp-session-setup.ts
+  h_476903bd8a47d9 67
+src/main/acp/acp-structured-prompts.ts
+  h_476903bd8a47d9 9,43-46,62
+src/main/acp/acp-timeline-requests.ts
+  h_476903bd8a47d9 5,22,45-48,78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1ff29f009760196c3da46fc1cff348e1fb69865c",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

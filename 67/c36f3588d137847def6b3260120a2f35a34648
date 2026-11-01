@@ -1,0 +1,14 @@
+src/main/agent-cli-version-probe.ts
+  h_476903bd8a47d9 33,64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "67c36f3588d137847def6b3260120a2f35a34648",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
