@@ -1,0 +1,145 @@
+pnpm-lock.yaml
+  s_a71ca3b06ed7b3::t_b26e322e90a2f9 8830
+src/main/agent-hooks/server/server-agent-presence.ts
+  s_a71ca3b06ed7b3::t_48f6b59a8e8162 42-44,69,83,95,100-101
+src/main/ai-vault/session-scanner-droid-parser.test.ts
+  s_a71ca3b06ed7b3::t_e81d03c3778cb5 31
+src/main/ai-vault/structured-session-ownership.test.ts
+  s_a71ca3b06ed7b3::t_6d174beb024b36 245,246,251,254,259,266,277,299-302,305,312,317,321,325-327,351-352,386
+src/main/ai-vault/structured-session-ownership.ts
+  s_a71ca3b06ed7b3::t_057c6ee4714306 16
+src/main/droid/hook-service.test.ts
+  s_a71ca3b06ed7b3::t_23211ccb3a6efe 84-85,90,101-102,107,109
+src/main/droid/hook-service.ts
+  s_a71ca3b06ed7b3::t_0ab2dc2eb3ed3b 56,124,135-136,286
+src/main/ipc/ai-vault.test.ts
+  s_a71ca3b06ed7b3::t_23d8aac6cf1c54 249-251
+src/main/native-chat/agent-session-journal/journal-legacy-import.ts
+  s_a71ca3b06ed7b3::t_e296ce6ef1b69f 93,184,238
+src/main/native-chat/agent-session-wire/structured-agent-session-adapter.ts
+  s_a71ca3b06ed7b3::t_9a73d6d1c13453 248-249
+src/main/native-chat/agent-session-wire/structured-agent-session-options-read.test.ts
+  s_a71ca3b06ed7b3::t_31e8125bd69707 283,287,289-290,299-303,306,608,609
+src/main/native-chat/agent-session-wire/structured-agent-session-turns-prompt.ts
+  s_a71ca3b06ed7b3::t_ffdaa27acafc26 108
+src/main/native-chat/structured-agent-session-history-adoption.test.ts
+  s_a71ca3b06ed7b3::t_44d0693b5291ef 118-119,124,126-127
+src/main/runtime/rpc/methods/ai-vault.ts
+  s_a71ca3b06ed7b3::t_f0679e0e8f3b1c 38,40-43,166-167,169
+src/main/runtime/structured-agent-launch-support.test.ts
+  s_a71ca3b06ed7b3::t_bb8c625815c34c 141,156
+src/main/runtime/structured-agent-launch-support.ts
+  s_a71ca3b06ed7b3::t_ab9f8aabd67442 22,43,51,70-71,89-90,93
+src/main/runtime/structured-agent-session-create-adoption.ts
+  s_a71ca3b06ed7b3::t_4843f6fd4a75ed 219
+src/renderer/src/components/native-chat/NativeChatApprovalCard.tsx
+  s_a71ca3b06ed7b3::t_726d0285a96a7a 131-139,181
+src/renderer/src/components/native-chat/NativeChatPromptEditor.tsx
+  s_a71ca3b06ed7b3::t_4ad3fde400032b 333,344
+src/renderer/src/components/native-chat/NativeChatSessionOptionPickers.tsx
+  s_a71ca3b06ed7b3::t_1054191d2ad158 310
+src/renderer/src/components/native-chat/agent-session-write-notice-text.ts
+  s_a71ca3b06ed7b3::t_47b8ccd13a017e 201
+src/renderer/src/components/native-chat/native-chat-composer-notice.ts
+  s_a71ca3b06ed7b3::t_970c089f626e93 20
+src/renderer/src/components/native-chat/native-chat-composer-prompt-recall.test.tsx
+  s_a71ca3b06ed7b3::t_48fa3577311471 146
+src/renderer/src/components/native-chat/native-chat-composer-types.ts
+  s_a71ca3b06ed7b3::t_dbb89d62d57e9f 41
+src/renderer/src/components/native-chat/native-chat-draft-cache.ts
+  s_a71ca3b06ed7b3::t_7ffdc1de67645e 91
+src/renderer/src/components/native-chat/native-chat-stopped-before-start-row.ts
+  s_a71ca3b06ed7b3::t_fedacae167b3e8 8
+src/renderer/src/components/native-chat/native-chat-structured-composer-dispatch.ts
+  s_a71ca3b06ed7b3::t_7a705251e6545c 14
+src/renderer/src/components/native-chat/structured-agent-session-prompt-response.ts
+  s_a71ca3b06ed7b3::t_1125a11a8bd191 1,4
+src/renderer/src/components/native-chat/structured-agent-session-send-attempt.ts
+  s_a71ca3b06ed7b3::t_5f3051cac5afe9 134
+src/renderer/src/components/native-chat/use-native-chat-composer-catalog.test.tsx
+  s_a71ca3b06ed7b3::t_8f6bb4f3bbedef 19,81-82,84-85
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown.ts
+  s_a71ca3b06ed7b3::t_d5100b36d0a2b2 133
+src/renderer/src/components/native-chat/use-native-chat-composer-submit.ts
+  s_a71ca3b06ed7b3::t_f5877439962f7b 129
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-send.test.tsx
+  s_a71ca3b06ed7b3::t_0e304c0c715475 56,65,69,165,167,170,171-172
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-send.ts
+  s_a71ca3b06ed7b3::t_af49b1b5c380e4 110-113,115,118-119
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.test.tsx
+  s_a71ca3b06ed7b3::t_8680be9e68f239 1,2,16,22,23,33,35,37,39-40,44,45,48,54-55
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.ts
+  s_a71ca3b06ed7b3::t_74a0617f5eff2d 113,116-117
+src/renderer/src/components/native-chat/use-structured-agent-session-mutate.test.tsx
+  s_a71ca3b06ed7b3::t_d3c4837eeb63b9 400,414,415,422
+src/renderer/src/components/native-chat/use-structured-agent-session-mutate.ts
+  s_a71ca3b06ed7b3::t_8e9ff2c82c71bb 62,67-69,71
+src/renderer/src/components/native-chat/use-structured-agent-session-sends.test.tsx
+  s_a71ca3b06ed7b3::t_63cc04769aacf2 19-20
+src/renderer/src/components/native-chat/use-structured-agent-session-sends.ts
+  s_a71ca3b06ed7b3::t_831da899974eac 107
+src/renderer/src/components/right-sidebar/AiVaultPanel.tsx
+  s_a71ca3b06ed7b3::t_79793ff0f8689e 254
+src/renderer/src/components/right-sidebar/AiVaultVirtualRow.test.tsx
+  s_a71ca3b06ed7b3::t_3f0e6c174dd8ba 38-41,43,229-230
+src/renderer/src/components/right-sidebar/AiVaultVirtualRow.tsx
+  s_a71ca3b06ed7b3::t_346c74426682ba 233-234
+src/renderer/src/components/right-sidebar/ai-vault-original-pane-actions.test.ts
+  s_a71ca3b06ed7b3::t_6334948f1756f5 1-3,4-5,9-10,20,21,27-28,39-40,42,46,51-52,59-60,67-68,84-85
+src/renderer/src/components/right-sidebar/ai-vault-session-cli-fork.test.ts
+  s_a71ca3b06ed7b3::t_2410f22ed1cbcf 29,31-33
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.test.ts
+  s_a71ca3b06ed7b3::t_4134aff36cf550 41-46,50,54-56,90,93,95,96-97,100-104,112,118-119,123-124
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.ts
+  s_a71ca3b06ed7b3::t_97c9cef1a0733e 10
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat.ts
+  s_a71ca3b06ed7b3::t_6674035b00c9f5 23
+src/renderer/src/components/settings/AgentCatalogRow.tsx
+  s_a71ca3b06ed7b3::t_70c684a10f82f0 119,278-279
+src/renderer/src/components/settings/AgentsPane.test.tsx
+  s_a71ca3b06ed7b3::t_9c26d277c2513e 542-543
+src/renderer/src/i18n/en-runtime-required.json
+  s_a71ca3b06ed7b3::t_3a23282c5abddd 3159
+src/renderer/src/i18n/locales/en.json
+  s_a71ca3b06ed7b3::t_80b772e56d6a37 13445,19350,19693,19951
+src/renderer/src/lib/structured-agent-session-launch-options.ts
+  s_a71ca3b06ed7b3::t_0e5e41a552af44 6
+src/renderer/src/runtime/structured-agent-session-client.ts
+  s_a71ca3b06ed7b3::t_2fd217d6d108b2 152
+src/shared/agent-hook-listener/provider-dispatch.ts
+  s_a71ca3b06ed7b3::t_f128e464ce3039 232-235,239
+src/shared/agent-session-availability.test.ts
+  s_a71ca3b06ed7b3::t_af6407845ff2db 46,49
+src/shared/agent-session-refusal-notice.ts
+  s_a71ca3b06ed7b3::t_17bef2c151167b 97,100-101
+src/shared/agent-session-thread-goal-wire.ts
+  s_a71ca3b06ed7b3::t_37c2d7f0b4f6f2 2-5,7-11
+src/shared/rpc-contract/ai-vault-params.ts
+  s_a71ca3b06ed7b3::t_8ca281d1e6b8fc 82
+src/shared/structured-agent-session-composer.ts
+  s_a71ca3b06ed7b3::t_b664ff6e835980 206,209,211
+src/shared/structured-agent-session-options.test.ts
+  s_a71ca3b06ed7b3::t_5b3d825c8d32f3 9,169-170
+src/shared/structured-agent-session-options.ts
+  s_a71ca3b06ed7b3::t_c78f8bd810bb66 252-253
+src/shared/structured-agent-session-surface-capabilities.ts
+  s_a71ca3b06ed7b3::t_e8548dbd8b790b 38,48
+src/wsl-guest/relay-agent-presence.ts
+  s_a71ca3b06ed7b3::t_80e0cc0b9833c8 6,14,60,80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "917ef9c737edb26e60c457a1b36620346c95a5bd",
+  "prompts": {},
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
