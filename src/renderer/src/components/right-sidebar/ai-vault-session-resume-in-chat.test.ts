@@ -151,6 +151,99 @@ describe('workspace matching, which only Claude is bound by', () => {
   })
 })
 
+describe('Droid rows', () => {
+  const droid = (overrides: Partial<ResumeInChatSession> = {}) =>
+    session({
+      agent: 'droid',
+      filePath: '/home/dev/.factory/sessions/-repo-orca/session-1.jsonl',
+      ...overrides
+    })
+
+  it('offers the chat for a local Droid row in its own folder that nobody holds', () => {
+    expect(eligibility({ session: droid(), droidHolder: null })).toEqual({
+      available: true,
+      workspaceId: 'repo-1::/repo/orca'
+    })
+  })
+
+  it('does not call a Droid row free before anyone has asked who holds it', () => {
+    expect(eligibility({ session: droid() })).toEqual({
+      available: true,
+      workspaceId: 'repo-1::/repo/orca',
+      confirmHeldSession: true
+    })
+  })
+
+  it('refuses a Droid row recorded in another folder, or in none', () => {
+    // load_session runs the tools in the recorded folder, so a chat elsewhere would edit the wrong tree.
+    expect(eligibility({ session: droid({ cwd: '/repo/other' }) })).toEqual({
+      available: false,
+      reason: 'workspace'
+    })
+    expect(eligibility({ session: droid({ cwd: null }) })).toEqual({
+      available: false,
+      reason: 'workspace'
+    })
+  })
+
+  it('refuses the same gates as every other row before it asks who holds the session', () => {
+    const live = { droidHolder: 'live' as const }
+    expect(eligibility({ session: droid({ executionHostId: 'ssh:build-box' }), ...live })).toEqual({
+      available: false,
+      reason: 'remote'
+    })
+    expect(eligibility({ session: droid({ messageCount: 0 }), ...live })).toEqual({
+      available: false,
+      reason: 'empty'
+    })
+    expect(eligibility({ session: droid(), structuredRouteAvailable: false, ...live })).toEqual({
+      available: false,
+      reason: 'workspace'
+    })
+  })
+
+  it('blocks a session a live terminal holds with its own reason', () => {
+    expect(eligibility({ session: droid(), droidHolder: 'live' })).toEqual({
+      available: false,
+      reason: 'held'
+    })
+  })
+
+  it('offers an unverifiable holder only after a confirmation', () => {
+    expect(eligibility({ session: droid(), droidHolder: 'unverifiable' })).toEqual({
+      available: true,
+      workspaceId: 'repo-1::/repo/orca',
+      confirmHeldSession: true
+    })
+  })
+
+  it('offers a session whose terminal exited like one nobody holds', () => {
+    expect(eligibility({ session: droid(), droidHolder: null })).toEqual({
+      available: true,
+      workspaceId: 'repo-1::/repo/orca'
+    })
+  })
+
+  it('never asks Claude or Codex rows about a holder', () => {
+    expect(eligibility({ droidHolder: 'live' })).toMatchObject({ available: true })
+    expect(
+      eligibility({ session: session({ agent: 'codex' }), droidHolder: 'live' })
+    ).toMatchObject({ available: true })
+  })
+
+  it('still sends a chat-owned Droid row to its own chat', () => {
+    expect(
+      eligibility({
+        session: {
+          ...droid(),
+          structuredSession: { sessionId: 'droid_1', workspaceId: 'repo-1::/repo/orca' }
+        },
+        droidHolder: 'live'
+      })
+    ).toEqual({ available: false, reason: 'already-structured' })
+  })
+})
+
 describe('aiVaultSessionCwdMatchesWorkspace', () => {
   it('ignores separator, case, and a trailing slash', () => {
     expect(aiVaultSessionCwdMatchesWorkspace('C:\\repo\\Orca', 'c:/repo/orca')).toBe(true)

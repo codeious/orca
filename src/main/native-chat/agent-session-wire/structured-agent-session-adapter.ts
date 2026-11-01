@@ -15,6 +15,7 @@ import type {
 // journal renders that as delivery unconfirmed instead of as failure.
 
 import type { AgentSessionBackgroundTaskStops } from '../../../shared/agent-child-work-stop-targets'
+import type { DroidHostCommand, DroidHostCommandResult } from '../../../shared/droid-host-command'
 import type {
   AgentJournalAnsweredTurnIdentity,
   AgentJournalItemIdentity,
@@ -120,37 +121,12 @@ export type AgentSessionAcquisition = {
   catalogListing?: AgentModelCatalogLiveListing
 }
 
-/** A refusal before spawn that a person can act on; the site that refused names it. */
-export type AgentSessionPreSpawnReason = Extract<
-  AgentSessionRefusalReason<'agent_session_operation_invalid'>,
-  | 'managedAccountEnvOverride'
-  | 'accountSwitchInProgress'
-  | 'managedAccountUnsupported'
-  | 'launchFolderMissing'
-  | 'historyInOtherAccount'
-  | 'claudeAccountFolderMissing'
-  | 'claudeAccountSetupFailed'
-  | 'agentCommandNotRunnable'
->
-
-/** Acquisition failed with first-hand proof that no provider process existed. */
-export class AgentSessionPreSpawnError extends Error {
-  /** Absent: Orca's own reason, which only the log reads. A wrapped pre-spawn error keeps its. */
-  readonly reason: AgentSessionPreSpawnReason | undefined
-
-  constructor(
-    cause: unknown,
-    options: { reason?: AgentSessionPreSpawnReason; message?: string } = {}
-  ) {
-    super(options.message ?? (cause instanceof Error ? cause.message : String(cause)), { cause })
-    this.name = 'AgentSessionPreSpawnError'
-    this.reason = options.reason ?? (isAgentSessionPreSpawnError(cause) ? cause.reason : undefined)
-  }
-}
-
-export function isAgentSessionPreSpawnError(error: unknown): error is AgentSessionPreSpawnError {
-  return error instanceof Error && error.name === 'AgentSessionPreSpawnError'
-}
+// Adapters throw it from here with the rest of the adapter contract.
+export {
+  AgentSessionPreSpawnError,
+  isAgentSessionPreSpawnError,
+  type AgentSessionPreSpawnReason
+} from './structured-agent-session-pre-spawn-error'
 
 /** A conversation command the host handed to a provider child: the running turn it opened for it,
  *  which the child's translator ends, and where the command's own result row goes. */
@@ -302,6 +278,9 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
     /** Host clock on the submission row this send came from; the origin the turn
      *  it opens records as `requestedAt`. */
     requestedAt?: number
+    /** Answer after the reply in progress instead of steering it. An adapter with no such
+     *  placement ignores it. */
+    afterReply?: true
     /** Revalidate after preparation, immediately before writing to the provider. */
     beforeDispatch?: () => Promise<void>
   }): Promise<AgentSessionDispatchOutcome>
@@ -360,6 +339,13 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
      *  start a new goal rather than rewrite that one's objective in place. */
     replacesGoal: boolean
   }): Promise<{ ok: true } | { ok: false; rejected: string }>
+  /** Answers a Droid chat command from the child with no message and no turn of its own. A throw
+   *  is the child's refusal, worded for the person. Absent where Droid is not the provider. */
+  droidCommand?(input: {
+    sessionId: string
+    fence: number
+    command: DroidHostCommand
+  }): Promise<DroidHostCommandResult>
   /** Stops exactly the tasks `taskIds` names, which the host resolves from its child records.
    *  `stillRunning` is the provider's own answer that one survived its stop; a throw leaves the
    *  effect unknown. */

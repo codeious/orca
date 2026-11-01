@@ -10,8 +10,8 @@ import {
   type NativeChatClaudeSignIn
 } from './native-chat-claude-sign-in'
 import type {
-  NativeChatComposerNotice,
-  NativeChatComposerNoticeContent
+  NativeChatComposerLine,
+  NativeChatComposerNotice
 } from './native-chat-composer-notice'
 
 /** A chat whose start failed or went unconfirmed, as a notice with Retry. */
@@ -87,7 +87,7 @@ export function structuredSessionNotices({
   }
   agentLabel: string
   sessionError: string | null
-  composerError: (NativeChatComposerNoticeContent & { onDismiss: () => void }) | null
+  composerError: NativeChatComposerLine | null
   claudeSignIn?: NativeChatClaudeSignIn | null
   /** Why the host says no chat can start here, from `useNativeChatAvailabilityNotice`. */
   availability?: NativeChatComposerNotice | null
@@ -112,6 +112,14 @@ export function structuredSessionNotices({
           }
         ]
       : []),
-    ...(composerError ? [{ key: 'composer-error', kind: 'error' as const, ...composerError }] : [])
+    ...(composerError
+      ? [
+          {
+            key: 'composer-error',
+            ...composerError,
+            kind: composerError.kind ?? ('error' as const)
+          }
+        ]
+      : [])
   ]
 }

@@ -1,7 +1,10 @@
 import { useCallback, useMemo, useState } from 'react'
 import { translate } from '@/i18n/i18n'
 import { applyPickerSuggestion, type NativeChatPickerItem } from './native-chat-picker-items'
-import type { NativeChatStructuredComposerTransport } from './native-chat-composer-types'
+import type {
+  NativeChatSendOptions,
+  NativeChatStructuredComposerTransport
+} from './native-chat-composer-types'
 import type { NativeChatComposerImageAttachment } from './NativeChatComposerField'
 import { nativeChatImagesHoldSend } from './native-chat-image-reattach'
 import {
@@ -38,10 +41,19 @@ export function useNativeChatComposerSubmit(args: {
   imageAttachments: readonly NativeChatComposerImageAttachment[]
   disabled: boolean
   sendPty: () => void
-  sendStructured: (text: string, attachments: readonly NativeChatComposerImageAttachment[]) => void
+  sendStructured: (
+    text: string,
+    attachments: readonly NativeChatComposerImageAttachment[],
+    options?: NativeChatSendOptions
+  ) => void
   setDraft: (value: string) => void
   setCaret: (caret: number) => void
-}): { send: () => void; goalMode: NativeChatComposerGoalMode } {
+}): {
+  send: () => void
+  /** Send asking the host to answer after the running reply; absent without a structured chat. */
+  sendAfterReply: (() => void) | undefined
+  goalMode: NativeChatComposerGoalMode
+} {
   const { caret, disabled, draft, draftScopeKey, imageAttachments, sendPty, sendStructured } = args
   const { setCaret, setDraft, structuredTransport } = args
   const threadGoal = structuredTransport?.threadGoal
@@ -98,40 +110,53 @@ export function useNativeChatComposerSubmit(args: {
     })
   }, [draft, draftScopeKey, imageAttachments.length, setCaret, structuredTransport, threadGoal])
 
-  const send = useCallback(() => {
-    if (nativeChatImagesHoldSend(imageAttachments)) {
-      return
-    }
-    if (threadGoal && structuredTransport && isBareStructuredAgentSessionGoalCommand(draft)) {
-      // Same entrance as picking `/goal`: the token becomes the chip. Typed inside
-      // goal mode it is still the entrance, never an objective.
-      setDraft('')
-      setCaret(0)
-      setEntered(true)
-    } else if (active) {
-      if (!disabled) {
-        setGoal()
+  const submit = useCallback(
+    (options?: NativeChatSendOptions) => {
+      if (nativeChatImagesHoldSend(imageAttachments)) {
+        return
       }
-    } else if (!structuredTransport) {
-      sendPty()
-    } else if ((draft.trim() !== '' || imageAttachments.length > 0) && !disabled) {
-      sendStructured(draft, imageAttachments)
-    }
-  }, [
-    active,
-    disabled,
-    draft,
-    imageAttachments,
-    sendPty,
-    sendStructured,
-    setCaret,
-    setDraft,
-    setGoal,
-    structuredTransport,
-    threadGoal
-  ])
+      if (threadGoal && structuredTransport && isBareStructuredAgentSessionGoalCommand(draft)) {
+        // Same entrance as picking `/goal`: the token becomes the chip. Typed inside
+        // goal mode it is still the entrance, never an objective.
+        setDraft('')
+        setCaret(0)
+        setEntered(true)
+      } else if (active) {
+        if (!disabled) {
+          setGoal()
+        }
+      } else if (!structuredTransport) {
+        sendPty()
+      } else if ((draft.trim() !== '' || imageAttachments.length > 0) && !disabled) {
+        if (options) {
+          sendStructured(draft, imageAttachments, options)
+        } else {
+          sendStructured(draft, imageAttachments)
+        }
+      }
+    },
+    [
+      active,
+      disabled,
+      draft,
+      imageAttachments,
+      sendPty,
+      sendStructured,
+      setCaret,
+      setDraft,
+      setGoal,
+      structuredTransport,
+      threadGoal
+    ]
+  )
+  const send = useCallback(() => submit(), [submit])
+  // Only a structured chat has a host to ask; a terminal pane has no such placement.
+  const sendAfterReply = useMemo(
+    () => (structuredTransport ? () => submit({ afterReply: true }) : undefined),
+    [structuredTransport, submit]
+  )
 
   const exit = useCallback(() => setEntered(false), [])
   const goalMode = useMemo(() => ({ active, exit, interceptPick }), [active, exit, interceptPick])
-  return { send, goalMode }
+  return { send, sendAfterReply, goalMode }
 }

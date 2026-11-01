@@ -176,6 +176,10 @@ export function paramsFor(method: string): unknown {
       const fields = { change: { kind: 'set', objective: 'Ship the parser' } }
       return { envelope: envelope({ method, fields, fence }), ...fields }
     }
+    case 'agentSession.droidCommand':
+      return { sessionId: SESSION, command: { name: 'context' } }
+    case 'agentSession.mcpSignInOpened':
+      return { sessionId: SESSION, requestId: 'open-request', opened: false }
     case 'agentSession.history':
       return { sessionId: SESSION, direction: 'tail' }
     case 'agentSession.acknowledgeAttention':

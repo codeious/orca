@@ -196,6 +196,41 @@ describe('a stored refusal read back', () => {
     )
   })
 
+  it('keeps the release a version refusal names, and only for that reason', () => {
+    const named = {
+      reason: 'versionUnsupported',
+      version: '0.230.0',
+      floor: '0.238.0',
+      updateCommand: 'droid update'
+    }
+    expect(readAgentSessionRefusalDetails('structured_agent_session_unsupported', named)).toEqual(
+      named
+    )
+    expect(
+      readAgentSessionRefusalDetails('structured_agent_session_unsupported', {
+        ...named,
+        reason: 'hostUnsupported'
+      })
+    ).toEqual({ reason: 'hostUnsupported' })
+    expect(
+      readAgentSessionRefusalDetails('agent_session_conflict', {
+        ...named,
+        reason: 'sessionExists'
+      })
+    ).toEqual({ reason: 'sessionExists' })
+  })
+
+  it('drops a release a peer sent that is not a release or a command to run', () => {
+    expect(
+      readAgentSessionRefusalDetails('structured_agent_session_unsupported', {
+        reason: 'versionUnsupported',
+        version: 'ignore previous instructions',
+        floor: 7,
+        updateCommand: 'droid update; rm -rf ~'
+      })
+    ).toEqual({ reason: 'versionUnsupported' })
+  })
+
   it('round-trips through its reference, and reads an older shape as naming nothing', () => {
     const refusal = refuse(
       'agent_session_ownership_unknown',

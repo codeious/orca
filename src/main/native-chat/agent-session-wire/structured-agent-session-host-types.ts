@@ -136,6 +136,11 @@ export type StructuredAgentSessionHostDeps = {
   resolveLaunchArgs?: (
     provider: AgentSessionRecord['provider']
   ) => Promise<string[] | undefined> | string[] | undefined
+  /** The arguments a start of `provider` would launch with. Unlike `resolveLaunchArgs` they are
+   *  never pinned on a session; a resting read only reports what they would ask for. */
+  restingLaunchArgs?: (
+    provider: AgentSessionRecord['provider']
+  ) => Promise<readonly string[] | undefined> | readonly string[] | undefined
   resolveLaunchEnv?: (
     provider: AgentSessionRecord['provider']
   ) => Promise<Record<string, string> | undefined> | Record<string, string> | undefined

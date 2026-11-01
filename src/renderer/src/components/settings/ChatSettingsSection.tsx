@@ -7,6 +7,7 @@ import { SettingsSubsectionHeader } from './SettingsFormControls'
 import { matchesSettingsSearch } from './settings-search'
 import type { GlobalSettings } from '../../../../shared/global-settings-types'
 import type { SourceControlAiSettingsPatch } from '../../../../shared/source-control-ai-types'
+import { isNativeChatLaunchable } from '../../../../shared/structured-native-chat-launch-route'
 import type { SettingsSearchEntry } from './settings-search'
 import { useAppStore } from '../../store'
 import { Card, CardContent } from '../ui/card'
@@ -34,7 +35,7 @@ export function ChatSettingsSection({
   isMounted: boolean
 }): React.JSX.Element | null {
   const query = useAppStore((state) => state.settingsSearchQuery)
-  if (settings.experimentalNativeChat !== true) {
+  if (!isNativeChatLaunchable(settings)) {
     return null
   }
   const title = translate('settings.appearance.chat.title', 'Chat')

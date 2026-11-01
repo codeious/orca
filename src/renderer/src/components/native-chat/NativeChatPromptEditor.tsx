@@ -25,9 +25,12 @@ import {
   promptTextOffset
 } from './native-chat-prompt-document'
 import type { NativeChatComposerInput } from './native-chat-composer-input'
+import { useDroidComposerFocusMirror } from './use-droid-composer-focus-mirror'
 
 type Props = Omit<HTMLAttributes<HTMLDivElement>, 'onChange' | 'onSelect'> & {
   scopeKey?: string
+  /** A Droid composer: its focus is mirrored to the main process. */
+  mirrorDroidComposerFocus?: boolean
   inputRef: RefObject<NativeChatComposerInput | null>
   initialValue: string
   disabled: boolean
@@ -38,6 +41,7 @@ type Props = Omit<HTMLAttributes<HTMLDivElement>, 'onChange' | 'onSelect'> & {
 
 export function NativeChatPromptEditor({
   scopeKey,
+  mirrorDroidComposerFocus = false,
   inputRef,
   initialValue,
   disabled,
@@ -47,6 +51,7 @@ export function NativeChatPromptEditor({
   className,
   ...events
 }: Props): React.JSX.Element {
+  const droidFocus = useDroidComposerFocusMirror(mirrorDroidComposerFocus)
   const placeholderRef = useRef(placeholder)
   placeholderRef.current = placeholder
   const editor = useEditor(
@@ -117,11 +122,11 @@ export function NativeChatPromptEditor({
           (!transaction.getMeta('preventUpdate') ||
             hasUnsavedNativeChatComposerDraftChange(scopeKey))
         ) {
-          writeNativeChatDraftDocument(
-            scopeKey,
-            promptTextMap(current.state.doc).text,
-            current.getJSON()
-          )
+          const text = promptTextMap(current.state.doc).text
+          // A report comment stays in this run, including every edit before confirmation.
+          writeNativeChatDraftDocument(scopeKey, text, current.getJSON(), {
+            unsaved: mirrorDroidComposerFocus && /^\/bug(?:\s|$)/i.test(text.trimStart())
+          })
         }
       },
       onUpdate: () => {
@@ -282,5 +287,18 @@ export function NativeChatPromptEditor({
   )
   useImperativeHandle(inputRef, () => input!, [input])
 
-  return <EditorContent editor={editor} {...events} />
+  return (
+    <EditorContent
+      editor={editor}
+      {...events}
+      onFocus={(event) => {
+        events.onFocus?.(event)
+        droidFocus.onFocus()
+      }}
+      onBlur={(event) => {
+        events.onBlur?.(event)
+        droidFocus.onBlur()
+      }}
+    />
+  )
 }

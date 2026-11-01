@@ -14,6 +14,7 @@ import { nativeChatImageSendBlock } from './native-chat-image-reattach'
 import { useNativeChatComposerHandle } from './use-native-chat-composer-handle'
 import { useNativeChatFileDrops } from './use-native-chat-file-drops'
 import { useNativeChatComposerKeyDown } from './use-native-chat-composer-keydown'
+import { useNativeChatComposerDroidKeys } from './use-native-chat-composer-droid-keys'
 import { useNativeChatSendLifecycle } from './use-native-chat-send-lifecycle'
 import { useNativeChatSessionOptions } from './use-native-chat-session-options'
 import { useNativeChatDictation } from './use-native-chat-dictation'
@@ -244,7 +245,6 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
     const sessionOptionsSurface = structuredTransport?.optionsSurface ?? ptySessionOptionsSurface
     const contextUsageSummary = useNativeChatContextUsageSummary(structuredTransport)
     const sessionOptionsSnapshot = structuredTransport?.optionSnapshot ?? ptySessionOptionsSnapshot
-
     const { send: sendStructured, fieldProps: queue } = useNativeChatHeldQueueComposerSend({
       agent,
       draftScopeKey,
@@ -285,7 +285,7 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       optimisticSendOutcome,
       terminalTabId
     })
-    const { send, goalMode } = useNativeChatComposerSubmit({
+    const { send, sendAfterReply, goalMode } = useNativeChatComposerSubmit({
       structuredTransport,
       draftScopeKey,
       draft,
@@ -297,13 +297,26 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       setDraft,
       setCaret
     })
-
     const interrupt = useNativeChatComposerInterrupt({
       inert: inputOwnedByCard,
       cancelPendingSends,
       isWorking,
       onStop,
       resolveTarget
+    })
+    const droidKeys = useNativeChatComposerDroidKeys({
+      agent,
+      snapshot: sessionOptionsSnapshot,
+      surface: sessionOptionsSurface,
+      isWorking,
+      sendAfterReply,
+      inert: inputOwnedByCard,
+      stopTurn: isWorking && onStop ? interrupt : undefined,
+      input: textareaRef,
+      draft,
+      hasAttachments: imageAttachments.length > 0,
+      clear: { setDraft, setCaret, setActiveSuggestion, clearSkillOrigin, clearImageAttachments },
+      openRewind: structuredTransport?.openRewind
     })
 
     const dispatchPtyPickerCommand = useNativeChatPickerCommandDispatch({
@@ -326,6 +339,8 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
       draft,
       recall: recall.recall,
       isComposing: imeEnterGesture.isComposing,
+      agent,
+      droidKeys,
       completePickerItem: goalMode.interceptPick(completeItem),
       dispatchPickerCommand: goalMode.interceptPick(dispatchPickerCommand),
       dismissPicker: dismiss,
@@ -351,6 +366,7 @@ const NativeChatComposerPane = forwardRef<NativeChatComposerHandle, NativeChatCo
     return (
       <NativeChatComposerField
         draftScopeKey={draftScopeKey}
+        mirrorDroidComposerFocus={agent === 'droid'}
         textareaRef={textareaRef}
         draft={draft}
         disabled={disabled}

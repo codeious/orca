@@ -6,7 +6,11 @@ import {
   STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY
 } from '../../../shared/protocol-version'
 import { ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES } from '../../../shared/electron-remote-runtime-client-capabilities'
-import { resolveAgentLaunchRoute, structuredAgentLaunchSupported } from './agent-launch-routing'
+import {
+  resolveAgentLaunchRoute,
+  structuredAgentLaunchDowngrade,
+  structuredAgentLaunchSupported
+} from './agent-launch-routing'
 
 const settings = { experimentalNativeChat: true }
 
@@ -142,6 +146,141 @@ describe('new agent launch routing', () => {
     // The server has not answered yet, or answered without structured sessions.
     expect(route({ ...server, hostCapabilities: null })).toBe('terminal-tui')
     expect(route({ ...server, hostCapabilities: [] })).toBe('terminal-tui')
+  })
+})
+
+describe('a per-agent launch setting', () => {
+  const droidSupported = {
+    agent: 'droid' as const,
+    executionHostId: 'local',
+    hostCapabilities: [
+      STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
+      STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY
+    ],
+    hostStructuredAgents: ['droid'],
+    workspaceKind: 'git-worktree' as const
+  }
+
+  it('opens Droid as a terminal while Chat UI is on and Droid is set to Terminal', () => {
+    const settings = {
+      experimentalNativeChat: true,
+      agentLaunchModes: { droid: 'terminal' as const }
+    }
+    expect(route({ ...droidSupported, settings })).toBe('terminal-tui')
+    expect(route({ ...droidSupported, agent: 'codex', settings })).toBe('structured-native-chat')
+  })
+
+  it('opens Droid as a chat while Chat UI is off and Droid is set to Chat', () => {
+    const settings = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' as const } }
+    expect(route({ ...droidSupported, settings })).toBe('structured-native-chat')
+    expect(route({ ...droidSupported, agent: 'codex', settings })).toBe('terminal-tui')
+  })
+
+  it('leaves Droid on Chat UI when its setting is Follow or absent', () => {
+    expect(route({ ...droidSupported, settings: { experimentalNativeChat: true } })).toBe(
+      'structured-native-chat'
+    )
+    expect(
+      route({ ...droidSupported, settings: { experimentalNativeChat: true, agentLaunchModes: {} } })
+    ).toBe('structured-native-chat')
+    expect(route({ ...droidSupported, settings: { experimentalNativeChat: false } })).toBe(
+      'terminal-tui'
+    )
+  })
+
+  it('still downgrades a Chat choice the launch cannot honour', () => {
+    const settings = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' as const } }
+    const input = { ...droidSupported, settings, executionHostId: 'ssh:host-a' }
+    const chosen = route(input)
+    expect(chosen).toBe('terminal-tui')
+    expect(structuredAgentLaunchDowngrade(input, chosen)).toBe('remote-execution-host')
+  })
+
+  it('reports no downgrade when the user chose Terminal', () => {
+    const settings = {
+      experimentalNativeChat: true,
+      agentLaunchModes: { droid: 'terminal' as const }
+    }
+    const input = { ...droidSupported, settings }
+    expect(structuredAgentLaunchDowngrade(input, route(input))).toBeNull()
+  })
+
+  // The floating workspace takes no rule of its own: it follows the setting exactly as it follows the switch.
+  it.each(['git-worktree', 'folder', 'floating'] as const)(
+    'decides a %s workspace by the same choice',
+    (workspaceKind) => {
+      const terminal = {
+        experimentalNativeChat: true,
+        agentLaunchModes: { droid: 'terminal' as const }
+      }
+      const chat = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' as const } }
+
+      expect(route({ ...droidSupported, workspaceKind, settings: terminal })).toBe('terminal-tui')
+      expect(route({ ...droidSupported, workspaceKind, settings: chat })).toBe(
+        'structured-native-chat'
+      )
+    }
+  )
+
+  it('never lets Terminal stop an explicit chat request such as Resume in new chat', () => {
+    const settings = {
+      experimentalNativeChat: false,
+      agentLaunchModes: { droid: 'terminal' as const }
+    }
+    expect(structuredAgentLaunchSupported({ ...droidSupported, settings })).toBe(true)
+  })
+})
+
+// An SSH host served by orcad negotiates structured chat like any other `runtime:` host.
+describe('Droid on a paired runtime host, including orcad SSH', () => {
+  const negotiated = [
+    STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
+    STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY
+  ]
+  const onRuntime = {
+    executionHostId: 'runtime:env-1',
+    hostCapabilities: [
+      ...negotiated,
+      STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY
+    ],
+    clientCapabilities: negotiated,
+    workspaceKind: 'folder' as const
+  }
+  const droid = { ...onRuntime, agent: 'droid' as const, hostStructuredAgents: ['droid'] }
+  const follow = { experimentalNativeChat: true }
+  const chat = { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' as const } }
+
+  it.each([
+    ['Follow with Chat UI on', follow],
+    ['Chat', chat]
+  ])('opens chat under %s when the server is an SSH host', (_name, modeSettings) => {
+    const input = { ...droid, settings: modeSettings }
+    const chosen = route(input)
+    expect(chosen).toBe('structured-native-chat')
+    expect(structuredAgentLaunchDowngrade(input, chosen)).toBeNull()
+  })
+
+  it.each(['claude', 'codex'] as const)(
+    'leaves %s in chat on a negotiated runtime host',
+    (agent) => {
+      expect(route({ ...onRuntime, agent, settings: follow })).toBe('structured-native-chat')
+    }
+  )
+
+  it('supports an explicit chat request for Droid there, as for Claude', () => {
+    const settings = { experimentalNativeChat: false }
+    expect(structuredAgentLaunchSupported({ ...droid, settings })).toBe(true)
+    expect(
+      structuredAgentLaunchSupported({
+        ...onRuntime,
+        agent: 'claude',
+        settings
+      })
+    ).toBe(true)
+  })
+
+  it('keeps Follow with the switch off in the terminal on the SSH server', () => {
+    expect(route({ ...droid, settings: { experimentalNativeChat: false } })).toBe('terminal-tui')
   })
 })
 

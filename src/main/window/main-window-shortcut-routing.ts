@@ -1,5 +1,6 @@
 import type { BrowserWindow } from 'electron'
 import { is } from '@electron-toolkit/utils'
+import { isDroidComposerMainWindowChord } from '../../shared/droid-composer-keys'
 import {
   ModifierDoubleTapDetector,
   toModifierDoubleTapEvent
@@ -201,6 +202,16 @@ export function installMainWindowShortcutRouting(args: {
       !input.alt &&
       !input.shift &&
       modForBold
+    ) {
+      return
+    }
+
+    // Why: Droid's composer owns Ctrl+L and Ctrl+N; match the physical chord so a rebound action can't take them.
+    // Mac is excluded: Orca's keys there are Cmd, so Ctrl already reaches the composer.
+    if (
+      process.platform !== 'darwin' &&
+      focus.isDroidComposerFocused() &&
+      isDroidComposerMainWindowChord(input, process.platform)
     ) {
       return
     }

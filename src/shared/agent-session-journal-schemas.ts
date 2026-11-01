@@ -149,6 +149,9 @@ const Question = z.object({
   header: z.string().optional(),
   multiSelect: z.boolean(),
   options: z.array(PromptOption),
+  description: z.string().optional(),
+  preselectedOptionIds: z.array(z.string()).optional(),
+  initialSearch: z.string().optional(),
   freeTextQuestionId: z.string().optional(),
   freeTextInput: FreeTextInput.optional()
 })
@@ -234,6 +237,8 @@ const KnownItemBody = z.discriminatedUnion('kind', [
     blockedPath: z.string().optional(),
     matchedAskRule: ApprovalMatchedAskRule.optional(),
     subject: ApprovalSubject.optional(),
+    acceptsComment: z.boolean().optional(),
+    acceptsPlanEdit: z.boolean().optional(),
     detail: z.string().nullable(),
     options: z.array(PromptOption),
     resolution: Resolution
@@ -250,6 +255,10 @@ const KnownItemBody = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('status'),
     text: z.string(),
+    summaryText: z.unknown().optional(),
+    // Optional annotations must not make a readable journal fail admission.
+    textKey: z.unknown().optional(),
+    textParams: z.unknown().optional(),
     presentation: z.string().optional(),
     contextClear: z
       .object({
@@ -263,7 +272,15 @@ const KnownItemBody = z.discriminatedUnion('kind', [
     providerFrame: ProviderFrame.optional(),
     threadGoal: AgentJournalThreadGoalStateSchema.optional(),
     failure: AgentSessionFailureFactSchema.optional(),
-    orcaStop: z.object({ cause: z.string().min(1) }).optional()
+    orcaStop: z.object({ cause: z.string().min(1) }).optional(),
+    specHandoff: z
+      .object({
+        newSessionId: z.string().min(1),
+        initialPrompt: z.string(),
+        specHandoffId: z.string().min(1),
+        autonomyLevel: z.string().min(1).optional()
+      })
+      .optional()
   }),
   z.object({
     kind: z.literal('turn'),

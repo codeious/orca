@@ -11,6 +11,11 @@ import {
   type AgentSessionOptionsResult
 } from '../../../shared/agent-session-wire'
 import type { AgentSessionRecord } from '../../../shared/agent-session-record'
+import {
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_MODEL_OPTION_ID,
+  droidSpecPairSavedOptionsAfterPick
+} from '../../../shared/droid-spec-pair-options'
 import { decodeStructuredAgentSessionOptionValue } from '../../../shared/structured-agent-session-option-codec'
 import type { AgentSessionRecordStore } from '../../runtime/agent-session-record-store'
 import { journalOpenReadRefusal } from '../agent-session-journal/journal-open-failure'
@@ -50,7 +55,10 @@ function restingOptionRules(
 }
 
 async function readStructuredAgentSessionOptionsAtRest(
-  deps: Pick<StructuredAgentSessionHostDeps, 'store' | 'agents' | 'modelCatalog'>,
+  deps: Pick<
+    StructuredAgentSessionHostDeps,
+    'store' | 'agents' | 'modelCatalog' | 'restingLaunchArgs'
+  >,
   sessionId: string
 ): Promise<RestingOptions> {
   const record = deps.store.getRecord(sessionId)
@@ -58,8 +66,13 @@ async function readStructuredAgentSessionOptionsAtRest(
     throw new Error('agent_session_identity_required')
   }
   const rules = restingOptionRules(deps.agents, record)
+  // Outside the session's serialize, so a held read never queues a send behind it.
   const catalog = (await deps.modelCatalog
-    ?.read({ agent: record.provider, sessionId })
+    ?.read({
+      agent: record.provider,
+      sessionId,
+      ...(rules?.waitsForCatalogListing ? { waitForListing: true } : {})
+    })
     .catch(() => null)) ?? { origin: 'unknown' as const }
   // With no catalog for the account, the list a running child of this agent falls back to.
   const listed = catalog.origin === 'unknown' ? (rules?.fallbackModels() ?? null) : catalog.models
@@ -80,6 +93,7 @@ async function readStructuredAgentSessionOptionsAtRest(
     (rules?.effortDefaultsToModel
       ? models.find((entry) => entry.id === model)?.defaultEffort
       : undefined)
+  const autonomyLevel = rules?.autonomyAtRest?.(saved, await restingLaunchArgs(deps, record))
   return {
     models: listed ? structuredAgentSessionOptionModels(listed, model, (row) => row) : [],
     ...(catalog.origin !== 'unknown' && catalog.fastModeSupport
@@ -89,8 +103,37 @@ async function readStructuredAgentSessionOptionsAtRest(
       ...(model ? { model } : {}),
       ...(effort ? { effort } : {}),
       ...(typeof fastMode === 'boolean' ? { fastMode } : {}),
-      ...(saved.serviceTier ? { serviceTier: saved.serviceTier } : {})
+      ...(saved.serviceTier ? { serviceTier: saved.serviceTier } : {}),
+      ...(rules?.reportsSavedSpec ? savedSpecCurrent(saved) : {}),
+      ...(autonomyLevel ? { autonomyLevel } : {})
     }
+  }
+}
+
+/** What a start would launch with, or nothing when the host cannot read it: the answer then names no level. */
+async function restingLaunchArgs(
+  deps: Pick<StructuredAgentSessionHostDeps, 'restingLaunchArgs'>,
+  record: AgentSessionRecord
+): Promise<readonly string[] | undefined> {
+  try {
+    return await deps.restingLaunchArgs?.(record.provider)
+  } catch {
+    return undefined
+  }
+}
+
+/** Spec as the next start replays it: on only when saved on, with the pair only when saved. */
+function savedSpecCurrent(
+  saved: Readonly<Record<string, string>>
+): Pick<AgentSessionOptionsResult['current'], 'planMode' | 'specModel' | 'specEffort'> {
+  return {
+    planMode:
+      saved.planMode !== undefined &&
+      decodeStructuredAgentSessionOptionValue('planMode', saved.planMode) === true,
+    ...(saved[DROID_SPEC_MODEL_OPTION_ID] ? { specModel: saved[DROID_SPEC_MODEL_OPTION_ID] } : {}),
+    ...(saved[DROID_SPEC_EFFORT_OPTION_ID]
+      ? { specEffort: saved[DROID_SPEC_EFFORT_OPTION_ID] }
+      : {})
   }
 }
 
@@ -114,7 +157,7 @@ export async function recordStructuredAgentSessionOptionIntent(
       )
     }
   }
-  const options = { ...record.options, [input.key]: input.value }
+  const options = droidSpecPairSavedOptionsAfterPick(record.options ?? {}, input.key, input.value)
   await ctx.persistOptions(options)
   ctx.publish()
   return { ok: true, value: { ...input, options } }

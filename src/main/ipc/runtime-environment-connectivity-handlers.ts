@@ -34,6 +34,8 @@ import {
   getRuntimeEnvironmentStatus
 } from './runtime-environment-transport-routing'
 import { publicRuntimeEnvironmentWithHostKey } from './runtime-environment-host-key'
+import type { RetainedRemoteRuntimeSubscription } from './runtime-environment-subscription-handlers'
+import { runtimeEnvironmentRevisionFailure } from './runtime-environment-revision-guard'
 
 function manuallyDisconnectedResponse(
   environment: ReturnType<typeof resolveEnvironment>
@@ -151,9 +153,12 @@ export function registerRuntimeEnvironmentConnectivityHandlers({
   )
 }
 
-export function registerRuntimeEnvironmentPassiveHandlers(getUserDataPath: () => string): void {
+export function registerRuntimeEnvironmentPassiveHandlers(
+  getUserDataPath: () => string,
+  subscriptions: ReadonlyMap<string, RetainedRemoteRuntimeSubscription>
+): void {
   registerPassiveStatusHandler(getUserDataPath)
-  registerPassiveCallHandler(getUserDataPath)
+  registerPassiveCallHandler(getUserDataPath, subscriptions)
 }
 
 function closeLegacySelectorTransport(selector: string, environmentId: string): void {
@@ -206,11 +211,14 @@ function runtimeEnvironmentCallFailure(
   }
 }
 
-function registerPassiveCallHandler(getUserDataPath: () => string): void {
+function registerPassiveCallHandler(
+  getUserDataPath: () => string,
+  subscriptions: ReadonlyMap<string, RetainedRemoteRuntimeSubscription>
+): void {
   ipcMain.handle(
     'runtimeEnvironments:call',
     async (
-      _event,
+      event,
       args: {
         selector: string
         method: string
@@ -226,16 +234,45 @@ function registerPassiveCallHandler(getUserDataPath: () => string): void {
       }
       let response: RuntimeRpcResponse<unknown>
       try {
-        response = await callRuntimeEnvironment(
-          getUserDataPath(),
-          environment.id,
-          args.method,
-          args.params,
-          args.timeoutMs,
-          args.expectedEnvironmentPairingRevision,
-          undefined,
-          { expectedEnvironmentRuntimeId: args.expectedEnvironmentRuntimeId }
-        )
+        const sessionId = mcpSignInSessionId(args.method, args.params)
+        const transcript =
+          sessionId === undefined
+            ? undefined
+            : [...subscriptions.values()].find(
+                (subscription) =>
+                  subscription.environmentId === environment.id &&
+                  subscription.ownerWebContentsId === event.sender.id &&
+                  subscription.sessionId === sessionId &&
+                  subscription.sendRequest
+              )
+        // The host binds browser forwarding to the transcript's authenticated socket.
+        if (transcript?.sendRequest) {
+          const failure = runtimeEnvironmentRevisionFailure(
+            environment,
+            args.expectedEnvironmentPairingRevision,
+            args.method,
+            args.expectedEnvironmentRuntimeId
+          )
+          if (failure) {
+            return failure
+          }
+          response = await transcript.sendRequest(
+            args.method,
+            args.params,
+            args.timeoutMs ?? 15_000
+          )
+        } else {
+          response = await callRuntimeEnvironment(
+            getUserDataPath(),
+            environment.id,
+            args.method,
+            args.params,
+            args.timeoutMs,
+            args.expectedEnvironmentPairingRevision,
+            undefined,
+            { expectedEnvironmentRuntimeId: args.expectedEnvironmentRuntimeId }
+          )
+        }
       } catch (error) {
         const failure = runtimeEnvironmentCallFailure(environment, args.method, error)
         if (failure) {
@@ -248,4 +285,27 @@ function registerPassiveCallHandler(getUserDataPath: () => string): void {
         : response
     }
   )
+}
+
+function mcpSignInSessionId(method: string, params: unknown): string | undefined {
+  if (
+    method !== 'agentSession.droidCommand' ||
+    typeof params !== 'object' ||
+    params === null ||
+    !('sessionId' in params) ||
+    typeof params.sessionId !== 'string' ||
+    !('command' in params) ||
+    typeof params.command !== 'object' ||
+    params.command === null ||
+    !('name' in params.command) ||
+    params.command.name !== 'mcp' ||
+    !('action' in params.command) ||
+    typeof params.command.action !== 'object' ||
+    params.command.action === null ||
+    !('kind' in params.command.action) ||
+    params.command.action.kind !== 'sign-in'
+  ) {
+    return undefined
+  }
+  return params.sessionId
 }

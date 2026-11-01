@@ -18,7 +18,10 @@ import {
   failedAcquisitionRefusal,
   failedAcquisitionSettlement
 } from './structured-agent-session-failed-create-refusal'
-import { withObservedProviderExit } from './structured-agent-session-failure-text'
+import {
+  structuredAgentSessionStartFailureFact,
+  withObservedProviderExit
+} from './structured-agent-session-failure-text'
 import { withMissingProviderExecutable } from '../../provider-process/provider-executable-missing'
 import { providerDiagnostic, withProviderDiagnostic } from '../../../shared/agent-session-failure'
 import { resolveAgentSessionReplayOutcome } from './structured-agent-session-replay-outcome'
@@ -150,6 +153,72 @@ describe('a ledger replay names the details its first answer did', () => {
         /stream-json|exited \(code|ENOENT|CLAUDE_CONFIG_DIR|restore queue/
       )
     }
+  })
+
+  describe('for a start refused over the agent release before any process', () => {
+    const DROID_RESUME = {
+      record: { ...agentSessionRecordFixture(), provider: 'droid' as const },
+      newSession: false
+    }
+    const old = { version: '0.230.0', floor: '0.238.0', updateCommand: 'droid update' }
+
+    it.each([
+      [
+        'too old',
+        AgentSessionPreSpawnError.unsupportedRelease(old),
+        { reason: 'versionUnsupported', ...old },
+        "Droid 0.230.0 is older than 0.238.0, the oldest release Orca's chat supports. Run `droid update` on this computer, then retry."
+      ],
+      [
+        'a protocol the chat does not speak',
+        AgentSessionPreSpawnError.unsupportedRelease(),
+        { reason: 'versionUnsupported' },
+        "This Droid release isn't supported in Orca's chat yet. Open Droid in a terminal."
+      ]
+    ])(
+      'keeps the code, the release facts and the sentence on the first answer and the replay: %s',
+      (_label, error, details, sentence) => {
+        const first = failedAcquisitionRefusal(error, DROID_RESUME)
+        const settlement = failedAcquisitionSettlement(error, DROID_RESUME)
+        expect(first?.refusal).toMatchObject({
+          code: 'structured_agent_session_unsupported',
+          details,
+          message: sentence
+        })
+        // Nothing ran, and the ledger row must say so rather than blame an exited process.
+        expect(settlement.exitProof).toBe('processless')
+        expect(settlement.outcome).toMatchObject({
+          status: 'failed',
+          code: 'structured_agent_session_unsupported',
+          details,
+          message: sentence
+        })
+        expect(replay(settlement.outcome)).toMatchObject({
+          decision: 'refuse',
+          refusal: { code: 'structured_agent_session_unsupported', details, message: sentence }
+        })
+      }
+    )
+
+    it('survives a wrap by the code that words a pre-spawn failure', () => {
+      const error = AgentSessionPreSpawnError.unsupportedRelease(old)
+      expect(failedAcquisitionRefusal(new AgentSessionPreSpawnError(error), DROID_RESUME)).toEqual(
+        failedAcquisitionRefusal(error, DROID_RESUME)
+      )
+    })
+
+    it('words the start failure the chat records with the release, not a new chat', () => {
+      const fact = structuredAgentSessionStartFailureFact({
+        refusal: failedAcquisitionRefusal(
+          AgentSessionPreSpawnError.unsupportedRelease(old),
+          DROID_RESUME
+        )!.refusal
+      })
+      expect(fact).toMatchObject({
+        kind: 'restartFailed',
+        refusal: { code: 'structured_agent_session_unsupported', details: old }
+      })
+    })
   })
 
   it('replays a spawn that failed before any process in a sentence, not its error', () => {

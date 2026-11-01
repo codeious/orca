@@ -14,6 +14,7 @@ export type RuntimeServiceCommandSurface = {
   listAiVaultSessions: RuntimeAiVaultCommands['list']
   resolveAiVaultSessionTitles: RuntimeAiVaultCommands['resolveTitles']
   prepareAiVaultSessionResume: RuntimeAiVaultCommands['prepare']
+  droidSessionHolder: RuntimeAiVaultCommands['droidSessionHolder']
   setSessionSearchEnabled: RuntimeSessionSearchSettingsController['setEnabled']
   onClientEvent: RuntimeClientEventBus['on']
   notifyNativeChatLaunchDraftResolved: RuntimeNativeChatDraftResolutions['notify']
@@ -112,6 +113,7 @@ export function installRuntimeServiceCommandSurface(
     listAiVaultSessions: vault.list.bind(vault),
     resolveAiVaultSessionTitles: vault.resolveTitles.bind(vault),
     prepareAiVaultSessionResume: vault.prepare.bind(vault),
+    droidSessionHolder: vault.droidSessionHolder.bind(vault),
     setSessionSearchEnabled: sessionSearchSettings.setEnabled.bind(sessionSearchSettings),
     onClientEvent: events.on.bind(events),
     notifyNativeChatLaunchDraftResolved: drafts.notify.bind(drafts),

@@ -49,6 +49,7 @@ import {
   decideAgentLaunchMode,
   readAgentLaunchModeSettings,
   resolveAgentLaunchModeOnHost,
+  structuredPreferenceLead,
   type AgentLaunchModeReceipt,
   type AgentLaunchModeVocabulary,
   DEFAULT_LAUNCH_VOCABULARY,
@@ -222,7 +223,7 @@ function downgradeAgentLaunchModeForStructuredRefusal(
     mode: 'terminal',
     preferred: receipt.preferred,
     reason: 'structured_unsupported_on_host',
-    detail: `Your default is a structured chat session, but the host refused to create one here; started ${vocabulary.terminal} instead.`
+    detail: `${structuredPreferenceLead(receipt)}, but the host refused to create one here; started ${vocabulary.terminal} instead.`
   }
 }
 

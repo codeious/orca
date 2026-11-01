@@ -84,6 +84,42 @@ describe('agent.launch with the real floating workspace resolver', () => {
     })
   })
 
+  // The floating workspace takes no rule of its own: a per-agent setting decides it as it decides any workspace.
+  it.each([
+    ['chat', false, 'structured'],
+    ['terminal', true, 'terminal']
+  ] as const)(
+    'routes %s for the agent while the switch is %s',
+    async (preference, switchOn, mode) => {
+      const runtime = new OrcaRuntimeService()
+      vi.spyOn(runtime, 'getClientSettings').mockReturnValue(
+        // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the launch reads only these preferences and optional agentCmdOverrides; no other settings consumer runs because terminal creation is stubbed.
+        {
+          ...STRUCTURED_PREFERENCE,
+          experimentalNativeChat: switchOn,
+          agentLaunchModes: { codex: preference }
+        } as ReturnType<OrcaRuntimeService['getClientSettings']>
+      )
+      vi.spyOn(runtime, 'createTerminal').mockResolvedValue({
+        handle: 'term_floating',
+        tabId: 'tab_floating',
+        worktreeId: FLOATING_TERMINAL_WORKTREE_ID,
+        title: 'Codex',
+        surface: 'background'
+      })
+
+      const result = await launch.handler(
+        launch.params.parse({
+          agent: 'codex',
+          target: { kind: 'existing', worktree: FLOATING_TERMINAL_WORKTREE_ID }
+        }),
+        { runtime, ...CAPABLE_CLIENT }
+      )
+
+      expect(result).toMatchObject({ receipt: { mode, reason: 'agent_setting' } })
+    }
+  )
+
   describe.each([true, false])('structured preference %s', (structuredPreference) => {
     it.each(selectors)('routes %s by preference, not by workspace kind', async (selector) => {
       const runtime = new OrcaRuntimeService()

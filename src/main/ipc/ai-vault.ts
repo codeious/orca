@@ -27,6 +27,10 @@ import {
 import { handleAiVaultGetFirstUserPrompt } from '../ai-vault/session-first-user-prompt-handler'
 import { registerAiVaultResumeHandler, type AiVaultResumeHandlerOptions } from './ai-vault-resume'
 import {
+  registerAiVaultDroidSessionHolderHandler,
+  type AiVaultDroidSessionHolderHandlerOptions
+} from './ai-vault-droid-session-holder-routing'
+import {
   LOCAL_EXECUTION_HOST_ID,
   parseRoutableExecutionHostId,
   requestedExecutionHostScope,
@@ -58,7 +62,8 @@ import { projectStructuredAiVaultSessions } from '../ai-vault/structured-session
 import { AI_VAULT_ALL_HOST_TIMEOUT_MS } from './ai-vault-all-host-timeouts'
 
 type AiVaultHandlerOptions = AiVaultSessionSources &
-  AiVaultResumeHandlerOptions & {
+  AiVaultResumeHandlerOptions &
+  AiVaultDroidSessionHolderHandlerOptions & {
     getActiveRuntimeAiVaultHostInfos?: () => readonly RuntimeAiVaultHostInfo[]
     scanRuntimeAiVaultSessions?: RuntimeAiVaultScanner
     resolveRuntimeAiVaultSessionTitles?: RuntimeAiVaultSessionTitleResolver
@@ -267,6 +272,7 @@ export function registerAiVaultHandlers(options: AiVaultHandlerOptions = {}): vo
     }
   )
   registerAiVaultResumeHandler(options)
+  registerAiVaultDroidSessionHolderHandler(options)
   ipcMain.handle(
     'aiVault:listSubagentSessions',
     (_event, args?: AiVaultSubagentListArgs): Promise<AiVaultSubagentListResult> =>

@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   isStableCliVersionFrom,
   isStableCliVersionOnLine,
-  probeAgentCliVersion
+  probeAgentCliVersion,
+  readAgentCliVersion
 } from './agent-cli-version-probe'
 
 const { runProcess } = vi.hoisted(() => ({ runProcess: vi.fn() }))
@@ -69,6 +70,38 @@ describe('probeAgentCliVersion', () => {
       throw new Error('spawn ENOENT')
     })
     expect(await probeAgentCliVersion(INPUT, anyVersion)).toBe(false)
+  })
+})
+
+describe('readAgentCliVersion', () => {
+  beforeEach(() => runProcess.mockReset())
+
+  it('returns the version the program prints, asked the way the probe asks', async () => {
+    prints('droid 0.230.0\n')
+    expect(await readAgentCliVersion(INPUT)).toBe('0.230.0')
+    expect(runProcess).toHaveBeenCalledWith({
+      ...INPUT,
+      args: ['--version'],
+      timeoutMs: 5_000,
+      maxOutputBytes: 4_096,
+      killOnOutputLimit: true
+    })
+  })
+
+  it.each([
+    ['a non-zero exit', '0.249.0\n', { code: 1 }],
+    ['a timeout', '0.249.0\n', { timedOut: true }],
+    ['no version in the output', 'usage: droid\n', {}]
+  ])('is null after %s', async (_label, stdout, result) => {
+    prints(stdout, result)
+    expect(await readAgentCliVersion(INPUT)).toBeNull()
+  })
+
+  it('is null when the program does not start', async () => {
+    runProcess.mockImplementationOnce(() => {
+      throw new Error('spawn ENOENT')
+    })
+    expect(await readAgentCliVersion(INPUT)).toBeNull()
   })
 })
 

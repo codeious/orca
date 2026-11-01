@@ -88,6 +88,40 @@ describe('readAgentLaunchCreateOutcome', () => {
     ).toEqual({ worktreeId: 'wt-1' })
   })
 
+  it('says why when the receipt is a release too old for chat, unless a warning already does', () => {
+    const detail =
+      "Droid 0.230.0 is older than 0.238.0, the oldest release Orca's chat supports. Run `droid update` on this computer."
+    const receipt = {
+      mode: 'terminal',
+      preferred: 'structured',
+      reason: 'agent_version_unsupported',
+      detail
+    }
+
+    expect(
+      readAgentLaunchCreateOutcome({
+        worktreeId: 'wt-1',
+        outcome: { kind: 'terminal', handle: 'term-1' },
+        receipt
+      })
+    ).toEqual({ worktreeId: 'wt-1', warning: detail })
+    expect(
+      readAgentLaunchCreateOutcome({
+        worktreeId: 'wt-1',
+        outcome: { kind: 'terminal', handle: 'term-1' },
+        warning: 'No pty available',
+        receipt
+      })
+    ).toEqual({ worktreeId: 'wt-1', warning: 'No pty available' })
+    expect(
+      readAgentLaunchCreateOutcome({
+        worktreeId: 'wt-1',
+        outcome: { kind: 'terminal', handle: 'term-1' },
+        receipt: { ...receipt, reason: 'user_default', detail: 'routine' }
+      })
+    ).toEqual({ worktreeId: 'wt-1' })
+  })
+
   it('ignores a warning outside the v2 top-level result contract', () => {
     expect(
       readAgentLaunchCreateOutcome({

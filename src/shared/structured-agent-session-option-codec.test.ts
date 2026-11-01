@@ -18,6 +18,15 @@ describe('structured agent session option codec', () => {
     expect(decodeStructuredAgentSessionOptionValue('fastMode', '1')).toBeNull()
   })
 
+  it('encodes the Spec toggle (planMode) as a boolean the way Fast mode is', () => {
+    expect(encodeStructuredAgentSessionOptionValue('planMode', true)).toBe('true')
+    expect(encodeStructuredAgentSessionOptionValue('planMode', false)).toBe('false')
+    expect(encodeStructuredAgentSessionOptionValue('planMode', 'true')).toBeNull()
+    expect(decodeStructuredAgentSessionOptionValue('planMode', 'true')).toBe(true)
+    expect(decodeStructuredAgentSessionOptionValue('planMode', 'false')).toBe(false)
+    expect(decodeStructuredAgentSessionOptionValue('planMode', 'spec')).toBeNull()
+  })
+
   it('passes existing string options through unchanged', () => {
     expect(encodeStructuredAgentSessionOptionValue('model', 'gpt-example')).toBe('gpt-example')
     expect(decodeStructuredAgentSessionOptionValue('effort', 'high')).toBe('high')

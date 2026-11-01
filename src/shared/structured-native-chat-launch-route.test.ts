@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest'
 import {
+  STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY,
   STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY,
   STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY
 } from './protocol-version'
@@ -135,5 +136,89 @@ describe('agents beyond Claude and Codex', () => {
   it('leave Claude and Codex offered by hosts that predate the capability', () => {
     expect(support({ agent: 'claude' })).toEqual({ supported: true })
     expect(support({ agent: 'codex' })).toEqual({ supported: true })
+  })
+})
+
+// orcad SSH hosts use the same negotiated structured-session support as other paired servers.
+describe('Droid on a paired runtime host, including orcad SSH', () => {
+  const RUNTIME_CAPABILITIES = [
+    STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
+    STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY,
+    STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY
+  ]
+  const runtimeHost = (overrides: Partial<StructuredNativeChatSupportInput> = {}) =>
+    support({
+      agent: 'droid',
+      executionHostId: 'runtime:env-1',
+      hostCapabilities: RUNTIME_CAPABILITIES,
+      clientCapabilities: [
+        STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
+        STRUCTURED_AGENT_SESSION_CLIENT_LAUNCH_MODE_CAPABILITY
+      ],
+      hostStructuredAgents: ['droid'],
+      ...overrides
+    })
+
+  it('is offered when host and client negotiate structured launches', () => {
+    expect(runtimeHost()).toEqual({ supported: true })
+  })
+
+  it('keeps Droid off chat when the host does not list Droid', () => {
+    expect(runtimeHost({ hostStructuredAgents: undefined })).toEqual({
+      supported: false,
+      blocker: 'agent-without-structured-session'
+    })
+    expect(runtimeHost({ hostStructuredAgents: ['claude'] })).toEqual({
+      supported: false,
+      blocker: 'agent-without-structured-session'
+    })
+  })
+
+  it.each(['claude', 'codex', 'pi', 'grok', 'droid'] as const)(
+    'keeps unknown runtime capabilities closed for %s',
+    (agent) => {
+      expect(runtimeHost({ agent, hostStructuredAgents: [agent], hostCapabilities: null })).toEqual(
+        { supported: false, blocker: 'runtime-capability-unknown' }
+      )
+    }
+  )
+
+  it('keeps Droid on a relay SSH host or WSL in the terminal', () => {
+    expect(runtimeHost({ executionHostId: 'ssh:host-a' })).toEqual({
+      supported: false,
+      blocker: 'remote-execution-host'
+    })
+    expect(
+      runtimeHost({
+        projectRuntime: {
+          status: 'resolved',
+          runtime: {
+            kind: 'wsl',
+            hostPlatform: 'wsl',
+            projectId: 'repo-1',
+            distro: 'Ubuntu',
+            reason: 'project-override',
+            cacheKey: 'wsl'
+          }
+        }
+      })
+    ).toEqual({ supported: false, blocker: 'project-runtime' })
+  })
+
+  it.each(['claude', 'codex', 'pi', 'grok'] as const)(
+    'leaves %s offered on a negotiated runtime host',
+    (agent) => {
+      expect(runtimeHost({ agent, hostStructuredAgents: [agent] })).toEqual({ supported: true })
+    }
+  )
+
+  it('leaves a local Droid launch alone', () => {
+    expect(
+      support({
+        agent: 'droid',
+        hostCapabilities: RUNTIME_CAPABILITIES,
+        hostStructuredAgents: ['droid']
+      })
+    ).toEqual({ supported: true })
   })
 })

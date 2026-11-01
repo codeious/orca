@@ -27,6 +27,7 @@ import {
 } from './agent-session-failure-copy'
 import type { AgentSessionWireRefusalCode } from './agent-session-wire-refusals'
 import { providerRetryWords, withRetryCause } from './agent-session-provider-retry-words'
+import { unsupportedReleaseSentence } from './agent-session-release-sentence'
 import { commandRefusedByReason } from './agent-session-command-refusal-words'
 import { joinSentences } from './sentence-joining'
 import {
@@ -170,6 +171,10 @@ function couldNot(verb: 'couldNotStart' | 'couldNotRestart'): Sentence {
         say('previousExitUnverifiable', agent(say, context)),
         ...startRetry(say, context, 'sendAgainToTryOnceMore')
       ])
+    }
+    const release = unsupportedReleaseSentence(context, fact.refusal, say)
+    if (release) {
+      return release
     }
     const code = fact.refusal?.code
     return joinSentences(

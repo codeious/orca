@@ -8,16 +8,17 @@
 import { agentSessionRefusalError } from '../../shared/agent-session-wire-refusals'
 import type { AgentSessionOperationRow } from '../../shared/agent-session-operation-ledger'
 import {
-  agentSessionWireProviderHandle,
-  type AgentSessionWireProviderHandle
-} from '../../shared/agent-session-provider-handle-encoding'
+  adoptedProviderHandle,
+  type AdoptedProviderHandle
+} from './agent-session-wire/structured-agent-session-adopted-handle'
 import type { StructuredAgentId } from '../../shared/agent-session-provider-handle'
 import type { AgentSessionLease, AgentSessionRecord } from '../../shared/agent-session-record'
 import { agentSessionLeaseAdmitsWriter } from '../../shared/agent-session-lease-adjudication'
+import type { StructuredAdoptionAgent } from '../../shared/structured-adoption-agent'
 
 export type StructuredAgentSessionAdoptionOwnership = {
   sessionId: string
-  /** Any registered agent's chat may hold the conversation, though only Claude and Codex adopt. */
+  /** Any registered agent's chat may hold the conversation, though only some agents adopt. */
   provider: StructuredAgentId
   providerSessionId: string
   lease: AgentSessionLease
@@ -31,12 +32,12 @@ export type StructuredAgentSessionAdoption = {
 
 export type CommittedStructuredAgentSessionAdoptionReplay = {
   record: AgentSessionRecord
-  providerHandle: AgentSessionWireProviderHandle
+  providerHandle: AdoptedProviderHandle
 }
 
 /** Exact committed-operation identity; attach still validates its fingerprint. */
 export function findCommittedStructuredAgentSessionAdoptionReplay(input: {
-  agent: 'claude' | 'codex'
+  agent: StructuredAdoptionAgent
   providerSessionId: string
   selfSessionId: string
   callerKey: string
@@ -63,12 +64,11 @@ export function findCommittedStructuredAgentSessionAdoptionReplay(input: {
   ) {
     return null
   }
-  // The replay re-sends the adoption as its create sent it, so it needs the wire's form.
-  const providerHandle = agentSessionWireProviderHandle(adopted.handle)
-  if (adopted.handle.nativeId !== input.providerSessionId || !providerHandle) {
+  if (adopted.handle.nativeId !== input.providerSessionId) {
     return null
   }
-  return { record, providerHandle }
+  // The replay re-sends the adoption as its create sent it, so it needs the same form.
+  return { record, providerHandle: adoptedProviderHandle(adopted.handle) }
 }
 
 /**
@@ -82,7 +82,7 @@ export function findCommittedStructuredAgentSessionAdoptionReplay(input: {
  * ownership index — without this exemption the replay refuses instead of replaying.
  */
 export function findConflictingStructuredAdoption(input: {
-  agent: 'claude' | 'codex'
+  agent: StructuredAdoptionAgent
   providerSessionId: string
   selfSessionId: string
   ownership: readonly StructuredAgentSessionAdoptionOwnership[]
@@ -122,11 +122,11 @@ export function structuredAdoptionConflictError(
  * (selected account before the system default).
  */
 export async function resolveStructuredAgentSessionAdoption(input: {
-  agent: 'claude' | 'codex'
+  agent: StructuredAdoptionAgent
   providerSessionId: string
   candidateAccountHomes: readonly string[]
   resolveTranscript: (args: {
-    agent: 'claude' | 'codex'
+    agent: StructuredAdoptionAgent
     providerSessionId: string
     accountHomePath: string
   }) => Promise<string | null>

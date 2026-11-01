@@ -49,6 +49,12 @@ describe('vitest real-agent-home write guard', () => {
     expect(existsSync(target)).toBe(false)
   })
 
+  it('refuses a write under the real ~/.factory, where the Droid hook writers go', () => {
+    const target = join(missingRealFolder('.factory'), 'hooks.json')
+    expect(() => writeFileSync(target, '{}')).toThrow(/real-agent-home guard/)
+    expect(existsSync(target)).toBe(false)
+  })
+
   it('refuses a promise write under a ~/.claude.json sibling', async () => {
     const target = join(missingRealFolder('.claude.json'), 'x.tmp')
     await expect(writeFile(target, '{}')).rejects.toThrow(/real-agent-home guard/)

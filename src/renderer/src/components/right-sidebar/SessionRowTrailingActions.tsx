@@ -50,6 +50,7 @@ export function SessionRowTrailingActions({
   worktreeInfo,
   onToggleDetails,
   onJumpToOriginalPane,
+  jumpToOriginalPaneLabel,
   showJumpToWorktree,
   onJumpToWorktree,
   onResume,
@@ -75,6 +76,7 @@ export function SessionRowTrailingActions({
   worktreeInfo: AiVaultSessionWorktreeInfo | null
   onToggleDetails: () => void
   onJumpToOriginalPane?: () => void
+  jumpToOriginalPaneLabel?: string
   showJumpToWorktree: boolean
   onJumpToWorktree?: () => void
   onResume: () => void
@@ -93,6 +95,12 @@ export function SessionRowTrailingActions({
   onRequestDelete?: () => void
 }) {
   const jumpToWorktreeTooltip = aiVaultWorktreeJumpTooltip(worktreeInfo)
+  const jumpToOriginalPaneText =
+    jumpToOriginalPaneLabel ??
+    translate(
+      'auto.components.right.sidebar.AiVaultSessionRow.jumpToOriginalPane',
+      'Jump to Original Pane'
+    )
 
   return (
     <div
@@ -109,10 +117,7 @@ export function SessionRowTrailingActions({
                 type="button"
                 variant="ghost"
                 size="icon-xs"
-                aria-label={translate(
-                  'auto.components.right.sidebar.AiVaultSessionRow.jumpToOriginalPane',
-                  'Jump to Original Pane'
-                )}
+                aria-label={jumpToOriginalPaneText}
                 draggable={false}
                 onClick={(event) => {
                   event.stopPropagation()
@@ -125,10 +130,7 @@ export function SessionRowTrailingActions({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top" sideOffset={4}>
-              {translate(
-                'auto.components.right.sidebar.AiVaultSessionRow.jumpToOriginalPane',
-                'Jump to Original Pane'
-              )}
+              {jumpToOriginalPaneText}
             </TooltipContent>
           </Tooltip>
         ) : null}
@@ -269,6 +271,7 @@ export function SessionRowTrailingActions({
             onResumeInNewChat={onResumeInNewChat}
             onResumeInNewCli={onResumeInNewCli}
             onJumpToOriginalPane={onJumpToOriginalPane}
+            jumpToOriginalPaneLabel={jumpToOriginalPaneText}
             showJumpToWorktree={showJumpToWorktree}
             onJumpToWorktree={onJumpToWorktree}
             onCopyResume={onCopyResume}

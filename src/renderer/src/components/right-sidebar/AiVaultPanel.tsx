@@ -25,8 +25,7 @@ import {
   resolveAiVaultHistorySessionResumeState
 } from './ai-vault-session-resume'
 import { useAiVaultSessionLaunchActions } from './ai-vault-session-launch-actions'
-import type { AiVaultResumeInChatEligibility } from './ai-vault-session-resume-in-chat'
-import { resolveAiVaultHistoryRowResume } from './ai-vault-session-resume-in-chat-workspace'
+import { useAiVaultRowResumeInChat } from './use-ai-vault-row-resume-in-chat'
 import {
   useAiVaultSessionWorktreeMap,
   withAiVaultCurrentWorktreeStatus
@@ -269,12 +268,12 @@ export default function AiVaultPanel(): React.JSX.Element {
   // workspace host a PTY" but "will the provider still find this conversation from the workspace we
   // would run it in". The workspace it targets is the session's own when that is open, because
   // Claude looks its transcript up under a directory derived from the launch cwd.
-  const getSessionResumeInChat = useCallback(
-    (session: AiVaultSession): AiVaultResumeInChatEligibility =>
-      resolveAiVaultHistoryRowResume({ ...getSessionRowResumeArgs(session), settings })
-        .resumeInChat,
-    [getSessionRowResumeArgs, settings]
-  )
+  const getSessionResumeInChat = useAiVaultRowResumeInChat({
+    sessions: filteredSessions,
+    rowArgs: getSessionRowResumeArgs,
+    settings,
+    generation: scanResult
+  })
 
   // Settings asks for "everything, ready to type".
   const focusSearchRequestId = useAiVaultSearchFocusRequest(

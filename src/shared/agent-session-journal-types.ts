@@ -1,3 +1,4 @@
+import type { AgentJournalQuestionPicker } from './agent-session-journal-question-picker'
 import type { AgentSessionProviderContextBoundary } from './agent-session-provider-context'
 // ─── Canonical agent-session journal: cross-process wire shapes ─────────────
 // The host-owned timeline for a structured agent session. Everything here must
@@ -19,6 +20,8 @@ import type { AgentSessionContextUsage } from './agent-session-context-usage'
 import type { AgentSessionProviderHandle } from './agent-session-provider-handle'
 import type { NativeChatBlock, NativeChatRole } from './native-chat-types'
 import type { AgentMessageSource } from './agent-session-message-source'
+import type { AgentJournalSpecHandoff } from './agent-session-journal-spec-handoff'
+import type { AgentSessionHostText } from './agent-session-host-text'
 
 export { type AgentType }
 
@@ -76,6 +79,8 @@ export type AgentJournalItemIdentity =
   | { provider: 'claude'; sessionId: string; uuid: string }
   /** A submission Orca minted before any provider echo existed. */
   | { provider: 'orca'; clientMessageId: string }
+  /** The user message Droid echoed for a send. The id is Droid's, stable in its transcript. */
+  | { provider: 'droid'; messageId: string }
   /** Bridge-era transcript record with no provider-stable identity. */
   | { provider: 'legacy'; agent: AgentType; sessionId: string; recordId: string }
 
@@ -188,7 +193,7 @@ export type AgentJournalFreeTextInput = {
   placeholder?: string
 }
 
-export type AgentJournalQuestion = {
+export type AgentJournalQuestion = AgentJournalQuestionPicker & {
   id: string
   question: string
   header?: string
@@ -233,6 +238,10 @@ export type AgentJournalApprovalItem = {
   blockedPath?: string
   matchedAskRule?: AgentJournalApprovalMatchedAskRule
   subject?: AgentJournalApprovalSubject
+  /** The answer may carry a note beside the chosen option; absent, the provider takes none. */
+  acceptsComment?: boolean
+  /** The answer may carry the plan's text as the person edited it. */
+  acceptsPlanEdit?: boolean
   detail: string | null
   options: AgentJournalPromptOption[]
   resolution: AgentJournalResolution
@@ -318,8 +327,10 @@ export type AgentJournalThreadGoalState =
   | { state: 'set'; goal: AgentJournalThreadGoal }
   | { state: 'cleared' }
 
-type AgentJournalStatusItemFields = {
+type AgentJournalStatusItemFields = AgentSessionHostText & {
   kind: 'status'
+  /** Droid's own compaction prose, stored beside the boundary label for replay. */
+  summaryText?: string
   /** Optional display hints; unknown values retain the ordinary text fallback. */
   presentation?: string
   contextClear?: AgentSessionProviderContextBoundary
@@ -340,6 +351,8 @@ type AgentJournalStatusItemFields = {
   /** On the row about a reply Orca's own stop cut off: why Orca stopped. Its cause is open (a newer
    *  host may name one this build does not know), so read it with `readAgentSessionOrcaStop`. */
   orcaStop?: { cause: string }
+  /** On the row where Droid made the session a Spec plan moves to: the chat opens that session. */
+  specHandoff?: AgentJournalSpecHandoff
 }
 
 /** A status row that reports no failure; its text is its writer's own. */
@@ -348,12 +361,10 @@ export type AgentJournalPlainStatusItem = AgentJournalStatusItemFields & {
   failure?: undefined
 }
 
-export type AgentJournalStatusItem =
-  | AgentJournalPlainStatusItem
-  | (AgentJournalStatusItemFields &
-      /** A row that reports a failure: what failed, typed, beside the sentence older clients print,
-       *  both from `agentSessionFailureWords`. Absent on rows from older hosts. */
-      AgentSessionFailureRowWords)
+/** A row that reports a failure: what failed, typed, beside the sentence older clients print,
+ *  both from `agentSessionFailureWords`. Absent on rows from older hosts. */
+export type AgentJournalStatusItem = AgentJournalStatusItemFields &
+  (AgentJournalPlainStatusItem | AgentSessionFailureRowWords)
 
 /** The durable record of one root turn. `running` exposes cancellation while
  *  the provider can still accept it; the item is revised to a terminal state,
@@ -508,6 +519,10 @@ export type AgentJournalSubmission = {
    *  A restart or a close keeps only a person's Send cut short as a card. The snapshot still
    *  carries it; no released client reads it. */
   origin?: 'client' | 'host'
+  /** Host-only: the client asked this message to wait for the running reply and answer inside the
+   *  same turn, so its handover tells the adapter so. Only an adapter with such a placement reads
+   *  it; absent is an ordinary send. */
+  afterReply?: true
   /** Who it is from: the kind of its `AgentSessionMessageSource` ('user' or 'agent'), so a restart
    *  or a close keeps only a person's unsent send as a card. Only the kind: the senders stay on the
    *  card, host-only, and publishing them here would need a strip. A newer build's kind is kept as

@@ -14,6 +14,8 @@ export type NativeChatSessionOptionRecord = {
   agent: AgentType
   model?: TrackedNativeChatSessionOption
   valuesByModel: Record<string, Record<string, TrackedNativeChatSessionOption>>
+  /** Values of options with `scope: 'session'`: no model needs to be named for them to be held. */
+  sessionValues?: Record<string, TrackedNativeChatSessionOption>
 }
 
 export function createNativeChatSessionOptionRecord(
@@ -33,7 +35,14 @@ export function cloneNativeChatSessionOptionRecord(
         modelId,
         Object.fromEntries(Object.entries(values).map(([id, tracked]) => [id, { ...tracked }]))
       ])
-    )
+    ),
+    ...(record.sessionValues
+      ? {
+          sessionValues: Object.fromEntries(
+            Object.entries(record.sessionValues).map(([id, tracked]) => [id, { ...tracked }])
+          )
+        }
+      : {})
   }
 }
 
@@ -56,6 +65,9 @@ export function clearTrackedSessionOption(
   modelId: string | null,
   optionId: string
 ): void {
+  if (record.sessionValues) {
+    delete record.sessionValues[optionId]
+  }
   if (!modelId) {
     return
   }
@@ -105,6 +117,16 @@ export function setTrackedSessionOption(
   return modelId
 }
 
+/** Holds a `scope: 'session'` option's value whether or not a model is named. */
+export function setTrackedSessionScopedOption(
+  record: NativeChatSessionOptionRecord,
+  optionId: string,
+  value: SessionOptionValue,
+  source: TrackedNativeChatSessionOption['source']
+): void {
+  record.sessionValues = { ...record.sessionValues, [optionId]: { value, source } }
+}
+
 export function flattenNativeChatSessionOptionRecord(
   record: NativeChatSessionOptionRecord,
   modelId: string
@@ -140,6 +162,10 @@ export function applyNativeChatReportedSessionOptions(
   for (const [id, value] of Object.entries(values)) {
     if (id === 'model') {
       continue
+    }
+    // A report outranks a session-scoped stand-in, which would otherwise shadow the next model.
+    if (record.sessionValues) {
+      delete record.sessionValues[id]
     }
     const current = modelValues[id]
     if (current?.value !== value || current.source !== sourceFor(id)) {

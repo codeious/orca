@@ -24,6 +24,7 @@ export function SessionActionMenuItems({
   onResumeInNewChat,
   onResumeInNewCli,
   onJumpToOriginalPane,
+  jumpToOriginalPaneLabel,
   showJumpToWorktree,
   onJumpToWorktree,
   onCopyResume,
@@ -45,6 +46,7 @@ export function SessionActionMenuItems({
   // Offered only on rows native chat owns, where it forks: see ai-vault-session-cli-fork.
   onResumeInNewCli?: () => void
   onJumpToOriginalPane?: () => void
+  jumpToOriginalPaneLabel?: string
   showJumpToWorktree: boolean
   onJumpToWorktree?: () => void
   // Absent for zero-turn sessions: copying a resume command that lands in an
@@ -91,10 +93,11 @@ export function SessionActionMenuItems({
       {onJumpToOriginalPane ? (
         <Item onSelect={onJumpToOriginalPane}>
           <LocateFixed className="size-3.5" />
-          {translate(
-            'auto.components.right.sidebar.AiVaultSessionRow.jumpToOriginalPane',
-            'Jump to Original Pane'
-          )}
+          {jumpToOriginalPaneLabel ??
+            translate(
+              'auto.components.right.sidebar.AiVaultSessionRow.jumpToOriginalPane',
+              'Jump to Original Pane'
+            )}
         </Item>
       ) : null}
       {showJumpToWorktree ? (

@@ -24,6 +24,18 @@ import { openTestJournalHostDatabase } from '../agent-session-journal/journal-ho
 import { createStructuredAgentSessionLogger } from './structured-agent-session-logger'
 import { codexProviderHandle } from '../../../shared/agent-session-provider-handle-encoding'
 import { NO_STRUCTURED_AGENTS } from './structured-agent-session-adapter-router-test-support'
+import {
+  agentSessionRefusalReference,
+  readAgentSessionRefusalReference
+} from '../../../shared/agent-session-wire-refusals'
+import {
+  agentSessionRefusalFailure,
+  parseAgentSessionWriteFailure
+} from '../../../shared/agent-session-write-failure'
+import {
+  agentSessionWriteNoticeEnglish,
+  agentSessionWriteNoticeParts
+} from '../../../shared/agent-session-refusal-notice'
 
 const CALLER = { callerKey: 'client-1' }
 const DEFAULT_MODEL = 'gpt-default'
@@ -149,6 +161,46 @@ afterEach(async () => {
 })
 
 describe('structured session options and close', () => {
+  it('carries host text through option refusal, ledger replay, reference and saved notice', async () => {
+    const text = 'This model needs another setting.'
+    const metadata = {
+      textKey: 'future.host.modelSetting',
+      textParams: { model: PICKED_MODEL, count: 2 }
+    }
+    optionFailure = new AgentSessionOptionRejectedError(
+      Object.assign(new Error(text), metadata),
+      'providerRefusedOption'
+    )
+    expect(optionFailure).toMatchObject(metadata)
+    const fields = { key: 'model', value: PICKED_MODEL }
+    const request = { envelope: envelope('agentSession.setOption', fields), ...fields }
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const result = await host.setOption(CALLER, request)
+      expect(result.ok).toBe(false)
+      if (result.ok) {
+        throw new Error('Expected refused option')
+      }
+      expect(result.refusal.details).toEqual({ reason: 'providerRefusedOption', ...metadata })
+      const reference = readAgentSessionRefusalReference(
+        JSON.parse(JSON.stringify(agentSessionRefusalReference(result.refusal)))
+      )
+      expect(reference?.details).toEqual({ reason: 'providerRefusedOption', ...metadata })
+      const failure = parseAgentSessionWriteFailure(
+        JSON.parse(JSON.stringify(agentSessionRefusalFailure(result.refusal)))
+      )
+      if (!failure) {
+        throw new Error('Expected saved refusal')
+      }
+      expect(failure).toMatchObject({ details: { ...metadata } })
+      const parts = agentSessionWriteNoticeParts(failure, 'option', {}, text)
+      expect(parts).toEqual(['optionRejected', { text, ...metadata }, 'notDoneOption'])
+      expect(agentSessionWriteNoticeEnglish(parts)).toBe(
+        "The agent didn't accept this setting. This model needs another setting. The setting wasn't changed."
+      )
+    }
+    expect(store.getRecord(SESSION)?.options).not.toEqual({ model: PICKED_MODEL })
+  })
+
   it('publishes an acknowledged model without waiting for journal traffic', async () => {
     const body = {
       kind: 'message' as const,
@@ -210,6 +262,29 @@ describe('structured session options and close', () => {
       })
     ).toMatchObject({ ok: true, value: { options: { model: PICKED_MODEL } } })
     expect(store.getRecord(SESSION)?.options).toEqual({ model: PICKED_MODEL })
+  })
+
+  it('sends a refusal the provider explained under the reason that lets a client quote it', async () => {
+    optionFailure = new AgentSessionOptionRejectedError(
+      'Model not allowed by organization policy.',
+      'providerRefusedOption'
+    )
+    const fields = { key: 'model', value: PICKED_MODEL }
+
+    expect(
+      await host.setOption(CALLER, {
+        envelope: envelope('agentSession.setOption', fields),
+        ...fields
+      })
+    ).toMatchObject({
+      ok: false,
+      refusal: {
+        code: 'agent_session_operation_invalid',
+        message: 'Model not allowed by organization policy.',
+        details: { reason: 'providerRefusedOption' }
+      }
+    })
+    expect(store.getRecord(SESSION)?.options).not.toEqual({ model: PICKED_MODEL })
   })
 
   // Closing a chat used to leave its provider child resident for the whole app session: the host's

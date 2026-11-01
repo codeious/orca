@@ -42,6 +42,7 @@ import { canMoveTabToNewPaneColumn } from '@/components/tab-bar/tab-move-to-pane
 import { isEditableTarget } from '@/lib/editable-target'
 import { NativeChatCopyOrcaSessionIdMenuItem } from './NativeChatCopyOrcaSessionIdMenuItem'
 import { NativeChatSelectionQuote } from './NativeChatSelectionQuote'
+import { getNativeChatSelectedText } from './native-chat-selected-text'
 import type { NativeChatComposerHandle } from './native-chat-composer-types'
 import type { TabSplitDirection } from '@/store/slices/tabs'
 
@@ -380,24 +381,4 @@ function keepSelectionThroughMenuPress(event: React.PointerEvent<HTMLElement>): 
   if (event.button === 2 || (isMacPlatform() && event.ctrlKey)) {
     event.preventDefault()
   }
-}
-
-function getNativeChatSelectedText(root: HTMLElement | null): string {
-  const selection = window.getSelection()
-  if (!root || !selection || selection.isCollapsed) {
-    return ''
-  }
-  const anchor = selection.anchorNode
-  const focus = selection.focusNode
-  if (!nodeBelongsToRoot(anchor, root) || !nodeBelongsToRoot(focus, root)) {
-    return ''
-  }
-  return selection.toString()
-}
-
-function nodeBelongsToRoot(node: Node | null, root: HTMLElement): boolean {
-  if (!node) {
-    return false
-  }
-  return root.contains(node)
 }

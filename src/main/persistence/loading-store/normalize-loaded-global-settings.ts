@@ -1,3 +1,4 @@
+import { normalizeAgentLaunchModePreferences } from '../../../shared/agent-launch-mode-preference'
 import { normalizeNativeChatAppearanceSettings } from '../../../shared/native-chat-appearance-settings'
 import { getDefaultVoiceSettings } from '../../../shared/constants'
 import { normalizePRBotAuthorOverrides } from '../../../shared/pr-bot-author-overrides'
@@ -71,6 +72,8 @@ export function normalizeLoadedGlobalSettings(
     nativeChatAppearance: normalizeNativeChatAppearanceSettings(
       parsed.settings?.nativeChatAppearance
     ),
+    // Why: a hand-edited or newer-build mode must not silently pin an agent to the terminal.
+    agentLaunchModes: normalizeAgentLaunchModePreferences(parsed.settings?.agentLaunchModes),
     worktreeVisibilityDefaults: migratedExternalVisibility.defaults,
     prBotAuthorOverrides: normalizePRBotAuthorOverrides(parsed.settings?.prBotAuthorOverrides),
     // Why: v1.3.42 renamed the sidekick setting to pet; carry the old flag forward once so enabled users don't lose it.

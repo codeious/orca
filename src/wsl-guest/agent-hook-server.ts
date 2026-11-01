@@ -72,7 +72,11 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
   private fixedToken: string | undefined
   private preferredPort: number
   private portFallbackApplied = false
-  private readonly presenceChecks = new RelayAgentPresence()
+  private readonly presenceChecks = new RelayAgentPresence({
+    state: this.state,
+    metadata: this.lastEnvelopeMetaByPaneKey,
+    apply: (event, source, env, version) => this.applyEvent(event, source, env, version)
+  })
   private retryScheduler: AgentHookResultRetryScheduler
   readonly claudeTerminalInterrupts = createRelayClaudeTerminalInterrupts(this.state, () =>
     this.relayInterruptHost()
@@ -187,6 +191,7 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
     this.endpointFileWritten = false
     this.stopCanonicalHooks()
     this.retryScheduler.clearAll()
+    this.presenceChecks.stop()
     clearAllListenerCaches(this.state)
     this.claudeTerminalInterrupts.clear()
     this.lastEnvelopeMetaByPaneKey.clear()
@@ -226,27 +231,12 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
       apply: (event, meta) =>
         this.applyEvent(event, meta.source, meta.env, meta.version, { checkPresence: false }),
       armExpiry: (paneKey, meta) =>
-        this.retryScheduler.armClaudeOwedNotificationExpiry(
-          meta.source,
-          paneKey,
-          meta.env,
-          meta.version
-        )
+        this.retryScheduler.armLeaseExpiry(meta.source, paneKey, meta.env, meta.version)
     }
   }
 
   checkAgentPresence(paneKey: string): Promise<void> {
-    const row = this.state.lastStatusByPaneKey.get(paneKey)
-    const meta = this.lastEnvelopeMetaByPaneKey.get(paneKey)
-    return this.presenceChecks.check(
-      row,
-      () => this.state.lastStatusByPaneKey.get(paneKey),
-      (event) => {
-        if (meta) {
-          this.applyEvent(event, meta.source, meta.env, meta.version)
-        }
-      }
-    )
+    return this.presenceChecks.check(paneKey)
   }
 
   /** Drop a paneKey's cached entries on PTY exit so a terminated pane can't resurface as a ghost event on reconnect. */
@@ -310,7 +300,8 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
         clearAssistantMessageRetry: (paneKey) =>
           this.retryScheduler.clearAssistantMessageRetry(paneKey),
         forward: this.forward,
-        checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey)
+        checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey),
+        watchDroidExit: (paneKey) => this.presenceChecks.watchDroidExit(paneKey)
       },
       incoming,
       source,

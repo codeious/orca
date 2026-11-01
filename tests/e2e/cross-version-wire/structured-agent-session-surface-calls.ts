@@ -97,6 +97,19 @@ export const STRUCTURED_CALLS: {
     hostMethod: 'changeThreadGoal',
     result: { ok: true, replayed: false }
   },
+  // Clients call this only on a host advertising `agent-session.droid-command.v1`; an older host
+  // answers `method_not_found`.
+  {
+    method: 'agentSession.droidCommand',
+    hostMethod: 'droidCommand',
+    result: { name: 'context', report: null }
+  },
+  // Generic clients cannot open sign-in links; without desktop negotiation no ack reaches the host.
+  {
+    method: 'agentSession.mcpSignInOpened',
+    hostMethod: null,
+    result: { accepted: false }
+  },
   {
     method: 'agentSession.handoffStatus',
     hostMethod: 'handoffStatus',

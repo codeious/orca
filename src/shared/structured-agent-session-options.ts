@@ -1,5 +1,13 @@
 import type { AgentSessionOptionCatalog, CatalogModel } from './agent-session-option-catalog'
+import { droidAutonomyOf, type DroidAutonomyState } from './droid-autonomy-options'
+import {
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_MODEL_OPTION_ID,
+  droidSpecPairOf,
+  type DroidSpecPair
+} from './droid-spec-pair-options'
 import { discoveredModel } from './structured-agent-session-discovered-model'
+import { withSpecModeOption } from './structured-agent-session-spec-option'
 import {
   buildNativeChatSessionOptionSnapshot,
   resolveEffectiveNativeChatModelId,
@@ -10,6 +18,7 @@ import {
   clearTrackedSessionOption,
   createNativeChatSessionOptionRecord,
   setTrackedSessionOption,
+  setTrackedSessionScopedOption,
   type NativeChatSessionOptionRecord
 } from './native-chat-session-option-state'
 import { STRUCTURED_LAUNCH_SEED_OPTION_IDS } from './native-chat-session-option-defaults'
@@ -37,7 +46,11 @@ export function structuredAgentSessionOptionCatalog(
       options: seed.unknownModelOptions ?? []
     })
   }
-  return { ...seed, models, defaultModelIsCliDefault: true }
+  return {
+    ...seed,
+    models: withSpecModeOption(models, result.current.planMode !== undefined),
+    defaultModelIsCliDefault: true
+  }
 }
 
 export type StructuredAgentSessionOptionState = {
@@ -48,6 +61,12 @@ export type StructuredAgentSessionOptionState = {
   catalogSource: 'seed' | 'builtin' | 'host' | 'live' | null
   record: NativeChatSessionOptionRecord
   pendingId: string | null
+  /** The Spec model and effort the host holds. Beside the record, which tracks only what a model's
+   *  own options and the next launch's seed can carry. Unset until a session's answer names them. */
+  specPair?: DroidSpecPair
+  /** The level Droid holds, or the one its next start will send, and the levels it offers. Beside
+   *  the record for the same reason as the pair: no model's options carry it. */
+  autonomy?: DroidAutonomyState | undefined
 }
 
 /** With `seedCatalog`, the state holds the static seed from the first frame, but the picker shows
@@ -107,7 +126,7 @@ export function applyStructuredAgentSessionModelCatalog(
     // as a provisional `default`-source value, never a confirmed one.
     catalog: {
       ...seed,
-      models,
+      models: withSpecModeOption(models, seed.offersSpecAtRest === true),
       ...(namesDefault ? { defaultModelIsCliDefault: true } : {})
     },
     catalogSource: 'host'
@@ -125,20 +144,37 @@ export function applyStructuredAgentSessionOptions(
   if (result.current.serviceTier === undefined) {
     clearTrackedSessionOption(state.record, result.current.model ?? null, 'serviceTier')
   }
+  if (result.current.planMode === undefined) {
+    clearTrackedSessionOption(state.record, result.current.model ?? null, 'planMode')
+  }
   applyNativeChatReportedSessionOptions(
     state.record,
     {
       ...(result.current.model ? { model: result.current.model } : {}),
       ...(result.current.effort ? { effort: result.current.effort } : {}),
       ...(result.current.fastMode !== undefined ? { fastMode: result.current.fastMode } : {}),
-      ...(result.current.serviceTier ? { serviceTier: result.current.serviceTier } : {})
+      ...(result.current.serviceTier ? { serviceTier: result.current.serviceTier } : {}),
+      ...(result.current.planMode !== undefined ? { planMode: result.current.planMode } : {})
     },
     result.current.confirmed ?? []
   )
+  // A report that names no model still says whether Spec is on, which the record cannot hold per model.
+  if (!result.current.model && seed.offersSpecAtRest && result.current.planMode !== undefined) {
+    setTrackedSessionScopedOption(state.record, 'planMode', result.current.planMode, 'reported')
+  }
   return {
     ...state,
     catalog: structuredAgentSessionOptionCatalog(seed, result),
-    catalogSource: 'live'
+    catalogSource: 'live',
+    autonomy: droidAutonomyOf(result.current),
+    ...(seed.offersSpecAtRest
+      ? {
+          specPair: droidSpecPairOf({
+            [DROID_SPEC_MODEL_OPTION_ID]: result.current.specModel,
+            [DROID_SPEC_EFFORT_OPTION_ID]: result.current.specEffort
+          })
+        }
+      : {})
   }
 }
 
@@ -223,8 +259,17 @@ export function commitStructuredAgentSessionOption(
   if (decoded === null) {
     return { ...state, pendingId: null }
   }
+  if (isSessionScopedOption(state.catalog, id)) {
+    setTrackedSessionScopedOption(state.record, id, decoded, 'dispatched')
+  }
   setTrackedSessionOption(state.record, id, decoded, 'dispatched', effectiveModel)
   return { ...state, pendingId: null }
+}
+
+function isSessionScopedOption(catalog: AgentSessionOptionCatalog, id: string): boolean {
+  return catalog.models.some((model) =>
+    model.options.some((option) => option.id === id && option.scope === 'session')
+  )
 }
 
 export function commitStructuredAgentSessionOptionValues(

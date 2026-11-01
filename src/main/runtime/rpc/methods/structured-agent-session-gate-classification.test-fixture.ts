@@ -85,6 +85,10 @@ export const WORK_METHODS = [
     method: 'agentSession.threadGoal',
     params: { envelope: envelope(), change: { kind: 'clear' } }
   },
+  {
+    method: 'agentSession.droidCommand',
+    params: { sessionId: SESSION, command: { name: 'context' } }
+  },
   { method: 'agentSession.handoffStatus', params: { sessionId: SESSION } },
   { method: 'agentSession.options', params: { sessionId: SESSION } },
   { method: 'agentSession.modelCatalog', params: { agent: 'codex', sessionId: SESSION } },

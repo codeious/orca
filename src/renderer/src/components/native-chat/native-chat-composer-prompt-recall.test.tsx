@@ -3,8 +3,10 @@ import { changePrompt, promptValue } from './native-chat-prompt-editor.test-supp
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { AgentType } from '../../../../shared/agent-status-types'
 import type { NativeChatMessage } from '../../../../shared/native-chat-types'
 import type * as nativeChatAgentProfiles from '../../../../shared/native-chat-agent-profiles'
+import { NON_DROID_AGENTS } from '../../../../shared/non-droid-composer-key-agents.test-fixture'
 
 vi.mock('@/i18n/i18n', () => ({
   translate: (_key: string, fallback: string) => fallback
@@ -76,14 +78,14 @@ const sent = (id: string, text: string): NativeChatMessage => ({
 let paneCounter = 0
 
 /** The real composer, editor and draft store over a chat that already holds `prompts`. */
-function renderComposer(prompts: string[]): HTMLElement {
+function renderComposer(prompts: string[], agent: AgentType): HTMLElement {
   paneCounter += 1
   render(
     <NativeChatComposer
       terminalTabId={`tab-${paneCounter}`}
       paneKey={`tab-${paneCounter}:recall`}
       targetPtyId={null}
-      agent="codex"
+      agent={agent}
       structuredTransport={{
         send: vi.fn(() => true),
         dispatchCommand: vi.fn(async () => ({ handled: false, accepted: false, error: null })),
@@ -123,25 +125,45 @@ beforeEach(() => {
 afterEach(() => cleanup())
 
 describe('composer prompt recall', () => {
-  it('walks prompts sent before this composer existed, and back to an empty draft', () => {
-    const input = renderComposer(['one', 'two'])
-    expect(press(input, 'ArrowUp')).toBe('two')
-    expect(press(input, 'ArrowUp')).toBe('one')
-    expect(press(input, 'ArrowDown')).toBe('two')
-    expect(press(input, 'ArrowDown')).toBe('')
-  })
+  it.each(NON_DROID_AGENTS)(
+    'walks prompts sent before this composer existed, and back to an empty draft for %s',
+    (agent) => {
+      const input = renderComposer(['one', 'two'], agent)
+      expect(press(input, 'ArrowDown')).toBe('')
+      expect(press(input, 'ArrowUp')).toBe('two')
+      expect(press(input, 'ArrowUp')).toBe('one')
+      expect(press(input, 'ArrowDown')).toBe('two')
+      expect(press(input, 'ArrowDown')).toBe('')
+    }
+  )
 
   // `/model` opens the command picker when typed; recalled, it must not take the arrows.
-  it('keeps walking past a recalled command instead of handing the arrows to its picker', () => {
-    const input = renderComposer(['one', '/model'])
-    expect(press(input, 'ArrowUp')).toBe('/model')
-    expect(press(input, 'ArrowUp')).toBe('one')
-  })
+  it.each(NON_DROID_AGENTS)(
+    'keeps walking past a recalled command instead of handing the arrows to its picker for %s',
+    (agent) => {
+      const input = renderComposer(['one', '/model'], agent)
+      expect(press(input, 'ArrowUp')).toBe('/model')
+      expect(press(input, 'ArrowUp')).toBe('one')
+    }
+  )
 
-  it('leaves the arrows alone once a recalled prompt is edited', () => {
-    const input = renderComposer(['one', 'two'])
-    press(input, 'ArrowUp')
-    changePrompt(input, 'two, edited')
-    expect(press(input, 'ArrowUp')).toBe('two, edited')
-  })
+  it.each(NON_DROID_AGENTS)(
+    'leaves the arrows alone while a typed draft is live for %s',
+    (agent) => {
+      const input = renderComposer(['one', 'two'], agent)
+      changePrompt(input, 'typing')
+      expect(press(input, 'ArrowUp')).toBe('typing')
+      expect(press(input, 'ArrowDown')).toBe('typing')
+    }
+  )
+
+  it.each(NON_DROID_AGENTS)(
+    'leaves the arrows alone once a recalled prompt is edited for %s',
+    (agent) => {
+      const input = renderComposer(['one', 'two'], agent)
+      press(input, 'ArrowUp')
+      changePrompt(input, 'two, edited')
+      expect(press(input, 'ArrowUp')).toBe('two, edited')
+    }
+  )
 })

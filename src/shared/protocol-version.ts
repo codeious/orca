@@ -260,6 +260,11 @@ export const AGENT_SESSION_QUEUED_MESSAGE_EDIT_RUNTIME_CAPABILITY =
 // the card is the only place the waiting command shows.
 export const AGENT_SESSION_QUEUED_COMMANDS_RUNTIME_CAPABILITY =
   'agent-session.queued-commands.v1' as const
+// Why: `agentSession.send`'s params are strict, so an older host rejects `afterReply`. A host
+// advertising this takes it as a request to answer inside the running turn after its current
+// reply (Droid's wait placement); an adapter with no such placement ignores it. Clients send it
+// only when this is advertised.
+export const AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY = 'agent-session.after-reply.v1' as const
 // Why: paired clients advertise Claude-structured support so the host can gate its agent-specific
 // journal and lifecycle surfaces independently from Codex support.
 export const CLAUDE_STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY =
@@ -284,6 +289,9 @@ export const AGENT_SESSION_BACKGROUND_TASK_STOP_CAPABILITY =
 // `answers` to an older host; they fall back to the answer packed into `optionId`.
 export const AGENT_SESSION_QUESTION_ANSWERS_RUNTIME_CAPABILITY =
   'agent-session.question-answers.v1' as const
+// Why: agentSession.respondToApproval has a strict schema, so clients must not send a comment or an
+// edited plan to an older host; the card offers neither until the host says it takes them.
+export const AGENT_SESSION_APPROVAL_NOTES_CAPABILITY = 'agent-session.approval-notes.v1' as const
 // Why: a structured chat on a paired server stores attached files on that server
 // (agentSessionAttachment.*); an older server has no store, so clients must refuse
 // the attach rather than hand the agent a path from this machine.
@@ -414,6 +422,7 @@ export const RUNTIME_CAPABILITIES = [
   AGENT_SESSION_SEND_ANSWERS_PROOF_RUNTIME_CAPABILITY,
   AGENT_SESSION_QUEUED_COMMANDS_RUNTIME_CAPABILITY,
   AGENT_SESSION_QUEUED_MESSAGE_EDIT_RUNTIME_CAPABILITY,
+  AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY,
   AGENT_SESSION_CONTINUE_INTERRUPTED_RUNTIME_CAPABILITY,
   ...STRUCTURED_AGENT_SESSION_SURFACE_RUNTIME_CAPABILITIES,
   ...AGENT_SESSION_ATTENTION_RUNTIME_CAPABILITIES,
@@ -422,6 +431,7 @@ export const RUNTIME_CAPABILITIES = [
   AGENT_SESSION_CONVERSATION_OUTLINE_RUNTIME_CAPABILITY,
   AGENT_SESSION_BACKGROUND_TASK_STOP_CAPABILITY,
   AGENT_SESSION_QUESTION_ANSWERS_RUNTIME_CAPABILITY,
+  AGENT_SESSION_APPROVAL_NOTES_CAPABILITY,
   AGENT_SESSION_ATTACHMENTS_RUNTIME_CAPABILITY,
   AGENT_SESSION_TURN_ITEM_CAPABILITY,
   AGENT_SESSION_BACKGROUND_TASK_ROW_STOP_CAPABILITY,

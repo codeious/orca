@@ -104,6 +104,8 @@ export type JournalSubmissionInput = {
   queuedMessageId?: string
   /** Who asked for this turn (`JournalSubmissionRow.origin`). */
   origin?: 'client' | 'host'
+  /** The client asked it to wait for the running reply (`JournalSubmissionRow.afterReply`). */
+  afterReply?: true
   /** Who it is from (`JournalSubmissionRow.source`); the row keeps the kind only. */
   source?: Pick<AgentSessionMessageSource, 'kind'>
 }

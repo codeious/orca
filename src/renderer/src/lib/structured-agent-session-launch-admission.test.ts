@@ -33,13 +33,18 @@ import { getStructuredAgentLaunchStatus } from './structured-agent-session-launc
 import { getStructuredAgentSessionLaunchSelection } from './structured-agent-session-launch-options'
 import { peekWebSessionFocusIntent } from '@/runtime/web-session-focus-intent'
 import { LOCAL_ADMISSION_WAIT_MS } from './structured-agent-session-host-admission'
+import { resetUnsupportedAgentVersionToastsForTests } from './unsupported-agent-version-toast'
 import { structuredAgentSessionFocusOwner } from '@/runtime/structured-agent-session-owner'
 
 const WORKTREE = 'repo-1::/srv/app'
 const INITIAL_SETTINGS = useAppStore.getState().settings
 
 function pairedPlan(
-  overrides: { resumeFrom?: { providerSessionId: string }; executionHostId?: 'local' } = {}
+  overrides: {
+    resumeFrom?: { providerSessionId: string }
+    executionHostId?: 'local'
+    agent?: 'claude' | 'codex'
+  } = {}
 ) {
   return adoptAgentSessionLaunchVerdict({
     requestId: 'request-1',
@@ -66,8 +71,22 @@ function expectNoChatCommitted(): void {
   ).toBeNull()
 }
 
+const TOO_OLD = {
+  supported: false,
+  reason: 'agent',
+  unsupportedVersion: {
+    agentName: 'Droid',
+    found: '0.230.0',
+    floor: '0.238.0',
+    updateCommand: 'droid update'
+  }
+}
+const VERSION_SENTENCE =
+  "Droid 0.230.0 is older than 0.238.0, the oldest release Orca's chat supports. Run `droid update` on this computer."
+
 beforeEach(() => {
   vi.clearAllMocks()
+  resetUnsupportedAgentVersionToastsForTests()
   localStorage.clear()
   useAppStore.setState({
     activeWorktreeId: WORKTREE,
@@ -258,6 +277,57 @@ describe('a structured chat launch on this machine', () => {
     expect(mocks.toastInfo).not.toHaveBeenCalled()
     expect(mocks.toastError).not.toHaveBeenCalled()
     expectNoChatCommitted()
+  })
+
+  it('names a too-old release once per app run, on this machine and on a server', async () => {
+    mocks.createSupport.mockResolvedValue(TOO_OLD)
+    const onHostDeclined = vi.fn(() => ({ opened: true }))
+
+    const first = beginStructuredAgentSessionProvisionalLaunch({
+      plan: localPlan(),
+      hooks: {},
+      onHostDeclined
+    })
+    await expect(first?.settlement).resolves.toEqual({ kind: 'terminal' })
+    expect(mocks.toastInfo).toHaveBeenCalledExactlyOnceWith(VERSION_SENTENCE)
+
+    mocks.toastInfo.mockClear()
+    const again = beginStructuredAgentSessionProvisionalLaunch({
+      plan: localPlan(),
+      hooks: {},
+      onHostDeclined
+    })
+    await expect(again?.settlement).resolves.toEqual({ kind: 'terminal' })
+    expect(mocks.toastInfo).not.toHaveBeenCalled()
+
+    const server = beginStructuredAgentSessionProvisionalLaunch({
+      plan: pairedPlan({ agent: 'codex' }),
+      hooks: {},
+      onHostDeclined
+    })
+    await expect(server?.settlement).resolves.toEqual({ kind: 'terminal' })
+    expect(mocks.toastInfo).toHaveBeenCalledExactlyOnceWith(VERSION_SENTENCE)
+    expect(mocks.toastInfo).not.toHaveBeenCalledWith(
+      expect.stringContaining('Opened'),
+      expect.anything()
+    )
+  })
+
+  it('does not invent a version notice when the host omits the release', async () => {
+    mocks.createSupport.mockResolvedValue({
+      supported: false,
+      reason: 'agent',
+      unsupportedVersion: { found: '0.1.0' }
+    })
+
+    const launch = beginStructuredAgentSessionProvisionalLaunch({
+      plan: localPlan(),
+      hooks: {},
+      onHostDeclined: () => ({ opened: true })
+    })
+
+    await expect(launch?.settlement).resolves.toEqual({ kind: 'terminal' })
+    expect(mocks.toastInfo).not.toHaveBeenCalled()
   })
 
   it("opens a new agent tab's terminal with the typed prompt when the caller names none", async () => {

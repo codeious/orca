@@ -9,7 +9,11 @@ import { findStructuredAgentSessionTab } from '@/lib/structured-agent-session-ta
 import type { AgentStatusState } from '../../../../shared/agent-status-types'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
 import { translate } from '@/i18n/i18n'
-import { findOriginalAiVaultSessionPane } from './ai-vault-original-pane'
+import {
+  findOriginalAiVaultSessionPane,
+  resolveOriginalPaneTarget,
+  type AiVaultOriginalPaneTarget
+} from './ai-vault-original-pane'
 import {
   createLazyAiVaultOriginalPaneIndex,
   findAiVaultSessionLiveStateInIndex,
@@ -22,7 +26,7 @@ export function useAiVaultOriginalPaneActions(): {
   ) => ReturnType<typeof findOriginalAiVaultSessionPane>
   getSessionLiveState: (session: AiVaultSession) => AgentStatusState | null
   isStructuredSessionOpen: (session: AiVaultSession) => boolean
-  jumpToOriginalPane: (session: AiVaultSession) => void
+  jumpToOriginalPane: (session: AiVaultSession, terminal?: AiVaultOriginalPaneTarget) => void
   jumpToWorktree: (worktreeId: string) => void
 } {
   const originalPaneLookupState = useAppStore(
@@ -70,12 +74,15 @@ export function useAiVaultOriginalPaneActions(): {
   )
 
   const jumpToOriginalPane = useCallback(
-    (session: AiVaultSession): void => {
+    (session: AiVaultSession, terminal?: AiVaultOriginalPaneTarget): void => {
       if (session.structuredSession && isStructuredSessionOpen(session)) {
         void activateAiVaultStructuredSession(session)
         return
       }
-      const target = findOriginalAiVaultSessionPane(useAppStore.getState(), session)
+      // The host may name a pane the session identity does not match; re-resolve it because it can close before the click.
+      const target = terminal
+        ? resolveOriginalPaneTarget({ state: useAppStore.getState(), paneKey: terminal.paneKey })
+        : findOriginalAiVaultSessionPane(useAppStore.getState(), session)
       if (!target) {
         toast.error(
           translate(

@@ -303,3 +303,73 @@ describe('a Stop pressed again, against a host that answers a repeat quietly', (
     expect(new Set(host.ids).size).toBe(2)
   })
 })
+
+describe('an option change the agent refuses', () => {
+  const ORG_POLICY = 'Model not allowed by organization policy.'
+  const refusal = (reason: string) => ({
+    ok: false as const,
+    refusal: {
+      code: 'agent_session_operation_invalid',
+      message: ORG_POLICY,
+      details: { reason }
+    }
+  })
+  const pick = (current: ReturnType<typeof render>['current'], onNotDone?: (f: unknown) => void) =>
+    act(async () => {
+      await current.mutate(
+        'agentSession.setOption',
+        'agentSession.setOption',
+        { key: 'model', value: 'blocked' },
+        onNotDone
+      )
+    })
+
+  it("quotes the agent's own sentence in the toast and hands on the failure without it", async () => {
+    mocks.call.mockResolvedValue(refusal('providerRefusedOption'))
+    const heard = vi.fn()
+    const { current } = render()
+
+    await pick(current, heard)
+
+    expect(mocks.toastError).toHaveBeenCalledExactlyOnceWith(
+      `The agent didn't accept this setting. ${ORG_POLICY} The setting wasn't changed.`
+    )
+    expect(heard).toHaveBeenCalledExactlyOnceWith({
+      kind: 'refused',
+      code: 'agent_session_operation_invalid',
+      details: { reason: 'providerRefusedOption' }
+    })
+  })
+
+  it('shows the generic words for a refusal that carries no sentence meant for a person', async () => {
+    mocks.call.mockResolvedValue(refusal('optionRejected'))
+    const { current } = render()
+
+    await pick(current)
+
+    expect(mocks.toastError).toHaveBeenCalledExactlyOnceWith(
+      "The agent didn't accept this setting. The setting wasn't changed."
+    )
+  })
+
+  it('says nothing, and tells nobody, when the answer is for a runtime the pane left', async () => {
+    const state = { current: { fence: 3 } }
+    mocks.call.mockImplementation(async () => {
+      state.current.fence = 4
+      return refusal('providerRefusedOption')
+    })
+    const heard = vi.fn()
+    const { current } = renderHook(() =>
+      useStructuredAgentSessionMutate({
+        sessionId: 'session-1',
+        target: { kind: 'local' },
+        stateRef: state
+      })
+    ).result
+
+    await pick(current, heard)
+
+    expect(mocks.toastError).not.toHaveBeenCalled()
+    expect(heard).not.toHaveBeenCalled()
+  })
+})

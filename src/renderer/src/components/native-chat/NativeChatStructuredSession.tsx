@@ -26,6 +26,7 @@ import { useNativeChatFileLinkContext } from './use-native-chat-file-link-contex
 import { useRecheckNativeChatFileLinksWhenTurnEnds } from './use-native-chat-file-link-existence'
 import { useNativeChatTabOwnerWorktreeId } from './use-native-chat-tab-owner'
 import { useStructuredAgentSession } from './use-structured-agent-session'
+import { useDroidSpecHandoff } from './use-droid-spec-handoff'
 import { useNativeChatImageRuntimeContext } from './native-chat-image-runtime-context'
 import { useStructuredNativeChatPaneCommands } from './use-structured-native-chat-pane-commands'
 import type { NativeChatStructuredViewProps } from './native-chat-view-types'
@@ -48,6 +49,7 @@ import { nativeChatStructuredStopControls } from './native-chat-structured-stop-
 import { chatApprovalFromJournal } from './native-chat-interactive-prompt'
 import { useAppStore } from '../../store'
 import { structuredAgentLabel } from '@/lib/structured-agent-session-launch-label'
+import { useDroidRewind } from './use-droid-rewind'
 import { useNativeChatStructuredComposerTransport } from './use-native-chat-structured-composer-transport'
 import { NativeChatThreadGoalBanner } from './NativeChatThreadGoalBanner'
 import { structuredAgentSessionReadFailureNotice } from './structured-agent-session-read-failure-notice'
@@ -96,6 +98,12 @@ export function NativeChatStructuredSession(
     ...(provisionalLaunch.launch ? { launch: provisionalLaunch.launch } : {})
   })
   useRecheckNativeChatFileLinksWhenTurnEnds(controller.isWorking)
+  useDroidSpecHandoff({
+    tabId: props.tabId,
+    agent: props.agent,
+    status: controller.status,
+    journalItems: controller.journalItems
+  })
   const stopControls = nativeChatStructuredStopControls(controller, hostExecution.stopping)
   const launchDraftSignal = useNativeChatLaunchDraftSignal({
     terminalTabId: props.tabId,
@@ -115,6 +123,7 @@ export function NativeChatStructuredSession(
     tabId: props.tabId,
     groupId: props.groupId,
     isVisible: props.isVisible,
+    agent: props.agent,
     rootRef,
     composerRef,
     questionAnswerInputRef,
@@ -211,9 +220,11 @@ export function NativeChatStructuredSession(
   })
   const questionBody = prompt?.body.kind === 'question' ? prompt.body : null
   const questions = questionBody ? agentSessionPromptQuestions(questionBody) : []
+  const droidRewind = useDroidRewind({ props, controller })
   const structuredTransport = useNativeChatStructuredComposerTransport({
     props,
     controller,
+    droidRewind,
     sendThroughLaunch,
     starting: provisionalLaunch.starting,
     worktreeId: ownerWorktreeId ?? undefined,
@@ -286,7 +297,9 @@ export function NativeChatStructuredSession(
         ) : viewState.kind === 'empty' ? (
           <NativeChatEmptyState kind="empty" agent={props.agent} />
         ) : (
-          <NativeChatRewindContext.Provider value={controller.rewind.surface}>
+          <NativeChatRewindContext.Provider
+            value={droidRewind?.surface ?? controller.rewind.surface}
+          >
             <NativeChatOrcaStopContext.Provider value={continuation.view}>
               <NativeChatClaudeSignInContext.Provider value={claudeSignIn}>
                 <NativeChatMessageList
@@ -356,8 +369,8 @@ export function NativeChatStructuredSession(
             <NativeChatApprovalCard
               key={`${prompt.itemId}:${prompt.revision}`}
               approval={approval}
-              onChoose={(optionId) =>
-                void promptResponse.respond(prompt, { kind: 'option', optionId })
+              onChoose={(optionId, notes) =>
+                void promptResponse.respond(prompt, { kind: 'option', optionId, ...notes })
               }
               isSubmitting={promptResponse.holds(prompt)}
               onCancel={cancelPrompt}
@@ -373,6 +386,8 @@ export function NativeChatStructuredSession(
               onAnswer={(response) => void promptResponse.respond(prompt, response)}
               isSubmitting={promptResponse.holds(prompt)}
               onCancel={cancelPrompt}
+              // A Droid card's dismissal answers Droid and leaves the turn running; Claude's Cancel is a Stop.
+              cancelOnEscape={props.agent === 'droid'}
               shouldFocus={!promptsUnanswerable && props.isVisible && props.isFocusedGroup}
               answerInputRef={questionAnswerInputRef}
             />

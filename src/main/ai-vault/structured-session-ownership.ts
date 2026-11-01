@@ -10,6 +10,10 @@ import {
   listStructuredProviderSessionOwnership,
   type StructuredProviderSessionOwnership
 } from '../native-chat/agent-session-wire/structured-provider-session-ownership'
+import {
+  hasStructuredResumeGrammar,
+  parseResumeInvocation
+} from './structured-session-resume-grammar'
 
 export function projectStructuredAiVaultSessions(
   result: AiVaultListResult,
@@ -93,7 +97,7 @@ function ownershipLookup():
     }
   }
   return (row) =>
-    row.agent === 'codex' || row.agent === 'claude'
+    hasStructuredResumeGrammar(row.agent)
       ? (byProviderSession.get(`${row.agent}\0${row.sessionId}`) ?? null)
       : null
 }
@@ -133,7 +137,7 @@ function isPotentialStructuredResumeCommand(command: string): boolean {
 function findResumeOwnership(
   args: AiVaultPrepareSessionResumeArgs
 ): StructuredProviderSessionOwnership | null {
-  if (args.agent !== 'codex' && args.agent !== 'claude') {
+  if (!hasStructuredResumeGrammar(args.agent)) {
     return null
   }
   const host = getStructuredAgentSessionHost()
@@ -154,7 +158,7 @@ function findResumeOwnership(
 }
 
 function findOwnership(
-  provider: 'claude' | 'codex',
+  provider: string,
   providerSessionId: string
 ): StructuredProviderSessionOwnership | null {
   return (
@@ -182,70 +186,6 @@ function isResumeCommandFor(
   // any provider session, so it cannot be admitted while one is structured.
   // Only an explicit target that differs from this owned session is safe.
   return invocation.target === null || invocation.target === ownership.providerSessionId
-}
-
-type ResumeInvocation = {
-  provider: 'codex' | 'claude'
-  target: string | null
-}
-
-function parseResumeInvocation(command: string): ResumeInvocation | null {
-  // Keep this deliberately conservative: shell quoting is normalized only
-  // enough to identify executable/flag tokens; an unrecognized shape is not
-  // treated as proof that a different session is being resumed.
-  const tokens = command.match(/"[^"\\]*(?:\\.[^"\\]*)*"|'[^']*'|[^\s]+/g) ?? []
-  const normalized = tokens.map((token) => token.replace(/^['"]|['"]$/g, ''))
-  const executableIndex = normalized.findIndex((token) =>
-    /(?:^|[\\/])(?:codex|claude)(?:\.exe)?$/i.test(token)
-  )
-  if (executableIndex === -1) {
-    return null
-  }
-  const provider = /codex(?:\.exe)?$/i.test(normalized[executableIndex]!) ? 'codex' : 'claude'
-  const args = normalized.slice(executableIndex + 1)
-  // `codex fork` already falls through below: it carries no `resume` marker.
-  if (provider === 'claude' && isClaudeForkInvocation(args)) {
-    return null
-  }
-  // `--continue`/`-c` resume the most recent session and never take an id, so a
-  // following token is a prompt, not a target — they are always target-less.
-  const targetlessFlags = provider === 'codex' ? [] : ['--continue', '-c']
-  const targetlessIndex = args.findIndex((token) => targetlessFlags.includes(token.toLowerCase()))
-  if (targetlessIndex !== -1) {
-    return { provider, target: null }
-  }
-  const resumeFlags = provider === 'codex' ? ['resume'] : ['--resume', '-r']
-  const inlineIndex = args.findIndex(
-    (token) =>
-      provider === 'claude' &&
-      (token.toLowerCase().startsWith('--resume=') || token.toLowerCase().startsWith('-r='))
-  )
-  if (inlineIndex !== -1) {
-    const target = args[inlineIndex]!.slice(args[inlineIndex]!.indexOf('=') + 1)
-    return { provider, target: target.length > 0 ? target : null }
-  }
-  const markerIndex = args.findIndex((token) => resumeFlags.includes(token.toLowerCase()))
-  if (markerIndex === -1) {
-    return null
-  }
-  const candidate = args[markerIndex + 1]
-  return {
-    provider,
-    target: candidate && !candidate.startsWith('-') ? candidate : null
-  }
-}
-
-/** A fork reads the conversation and writes a new one, so it is no second writer. Not when
- *  `--session-id` names the id it writes under, and nothing after `--` is an option. */
-function isClaudeForkInvocation(args: readonly string[]): boolean {
-  const terminatorIndex = args.indexOf('--')
-  const options = (terminatorIndex === -1 ? args : args.slice(0, terminatorIndex)).map((token) =>
-    token.toLowerCase()
-  )
-  return (
-    options.includes('--fork-session') &&
-    !options.some((token) => token === '--session-id' || token.startsWith('--session-id='))
-  )
 }
 
 function refuseLegacyWriter(ownership: StructuredProviderSessionOwnership): never {

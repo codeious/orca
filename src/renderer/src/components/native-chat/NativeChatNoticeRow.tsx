@@ -5,6 +5,7 @@ import { NativeChatMarkdown } from './NativeChatMarkdown'
 import { NativeChatCodeBlock } from './NativeChatCodeBlock'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { translate } from '@/i18n/i18n'
+import { agentSessionHostText } from './agent-session-host-text'
 import { cn } from '@/lib/utils'
 import {
   AGENT_SESSION_HOST_STATUS_COPY as HOST_STATUS_COPY,
@@ -130,7 +131,7 @@ export function NativeChatNoticeRow({
           { agentName },
           sayAgentSessionFailureTranslated
         )
-      : block.text
+      : agentSessionHostText(block.text, block)
   const tone =
     named || block.presentation === AGENT_SESSION_ORCA_STOP_PRESENTATION ? 'notice' : block.tone
   const Icon =
@@ -155,6 +156,16 @@ export function NativeChatNoticeRow({
         {Icon ? <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" /> : null}
         <p className="min-w-0 whitespace-pre-wrap break-words">{text}</p>
       </div>
+      {block.summaryText ? (
+        <NativeChatMarkdown
+          content={block.summaryText}
+          renderCodeBlock={NativeChatCodeBlock}
+          className="text-sm text-chat-foreground"
+          onLinkClick={onLinkClick}
+          allowFileUriLinks={allowFileUriLinks}
+          linkifyFilePaths={onLinkClick !== undefined}
+        />
+      ) : null}
       {claudeSignIn && isClaudeSignInFailureKind(block.failure?.kind) ? (
         <Button
           type="button"

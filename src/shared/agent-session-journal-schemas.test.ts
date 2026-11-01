@@ -113,6 +113,61 @@ const CANONICAL_BODIES: AgentJournalItemBody[] = [
 ]
 
 describe('canonical admission', () => {
+  it('reads the same old cards with or without optional Droid parity fields', () => {
+    const approval = {
+      kind: 'approval',
+      title: 'Plan',
+      detail: 'Do the work',
+      options: [{ id: 'proceed_once', label: 'Proceed' }],
+      resolution: RESOLUTION
+    }
+    const question = {
+      kind: 'question',
+      question: 'Pick a row',
+      options: [],
+      resolution: RESOLUTION,
+      questions: [
+        { id: 'q1', question: 'Pick a row', multiSelect: false, options: [{ id: 'a', label: 'A' }] }
+      ]
+    }
+    const status = { kind: 'status', text: 'Ready' }
+    const pairs = [
+      [approval, { ...approval, acceptsComment: true, acceptsPlanEdit: true }],
+      [
+        question,
+        {
+          ...question,
+          questions: question.questions.map((q) => ({
+            ...q,
+            description: 'Rows',
+            preselectedOptionIds: ['a'],
+            initialSearch: 'A'
+          }))
+        }
+      ],
+      [
+        status,
+        {
+          ...status,
+          specHandoff: {
+            newSessionId: 'next',
+            initialPrompt: 'Implement the plan',
+            specHandoffId: 'handoff-1'
+          }
+        }
+      ]
+    ]
+    for (const [old, added] of pairs) {
+      expect(AgentJournalItemBodySchema.safeParse(old).success).toBe(true)
+      expect(AgentJournalItemBodySchema.safeParse(added).success).toBe(true)
+      const oldReader = Object.fromEntries(Object.entries(added!).filter(([key]) => key in old!))
+      // Nested picker extras are also unknown to a reader of the base question shape.
+      if (oldReader.kind === 'question') {
+        oldReader.questions = question.questions
+      }
+      expect(oldReader).toEqual(old)
+    }
+  })
   it('admits every body shape this build writes', () => {
     for (const body of CANONICAL_BODIES) {
       expect(isAdmissibleAgentJournalItemBody(body)).toBe(true)

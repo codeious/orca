@@ -21,12 +21,14 @@ import {
   attachBrowserClientPageRenderer,
   retireBrowserClientPageRenderer
 } from '../browser/browser-client-page-renderer-runtime'
+import { installDroidComposerFocusMirror } from './droid-composer-focus-mirror'
 import { registerRendererDocumentNavigation } from './renderer-document-navigation'
 import { createRendererRecoveryReloadWatchdog } from './renderer-recovery-reload-watchdog'
 import { createRendererLaunchFailureBackoff } from './renderer-launch-failure-backoff'
 
 export type MainWindowFocusLifecycle = {
   dispose: () => void
+  isDroidComposerFocused: () => boolean
   isFloatingPanelFocused: () => boolean
   isFloatingTerminalInputFocused: () => boolean
   isMarkdownEditorFocused: () => boolean
@@ -52,6 +54,7 @@ export function installMainWindowFocusLifecycle(args: {
   let floatingTerminalInputFocused = false
   let floatingPanelFocused = false
   let shortcutRecorderFocused = false
+  const droidComposerFocus = installDroidComposerFocusMirror(mainWindow)
 
   const markdownFocusChannel = 'ui:setMarkdownEditorFocused'
   // Why: strict-bool + sender check so a guest/webview or malformed IPC payload can't disable the Cmd+B sidebar carve-out.
@@ -144,6 +147,7 @@ export function installMainWindowFocusLifecycle(args: {
     resetTerminalInputFocus()
     resetFloatingTerminalInputFocus()
     resetShortcutRecorderFocus()
+    droidComposerFocus.reset()
     return () => {
       if (
         rendererProcessGone ||
@@ -253,6 +257,7 @@ export function installMainWindowFocusLifecycle(args: {
     resetTerminalInputFocus()
     resetFloatingTerminalInputFocus()
     resetShortcutRecorderFocus()
+    droidComposerFocus.reset()
     // Why: macOS reports BrowserWindow teardown as renderer killed/SIGKILL after close — window noise, not a crash.
     if (!isWindowClosing()) {
       // Why: the recorder owns crash classification; filtering here made expected-teardown evidence unreachable.
@@ -269,6 +274,7 @@ export function installMainWindowFocusLifecycle(args: {
     resetTerminalInputFocus()
     resetFloatingTerminalInputFocus()
     resetShortcutRecorderFocus()
+    droidComposerFocus.reset()
   })
   mainWindow.webContents.on('did-finish-load', () => {
     rendererProcessGone = false
@@ -283,6 +289,7 @@ export function installMainWindowFocusLifecycle(args: {
     resetTerminalInputFocus()
     resetFloatingTerminalInputFocus()
     resetShortcutRecorderFocus()
+    droidComposerFocus.dispose()
     clearRendererRecoveryTimer()
     recoveryReloadWatchdog.clear()
     ipcMain.removeListener(markdownFocusChannel, onMarkdownEditorFocused)
@@ -293,6 +300,7 @@ export function installMainWindowFocusLifecycle(args: {
   }
   return {
     dispose,
+    isDroidComposerFocused: droidComposerFocus.isFocused,
     isFloatingPanelFocused: () => floatingPanelFocused,
     isFloatingTerminalInputFocused: () => floatingTerminalInputFocused,
     isMarkdownEditorFocused: () => markdownEditorFocused,

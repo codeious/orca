@@ -2,6 +2,7 @@
 // shared English as its fallback so desktop and mobile never say it differently.
 
 import { translate } from '@/i18n/i18n'
+import { agentSessionHostText } from './agent-session-host-text'
 import { agentSessionFailureSentence } from '../../../../shared/agent-session-failure-words'
 import { agentSessionWriteNoticeParts } from '../../../../shared/agent-session-refusal-notice'
 import {
@@ -165,7 +166,7 @@ export function agentSessionWriteNoticeText(parts: readonly AgentSessionWriteNot
       typeof part === 'string'
         ? SENTENCES[part]()
         : 'text' in part
-          ? part.text
+          ? agentSessionHostText(part.text, part)
           : agentSessionFailureSentence(
               part.failure,
               part.surface,
@@ -178,7 +179,8 @@ export function agentSessionWriteNoticeText(parts: readonly AgentSessionWriteNot
 
 export function agentSessionWriteFailureText(
   failure: AgentSessionWriteFailure,
-  write: AgentSessionWriteKind
+  write: AgentSessionWriteKind,
+  providerText?: string
 ): string {
-  return agentSessionWriteNoticeText(agentSessionWriteNoticeParts(failure, write))
+  return agentSessionWriteNoticeText(agentSessionWriteNoticeParts(failure, write, {}, providerText))
 }

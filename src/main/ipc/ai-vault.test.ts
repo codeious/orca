@@ -263,6 +263,49 @@ describe('prepareSessionResume IPC', () => {
   })
 })
 
+describe('droidSessionHolder IPC', () => {
+  function getDroidSessionHolderHandler(): (event: unknown, args: unknown) => Promise<unknown> {
+    const registration = mocks.ipcHandle.mock.calls.find(
+      ([channel]) => channel === 'aiVault:droidSessionHolder'
+    )
+    if (!registration) {
+      throw new Error('aiVault:droidSessionHolder was not registered')
+    }
+    return registration[1]
+  }
+
+  it('asks this machine for a local session and the paired host for a runtime session', async () => {
+    const readLocalDroidSessionHolder = vi.fn().mockResolvedValue({ holder: 'live' })
+    const readRuntimeDroidSessionHolder = vi.fn().mockResolvedValue({ holder: null })
+    registerAiVaultHandlers({ readLocalDroidSessionHolder, readRuntimeDroidSessionHolder })
+
+    await expect(
+      getDroidSessionHolderHandler()({}, { executionHostId: 'local', sessionId: 'droid-1' })
+    ).resolves.toEqual({ holder: 'live' })
+    await expect(
+      getDroidSessionHolderHandler()(
+        {},
+        { executionHostId: 'runtime:env-123', sessionId: 'droid-2' }
+      )
+    ).resolves.toEqual({ holder: null })
+    expect(readLocalDroidSessionHolder).toHaveBeenCalledWith('droid-1')
+    expect(readRuntimeDroidSessionHolder).toHaveBeenCalledWith('env-123', 'droid-2')
+  })
+
+  it('does not wait on structured chat ownership to report a terminal process', async () => {
+    const ensureStructuredSessionOwnership = vi.fn().mockRejectedValue(new Error('refused'))
+    registerAiVaultHandlers({
+      ensureStructuredSessionOwnership,
+      readLocalDroidSessionHolder: vi.fn().mockResolvedValue({ holder: 'live' })
+    })
+
+    await expect(
+      getDroidSessionHolderHandler()({}, { executionHostId: 'local', sessionId: 'droid-1' })
+    ).resolves.toEqual({ holder: 'live' })
+    expect(ensureStructuredSessionOwnership).not.toHaveBeenCalled()
+  })
+})
+
 function getPrepareSessionResumeHandler(): (
   event: unknown,
   args: unknown

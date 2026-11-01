@@ -1,6 +1,10 @@
 import type { AgentStatusEntry, AgentType } from '../../../../shared/agent-status-types'
 import type { TerminalLayoutSnapshot } from '../../../../shared/terminal-tab-types'
 import {
+  isNativeChatLaunchable,
+  type NativeChatDefaultSettings
+} from '../../../../shared/structured-native-chat-launch-route'
+import {
   isNativeChatTabWideFallbackSafe,
   resolveNativeChatActiveLayoutLeafId
 } from '../native-chat/native-chat-leaf-routing'
@@ -14,7 +18,7 @@ type TabBarAgentProjectionSelectorDependencies = {
 export type TabBarAgentProjectionState = {
   agentStatusByPaneKey?: Record<string, AgentStatusEntry>
   terminalLayoutsByTabId?: Record<string, TerminalLayoutSnapshot>
-  settings?: { experimentalNativeChat?: boolean } | null
+  settings?: Partial<NativeChatDefaultSettings> | null
 }
 
 export type TabBarAgentProjections = {
@@ -136,7 +140,7 @@ export function createTabBarAgentProjectionSelector(
   let cachedEnabledResult: TabBarAgentProjections | null = null
 
   return (state) => {
-    const nativeChatEnabled = state.settings?.experimentalNativeChat === true
+    const nativeChatEnabled = isNativeChatLaunchable(state.settings)
     const statuses = state.agentStatusByPaneKey ?? EMPTY_AGENT_STATUS_BY_PANE_KEY
     const layouts = state.terminalLayoutsByTabId ?? EMPTY_TERMINAL_LAYOUTS_BY_TAB_ID
     if (statuses !== cachedAgentStatusByPaneKey || layouts !== cachedAgentTypeLayoutsByTabId) {

@@ -18,6 +18,7 @@ import {
   type AgentLaunchModeSettings,
   type AgentLaunchModeVocabulary
 } from '../../../agent-launch/agent-launch-mode'
+import type { StructuredAgentSessionCreateSupport } from '../../../native-chat/structured-agent-session-create-support'
 import type { TuiAgent } from '../../../../shared/tui-agent'
 import type { OrcaRuntimeService } from '../../orca-runtime'
 
@@ -70,7 +71,7 @@ export async function resolveWorkerStartModeOnHost(
 
 export function downgradeWorkerStartModeForHost(
   receipt: WorkerStartModeReceipt,
-  support: { supported: boolean; reason?: 'agent' | 'remote' | 'wsl' } | null
+  support: StructuredAgentSessionCreateSupport | null
 ): WorkerStartModeReceipt {
   return downgradeAgentLaunchModeForHost(receipt, support, WORKER_START_VOCABULARY)
 }

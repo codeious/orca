@@ -131,7 +131,7 @@ export function registerRuntimeEnvironmentHandlers(store: Store): void {
     getSettings: () => store.getSettings()
   })
   registerRuntimeEnvironmentRecoveryHandler()
-  registerRuntimeEnvironmentPassiveHandlers(getUserDataPath)
+  registerRuntimeEnvironmentPassiveHandlers(getUserDataPath, remoteRuntimeSubscriptions)
   for (const environment of listEnvironments(getUserDataPath())) {
     if (!isRuntimeEnvironmentManuallyDisconnected(environment.id)) {
       getRuntimeEnvironmentStatusOwner(getUserDataPath(), environment.id).activate()

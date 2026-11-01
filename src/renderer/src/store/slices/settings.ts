@@ -17,6 +17,7 @@ import { normalizeOpenInApplications } from '../../../../shared/open-in-applicat
 import { createSettingsSearchState, type SettingsSearchState } from './settings-search-state'
 import { isRuntimeCatalogListingStale } from './runtime-status-hydration'
 import { normalizeDisabledTuiAgents } from '../../../../shared/tui-agent-selection'
+import { normalizeAgentLaunchModePreferences } from '../../../../shared/agent-launch-mode-preference'
 import {
   normalizeTuiAgentArgsRecord,
   normalizeTuiAgentEnvRecord
@@ -110,6 +111,11 @@ function normalizeSettingsUpdates(
   if ('agentDefaultEnv' in updates) {
     sanitizedUpdates.agentDefaultEnv = normalizeTuiAgentEnvRecord(updates.agentDefaultEnv)
     sanitizedUpdates.agentYoloDefaultsMigrated = true
+  }
+  if ('agentLaunchModes' in updates) {
+    sanitizedUpdates.agentLaunchModes = normalizeAgentLaunchModePreferences(
+      updates.agentLaunchModes
+    )
   }
   if ('uiLanguage' in updates) {
     sanitizedUpdates.uiLanguage = normalizeUiLanguage(updates.uiLanguage)

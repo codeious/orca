@@ -245,7 +245,7 @@ function launchAgentInNewTabInternal(args: LaunchAgentInNewTabArgs): LaunchAgent
   }
   if (
     pasteDraftAfterLaunch !== null &&
-    newTabPromptLaunchesThroughHost({ promptDelivery, pastesPrompt: true })
+    newTabPromptLaunchesThroughHost({ agent, promptDelivery, pastesPrompt: true })
   ) {
     const launched = launchNewTabPromptThroughHost({
       agent,

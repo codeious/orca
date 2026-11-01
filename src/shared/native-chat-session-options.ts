@@ -1,4 +1,5 @@
 import type { AgentType } from './agent-status-types'
+import type { DroidAutonomyLevel } from './droid-autonomy-options'
 
 export type SessionOptionValue = string | boolean
 
@@ -123,7 +124,33 @@ export type NativeChatSessionOptionSettingsMutation =
     }
   | { type: 'clear-model-if-missing'; agent: AgentType; availableModelIds: readonly string[] }
 
+/** Droid's Spec model and effort. Drawn beside the options and set through `setOption` under
+ *  `specModel` and `specEffort`, but never one of the snapshot's descriptors: neither is tracked
+ *  per model or remembered for the next launch. `null` is "same as main". */
+export type SessionOptionSpecPair = {
+  model: string | null
+  effort: string | null
+  modelChoices: SessionOptionSelectChoice[]
+  effortChoices: SessionOptionSelectChoice[]
+  settable: boolean
+}
+
+/** Droid's autonomy level, drawn beside the options and set through `setOption` under
+ *  `autonomyLevel`, but never one of the snapshot's descriptors: it is not tracked per model or
+ *  remembered for the next launch. `levels` is what a pick or a key may move to. */
+export type SessionOptionAutonomy = {
+  level: DroidAutonomyLevel
+  levels: readonly DroidAutonomyLevel[]
+  settable: boolean
+}
+
 export type SessionOptionsSurface = {
+  /** Present only for an agent whose Spec runs on a model of its own. */
+  specPair?: SessionOptionSpecPair
+  /** Present only for an agent that reports an autonomy level, once it has one to show. */
+  autonomy?: SessionOptionAutonomy
+  /** Models the agent refused in this session with a reason; they stay listed, a cycling key skips them. */
+  refusedModelIds?: readonly string[]
   getSnapshot(): SessionOptionDescriptor[]
   /** Apply an absolute target; known flip-only options use their tracked baseline. */
   setOption(id: string, value: SessionOptionValue): Promise<SessionOptionSetResult>

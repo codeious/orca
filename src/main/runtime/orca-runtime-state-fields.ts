@@ -1,6 +1,7 @@
 // @ts-nocheck -- mechanically split from OrcaRuntimeService; behavior is covered by AST equivalence and characterization tests.
 import { OrcaRuntimeWithLinearCommands } from './orca-runtime-linear-commands'
 import type { ExecutionHostScope } from '../../shared/execution-host'
+import type { DroidMcpSignInOpener } from '../droid/droid-mcp-sign-in'
 import type { RuntimeStore } from './runtime-store-contract'
 import type { StatsCollector } from '../stats/collector'
 import type { IPtyProvider } from '../providers/types'
@@ -16,6 +17,7 @@ import type {
   AiVaultPrepareSessionResumeArgs,
   AiVaultPrepareSessionResumeResult
 } from '../../shared/ai-vault-resume-preparation'
+import type { AiVaultDroidSessionHolderResult } from '../../shared/ai-vault-droid-session-holder'
 import type { RuntimeDesktopWindowStatus } from '../../shared/runtime-types'
 import type { AgentSessionClaimSigner } from './agent-session-claim-identity'
 import type { OrchestrationEnvironmentTransport } from './orchestration/environment-transport'
@@ -93,6 +95,7 @@ export class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCommands {
       checkHookAgentPresence?: (
         paneKey: string
       ) => Promise<'live' | 'unverifiable' | 'exited' | null>
+      droidSessionHolder?: (sessionId: string) => Promise<AiVaultDroidSessionHolderResult>
       reconcileAgentStatusForEndedProcess?: (paneKeys: Iterable<string>) => void
       dropAgentStatusForRemovedWorktree?: (worktreeId: string, host?: ExecutionHostScope) => void
       canRecoverPersistentLocalPtys?: () => boolean
@@ -118,6 +121,8 @@ export class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCommands {
       }) => string | null | Promise<string | null>
       // The sync launch prep runs on the shared mirror, for the catalog probe's read-only server.
       prepareCodexCatalogProbeHome?: (homePath: string) => void
+      // Only a host with a person at it can open a sign-in link; orcad leaves it unset.
+      openMcpSignIn?: DroidMcpSignInOpener
       buildAgentHookPtyEnv?: () => Record<string, string>
       getDesktopWindowStatus?: () => RuntimeDesktopWindowStatus
       agentSessionClaimSigner?: AgentSessionClaimSigner
@@ -241,6 +246,7 @@ export class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCommands {
     this.retireAgentHookCompatibilityAuthorityFn =
       deps?.retireAgentHookCompatibilityAuthority ?? null
     this.checkHookAgentPresenceFn = deps?.checkHookAgentPresence ?? null
+    this.droidSessionHolderFn = deps?.droidSessionHolder ?? null
     this.reconcileAgentStatusForEndedProcessFn = deps?.reconcileAgentStatusForEndedProcess ?? null
     this.dropAgentStatusForRemovedWorktreeFn = deps?.dropAgentStatusForRemovedWorktree ?? null
     this.canRecoverPersistentLocalPtysFn = deps?.canRecoverPersistentLocalPtys ?? (() => true)
@@ -273,6 +279,7 @@ export class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCommands {
     this.prepareCodexStructuredLaunchFn = deps?.prepareCodexStructuredLaunch ?? null
     this.resolveCodexStructuredLaunchHomeFn = deps?.resolveCodexStructuredLaunchHome ?? null
     this.prepareCodexCatalogProbeHomeFn = deps?.prepareCodexCatalogProbeHome ?? null
+    this.openMcpSignInFn = deps?.openMcpSignIn ?? null
     this.agentSessionClaimSigner =
       deps?.agentSessionClaimSigner ?? createEphemeralAgentSessionClaimSigner(this.runtimeId)
     this.onTerminalSideEffects = deps?.onTerminalSideEffects ?? null

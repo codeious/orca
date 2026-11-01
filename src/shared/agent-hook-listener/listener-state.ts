@@ -16,6 +16,7 @@ import type { CodexSubagentRoster } from '../codex-subagent-roster'
 import type { CodexSubagentTranscriptState } from '../codex-subagent-transcript'
 import type { MuseSessionLogState } from '../muse-session-log'
 import type { AgentHookEventPayload, ToolSnapshot } from './listener-event'
+import type { DroidPaneSessions } from './providers/droid-sessions'
 import {
   deletePaneScopedCacheEntry,
   deletePaneScopedSetEntry,
@@ -65,6 +66,8 @@ export type HookListenerState = {
   codexSubagentTranscriptByPaneKey: Map<string, CodexSubagentTranscriptState>
   /** Root Codex state/model, kept separate from child hook traffic. */
   codexLeadStateByPaneKey: Map<string, CodexLeadTurnState>
+  /** Droid lead session and child sessions per pane, kept apart so child hooks never speak for the lead. */
+  droidSessionsByPaneKey: Map<string, DroidPaneSessions>
   /** Newest Grok turn per pane, used to reject end reports that arrive after a replacement prompt. */
   grokActiveTurnByPaneKey: Map<string, GrokActiveTurn>
   /** The Grok main agent's own state as last published, so its clock keeps continuity across events. */
@@ -129,6 +132,7 @@ export function createHookListenerState(
     codexSubagentRosterByPaneKey: new Map(),
     codexSubagentTranscriptByPaneKey: new Map(),
     codexLeadStateByPaneKey: new Map(),
+    droidSessionsByPaneKey: new Map(),
     grokActiveTurnByPaneKey: new Map(),
     grokMainAgentStatusByPaneKey: new Map(),
     musePaneStateByPaneKey: new Map(),
@@ -221,6 +225,7 @@ export function clearPaneCacheState(state: HookListenerState, paneKey: string): 
   state.codexSubagentRosterByPaneKey.delete(paneKey)
   state.codexSubagentTranscriptByPaneKey.delete(paneKey)
   state.codexLeadStateByPaneKey.delete(paneKey)
+  state.droidSessionsByPaneKey.delete(paneKey)
   state.grokActiveTurnByPaneKey.delete(paneKey)
   state.grokMainAgentStatusByPaneKey.delete(paneKey)
   state.musePaneStateByPaneKey.delete(paneKey)
@@ -245,7 +250,8 @@ export function paneHasStateClaims(state: HookListenerState, paneKey: string): b
     state.claudeLaunchedBackgroundTasksByPaneKey.has(paneKey) ||
     state.claudeSessionOwnerByPaneKey.has(paneKey) ||
     state.codexSubagentRosterByPaneKey.has(paneKey) ||
-    state.codexLeadStateByPaneKey.has(paneKey)
+    state.codexLeadStateByPaneKey.has(paneKey) ||
+    state.droidSessionsByPaneKey.has(paneKey)
   )
 }
 
@@ -274,6 +280,7 @@ export function movePaneCacheState(
   movePaneScopedMapEntries(state.codexSubagentRosterByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.codexSubagentTranscriptByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.codexLeadStateByPaneKey, fromPaneKey, toPaneKey)
+  movePaneScopedMapEntries(state.droidSessionsByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.grokActiveTurnByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.grokMainAgentStatusByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.musePaneStateByPaneKey, fromPaneKey, toPaneKey)
@@ -311,6 +318,7 @@ export function clearAllListenerCaches(state: HookListenerState): void {
   state.codexSubagentRosterByPaneKey.clear()
   state.codexSubagentTranscriptByPaneKey.clear()
   state.codexLeadStateByPaneKey.clear()
+  state.droidSessionsByPaneKey.clear()
   state.grokActiveTurnByPaneKey.clear()
   state.grokMainAgentStatusByPaneKey.clear()
   state.opencodeSessionPaneBySessionId.clear()

@@ -42,6 +42,10 @@ type ManagedProviderProcessOptions = {
   acceptClose?: (result: ProviderProcessCloseResult) => boolean
   /** Defaults to `session`; a one-shot's stdin end completes its request instead of stopping it. */
   lifetime?: ProviderSupervisorLifetime
+  /** How long a POSIX supervisor waits after stdin ends before SIGTERM. Defaults to the short grace. */
+  stdinEndGraceMs?: number
+  /** A provider that closes its stdout without exiting: its end reaches `child.stdout` through the supervisor. */
+  forwardOutputEnd?: boolean
   /** Any stdout or stderr chunk: the child is doing something. */
   onOutput?: () => void
 }
@@ -78,7 +82,9 @@ export function spawnManagedProviderProcess(
   const spec = createProviderSpawnSpec(launch, options.inheritedEnv ?? process.env, platform, {
     // A gone owner gets the close this provider's own close would make under the supervisor.
     closeRequest: closePolicy(true).signalSupervisorOnClose ? 'stdin-end-and-sigterm' : 'stdin-end',
-    ...(options.lifetime ? { lifetime: options.lifetime } : {})
+    ...(options.lifetime ? { lifetime: options.lifetime } : {}),
+    ...(options.stdinEndGraceMs !== undefined ? { stdinEndGraceMs: options.stdinEndGraceMs } : {}),
+    ...(options.forwardOutputEnd ? { forwardOutputEnd: true } : {})
   })
   const policy = closePolicy(spec.supervised)
   if (spec.supervised && !(policy.gracefulExitMs >= PROVIDER_SUPERVISOR_MAX_STOP_MS)) {

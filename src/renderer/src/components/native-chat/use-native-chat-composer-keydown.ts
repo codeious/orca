@@ -5,6 +5,12 @@ import {
   type KeyboardEventHandler,
   type SetStateAction
 } from 'react'
+import type { AgentType } from '../../../../shared/agent-status-types'
+import {
+  matchDroidComposerKey,
+  type DroidComposerKey
+} from '../../../../shared/droid-composer-keys'
+import { getShortcutPlatform } from '@/lib/shortcut-platform'
 import type { ComposerAutocomplete, NativeChatPickerItem } from './native-chat-composer-state'
 import { isMacPlatform } from './native-chat-shortcut'
 import type { NativeChatMentionFiles } from './use-native-chat-mention-files'
@@ -33,6 +39,10 @@ export type UseNativeChatComposerKeyDownArgs = {
   /** Cmd/Ctrl+Enter from an empty composer: send the newest queued draft now; false falls
    *  through to send. */
   steerQueued?: (() => boolean) | undefined
+  /** Only `droid` reads the map below; every other agent keeps today's keys. */
+  agent?: AgentType
+  /** What each Droid key does. A key with no entry falls through to today's handling. */
+  droidKeys?: Partial<Record<DroidComposerKey, () => void>> | undefined
   setActiveSuggestion: Dispatch<SetStateAction<number>>
   setDraft: Dispatch<SetStateAction<string>>
   setCaret: Dispatch<SetStateAction<number>>
@@ -53,6 +63,8 @@ export function useNativeChatComposerKeyDown({
   interrupt,
   send,
   steerQueued,
+  agent,
+  droidKeys,
   setActiveSuggestion,
   setDraft,
   setCaret
@@ -111,6 +123,12 @@ export function useNativeChatComposerKeyDown({
           event.preventDefault()
           return
         }
+        // Why: Droid's Tab cycles effort, and a menu on screen outranks that even with no row to take it.
+        // The exact chord match leaves Ctrl, Alt and Meta+Tab to the window shortcuts.
+        if (agent === 'droid' && matchDroidComposerKey(event, getShortcutPlatform()) === 'tab') {
+          event.preventDefault()
+          return
+        }
         if (event.key === 'Escape') {
           event.preventDefault()
           dismissPicker(autocomplete.triggerKey)
@@ -118,22 +136,42 @@ export function useNativeChatComposerKeyDown({
         }
       }
 
+      // Droid's map comes after IME and the open menu and before today's handling. Unwired keys fall through.
+      const droidKey =
+        agent === 'droid' && !event.defaultPrevented
+          ? matchDroidComposerKey(event, getShortcutPlatform())
+          : null
+      const droidAction = droidKey ? droidKeys?.[droidKey] : undefined
+      // Steers the waiting card and says whether it did. Platform primary modifier only (AGENTS.md):
+      // ⌘ on Mac, Ctrl elsewhere. Only from an empty composer: the chord never sends a card past
+      // what the user just wrote.
+      const trySteerQueued = (): boolean =>
+        (isMacPlatform() ? event.metaKey : event.ctrlKey) &&
+        draft.trim() === '' &&
+        !hasAttachments &&
+        steerQueued?.() === true
+      if (droidAction) {
+        event.preventDefault()
+        // Off a Mac that chord is also Droid's Ctrl+Enter, so a waiting card still goes first.
+        if (!(droidKey === 'ctrlEnter' && trySteerQueued())) {
+          droidAction()
+        }
+        return
+      }
+
       if (event.key === 'Escape') {
         event.preventDefault()
-        interrupt()
+        // Only Stop ends a Droid turn, even when its Escape is not wired.
+        if (agent !== 'droid') {
+          interrupt()
+        }
         return
       }
       if (event.key === 'Enter' && !event.shiftKey) {
-        // Platform primary modifier only (AGENTS.md): ⌘ on Mac, Ctrl elsewhere.
-        const steerChord = isMacPlatform() ? event.metaKey : event.ctrlKey
-        // Only from an empty composer: the chord never sends a card past what the user just wrote.
-        const composerEmpty = draft.trim() === '' && !hasAttachments
-        if (steerChord && composerEmpty && steerQueued?.()) {
-          event.preventDefault()
-          return
-        }
         event.preventDefault()
-        send()
+        if (!trySteerQueued()) {
+          send()
+        }
         return
       }
       const arrow = event.key === 'ArrowUp' || event.key === 'ArrowDown'
@@ -167,12 +205,14 @@ export function useNativeChatComposerKeyDown({
     },
     [
       activeSuggestion,
+      agent,
       autocomplete,
       completeMention,
       completePickerItem,
       dismissPicker,
       dispatchPickerCommand,
       draft,
+      droidKeys,
       hasAttachments,
       interrupt,
       isComposing,

@@ -2,6 +2,7 @@ import { useCallback, useMemo, type KeyboardEventHandler, type RefObject } from 
 import { useAppStore } from '@/store'
 import { formatShortcutLabel } from '@/hooks/useShortcutLabel'
 import { getShortcutPlatform } from '@/lib/shortcut-platform'
+import type { AgentType } from '../../../../shared/agent-status-types'
 import { isOrcaSessionId } from '../../../../shared/orca-session-address'
 import { resolveStructuredSessionOrcaSessionId } from '../../runtime/structured-session-orca-session-id'
 import type { RuntimeClientTarget } from '../../runtime/runtime-rpc-client'
@@ -14,6 +15,7 @@ import {
 } from './use-native-chat-context-menu'
 import { matchNativeChatSplitShortcut } from './native-chat-split-shortcut'
 import { runNativeChatSplitTarget } from './native-chat-layout-actions'
+import { copyNativeChatTranscriptSelection } from './native-chat-selected-text'
 
 export function useStructuredNativeChatPaneCommands({
   tabId,
@@ -24,11 +26,14 @@ export function useStructuredNativeChatPaneCommands({
   questionAnswerInputRef,
   terminalPaneActions,
   sessionId,
-  target
+  target,
+  agent
 }: {
   tabId: string
   groupId?: string
   isVisible: boolean
+  /** Droid's Ctrl+C also copies a transcript selection; every other agent keeps today's keys. */
+  agent?: AgentType | undefined
   rootRef: RefObject<HTMLDivElement | null>
   composerRef: RefObject<NativeChatComposerHandle | null>
   questionAnswerInputRef: RefObject<HTMLInputElement | null>
@@ -81,6 +86,9 @@ export function useStructuredNativeChatPaneCommands({
       if (event.repeat) {
         return
       }
+      if (agent === 'droid' && copyNativeChatTranscriptSelection(event, rootRef.current)) {
+        return
+      }
       const direction = matchNativeChatSplitShortcut(event, getShortcutPlatform(), keybindings)
       if (!direction) {
         return
@@ -105,7 +113,7 @@ export function useStructuredNativeChatPaneCommands({
       event.preventDefault()
       event.stopPropagation()
     },
-    [groupId, keybindings, tabId, terminalPaneActions]
+    [agent, groupId, keybindings, rootRef, tabId, terminalPaneActions]
   )
 
   return { ...contextMenu, onKeyDownCapture }

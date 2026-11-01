@@ -1,4 +1,5 @@
 import { readWholeAgentSessionFailureFact } from './agent-session-failure'
+import { readAgentSessionHostText } from './agent-session-host-text'
 import type { AgentJournalStatusItem, AgentJournalTurnScope } from './agent-session-journal-types'
 import { readAgentSessionOrcaStop } from './agent-session-orca-stop'
 import type { NativeChatTextBlock } from './native-chat-types'
@@ -23,6 +24,8 @@ export function structuredAgentSessionStatusBlock(
   return {
     type: 'text',
     text: body.text,
+    ...(typeof body.summaryText === 'string' ? { summaryText: body.summaryText } : {}),
+    ...readAgentSessionHostText(body),
     ...(presentation !== undefined ? { presentation } : {}),
     ...(body.contextClear !== undefined ? { contextClear: body.contextClear } : {}),
     ...(body.tone !== undefined ? { tone: body.tone } : {}),

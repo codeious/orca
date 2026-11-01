@@ -36,6 +36,65 @@ describe('NativeChatComposerNotices', () => {
     expect(container.querySelectorAll('[data-notice-kind="error"]')).toHaveLength(2)
   })
 
+  it('draws information as a neutral row, with no error tint and no alert icon', () => {
+    const dismiss = vi.fn()
+    const { container } = render(
+      <NativeChatComposerNotices
+        notices={[
+          {
+            key: 'composer-error',
+            kind: 'info',
+            text: 'Droid keys in the message box: Ctrl+L: cycle autonomy.',
+            onDismiss: dismiss
+          }
+        ]}
+      />
+    )
+    const row = screen.getByRole('listitem')
+    expect(row).toHaveAttribute('data-notice-kind', 'info')
+    expect(row.className).not.toContain('destructive')
+    expect(container.querySelector('ul')?.className).not.toContain('destructive')
+    const icon = row.querySelector('svg')
+    expect(icon).toHaveClass('lucide-info')
+    expect(icon).not.toHaveClass('lucide-circle-alert')
+    expect(icon?.getAttribute('class')).not.toContain('destructive')
+    expect(
+      screen.getByText('Droid keys in the message box: Ctrl+L: cycle autonomy.')
+    ).not.toHaveClass('text-destructive')
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
+    expect(dismiss).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps the error look for an error: tinted row, alert icon, red border', () => {
+    const { container } = render(
+      <NativeChatComposerNotices
+        notices={[{ key: 'composer-error', kind: 'error', text: 'Your message was not sent.' }]}
+      />
+    )
+    const row = screen.getByRole('listitem')
+    expect(row).toHaveClass('bg-destructive/5')
+    expect(row.querySelector('svg')).toHaveClass('lucide-circle-alert', 'text-destructive')
+    expect(container.querySelector('ul')).toHaveClass('border-destructive/30')
+  })
+
+  it('puts information after an error and tints the card for the error alone', () => {
+    const { container } = render(
+      <NativeChatComposerNotices
+        notices={[
+          { key: 'composer-error', kind: 'info', text: 'the key list' },
+          { key: 'session', kind: 'error', text: 'Orca couldn’t save your message.' }
+        ]}
+      />
+    )
+    expect(
+      screen.getAllByRole('listitem').map((row) => row.getAttribute('data-notice-kind'))
+    ).toEqual(['error', 'info'])
+    expect(container.querySelector('ul')).toHaveClass('border-destructive/30')
+    expect(container.querySelector('[data-notice-kind="info"]')?.className).not.toContain(
+      'destructive'
+    )
+  })
+
   it('shows error text Orca did not write in its own block, with a copy button', () => {
     const write = vi.fn().mockResolvedValue(undefined)
     Object.assign(window, { api: { ui: { writeClipboardText: write } } })

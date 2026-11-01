@@ -1,4 +1,5 @@
 import type { AgentSessionRewindParams } from '../../../shared/agent-session-rewind'
+import { bindMcpSignInCaller } from './structured-agent-session-droid-command'
 import { rewindStructuredAgentSession } from './structured-agent-session-rewind'
 import { StructuredConversationCommandController } from './structured-conversation-command-controller'
 // Structured agent-session host: where the lease, journal, and provider adapter meet.
@@ -81,6 +82,7 @@ export class StructuredAgentSessionHost {
     (sessionId) => this.backgroundTasks.read(sessionId)
   )
   private readonly subscribers = this.clientDelivery.subscribers
+  readonly mcpSignIn = this.subscribers.mcpSignIn
   private readonly tasks = new StructuredAgentSessionTaskQueue()
   private readonly runtimeState: StructuredAgentSessionHostRuntimeState
   private readonly reconcileLeases: ReturnType<typeof createRestartReconciler>
@@ -206,8 +208,10 @@ export class StructuredAgentSessionHost {
   }
   /** Releases a session's resources without ending the conversation; see the lifetime's close.
    *  `user-close` makes a turn it cuts short the user's cancellation; an `evict` leaves it news. */
-  close: StructuredAgentSessionConversationLifetime['close'] = (sessionId, cause) =>
-    this.lifetime.close(sessionId, cause)
+  close: StructuredAgentSessionConversationLifetime['close'] = (sessionId, cause) => {
+    this.subscribers.mcpSignIn.close(sessionId)
+    return this.lifetime.close(sessionId, cause)
+  }
 
   supportsCreate = (location: AgentSessionExecutionLocation, agent: string): boolean =>
     providerSupport.adapterSupportsCreate(this.deps.adapter, location, agent)
@@ -307,6 +311,7 @@ export class StructuredAgentSessionHost {
   setOption = this.mutations.setOption
   changeThreadGoal = this.mutations.changeThreadGoal
   readOptions = this.mutations.readOptions
+  droidCommand = bindMcpSignInCaller(this.subscribers.mcpSignIn, this.mutations.droidCommand)
 
   rewind = (caller: StructuredAgentSessionCaller, params: AgentSessionRewindParams) =>
     rewindStructuredAgentSession(this.mutationContext(), this.attachContext(), caller, params)

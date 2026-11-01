@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { DROID_HOST_COMMAND_NAMES } from './droid-command-registry'
 import {
   dispatchStructuredAgentSessionComposerCommand,
   isStructuredAgentSessionComposerCommand,
@@ -94,6 +95,34 @@ describe('isStructuredAgentSessionComposerCommand', () => {
 
   it('leaves an unknown token to the chat path', () => {
     expect(isStructuredAgentSessionComposerCommand('/my-skill', 'claude')).toBe(false)
+  })
+
+  it.each(DROID_HOST_COMMAND_NAMES)(
+    'claims a typed /%s for Droid, with or without words after it',
+    (name) => {
+      expect(isStructuredAgentSessionComposerCommand(`/${name}`, 'droid')).toBe(true)
+      expect(isStructuredAgentSessionComposerCommand(`/${name} and more`, 'droid')).toBe(true)
+      expect(
+        isStructuredAgentSessionComposerCommand(`/${name} first\nprivate second`, 'droid')
+      ).toBe(true)
+      expect(
+        isStructuredAgentSessionComposerCommand(
+          `  /${name.toUpperCase()} first\nprivate second `,
+          'droid'
+        )
+      ).toBe(true)
+    }
+  )
+
+  // The Droid registry is Droid's alone: every other agent claims /help as it did before it.
+  it.each([
+    ['claude', false],
+    ['codex', false],
+    ['omp', false],
+    ['openclaude', false],
+    ['pi', true]
+  ] as const)('claims /help for %s as it did before the Droid registry: %s', (agent, claimed) => {
+    expect(isStructuredAgentSessionComposerCommand('/help', agent)).toBe(claimed)
   })
 })
 
@@ -248,5 +277,153 @@ describe('agent-implemented commands pass through to the agent', () => {
       error:
         '/permissions is not available in chat sessions. Use the slash menu to see available commands.'
     })
+  })
+})
+
+describe('the session commands only Droid claims', () => {
+  // What each agent did with these names before Droid claimed them; Droid's registry is its alone.
+  it.each([
+    ['claude', 'new', false],
+    ['claude', 'quit', false],
+    ['claude', 'exit', false],
+    ['codex', 'new', true],
+    ['codex', 'quit', false],
+    ['codex', 'exit', true],
+    ['pi', 'new', false],
+    ['pi', 'quit', false],
+    ['pi', 'exit', false],
+    ['omp', 'new', true],
+    ['omp', 'quit', false],
+    ['omp', 'exit', false]
+  ] as const)('claims /%s for %s as it did before: %s', (agent, name, claimed) => {
+    expect(isStructuredAgentSessionComposerCommand(`/${name}`, agent)).toBe(claimed)
+  })
+
+  it.each(['clear', 'new', 'quit', 'exit'] as const)('claims /%s for Droid', (name) => {
+    expect(isStructuredAgentSessionComposerCommand(`/${name}`, 'droid')).toBe(true)
+  })
+})
+
+describe('a command the host runs itself for the agent', () => {
+  const controller = {
+    agent: 'droid' as const,
+    snapshot: [],
+    invokeAction: async () => true,
+    setOption: async () => true
+  }
+
+  it('runs it ahead of the conversation command of the same name, which is then left alone', async () => {
+    const runConversationCommand = vi.fn(async () => ({ accepted: true, error: null }))
+    const runHostCommand = vi.fn(async () => ({
+      accepted: false,
+      error: null,
+      info: 'Run /clear again to confirm.'
+    }))
+
+    expect(
+      await dispatchStructuredAgentSessionComposerCommand('/clear', {
+        ...controller,
+        conversationCommands: ['clear', 'compact'],
+        runConversationCommand,
+        runHostCommand
+      })
+    ).toEqual({
+      handled: true,
+      accepted: false,
+      error: null,
+      info: 'Run /clear again to confirm.'
+    })
+    expect(runHostCommand).toHaveBeenCalledWith('clear', '')
+    expect(runConversationCommand).not.toHaveBeenCalled()
+  })
+
+  it('hands it the name in lower case and the words after it', async () => {
+    const runHostCommand = vi.fn(async () => ({ accepted: true, error: null }))
+
+    await dispatchStructuredAgentSessionComposerCommand('/NEW  and more words ', {
+      ...controller,
+      runHostCommand
+    })
+
+    expect(runHostCommand).toHaveBeenCalledWith('new', 'and more words')
+  })
+
+  it.each(['/bug first\nprivate  second', '  /BUG  first\nprivate  second  '])(
+    'keeps a multiline bug comment on the host: %j',
+    async (text) => {
+      const runHostCommand = vi.fn(async () => ({
+        accepted: false,
+        error: null,
+        info: 'Confirm before sending this report.'
+      }))
+
+      expect(
+        await dispatchStructuredAgentSessionComposerCommand(text, {
+          ...controller,
+          runHostCommand
+        })
+      ).toEqual({
+        handled: true,
+        accepted: false,
+        error: null,
+        info: 'Confirm before sending this report.'
+      })
+      expect(runHostCommand).toHaveBeenCalledWith('bug', 'first\nprivate  second')
+    }
+  )
+
+  it.each(['claude', 'codex', 'pi', 'omp', 'openclaude'] as const)(
+    'preserves %s parsing of multiline slash text',
+    async (agent) => {
+      const runHostCommand = vi.fn(async () => ({ accepted: true, error: null }))
+      for (const text of [
+        '/bug first\nprivate second',
+        '  /BUG first\nprivate second ',
+        '/clear first\nprivate second'
+      ]) {
+        expect(isStructuredAgentSessionComposerCommand(text, agent)).toBe(false)
+        expect(
+          await dispatchStructuredAgentSessionComposerCommand(text, {
+            ...controller,
+            agent,
+            runHostCommand
+          })
+        ).toEqual({ handled: false, accepted: false, error: null })
+      }
+      expect(runHostCommand).not.toHaveBeenCalled()
+    }
+  )
+
+  it('leaves the command to the shared handling when the host does not take it', async () => {
+    const runConversationCommand = vi.fn(async () => ({ accepted: true, error: null }))
+    const runHostCommand = vi.fn(async () => null)
+
+    expect(
+      await dispatchStructuredAgentSessionComposerCommand('/clear', {
+        ...controller,
+        conversationCommands: ['clear'],
+        runConversationCommand,
+        runHostCommand
+      })
+    ).toEqual({ handled: true, accepted: true, error: null })
+    expect(runConversationCommand).toHaveBeenCalledWith('clear')
+  })
+
+  it('does not ask the host about a message, or about a command the agent does not claim', async () => {
+    const runHostCommand = vi.fn(async () => null)
+
+    expect(
+      await dispatchStructuredAgentSessionComposerCommand('fix the build', {
+        ...controller,
+        runHostCommand
+      })
+    ).toEqual({ handled: false, accepted: false, error: null })
+    expect(
+      await dispatchStructuredAgentSessionComposerCommand('/my-skill', {
+        ...controller,
+        runHostCommand
+      })
+    ).toEqual({ handled: false, accepted: false, error: null })
+    expect(runHostCommand).not.toHaveBeenCalled()
   })
 })

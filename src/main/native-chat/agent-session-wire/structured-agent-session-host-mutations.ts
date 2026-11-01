@@ -44,6 +44,8 @@ import { mutateWithChatStop } from './structured-agent-session-chat-stop'
 import { performSetOption } from './structured-agent-session-turns-options'
 export type { StructuredAgentSessionMutationContext } from './structured-agent-session-mutation-context'
 import type { StructuredAgentSessionCaller } from './structured-agent-session-host-types'
+import type { DroidHostCommandRequest } from '../../../shared/droid-host-command'
+import { runStructuredAgentSessionDroidCommand } from './structured-agent-session-droid-command'
 import {
   readStructuredAgentSessionOptions,
   recordStructuredAgentSessionOptionIntent
@@ -57,6 +59,8 @@ export function sendStructuredAgentSessionTurn(
     body: AgentJournalMessageItem
     retryUnknown?: true
     delivery?: 'queue-if-active'
+    /** Answer inside the running turn after its current reply; see `SendParams.afterReply`. */
+    afterReply?: true
     /** Host-local, set only by the client-facing `agentSession.send` RPC (the
      *  renderer's launch prompt included): recorded as the submission's `client`
      *  origin, so a restart or a close keeps it as a card if it never reached the
@@ -244,6 +248,8 @@ export function structuredAgentSessionMutationDelegates(
       caller: StructuredAgentSessionCaller,
       params: Parameters<typeof changeStructuredAgentSessionThreadGoal>[2]
     ) => changeStructuredAgentSessionThreadGoal(context(), caller, params),
-    readOptions: (sessionId: string) => readStructuredAgentSessionOptions(context(), sessionId)
+    readOptions: (sessionId: string) => readStructuredAgentSessionOptions(context(), sessionId),
+    droidCommand: (sessionId: string, command: DroidHostCommandRequest) =>
+      runStructuredAgentSessionDroidCommand(context(), sessionId, command)
   }
 }

@@ -20,6 +20,7 @@ import {
 } from './runtime-environment-abortable-requests'
 import { runtimeEnvironmentRevisionFailure } from './runtime-environment-revision-guard'
 import { resetSharedControlSupport } from './runtime-environment-shared-control-support'
+import { createRuntimeEnvironmentMcpSignInReceiver } from './runtime-environment-mcp-sign-in-receiver'
 import {
   executeSupportRoutedCall,
   shouldUseSharedControlEnvelope,
@@ -165,6 +166,10 @@ export async function subscribeRuntimeEnvironment(
   const environment = await resolveManagedRuntimeEnvironment(userDataPath, selector)
   const pairing = getPreferredPairingOffer(environment)
   const effectiveTimeoutMs = timeoutMs ?? DEFAULT_REMOTE_RUNTIME_TIMEOUT_MS
+  const mcpSignIn =
+    method === 'agentSession.subscribe'
+      ? createRuntimeEnvironmentMcpSignInReceiver(params, isCurrent, signal)
+      : undefined
   let markedUsed = false
   const markUsedOnce = (runtimeId: string): void => {
     if (markedUsed || !isCurrent()) {
@@ -175,6 +180,7 @@ export async function subscribeRuntimeEnvironment(
   }
   const callbacksWithMarkUsed = {
     onResponse: (response: RuntimeRpcResponse<unknown>) => {
+      response = mcpSignIn?.receive(response) ?? response
       if (response.ok === true) {
         markUsedOnce(response._meta.runtimeId)
       }
@@ -182,13 +188,16 @@ export async function subscribeRuntimeEnvironment(
     },
     onBinary: (bytes: Uint8Array<ArrayBufferLike>) =>
       callbacks.onEvent({ type: 'binary' as const, bytes }),
-    onError: (error: { code: string; message: string }) =>
+    onError: (error: { code: string; message: string }) => {
+      mcpSignIn?.close()
       callbacks.onEvent({
         type: 'error' as const,
         code: error.code,
         message: withRemoteRuntimeTailscaleHint(error.message, pairing.endpoint)
-      }),
+      })
+    },
     onClose: () => {
+      mcpSignIn?.close()
       callbacks.onEvent({ type: 'close' as const })
       callbacks.onClose()
     }
@@ -208,7 +217,7 @@ export async function subscribeRuntimeEnvironment(
         signal
       })
     }
-    return await subscribeRemoteRuntimeRequest(
+    const subscription = await subscribeRemoteRuntimeRequest(
       pairing,
       method,
       params,
@@ -216,7 +225,9 @@ export async function subscribeRuntimeEnvironment(
       callbacksWithMarkUsed,
       { clientCapabilities: ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES, signal }
     )
+    return mcpSignIn?.bind(subscription) ?? subscription
   } catch (error) {
+    mcpSignIn?.close()
     if (error instanceof Error) {
       error.message = withRemoteRuntimeTailscaleHint(error.message, pairing.endpoint)
     }

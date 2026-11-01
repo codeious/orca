@@ -11,6 +11,7 @@ import { getLocalProjectWorktreeGitOptions } from '../project-runtime-git-option
 import type { AgentSessionAttachParams } from '../native-chat/agent-session-wire/structured-agent-session-attach'
 import { resolveTuiAgentLaunchEnv } from '../../shared/tui-agent-launch-defaults'
 import { resolveHostStructuredAgentCreateSupport } from './structured-agent-launch-support'
+import type { StructuredAgentSessionCreateSupport } from '../native-chat/structured-agent-session-create-support'
 import { structuredAgentRuntimeRegistration } from './structured-agent-runtime-registrations'
 import { resolveStructuredLaunchSeedOptions } from '../../shared/native-chat-session-option-defaults'
 import { hasPersistedStructuredAgentSessionStore as hasPersistedStructuredAgentSessionStoreOnDisk } from './structured-agent-session-runtime'
@@ -26,17 +27,15 @@ import {
   isLegacyAgentSessionAccountHome,
   type AgentSessionAccountHome
 } from '../../shared/agent-session-account-home'
-import {
-  isAgentSessionHandleProvider,
-  type StructuredAgentId
-} from '../../shared/agent-session-provider-handle'
-import { agentSessionWireProviderHandle } from '../../shared/agent-session-provider-handle-encoding'
+import type { StructuredAgentId } from '../../shared/agent-session-provider-handle'
+import { isStructuredAdoptionAgent } from '../../shared/structured-adoption-agent'
+import { adoptedProviderHandle } from '../native-chat/agent-session-wire/structured-agent-session-adopted-handle'
 
 export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaRuntimeWithGetWorktreePs {
   async getStructuredAgentSessionCreateSupport(
     worktreeSelector: string,
     agent: StructuredAgentId
-  ): Promise<{ supported: boolean; reason?: 'agent' | 'remote' | 'wsl' }> {
+  ): Promise<StructuredAgentSessionCreateSupport> {
     return resolveHostStructuredAgentCreateSupport({
       agent,
       worktreeSelector,
@@ -208,9 +207,18 @@ export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaR
     }) => AgentSessionAccountHome | Promise<AgentSessionAccountHome>
   ): Promise<AgentSessionAttachParams> {
     const support = await this.getStructuredAgentSessionCreateSupport(input.worktree, input.agent)
-    // Adopting a conversation reads the agent's own transcript, which only Claude and Codex have
-    // importers for.
-    if (!support.supported || (input.resumeFrom && !isAgentSessionHandleProvider(input.agent))) {
+    if (!support.supported && support.unsupportedVersion) {
+      const { found, floor, updateCommand } = support.unsupportedVersion
+      throw agentSessionRefusalError('structured_agent_session_unsupported', {
+        reason: 'versionUnsupported',
+        version: found,
+        floor,
+        updateCommand
+      })
+    }
+    // Adopting a conversation reads the agent's own transcript, which only Claude, Codex and Droid
+    // have importers for.
+    if (!support.supported || (input.resumeFrom && !isStructuredAdoptionAgent(input.agent))) {
       throw agentSessionRefusalError('structured_agent_session_unsupported', {
         reason: 'hostUnsupported'
       })
@@ -272,7 +280,7 @@ export class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends OrcaR
             // `providerHandle` alone must not: `agentSession.ensure` already passes one today
             // without adopting anything.
             adopt: {
-              providerHandle: agentSessionWireProviderHandle({
+              providerHandle: adoptedProviderHandle({
                 transport: definition.handleTransport,
                 agent: definition.agent,
                 nativeId: input.resumeFrom.providerSessionId

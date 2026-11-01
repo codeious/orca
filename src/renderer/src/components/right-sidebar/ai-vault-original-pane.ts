@@ -24,6 +24,9 @@ export type OriginalPaneState = Pick<
   | 'terminalLayoutsByTabId'
 >
 
+/** All that locating a pane reads: which tab owns it, and whether its layout still has the leaf. */
+export type PaneLocationState = Pick<OriginalPaneState, 'tabsByWorktree' | 'terminalLayoutsByTabId'>
+
 function agentMatches(session: AiVaultSession, agent: string | undefined): boolean {
   return agent === session.agent
 }
@@ -119,7 +122,7 @@ function hasAvailableLeaf(layout: TerminalLayoutSnapshot | undefined, leafId: st
 }
 
 function getTabOwnerWorktreeId(
-  state: OriginalPaneState,
+  state: PaneLocationState,
   tabId: string,
   worktreeIdHint?: string
 ): string | null {
@@ -138,7 +141,7 @@ function getTabOwnerWorktreeId(
 }
 
 export function resolveOriginalPaneTarget(args: {
-  state: OriginalPaneState
+  state: PaneLocationState
   paneKey: string
   worktreeIdHint?: string
   tabIdHint?: string

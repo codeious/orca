@@ -216,6 +216,47 @@ describe('structuredAgentSessionLaunchFeasible', () => {
       expect.objectContaining({ ...ROUTE_INPUT, settings })
     )
   })
+
+  describe('when the host has not listed its agents', () => {
+    const request = {
+      agent: 'droid',
+      workspace: { kind: 'git-worktree', worktreeId: 'wt-1' },
+      settings: { experimentalNativeChat: false }
+    } as const
+
+    it('lists none on its own', () => {
+      structuredAgentSessionLaunchFeasible(store, request)
+
+      expect(mocks.structuredAgentLaunchSupported.mock.calls[0]?.[0]).not.toHaveProperty(
+        'hostStructuredAgents'
+      )
+    })
+
+    it('lists the agent itself when the caller assumes its host does', () => {
+      structuredAgentSessionLaunchFeasible(store, { ...request, assumeHostListsAgent: true })
+
+      expect(mocks.structuredAgentLaunchSupported).toHaveBeenCalledWith(
+        expect.objectContaining({ hostStructuredAgents: ['droid'] })
+      )
+      // The assumption is not a routing argument.
+      expect(mocks.buildAgentLaunchRouteInput).toHaveBeenCalledWith(store, {
+        agent: 'droid',
+        workspace: request.workspace
+      })
+    })
+
+    it('keeps a list the host did give over the assumption', () => {
+      mocks.buildAgentLaunchRouteInput.mockReturnValue({
+        ...ROUTE_INPUT,
+        hostStructuredAgents: ['claude', 'codex']
+      })
+      structuredAgentSessionLaunchFeasible(store, { ...request, assumeHostListsAgent: true })
+
+      expect(mocks.structuredAgentLaunchSupported).toHaveBeenCalledWith(
+        expect.objectContaining({ hostStructuredAgents: ['claude', 'codex'] })
+      )
+    })
+  })
 })
 
 describe('adoptAgentSessionLaunchVerdict', () => {

@@ -9,6 +9,8 @@ import { SettingsBadge, SettingsSegmentedControl } from './SettingsFormControls'
 import type { AgentSessionSourceHomeControl } from './codex-session-source-home-control'
 import { AgentSessionSourceHomeInput } from './codex-session-source-home-control'
 import { stringifyAgentDefaultEnvDraft } from './agent-default-env-draft'
+import type { AgentLaunchModeControl } from './agent-launch-mode-control'
+import { AgentLaunchModeSetting } from './AgentLaunchModeSetting'
 import {
   AgentCommandOverrideInput,
   AgentDefaultArgsInput,
@@ -74,6 +76,8 @@ export type AgentCatalogRowProps = {
   onSaveArgs: (value: string) => void
   onSaveEnv: (value: Record<string, string>) => void
   sessionSourceHome?: AgentSessionSourceHomeControl
+  /** Set only for an agent whose launch can be a chat or a terminal. */
+  launchMode?: AgentLaunchModeControl
 }
 
 export function AgentCatalogRow({
@@ -94,7 +98,8 @@ export function AgentCatalogRow({
   onSaveOverride,
   onSaveArgs,
   onSaveEnv,
-  sessionSourceHome
+  sessionSourceHome,
+  launchMode
 }: AgentCatalogRowProps): React.JSX.Element {
   const envSummary = stringifyAgentDefaultEnvDraft(envOverride)
   const defaultEnvSummary = stringifyAgentDefaultEnvDraft(defaultEnv)
@@ -202,6 +207,11 @@ export function AgentCatalogRow({
 
       {isDetected && cmdOpen && (
         <div className="mt-3 pl-10">
+          {launchMode && (
+            <div className="mb-3">
+              <AgentLaunchModeSetting {...launchMode} />
+            </div>
+          )}
           <AgentCommandOverrideInput
             key={cmdOverride ?? defaultCmd}
             defaultCmd={defaultCmd}

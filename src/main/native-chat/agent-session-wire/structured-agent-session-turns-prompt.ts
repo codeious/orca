@@ -33,6 +33,9 @@ export type AgentSessionPromptRequest = {
   /** A decision id; or, from a client that predates `answers`, a question answer packed into one id. */
   optionId?: string
   answers?: AgentSessionQuestionAnswer[]
+  /** Only on an approval whose card says it takes them. */
+  comment?: string
+  editedSpecContent?: string
 }
 
 function invalid(
@@ -50,7 +53,17 @@ function readPromptChoice(
   if (prompt.kind === 'approval') {
     const optionId = input.optionId
     return optionId !== undefined && prompt.options.some((option) => option.id === optionId)
-      ? { response: { kind: 'option', optionId }, selectedOptionId: optionId }
+      ? {
+          response: {
+            kind: 'option',
+            optionId,
+            ...(input.comment === undefined ? {} : { comment: input.comment }),
+            ...(input.editedSpecContent === undefined
+              ? {}
+              : { editedSpecContent: input.editedSpecContent })
+          },
+          selectedOptionId: optionId
+        }
       : null
   }
   const answers =
@@ -97,6 +110,13 @@ export async function performPrompt(
     return held ? { ok: true, value: held } : validated
   }
   const { prompt } = validated
+  if (
+    prompt.kind === 'approval' &&
+    ((input.comment !== undefined && !prompt.acceptsComment) ||
+      (input.editedSpecContent !== undefined && !prompt.acceptsPlanEdit))
+  ) {
+    return invalid('optionRejected', `Item ${input.itemId} takes no comment or edited plan.`)
+  }
   const choice = readPromptChoice(prompt, input)
   if (!choice) {
     return invalid(

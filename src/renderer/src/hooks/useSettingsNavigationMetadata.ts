@@ -23,6 +23,7 @@ import { useAppStore } from '@/store'
 import { useProjectHostSetupProjection } from '@/store/selectors'
 import type { ProjectGroupingModel } from '@/components/sidebar/worktree-list/grouping/project-grouping'
 import type { Repo } from '../../../shared/repo-types'
+import { isNativeChatLaunchable } from '../../../shared/structured-native-chat-launch-route'
 import {
   buildCapabilitySettingsSections,
   buildSetupSettingsSections
@@ -122,7 +123,7 @@ export function useSettingsNavigationMetadata(): SettingsNavSection[] {
       ] as const
     })
   )
-  const nativeChatEnabled = settings?.experimentalNativeChat === true
+  const nativeChatEnabled = isNativeChatLaunchable(settings)
   const isMac = isMacUserAgent()
   const isWindows = isWindowsUserAgent()
   const isWebClient = isWebClientLocation()

@@ -1,4 +1,5 @@
 import { refuse, type AgentSessionOptionResult } from '../../../shared/agent-session-wire'
+import { readAgentSessionHostText } from '../../../shared/agent-session-host-text'
 import { isAgentSessionOptionRejectedError } from './structured-agent-session-option-error'
 import type { AgentSessionTurnContext, TurnOutcome } from './structured-agent-session-turns'
 
@@ -21,7 +22,7 @@ export async function performSetOption(
         ok: false,
         refusal: refuse(
           'agent_session_operation_invalid',
-          { reason: error.refusalReason },
+          { reason: error.refusalReason, ...readAgentSessionHostText(error) },
           error.message
         )
       }

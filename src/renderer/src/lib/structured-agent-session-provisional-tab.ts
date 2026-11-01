@@ -40,6 +40,13 @@ export function openStructuredAgentSessionProvisionalTab(args: {
   agent: TuiAgent
   targetGroupId?: string
   activate?: boolean
+  /** Opens the chat right after another tab, with the name, color, and pin the caller passes. */
+  placement?: {
+    afterTabId: string
+    customLabel?: string | null
+    color?: string | null
+    isPinned?: boolean
+  }
 }): Tab {
   const state = useAppStore.getState()
   const tabId = structuredAgentSessionTabId(args.sessionId)
@@ -64,6 +71,14 @@ export function openStructuredAgentSessionProvisionalTab(args: {
     agentSessionAgent: args.agent,
     label: defaultAgentChatLabel(args.agent),
     ...(args.targetGroupId ? { targetGroupId: args.targetGroupId } : {}),
+    ...(args.placement
+      ? {
+          afterTabId: args.placement.afterTabId,
+          ...(args.placement.customLabel ? { customLabel: args.placement.customLabel } : {}),
+          ...(args.placement.color ? { color: args.placement.color } : {}),
+          ...(args.placement.isPinned ? { isPinned: true } : {})
+        }
+      : {}),
     activate: args.activate !== false
   })
   if (args.activate !== false) {

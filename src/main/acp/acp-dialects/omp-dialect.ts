@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { JSON_RPC_INTERNAL_ERROR } from '../acp-errors'
 import type { ToolCallContent, ToolCallUpdate } from '../generated/acp-protocol.generated'
 import type { AcpCompactionReply, AcpDialect } from './acp-dialect'
 
@@ -115,7 +116,7 @@ export const OMP_ACP_DIALECT: AcpDialect = {
   authenticationRequired: (error) => {
     const details = promptErrorDataSchema.safeParse(error.data).data?.details
     return (
-      error.code === -32603 &&
+      error.code === JSON_RPC_INTERNAL_ERROR &&
       details !== undefined &&
       SIGNED_OUT_DETAIL_PREFIXES.some((prefix) => details.startsWith(prefix))
     )

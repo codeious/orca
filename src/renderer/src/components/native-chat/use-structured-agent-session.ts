@@ -139,7 +139,10 @@ export function useStructuredAgentSession(args: {
   // A host's queue waits on any pending prompt, and nothing here can settle one this build cannot
   // answer: the send must start a turn, after which the card's cancel works.
   const commandWaiting = commandCardWaiting(transportState.queuedMessages)
-  const queueEnabled = (queueFollowUps || commandWaiting) && !promptsUnanswerableHere
+  // Droid takes a mid-turn message at once, steered or waited by the key (Enter, Ctrl+Enter), so
+  // the setting never makes it a card; a command card already waiting still orders what follows.
+  const queueEnabled =
+    ((queueFollowUps && agent !== 'droid') || commandWaiting) && !promptsUnanswerableHere
   const queue = useMemo(
     () => ({ capability: queueCapability, enabled: queueEnabled }),
     [queueCapability, queueEnabled]

@@ -20,6 +20,9 @@ export type StructuredAgentSessionSendInput = {
   attachments?: readonly StructuredAgentSessionAttachment[]
   /** Asks the host to hold it as a card while the agent works; decided once, at the send. */
   delivery?: 'queue-if-active'
+  /** Asks the host to answer after the running reply, inside the same turn; set only for a host
+   *  that takes it. */
+  afterReply?: true
   /** The caller keeps the text if it comes back, instead of the chat's composer. */
   callerKeepsText?: true
   /** Made while the chat read Stopping: drawn after that turn until the host records it. */
@@ -42,6 +45,7 @@ export function takeStructuredAgentSessionSendSlot(
     previewUris: attachments.map((attachment) => attachment.previewUri),
     queuedAt: input.now ?? Date.now(),
     ...(input.delivery ? { delivery: input.delivery } : {}),
+    ...(input.afterReply ? { afterReply: true as const } : {}),
     ...(input.callerKeepsText ? { callerKeepsText: true as const } : {}),
     ...(input.sentWhileStopping ? { sentWhileStopping: true as const } : {}),
     ...(attachments.some((attachment) => attachment.connectionId)

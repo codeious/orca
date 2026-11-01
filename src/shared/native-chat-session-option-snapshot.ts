@@ -247,18 +247,21 @@ export function buildNativeChatSessionOptionSnapshot(args: {
       ...(modelAction ? { action: modelAction } : {})
     }
   ]
-  if (!effectiveModelId) {
-    return snapshot
-  }
-  const model = models.find((candidate) => candidate.id === effectiveModelId)
-  const trackedValues = record.valuesByModel[effectiveModelId] ?? {}
-  for (const option of model?.options ?? []) {
+  const model = effectiveModelId
+    ? models.find((candidate) => candidate.id === effectiveModelId)
+    : undefined
+  const trackedValues = effectiveModelId ? (record.valuesByModel[effectiveModelId] ?? {}) : {}
+  // With no model named, only the options that never belonged to a model can be drawn.
+  const options = effectiveModelId ? (model?.options ?? []) : sessionScopedOptions(models)
+  for (const option of options) {
     const descriptor = optionDescriptor({
       option,
-      tracked: trackedValues[option.id],
+      tracked:
+        trackedValues[option.id] ??
+        (option.scope === 'session' ? record.sessionValues?.[option.id] : undefined),
       mode,
       liveTransport,
-      modelIsCliDefault: effectiveModelId === defaultModelId,
+      modelIsCliDefault: effectiveModelId !== null && effectiveModelId === defaultModelId,
       composedModelApply: catalog.modelApply
     })
     if (descriptor) {
@@ -266,4 +269,14 @@ export function buildNativeChatSessionOptionSnapshot(args: {
     }
   }
   return snapshot
+}
+
+function sessionScopedOptions(models: readonly CatalogModel[]): CatalogOption[] {
+  const byId = new Map<string, CatalogOption>()
+  for (const option of models.flatMap((model) => model.options)) {
+    if (option.scope === 'session' && !byId.has(option.id)) {
+      byId.set(option.id, option)
+    }
+  }
+  return [...byId.values()]
 }

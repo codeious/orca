@@ -8,17 +8,16 @@ import { activeProviderContext } from '../../../shared/agent-session-provider-co
 
 import type { AgentSessionJournalIdentity } from '../../../shared/agent-session-journal-types'
 import type { AgentSessionOwnerProbe } from '../../../shared/agent-session-lease-adjudication'
-import type {
-  StructuredAgentId,
-  AgentSessionProviderHandleLink
-} from '../../../shared/agent-session-provider-handle'
+import type { StructuredAgentId } from '../../../shared/agent-session-provider-handle'
 import {
   agentSessionProviderHandleBelongsTo,
   agentSessionProviderHandleFromWire,
   type AgentSessionWireProviderHandle
 } from '../../../shared/agent-session-provider-handle-encoding'
-import { claudeProviderHandleLink } from '../../claude/claude-structured-owner-identity'
-import { codexProviderHandleLink } from '../../codex/codex-structured-owner-identity'
+import {
+  adoptedProviderHandleLink,
+  type AdoptedProviderHandle
+} from './structured-agent-session-adopted-handle'
 import type {
   AgentSessionAccountHome,
   AgentSessionExecutionLocation,
@@ -79,7 +78,7 @@ export type AgentSessionAttachParams = {
    * without adopting — presence of a handle must never be what triggers a resume.
    */
   adopt?: {
-    providerHandle: AgentSessionWireProviderHandle
+    providerHandle: AdoptedProviderHandle
     /** Omitted only when the exact committed operation replays an already-imported journal. */
     transcriptPath?: string
   }
@@ -269,38 +268,6 @@ async function reconcileAgainstProviderHistory(input: {
     fence: input.fence,
     history
   })
-}
-
-/**
- * The first link of an adopting session's chain.
- *
- * `adopted` is the only origin besides `created` a chain will accept at its head, and it is the
- * honest one here: this session did not create the conversation. The adapter appends its own
- * `resumed` link once the provider proves the same identity root — or, when it proves the identical
- * handle at the same fence, the validator elides that as a retry and this link stays the head.
- */
-const ADOPTED_HANDLE_FENCE = 1
-
-function adoptedProviderHandleLink(
-  handle: AgentSessionWireProviderHandle,
-  observedAt: number
-): AgentSessionProviderHandleLink {
-  return handle.kind === 'claude'
-    ? claudeProviderHandleLink({
-        sessionId: handle.sessionId,
-        leafUuid: handle.leafUuid,
-        resumed: false,
-        origin: 'adopted',
-        fence: ADOPTED_HANDLE_FENCE,
-        observedAt
-      })
-    : codexProviderHandleLink({
-        threadId: handle.threadId,
-        resumed: false,
-        origin: 'adopted',
-        fence: ADOPTED_HANDLE_FENCE,
-        observedAt
-      })
 }
 
 export function reserveRequestFor(input: {

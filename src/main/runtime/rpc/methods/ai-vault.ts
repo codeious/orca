@@ -21,11 +21,17 @@ import {
 } from '../../../ai-vault/structured-session-ownership'
 import { ensureStructuredAgentSessionHostUnlessRefused } from '../../structured-agent-session-host-refusal'
 import {
+  AiVaultDroidSessionHolderParams,
   AiVaultListSessionsParams,
   AiVaultPrepareSessionResumeParams,
   AiVaultSessionTitlesParams
 } from '../../../../shared/rpc-contract/ai-vault-params'
-export { AiVaultListSessionsParams, AiVaultPrepareSessionResumeParams, AiVaultSessionTitlesParams }
+export {
+  AiVaultDroidSessionHolderParams,
+  AiVaultListSessionsParams,
+  AiVaultPrepareSessionResumeParams,
+  AiVaultSessionTitlesParams
+}
 
 export const AI_VAULT_METHODS = [
   defineMethod({
@@ -136,5 +142,12 @@ export const AI_VAULT_METHODS = [
       assertLegacyAiVaultResumeAllowed(args)
       return runtime.prepareAiVaultSessionResume(args)
     }
+  }),
+  defineMethod({
+    name: 'aiVault.droidSessionHolder',
+    permission: 'workspace',
+    params: AiVaultDroidSessionHolderParams,
+    // A terminal process, not a chat: no structured host is needed to say who holds a session.
+    handler: (params, { runtime }) => runtime.droidSessionHolder(params.sessionId)
   })
 ]

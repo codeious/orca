@@ -23,6 +23,10 @@ export type NativeChatComposerErrorDetail = {
   errorText?: string
   /** A refused command's cause: its line is said only while that still holds. */
   refusedWhile?: StructuredAgentSessionCommandRefusalCause
+  /** `info`: the line is the host's answer to a command, not a failure. */
+  kind?: 'info'
+  /** A button beside an `info` line; running it takes the line away. */
+  action?: { label: string; onClick: () => void }
 }
 
 export type NativeChatOptionPickerRequest = {
@@ -38,11 +42,16 @@ export type NativeChatQueueHold = {
   clear: () => Promise<boolean>
 }
 
+/** How a message differs from an ordinary send. `afterReply`: answer inside the running turn after
+ *  its current reply, not at its next tool boundary (Droid's Ctrl+Enter). */
+export type NativeChatSendOptions = { afterReply?: true }
+
 export type NativeChatStructuredComposerTransport = {
   conversationCommands?: readonly AgentSessionConversationCommand[]
   send: (
     text: string,
-    attachments: readonly NativeChatComposerImageAttachment[]
+    attachments: readonly NativeChatComposerImageAttachment[],
+    options?: NativeChatSendOptions
   ) => boolean | 'queued'
   /** A send is out: Send stays disabled, and a send returns false, until it settles. */
   sendOut?: boolean
@@ -73,6 +82,8 @@ export type NativeChatStructuredComposerTransport = {
   /** Present while the host holds the queue and no turn runs: an empty composer's primary
    *  action becomes Resume, which releases it. */
   queueResume?: NativeChatQueueResume
+  /** Present only in a Droid chat that can rewind: Esc three times on an empty composer calls it. */
+  openRewind?: () => void
 }
 
 export type NativeChatOptimisticSendOutcome = {

@@ -7,6 +7,7 @@
 // older host, and the reader falls back to what it does for the code.
 
 import type { AgentSessionAccountKind } from './agent-session-availability'
+import { readAgentSessionHostText, type AgentSessionHostText } from './agent-session-host-text'
 import type { AgentJournalResolution } from './agent-session-journal-types'
 import {
   readAgentSessionArgumentProblem,
@@ -48,6 +49,7 @@ export const AGENT_SESSION_REFUSAL_REASONS = {
     // A prompt card or an option
     'promptGone',
     'optionRejected',
+    'providerRefusedOption',
     // The provider
     'providerStarting',
     'goalsUnsupported',
@@ -127,7 +129,9 @@ export const AGENT_SESSION_REFUSAL_REASONS = {
   structured_agent_session_unsupported: [
     'clientCapabilityMissing',
     'hostDisabled',
-    'hostUnsupported'
+    'hostUnsupported',
+    /** The installed agent's release, or the protocol it speaks, is one the chat doesn't support. */
+    'versionUnsupported'
   ],
   // Sent with no reason when starting the agent for an operation throws; older clients read it too.
   agent_session_owner_restart_failed: []
@@ -153,6 +157,16 @@ type PromptFacts = {
 
 type NoFacts = Record<never, never>
 
+/** The release a `versionUnsupported` refusal found too old; absent when the protocol is why. */
+export type UnsupportedVersionFacts = {
+  /** The installed release. */
+  version?: string
+  /** The oldest release the chat supports. */
+  floor?: string
+  /** What the person runs on the computer to update the agent. */
+  updateCommand?: string
+}
+
 /** The facts a code carries beside its reason. */
 type AgentSessionRefusalFactsByCode = {
   agent_session_operation_invalid: RewindFacts & {
@@ -174,13 +188,15 @@ type AgentSessionRefusalFactsByCode = {
   agent_session_operation_expired: NoFacts
   agent_session_operation_capacity: NoFacts
   agent_session_journal_unreadable: NoFacts
-  structured_agent_session_unsupported: NoFacts
+  structured_agent_session_unsupported: UnsupportedVersionFacts
   agent_session_owner_restart_failed: NoFacts
 }
 
 /** A durably failed create says whether anything still runs for it, whichever code it failed
  *  with: `exited` proves nothing does, so a new operation cannot collide with this one. */
-type AgentSessionRefusalCommonFacts = { ownerVerdict?: AgentSessionOwnerVerdict }
+type AgentSessionRefusalCommonFacts = AgentSessionHostText & {
+  ownerVerdict?: AgentSessionOwnerVerdict
+}
 
 export type AgentSessionRefusalFacts<C extends AgentSessionWireRefusalCode> =
   AgentSessionRefusalFactsByCode[C] & AgentSessionRefusalCommonFacts
@@ -250,6 +266,21 @@ function readFact(
   }
 }
 
+// These reach a sentence a person reads, so only what a release and an update command look like.
+const RELEASE = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/
+const UPDATE_COMMAND = /^[A-Za-z][\w-]*(?: [\w.-]+){0,3}$/
+
+function readUnsupportedVersionFacts(value: Record<string, unknown>): UnsupportedVersionFacts {
+  const { version, floor, updateCommand } = value
+  return {
+    ...(typeof version === 'string' && RELEASE.test(version) ? { version } : {}),
+    ...(typeof floor === 'string' && RELEASE.test(floor) ? { floor } : {}),
+    ...(typeof updateCommand === 'string' && UPDATE_COMMAND.test(updateCommand)
+      ? { updateCommand }
+      : {})
+  }
+}
+
 export function isAgentSessionRefusalReason<C extends AgentSessionWireRefusalCode>(
   code: C,
   value: unknown
@@ -280,8 +311,12 @@ export function readAgentSessionRefusalDetails<C extends AgentSessionWireRefusal
       ? readAgentSessionArgumentProblem(value.argumentProblem)
       : undefined
   const read = {
+    ...readAgentSessionHostText(value),
     ...(isAgentSessionRefusalReason(code, value.reason) ? { reason: value.reason } : {}),
     ...facts,
+    ...(code === 'structured_agent_session_unsupported' && value.reason === 'versionUnsupported'
+      ? readUnsupportedVersionFacts(value)
+      : {}),
     ...(code === 'agent_session_operation_invalid' &&
     value.reason === 'notSignedIn' &&
     (value.account === 'managed' || value.account === 'system')

@@ -13736,6 +13736,7 @@
             "resumeInChatConflict": "Un autre chat tient déjà cette conversation.",
             "resumeInChatTranscriptMissing": "L'historique de cette conversation n'a pas pu être chargé, elle ne peut donc pas être reprise dans le chat.",
             "resumeInChatFailed": "Impossible de reprendre cette session dans un nouveau chat.",
+            "resumeInChatHeld": "Un terminal exécute toujours cette conversation. Ouvrez plutôt ce terminal.",
             "resumeInNewCliUnavailable": "Impossible d'ouvrir cette session dans la CLI.",
             "resumeInNewCliHostTooOld": "Mettez à jour Orca sur l'hôte qui exécute ce chat pour le reprendre dans une nouvelle CLI."
           },
@@ -13876,7 +13877,13 @@
             "resumeInNewNativeChat": "Reprendre dans un nouveau chat natif",
             "resumeInNewCli": "Reprendre dans une nouvelle CLI",
             "resumeInNewCliTooltipFork": "Forke cette conversation dans une nouvelle session CLI.",
-            "resumeInNewCliTooltipChat": "Le chat natif reste tel quel."
+            "resumeInNewCliTooltipChat": "Le chat natif reste tel quel.",
+            "openTerminal": "Ouvrir le terminal"
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Reprendre dans un nouveau chat ?",
+            "description": "Orca ne peut pas savoir si un terminal exécute encore cette conversation. Si c'est le cas, les deux écriront dans le même historique et le scinderont en deux.",
+            "confirm": "Reprendre quand même"
           },
           "AiVaultSessionDeleteDialog": {
             "title": "Supprimer cette session ?",
@@ -17916,6 +17923,8 @@
         "providerRetryNumberOf": "Nouvelle tentative {{attempt}} sur {{maxRetries}}.",
         "providerRetryLastError": "Dernière erreur : {{detail}}.",
         "previousExitUnverifiable": "Impossible d'arrêter l'exécution précédente de {{agent}}.",
+        "agentVersionBelowFloor": "{{agent}} {{found}} est antérieur à la version {{floor}}, la plus ancienne que prend en charge le chat d’Orca. Exécutez `{{updateCommand}}` sur cet ordinateur, puis réessayez.",
+        "agentProtocolUnsupported": "Cette version de {{agent}} n’est pas encore prise en charge par le chat d’Orca. Ouvrez {{agent}} dans un terminal.",
         "sessionNotRestored": "{{agent}} n'a pas pu rouvrir sa session précédente, cette discussion continue donc dans une nouvelle. {{agent}} ne se souvient pas des messages précédents.",
         "agentCommandNotSignedIn": "Connectez-vous à {{agent}} avec `{{loginCommand}}` sur l’ordinateur qui exécute ce chat.",
         "interactiveAgentNotSignedIn": "Connectez-vous à {{agent}} en exécutant `{{loginCommand}}` puis en utilisant `{{slashCommand}}` sur l’ordinateur qui exécute ce chat.",

@@ -12,6 +12,7 @@ import type {
   SessionAccumulator
 } from './session-scanner-types'
 import type { TranscriptMessageSink } from './session-transcript-consumers'
+import { isDroidConversationMessage } from '../droid/droid-message-visibility'
 import {
   accumulatorFoldResumeState,
   addPreviewMessage,
@@ -89,13 +90,8 @@ function consumeDroidRecordLine(accumulator: SessionAccumulator, line: string): 
   if (record.type === 'message') {
     consumeDroidMessage(accumulator, record)
   } else if (record.type === 'completion') {
-    accumulator.messageCount++
+    // A completion summarises a turn already recorded as messages; it is not a turn of its own.
     accumulator.totalTokens += tokenTotal(record.usage)
-    addPreviewMessage(accumulator, {
-      role: 'assistant',
-      text: extractString(record.finalText),
-      timestamp: record.timestamp
-    })
   }
 }
 
@@ -134,6 +130,9 @@ function consumeDroidMessage(
 ): void {
   const role = extractString(record.role) ?? extractString(asRecord(record.message)?.role)
   if (role !== 'user' && role !== 'assistant') {
+    return
+  }
+  if (!isDroidConversationMessage(asRecord(record.message))) {
     return
   }
   accumulator.messageCount++

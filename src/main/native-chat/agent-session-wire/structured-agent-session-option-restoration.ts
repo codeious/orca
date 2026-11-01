@@ -1,4 +1,8 @@
 import type { AgentSessionOptionsResult } from '../../../shared/agent-session-wire'
+import {
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_MODEL_OPTION_ID
+} from '../../../shared/droid-spec-pair-options'
 import type { StructuredAgentSessionAdapter } from './structured-agent-session-adapter'
 import { encodeStructuredAgentSessionOptionValue } from '../../../shared/structured-agent-session-option-codec'
 
@@ -20,8 +24,8 @@ export async function readNativeSessionOptions(input: {
   })
 }
 
-/** The record's options once the provider has reported: its model, effort, Fast and service tier
- *  replace the saved ones, other saved options stay, and any the child could not take are dropped. */
+/** The record's options once the provider has reported: its model, effort, Fast, service tier and
+ *  Spec replace the saved ones, other saved options stay, and any the child could not take are dropped. */
 export function nativeSessionOptionsFromReport(input: {
   reported: AgentSessionOptionsResult['current']
   restoreSkipped: readonly string[]
@@ -35,6 +39,9 @@ export function nativeSessionOptionsFromReport(input: {
   delete restored.effort
   delete restored.fastMode
   delete restored.serviceTier
+  delete restored.planMode
+  delete restored[DROID_SPEC_MODEL_OPTION_ID]
+  delete restored[DROID_SPEC_EFFORT_OPTION_ID]
   for (const key of input.restoreSkipped) {
     delete restored[key]
   }
@@ -43,10 +50,17 @@ export function nativeSessionOptionsFromReport(input: {
     reported.fastMode === undefined || reported.serviceTier !== undefined
       ? undefined
       : encodeStructuredAgentSessionOptionValue('fastMode', reported.fastMode)
+  const planMode =
+    reported.planMode === undefined
+      ? undefined
+      : encodeStructuredAgentSessionOptionValue('planMode', reported.planMode)
   const options: Record<string, string> = {
     ...restored,
+    ...(planMode !== undefined && planMode !== null ? { planMode } : {}),
     ...(reported.model ? { model: reported.model } : {}),
     ...(reported.effort ? { effort: reported.effort } : {}),
+    ...(reported.specModel ? { [DROID_SPEC_MODEL_OPTION_ID]: reported.specModel } : {}),
+    ...(reported.specEffort ? { [DROID_SPEC_EFFORT_OPTION_ID]: reported.specEffort } : {}),
     ...(fastMode !== undefined && fastMode !== null ? { fastMode } : {}),
     ...(reported.serviceTier ? { serviceTier: reported.serviceTier } : {})
   }

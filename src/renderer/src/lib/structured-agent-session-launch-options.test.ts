@@ -363,3 +363,207 @@ describe('picks made while a chat launches', () => {
     expect(lifecycle()).toBeNull()
   })
 })
+
+describe('autonomy picks made while a chat launches', () => {
+  let setOptionReplies: Deferred<unknown>[]
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    localStorage.clear()
+    resetStructuredAgentLaunchPersistenceForTests()
+    resetStructuredAgentLaunchRegistryForTests()
+    setOptionReplies = []
+    mocks.createIntent.mockReturnValue(launchIntent({ model: 'main-seeded' }))
+    vi.mocked(refreshLocalStructuredSessionTabs).mockResolvedValue([PUBLISHED])
+    mocks.call.mockImplementation((_target, method) => {
+      if (method === 'agentSession.setOption') {
+        const reply = deferred<unknown>()
+        setOptionReplies.push(reply)
+        return reply.promise
+      }
+      return new Promise(() => {})
+    })
+  })
+
+  it('are applied after the main model and effort and the Spec pair, against the receipt fence', async () => {
+    mocks.launch.mockResolvedValue({ sessionId: SESSION_ID, fence: 3 })
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-autonomy-1' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'low')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specModel', 'cheap-model')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'effort', 'high')
+    for (let applied = 0; applied < 3; applied += 1) {
+      await settle()
+      setOptionReplies[applied]?.resolve(ACCEPTED)
+    }
+    await settle()
+
+    expect(mutations()).toEqual([
+      { method: 'agentSession.setOption', fence: 3, key: 'effort', value: 'high' },
+      { method: 'agentSession.setOption', fence: 3, key: 'specModel', value: 'cheap-model' },
+      { method: 'agentSession.setOption', fence: 3, key: 'autonomyLevel', value: 'low' }
+    ])
+  })
+
+  it('survive a main model pick, which drops only the picks made under the model it replaces', () => {
+    mocks.launch.mockReturnValue(new Promise(() => {}))
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-autonomy-2' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'effort', 'high')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'low')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'model', 'main-picked')
+
+    expect(getStructuredAgentSessionLaunchSelection(SESSION_ID)?.held).toEqual({
+      model: 'main-picked',
+      autonomyLevel: 'low'
+    })
+  })
+
+  it('replace the level held before them, so the last pick is the one applied', async () => {
+    mocks.launch.mockReturnValue(new Promise(() => {}))
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-autonomy-3' })
+    const first = holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'low')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'medium')
+
+    expect(getStructuredAgentSessionLaunchSelection(SESSION_ID)?.held).toEqual({
+      autonomyLevel: 'medium'
+    })
+    await expect(first).resolves.toEqual({ kind: 'superseded' })
+  })
+
+  it('are folded into what the launch reports it runs once the host accepts them', async () => {
+    mocks.launch.mockResolvedValue({ sessionId: SESSION_ID, fence: 1 })
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-autonomy-4' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'autonomyLevel', 'low')
+    await settle()
+    const seen: unknown[] = []
+    subscribeStructuredAgentLaunchStatus(() =>
+      seen.push(getStructuredAgentSessionLaunchSelection(SESSION_ID))
+    )
+    setOptionReplies[0]!.resolve({
+      ok: true,
+      value: {
+        key: 'autonomyLevel',
+        value: 'low',
+        options: { model: 'main-seeded', autonomyLevel: 'low' }
+      }
+    })
+    await settle()
+
+    expect(seen[0]).toEqual({
+      seed: { model: 'main-seeded', autonomyLevel: 'low' },
+      held: {}
+    })
+  })
+})
+
+describe('Spec model and effort picks made while a chat launches', () => {
+  let setOptionReplies: Deferred<unknown>[]
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    localStorage.clear()
+    resetStructuredAgentLaunchPersistenceForTests()
+    resetStructuredAgentLaunchRegistryForTests()
+    setOptionReplies = []
+    mocks.createIntent.mockReturnValue(launchIntent({ model: 'main-seeded' }))
+    vi.mocked(refreshLocalStructuredSessionTabs).mockResolvedValue([PUBLISHED])
+    mocks.call.mockImplementation((_target, method) => {
+      if (method === 'agentSession.setOption') {
+        const reply = deferred<unknown>()
+        setOptionReplies.push(reply)
+        return reply.promise
+      }
+      return new Promise(() => {})
+    })
+  })
+
+  it('are applied after the main model and effort, in that order, against the receipt fence', async () => {
+    mocks.launch.mockResolvedValue({ sessionId: SESSION_ID, fence: 3 })
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-spec-1' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specEffort', 'off')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specModel', 'cheap-model')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'effort', 'high')
+    for (let applied = 0; applied < 3; applied += 1) {
+      await settle()
+      setOptionReplies[applied]?.resolve(ACCEPTED)
+    }
+    await settle()
+
+    expect(mutations()).toEqual([
+      { method: 'agentSession.setOption', fence: 3, key: 'effort', value: 'high' },
+      { method: 'agentSession.setOption', fence: 3, key: 'specModel', value: 'cheap-model' },
+      { method: 'agentSession.setOption', fence: 3, key: 'specEffort', value: 'off' }
+    ])
+  })
+
+  it('survive a main model pick, which drops only the picks made under the model it replaces', () => {
+    mocks.launch.mockReturnValue(new Promise(() => {}))
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-spec-2' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'effort', 'high')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specModel', 'cheap-model')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'model', 'main-picked')
+
+    expect(getStructuredAgentSessionLaunchSelection(SESSION_ID)?.held).toEqual({
+      model: 'main-picked',
+      specModel: 'cheap-model'
+    })
+  })
+
+  it('are held with the Spec switch, which a main model pick leaves alone too', () => {
+    mocks.launch.mockReturnValue(new Promise(() => {}))
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-spec-switch' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'planMode', 'true')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'effort', 'high')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'model', 'main-picked')
+
+    expect(getStructuredAgentSessionLaunchSelection(SESSION_ID)?.held).toEqual({
+      model: 'main-picked',
+      planMode: 'true'
+    })
+  })
+
+  it('drop a held Spec effort when the held Spec model is cleared, so no effort outlives its model', async () => {
+    mocks.launch.mockReturnValue(new Promise(() => {}))
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-spec-clear' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specModel', 'cheap-model')
+    const effort = holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specEffort', 'low')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specModel', 'same-as-main')
+
+    expect(getStructuredAgentSessionLaunchSelection(SESSION_ID)?.held).toEqual({
+      specModel: 'same-as-main'
+    })
+    await expect(effort).resolves.toEqual({ kind: 'superseded' })
+  })
+
+  it('keep a held Spec model when only the held Spec effort is cleared', () => {
+    mocks.launch.mockReturnValue(new Promise(() => {}))
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-spec-clear-effort' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specModel', 'cheap-model')
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specEffort', 'same-as-main')
+
+    expect(getStructuredAgentSessionLaunchSelection(SESSION_ID)?.held).toEqual({
+      specModel: 'cheap-model',
+      specEffort: 'same-as-main'
+    })
+  })
+
+  it('leave a cleared pair out of what the launch reports it runs once the host accepts the clear', async () => {
+    mocks.launch.mockResolvedValue({ sessionId: SESSION_ID, fence: 1 })
+    mocks.createIntent.mockReturnValue(
+      launchIntent({ model: 'main-seeded', specModel: 'cheap-model', specEffort: 'off' })
+    )
+    startStructuredAgentLaunch(WORKTREE_ID, 'codex', { requestId: 'request-spec-3' })
+    holdStructuredAgentSessionLaunchOption(SESSION_ID, 'specModel', 'same-as-main')
+    await settle()
+    const seen: unknown[] = []
+    subscribeStructuredAgentLaunchStatus(() =>
+      seen.push(getStructuredAgentSessionLaunchSelection(SESSION_ID))
+    )
+    setOptionReplies[0]!.resolve({
+      ok: true,
+      value: { key: 'specModel', value: 'same-as-main', options: { model: 'main-seeded' } }
+    })
+    await settle()
+
+    expect(seen[0]).toEqual({ seed: { model: 'main-seeded' }, held: {} })
+  })
+})

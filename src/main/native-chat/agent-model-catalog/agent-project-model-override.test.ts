@@ -266,4 +266,59 @@ describe('workspaceMayOverrideDefaultModel', () => {
       }
     }
   )
+
+  const account = () => join(root, 'account', '.factory')
+
+  it.each([
+    ['.factory/settings.json', '{"model":"gpt-6-sol"}'],
+    ['.factory/settings.json', '{"reasoningEffort":"low"}'],
+    ['.factory/settings.local.json', '{"model":"gpt-6-sol"}'],
+    ['.factory/settings.json', '{"sessionDefaultSettings":{"model":"gpt-6-sol"}}'],
+    ['.factory/settings.json', '{"sessionDefaultSettings":{"reasoningEffort":"high"}}'],
+    ['.factory/settings.json', '{"model":']
+  ])('counts Droid project config in %s that may pick a model or effort', async (file, text) => {
+    const repo = join(root, 'droid-model')
+    write(join(repo, '.git', 'HEAD'), 'ref: refs/heads/main\n')
+    write(join(repo, file), text)
+    expect(await mayOverride('droid', repo, account())).toBe(true)
+  })
+
+  it('ignores Droid settings that pick no model, and the account home’s own .factory', async () => {
+    const repo = join(root, 'droid-plain')
+    write(join(repo, '.git', 'HEAD'), 'ref: refs/heads/main\n')
+    expect(await mayOverride('droid', repo, account())).toBe(false)
+    write(join(repo, '.factory', 'settings.json'), '{"interactionMode":"auto"}')
+    write(
+      join(repo, '.factory', 'settings.local.json'),
+      '{"sessionDefaultSettings":{"specModeModel":"gpt-6-sol","autonomyLevel":"off"}}'
+    )
+    expect(await mayOverride('droid', repo, account())).toBe(false)
+    write(join(repo, '.factory', 'settings.json'), '{"model":"gpt-6-sol"}')
+    expect(await mayOverride('droid', repo, join(repo, '.factory'))).toBe(false)
+  })
+
+  it('reads .factory from the git top-level down through a nested linked worktree, and no further', async () => {
+    const repo = join(root, 'repo')
+    const worktree = join(repo, 'wt')
+    write(join(root, '.factory', 'settings.json'), '{"model":"above"}')
+    write(join(repo, '.git', 'HEAD'), 'ref: refs/heads/main\n')
+    write(join(worktree, '.git'), 'gitdir: /elsewhere')
+    expect(await mayOverride('droid', join(worktree, 'src'), account())).toBe(false)
+    write(join(repo, '.factory', 'settings.json'), '{"model":"from-root"}')
+    expect(await mayOverride('droid', join(worktree, 'src'), account())).toBe(true)
+  })
+
+  it('stops an external linked worktree at itself, and a folder that is not a git repo at its own folder', async () => {
+    const worktree = join(root, 'external')
+    write(join(root, '.factory', 'settings.json'), '{"model":"parent"}')
+    write(join(worktree, '.git'), 'gitdir: /elsewhere')
+    expect(await mayOverride('droid', join(worktree, 'src'), account())).toBe(false)
+    write(join(worktree, '.factory', 'settings.local.json'), '{"reasoningEffort":"low"}')
+    expect(await mayOverride('droid', join(worktree, 'src'), account())).toBe(true)
+
+    const loose = join(root, 'loose')
+    expect(await mayOverride('droid', loose, account())).toBe(false)
+    write(join(loose, '.factory', 'settings.json'), '{"model":"here"}')
+    expect(await mayOverride('droid', loose, account())).toBe(true)
+  })
 })

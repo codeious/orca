@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import type {
+  NativeChatComposerLine,
   NativeChatComposerNotice,
   NativeChatComposerNoticeContent
 } from './native-chat-composer-notice'
@@ -10,7 +11,7 @@ import type {
 import type { StructuredConversationCommandCauses } from './structured-conversation-command-send'
 
 type ComposerErrorLine = NativeChatComposerNoticeContent &
-  Pick<NativeChatComposerErrorDetail, 'refusedWhile'>
+  Pick<NativeChatComposerErrorDetail, 'refusedWhile' | 'kind' | 'action'>
 
 /** The composer's own paste and attachment notice, after the chat's notices. */
 export function useNativeChatComposerNotice(chatNotices?: readonly NativeChatComposerNotice[]): {
@@ -42,10 +43,10 @@ export function useNativeChatComposerNotice(chatNotices?: readonly NativeChatCom
   return { notices, setNotice }
 }
 
-/** A chat's last send or command error: shown in the card until dismissed or the next send clears
+/** A chat's last send or command line: shown in the card until dismissed or the next send clears
  *  it. A command's refusal names what the chat shows it waiting on, so it goes once that is gone. */
 export function useNativeChatComposerError(causes: StructuredConversationCommandCauses): {
-  composerError: (NativeChatComposerNoticeContent & { onDismiss: () => void }) | null
+  composerError: NativeChatComposerLine | null
   reportComposerError: NativeChatStructuredComposerTransport['onError']
 } {
   const [line, setLine] = useState<ComposerErrorLine | null>(null)
@@ -57,7 +58,9 @@ export function useNativeChatComposerError(causes: StructuredConversationCommand
           : {
               text,
               ...(detail?.errorText ? { errorText: detail.errorText } : {}),
-              ...(detail?.refusedWhile ? { refusedWhile: detail.refusedWhile } : {})
+              ...(detail?.refusedWhile ? { refusedWhile: detail.refusedWhile } : {}),
+              ...(detail?.kind ? { kind: detail.kind } : {}),
+              ...(detail?.action ? { action: detail.action } : {})
             }
       ),
     []
@@ -73,6 +76,18 @@ export function useNativeChatComposerError(causes: StructuredConversationCommand
         ? {
             text: shown.text,
             ...(shown.errorText ? { errorText: shown.errorText } : {}),
+            ...(shown.kind ? { kind: shown.kind } : {}),
+            ...(shown.action
+              ? {
+                  action: {
+                    label: shown.action.label,
+                    onClick: () => {
+                      setLine(null)
+                      shown.action?.onClick()
+                    }
+                  }
+                }
+              : {}),
             onDismiss: () => setLine(null)
           }
         : null,

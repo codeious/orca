@@ -41,6 +41,7 @@ export function VaultSessionRow({
   resumeHidden,
   onToggleDetails,
   onJumpToOriginalPane,
+  jumpToOriginalPaneLabel,
   showJumpToWorktree,
   onJumpToWorktree,
   onResume,
@@ -72,6 +73,8 @@ export function VaultSessionRow({
   resumeHidden?: boolean
   onToggleDetails: () => void
   onJumpToOriginalPane?: () => void
+  /** Replaces "Jump to Original Pane" when the jump opens a specific terminal. */
+  jumpToOriginalPaneLabel?: string
   showJumpToWorktree: boolean
   onJumpToWorktree?: () => void
   onResume: () => void
@@ -196,6 +199,7 @@ export function VaultSessionRow({
               worktreeInfo={worktreeInfo}
               onToggleDetails={onToggleDetails}
               onJumpToOriginalPane={onJumpToOriginalPane}
+              jumpToOriginalPaneLabel={jumpToOriginalPaneLabel}
               showJumpToWorktree={showJumpToWorktree}
               onJumpToWorktree={onJumpToWorktree}
               onResume={onResume}
@@ -262,6 +266,7 @@ export function VaultSessionRow({
           resumeHidden={resumeHidden}
           resumeLabel={resumeLabel}
           onJumpToOriginalPane={onJumpToOriginalPane}
+          jumpToOriginalPaneLabel={jumpToOriginalPaneLabel}
           showJumpToWorktree={showJumpToWorktree}
           onJumpToWorktree={onJumpToWorktree}
           onResume={onResume}

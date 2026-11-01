@@ -62,6 +62,8 @@ export type AgentSessionStructuredFeasibilityRequest = AgentLaunchRouteArgs & {
   /** Named explicitly rather than read off the store, so a React caller's memo depends on the
    *  settings this answer actually turns on. */
   settings: AgentLaunchRoutingInput['settings']
+  /** Counts the agent as listed by its host until that host's list is learned; a learned list wins. */
+  assumeHostListsAgent?: true
 }
 
 export type AgentSessionLaunchTarget = {
@@ -158,10 +160,17 @@ export function structuredAgentSessionLaunchFeasible(
   store: AgentLaunchRouteStore,
   request: AgentSessionStructuredFeasibilityRequest
 ): boolean {
-  const { settings, ...args } = request
+  const { settings, assumeHostListsAgent, ...args } = request
+  const input = buildAgentLaunchRouteInput(store, args)
   // Why: the narrow settings ride on the built input, not the store, so a caller names the exact
   // settings this answer turns on without having to hold a whole store-shaped object.
-  return structuredAgentLaunchSupported({ ...buildAgentLaunchRouteInput(store, args), settings })
+  return structuredAgentLaunchSupported({
+    ...input,
+    settings,
+    ...(assumeHostListsAgent && !input.hostStructuredAgents
+      ? { hostStructuredAgents: [args.agent] }
+      : {})
+  })
 }
 
 /** The route a launch would take, for a caller that only branches on it and launches nothing. */

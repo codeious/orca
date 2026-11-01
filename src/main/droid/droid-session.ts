@@ -1,0 +1,322 @@
+import { realpath as fsRealpath } from 'node:fs/promises'
+import { JsonlRpcSessionLifecycle } from '../jsonl-rpc/session-lifecycle'
+import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
+import { providerTimelineSink } from '../native-chat/agent-session-timeline/provider-timeline-plan'
+import {
+  AgentSessionPreSpawnError,
+  type AgentSessionDispatchOutcome,
+  type StructuredAgentSessionAcquireInput,
+  type StructuredAgentSessionLifecycleEvent
+} from '../native-chat/agent-session-wire/structured-agent-session-adapter'
+import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-wire/structured-agent-session-logger'
+import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
+import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
+import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
+import { DroidContextUsage } from './droid-context-usage'
+import {
+  readDroidCompactionSummary,
+  type DroidCompactionSummaryReader
+} from './droid-compaction-summary'
+import {
+  createDroidSessionMcpSignIn,
+  type DroidMcpSignIn,
+  type DroidMcpSignInOpener
+} from './droid-mcp-sign-in'
+import {
+  droidOptionParams,
+  droidSavedOptionPicks,
+  droidSpecPairParams
+} from './droid-model-options'
+import { droidRequestFailure } from './droid-missing-method'
+import { DroidPrompts } from './droid-prompts'
+import { DroidSessionModel } from './droid-session-model'
+import { DroidSessionOptions } from './droid-session-options'
+import { DroidReportedSettings, type DroidStartSettings } from './droid-session-settings'
+import { DroidChatTitle, type DroidTitleUpdate } from './droid-session-title'
+import { readStartedSession } from './droid-started-session'
+import { DroidSpecHandoffs } from './droid-spec-handoff'
+import { DroidTurns } from './droid-turns'
+import { isSupportedDroidProtocol } from './droid-version-support'
+
+export type DroidConnection = Pick<
+  DroidAgentConnection,
+  | 'request'
+  | 'close'
+  | 'pauseReading'
+  | 'resumeReading'
+  | 'pid'
+  | 'closed'
+  | 'rootVerdict'
+  | 'processless'
+  | 'lastCloseResult'
+  | 'onExit'
+  | 'protocolVersion'
+>
+
+export type DroidSessionDeps = {
+  /** Reads only this runtime's files, beside the child it spawns (also on orcad SSH hosts). */
+  readCompactionSummary?: DroidCompactionSummaryReader
+  openConnection?: (
+    launch: ProviderProcessLaunch,
+    handlers: DroidAgentConnectionOptions
+  ) => DroidConnection
+  onLifecycle: (event: StructuredAgentSessionLifecycleEvent) => void
+  onSettled: (input: {
+    sessionId: string
+    clientMessageId: string
+    fence: number
+    outcome: AgentSessionDispatchOutcome
+  }) => void
+  onIdle: (input: { sessionId: string }) => void
+  /** The name Droid's own title report gives the chat; absent in tests that do not read it. */
+  onTitle?: (update: DroidTitleUpdate) => void
+  logger: StructuredAgentSessionLogger
+  /** Resolves a folder to its real path; replaced in tests. */
+  realpath?: (path: string) => Promise<string>
+  /** Opens an MCP sign-in link on the machine Orca runs on. Absent on a host with no way to. */
+  openMcpSignIn?: DroidMcpSignInOpener
+  forwardMcpSignIn?: (
+    sessionId: string,
+    url: string,
+    serverName: string
+  ) => boolean | Promise<boolean>
+}
+
+/** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. A picked
+ *  level was chosen in the chat; otherwise it is the one Agent Permissions asks for. */
+type DroidSessionBegin = DroidStartSettings & {
+  cwd: string
+  resumeId: string | null
+  autonomyPicked: boolean
+}
+
+const DROID_MACHINE_ID = 'orca'
+const START_TIMEOUT_MS = 120_000
+
+/** One child owns its transport, turns and timeline, including shutdown retries. */
+export class DroidSession {
+  readonly connection: DroidConnection
+  readonly lane: JsonlRpcTimelineLane
+  readonly turns: DroidTurns
+  readonly prompts: DroidPrompts
+  private readonly echoed = new Map<string, string>()
+  private readonly handoffs = new DroidSpecHandoffs()
+  private readonly chatTitle = new DroidChatTitle()
+  private readonly lifecycle: JsonlRpcSessionLifecycle
+  /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
+  readonly settings = new DroidReportedSettings()
+  /** What a no-pick new session resolved, for the host catalog. Absent when the start listed none. */
+  readonly model = new DroidSessionModel()
+  readonly options: DroidSessionOptions
+  readonly context: DroidContextUsage
+  readonly mcpSignIn: DroidMcpSignIn
+  readonly readCompactionSummary: (sessionId: string) => ReturnType<DroidCompactionSummaryReader>
+  /** Droid's own id for the session this child holds, once the start has answered. */
+  droidSessionId: string | undefined
+  /** Where the chat was opened. A /cd stays inside it, so a load still finds the session here. */
+  readonly workspace: { folder: string; realpath: (path: string) => Promise<string> }
+
+  /** Every request after the start goes through here, so a method this Droid lacks reads alike. */
+  readonly request: DroidConnection['request'] = (method, params, options) =>
+    this.connection.request(method, params, options).catch((error: unknown) => {
+      throw droidRequestFailure(method, error)
+    })
+
+  constructor(
+    readonly input: StructuredAgentSessionAcquireInput,
+    readonly generation: string,
+    launch: ProviderProcessLaunch,
+    private readonly deps: DroidSessionDeps,
+    private readonly begin: DroidSessionBegin
+  ) {
+    const sink = input.events && providerTimelineSink(input.events)
+    if (!sink) {
+      throw new Error('Droid structured chat requires the shared timeline sink')
+    }
+    this.workspace = { folder: begin.cwd, realpath: deps.realpath ?? fsRealpath }
+    this.readCompactionSummary = (id) =>
+      (deps.readCompactionSummary ?? readDroidCompactionSummary)(launch, id)
+    const sessionId = input.identity.sessionId
+    this.lane = new JsonlRpcTimelineLane({
+      sink,
+      sessionId,
+      agent: 'droid',
+      generation,
+      namespace: sessionId,
+      pauseReading: () => this.connection?.pauseReading(),
+      resumeReading: () => this.connection?.resumeReading(),
+      onFailed: (reason) => this.fail(new Error(reason)),
+      onInputAccepted: (clientMessageId) => {
+        const messageId = this.echoed.get(clientMessageId)
+        this.echoed.delete(clientMessageId)
+        this.lifecycle.settle(clientMessageId, {
+          state: 'accepted',
+          providerIdentity: messageId
+            ? { provider: 'droid', messageId }
+            : { provider: 'orca', clientMessageId }
+        })
+      }
+    })
+    this.lifecycle = new JsonlRpcSessionLifecycle({
+      label: 'Droid',
+      scope: 'droid',
+      sessionId,
+      fence: input.fence,
+      generation,
+      lane: this.lane,
+      connection: () => this.connection,
+      logger: deps.logger,
+      onLifecycle: deps.onLifecycle,
+      onSettled: deps.onSettled,
+      endWork: () => {
+        this.prompts.clear()
+        this.turns.end()
+      }
+    })
+    this.prompts = new DroidPrompts(this.lane, {
+      autonomyLevels: () => this.settings.current.availableAutonomyLevels,
+      handoffs: this.handoffs
+    })
+    this.options = new DroidSessionOptions({
+      request: this.request,
+      settings: this.settings,
+      model: this.model,
+      requested: begin.interactionMode,
+      ...(begin.autonomyPicked ? { pickedAutonomy: begin.autonomyLevel } : {}),
+      timeoutMs: START_TIMEOUT_MS
+    })
+    this.context = new DroidContextUsage({
+      request: this.request,
+      apply: (events) => this.lane.apply(events),
+      warn: (message, fields) =>
+        deps.logger.warn(message, { scope: 'droid-context', sessionId, ...fields })
+    })
+    this.mcpSignIn = createDroidSessionMcpSignIn(deps, sessionId, this.lane)
+    this.turns = new DroidTurns({
+      lane: this.lane,
+      generation,
+      request: this.request,
+      settled: (id, outcome) => this.lifecycle.settle(id, outcome),
+      idle: () => {
+        this.context.refreshInBackground()
+        deps.onIdle({ sessionId })
+      },
+      settings: (report) => this.settings.receive(report),
+      specHandoff: (notification) => this.handoffs.created(notification),
+      title: (notification) => {
+        const title = this.chatTitle.accept(notification)
+        if (title !== null) {
+          deps.onTitle?.({ sessionId, title })
+        }
+      },
+      rememberEcho: (clientMessageId, messageId) => {
+        this.echoed.set(clientMessageId, messageId)
+      },
+      warn: (message, fields) =>
+        deps.logger.warn(message, { scope: 'droid-steer', sessionId, ...fields })
+    })
+    this.connection = (
+      deps.openConnection ?? ((spec, handlers) => new DroidAgentConnection(spec, handlers))
+    )(launch, {
+      ...(input.onOutput ? { onOutput: input.onOutput } : {}),
+      onNotification: (method, params) => this.notified(method, params),
+      onRequest: (method, params, context) => this.prompts.handle(method, params, context),
+      onClose: (error) => this.fail(error),
+      onDiagnostic: (message) => deps.logger.warn(message, { scope: 'droid-rpc', sessionId }),
+      onExit: (error) => this.lifecycle.observeExit(error)
+    })
+  }
+
+  /** Droid's own id for the session this child now holds. Nothing else is sent before it answers. */
+  async start(): Promise<string> {
+    const { cwd, resumeId, autonomyLevel, interactionMode } = this.begin
+    const saved = droidSavedOptionPicks(this.input.options)
+    let result: unknown
+    try {
+      result = await (resumeId
+        ? this.connection.request(
+            'droid.load_session',
+            { sessionId: resumeId },
+            { timeoutMs: START_TIMEOUT_MS }
+          )
+        : this.connection.request(
+            'droid.initialize_session',
+            // The mode is Auto or Spec, never a Mission: those spend the person's credits unattended.
+            {
+              machineId: DROID_MACHINE_ID,
+              cwd,
+              interactionMode,
+              autonomyLevel,
+              ...droidOptionParams(saved),
+              ...droidSpecPairParams(saved)
+            },
+            { timeoutMs: START_TIMEOUT_MS }
+          ))
+    } catch (error) {
+      this.refuseUnsupportedProtocol(false)
+      throw error
+    }
+    this.refuseUnsupportedProtocol(true)
+    const resume = resumeId ? { id: resumeId, cwd, realpath: this.deps.realpath } : null
+    const { id, settings } = await readStartedSession(result, resume)
+    this.droidSessionId = id
+    this.settings.adopt(settings)
+    this.model.capture(result, saved, resumeId === null)
+    let reportedLevel = this.settings.current.autonomyLevel
+    if (resumeId) {
+      reportedLevel = await this.options.resume(
+        { autonomyLevel, interactionMode },
+        saved,
+        (error) =>
+          this.deps.logger.warn('Droid did not take the saved model', {
+            scope: 'droid-options',
+            sessionId: this.input.identity.sessionId,
+            error
+          })
+      )
+    }
+    // The row names Agent Permissions, so it is not said of a level the person picked in the chat.
+    if (!this.begin.autonomyPicked) {
+      this.lane.apply(droidAutonomyCapRow(autonomyLevel, reportedLevel))
+    }
+    return id
+  }
+
+  close(requested = true): ReturnType<DroidConnection['close']> {
+    return this.lifecycle.close(requested)
+  }
+
+  fail(error: Error): void {
+    this.lifecycle.fail(error)
+  }
+
+  drainObservedExit(): Promise<void> {
+    return this.lifecycle.drainObservedExit()
+  }
+
+  retire(): Promise<void> {
+    return this.lifecycle.retire()
+  }
+
+  /** A release on another protocol major cannot run a chat; with no stamp seen there is no protocol. */
+  private refuseUnsupportedProtocol(stampRequired: boolean): void {
+    const version = this.connection.protocolVersion
+    if (version === undefined ? stampRequired : !isSupportedDroidProtocol(version)) {
+      throw AgentSessionPreSpawnError.unsupportedRelease()
+    }
+  }
+
+  // The peer swallows a handler's throw, so a notification Droid sent that cannot be read ends the child.
+  private notified(method: string, params: unknown): void {
+    if (method !== 'droid.session_notification') {
+      return
+    }
+    try {
+      this.context.receive(params)
+      this.mcpSignIn.receive(params)
+      this.turns.receive(params)
+    } catch (error) {
+      this.fail(error instanceof Error ? error : new Error(String(error)))
+    }
+  }
+}

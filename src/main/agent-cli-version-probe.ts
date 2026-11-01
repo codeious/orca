@@ -12,12 +12,11 @@ function warnRefused(program: string, why: string, output = ''): void {
   console.warn(`[agent-cli-version] ${program} --version: ${why}${said ? `: ${said}` : ''}`)
 }
 
-/** Runs `<program> --version` on this host and asks `supports` about the version it prints. False
- *  when it cannot tell: a failed spawn, a non-zero exit, a timeout, or output with no version. */
-export async function probeAgentCliVersion(
-  input: Pick<ProcessSpec, 'program' | 'cwd' | 'env'>,
-  supports: (version: string) => boolean
-): Promise<boolean> {
+/** Runs `<program> --version` on this host and returns the version it prints. Null when it cannot
+ *  tell: a failed spawn, a non-zero exit, a timeout, or output with no version. */
+export async function readAgentCliVersion(
+  input: Pick<ProcessSpec, 'program' | 'cwd' | 'env'>
+): Promise<string | null> {
   let result
   try {
     result = await runProcess({
@@ -29,7 +28,7 @@ export async function probeAgentCliVersion(
     })
   } catch (error) {
     warnRefused(input.program, `did not start (${String(error)})`)
-    return false
+    return null
   }
   const output = `${result.stdout}\n${result.stderr}`
   if (result.timedOut || result.outputTruncated || result.code !== 0) {
@@ -39,11 +38,22 @@ export async function probeAgentCliVersion(
         ? 'printed too much'
         : `exited ${result.code ?? result.signal}`
     warnRefused(input.program, why, output)
-    return false
+    return null
   }
   const version = parseCliVersion(result.stdout)
   if (version === null) {
     warnRefused(input.program, 'printed no version', output)
+  }
+  return version
+}
+
+/** Asks `supports` about the version `<program> --version` prints. False when it cannot tell. */
+export async function probeAgentCliVersion(
+  input: Pick<ProcessSpec, 'program' | 'cwd' | 'env'>,
+  supports: (version: string) => boolean
+): Promise<boolean> {
+  const version = await readAgentCliVersion(input)
+  if (version === null) {
     return false
   }
   if (!supports(version)) {

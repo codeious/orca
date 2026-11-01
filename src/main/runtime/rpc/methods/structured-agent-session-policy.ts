@@ -7,7 +7,7 @@ import {
   type RuntimeCapability
 } from '../../../../shared/protocol-version'
 import { AGENT_SESSION_OPTIONAL_MODEL_CLIENT_CAPABILITY } from '../../../../shared/agent-session-optional-model-capability'
-import { isNativeChatEnabled } from '../../../../shared/structured-native-chat-launch-route'
+import { resolveNativeChatLaunchChoice } from '../../../../shared/structured-native-chat-launch-route'
 import type { OrcaRuntimeService } from '../../orca-runtime'
 import type { RpcContext } from '../core'
 
@@ -97,12 +97,14 @@ export function createSupportFollowsHostSetting(
   )
 }
 
-/** An unreadable settings store reads as off, the default. */
+/** Whether the host's launch preference opens `agent` as a chat. An unreadable settings store
+ *  reads as off, the default. */
 export function isStructuredNativeChatEnabled(
-  runtime: Pick<OrcaRuntimeService, 'getClientSettings'>
+  runtime: Pick<OrcaRuntimeService, 'getClientSettings'>,
+  agent?: string
 ): boolean {
   try {
-    return isNativeChatEnabled(runtime.getClientSettings())
+    return resolveNativeChatLaunchChoice(runtime.getClientSettings(), agent).structured
   } catch {
     return false
   }

@@ -6,8 +6,10 @@ import { createNativeChatSessionOptionRecord } from './native-chat-session-optio
 import {
   applyStructuredAgentSessionModelCatalog,
   applyStructuredAgentSessionOptions,
+  canSetStructuredAgentSessionOption,
   createStructuredAgentSessionOptionState,
   settleStructuredAgentSessionBuiltinCatalog,
+  structuredAgentSessionOptionPicks,
   structuredAgentSessionOptionSnapshot
 } from './structured-agent-session-options'
 import { structuredAgentSessionOptionView } from './structured-agent-session-option-view'
@@ -186,6 +188,57 @@ describe('structured agent session options', () => {
     })
     expect(structuredAgentSessionOptionSnapshot(absent).map(({ id }) => id)).toEqual(['model'])
     expect(absent.record.valuesByModel['account-model']?.fastMode).toBeUndefined()
+  })
+
+  describe('Spec toggle (planMode)', () => {
+    const seed = { models: [], modelApply: {} }
+    const droidModels = [{ id: 'opus', label: 'Opus', isDefault: true, efforts: [] }]
+    const report = (planMode?: boolean) =>
+      applyStructuredAgentSessionOptions(
+        createStructuredAgentSessionOptionState('droid', seed),
+        seed,
+        {
+          models: droidModels,
+          current: {
+            model: 'opus',
+            ...(planMode === undefined ? {} : { planMode, confirmed: ['planMode'] })
+          }
+        }
+      )
+
+    it('is labelled Spec and shows only when the host reports the field', () => {
+      expect(structuredAgentSessionOptionSnapshot(report(true))).toContainEqual(
+        expect.objectContaining({
+          id: 'planMode',
+          label: 'Spec',
+          kind: { type: 'boolean', currentValue: true },
+          valueSource: 'reported',
+          settable: true
+        })
+      )
+      expect(structuredAgentSessionOptionSnapshot(report(false))).toContainEqual(
+        expect.objectContaining({ id: 'planMode', kind: { type: 'boolean', currentValue: false } })
+      )
+      expect(structuredAgentSessionOptionSnapshot(report()).map(({ id }) => id)).toEqual(['model'])
+    })
+
+    it('follows the host when Droid leaves Spec on plan approval', () => {
+      const left = applyStructuredAgentSessionOptions(report(true), seed, {
+        models: droidModels,
+        current: { model: 'opus', planMode: false, confirmed: ['planMode'] }
+      })
+      expect(structuredAgentSessionOptionSnapshot(left)).toContainEqual(
+        expect.objectContaining({ id: 'planMode', kind: { type: 'boolean', currentValue: false } })
+      )
+    })
+
+    it('is saved like a model pick, so the next start resumes in Spec', () => {
+      const state = report(false)
+      expect(canSetStructuredAgentSessionOption(state, 'planMode', true)).toBe(true)
+      expect(structuredAgentSessionOptionPicks(state, { planMode: 'true' })).toEqual([
+        { modelId: 'opus', optionId: 'planMode', value: true }
+      ])
+    })
   })
 
   it('offers one speed choice in place of the Fast toggle where the model lists speeds', () => {

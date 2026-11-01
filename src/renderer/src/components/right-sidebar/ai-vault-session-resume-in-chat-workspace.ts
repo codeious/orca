@@ -6,12 +6,16 @@ import {
 import { resolveStructuredAgentSessionOwner } from '@/runtime/structured-agent-session-owner'
 import { useAppStore } from '@/store'
 import type { AiVaultSession } from '../../../../shared/ai-vault-types'
-import { normalizeExecutionHostId } from '../../../../shared/execution-host'
-import { isAgentSessionHandleProvider } from '../../../../shared/agent-session-provider-handle'
+import {
+  LOCAL_EXECUTION_HOST_ID,
+  normalizeExecutionHostId
+} from '../../../../shared/execution-host'
 import { STRUCTURED_AGENT_SESSION_RESUME_HISTORY_RUNTIME_CAPABILITY } from '../../../../shared/protocol-version'
+import { isStructuredAdoptionAgent } from '../../../../shared/structured-adoption-agent'
 import { resolveAiVaultTargetWorkspacePath } from './ai-vault-session-launch-target'
 import {
   resolveAiVaultSessionResumeInChatEligibility,
+  type AiVaultDroidHolder,
   type AiVaultResumeInChatEligibility
 } from './ai-vault-session-resume-in-chat'
 import {
@@ -26,6 +30,8 @@ export function resolveAiVaultSessionResumeInChatForWorkspace(args: {
   activeWorkspaceId: string | null
   targetState: AiVaultSessionResumeTargetState
   settings: AgentSessionStructuredFeasibilityRequest['settings']
+  /** What the owning host said about a Droid terminal holding the row; omitted until it answers. */
+  droidHolder?: AiVaultDroidHolder | null
 }): AiVaultResumeInChatEligibility {
   const targetWorkspaceId = args.resumeState.usesSessionWorktree
     ? args.resumeState.worktreeId
@@ -43,8 +49,9 @@ export function resolveAiVaultSessionResumeInChatForWorkspace(args: {
     session: args.session,
     targetWorkspaceId,
     targetWorkspacePath,
+    droidHolder: args.droidHolder,
     structuredRouteAvailable:
-      isAgentSessionHandleProvider(args.session.agent) &&
+      isStructuredAdoptionAgent(args.session.agent) &&
       targetWorkspaceId !== null &&
       targetOwner !== null &&
       targetOwner === normalizeExecutionHostId(args.session.executionHostId) &&
@@ -54,7 +61,10 @@ export function resolveAiVaultSessionResumeInChatForWorkspace(args: {
           kind: workspaceKindForWorktreeId(targetWorkspaceId),
           worktreeId: targetWorkspaceId
         },
-        settings: args.settings
+        settings: args.settings,
+        // This build registers every adoption agent, and the host list is only asked for once a
+        // setting names chat, which an explicit resume must not depend on.
+        ...(targetOwner === LOCAL_EXECUTION_HOST_ID ? { assumeHostListsAgent: true as const } : {})
       }) &&
       resolveHostCapabilities(state, targetOwner)?.includes(
         STRUCTURED_AGENT_SESSION_RESUME_HISTORY_RUNTIME_CAPABILITY
@@ -68,9 +78,10 @@ export function resolveAiVaultHistoryRowResume(
   args: Parameters<typeof resolveAiVaultHistorySessionResumeState>[0] & {
     targetState: AiVaultSessionResumeTargetState
     settings: AgentSessionStructuredFeasibilityRequest['settings']
+    droidHolder?: AiVaultDroidHolder | null
   }
 ): { resumeState: AiVaultSessionResumeState; resumeInChat: AiVaultResumeInChatEligibility } {
-  const { settings, ...resumeArgs } = args
+  const { settings, droidHolder, ...resumeArgs } = args
   const resumeState = resolveAiVaultHistorySessionResumeState(resumeArgs)
   return {
     resumeState,
@@ -79,7 +90,8 @@ export function resolveAiVaultHistoryRowResume(
       resumeState,
       activeWorkspaceId: args.activeWorktreeId,
       targetState: args.targetState,
-      settings
+      settings,
+      droidHolder
     })
   }
 }

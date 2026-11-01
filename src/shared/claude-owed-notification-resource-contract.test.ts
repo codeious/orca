@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createHookListenerState, clearPaneCacheState } from './agent-hook-listener/listener-state'
-import { ClaudeOwedNotificationExpiryTimers } from './claude-owed-notification-expiry-timers'
+import { AgentLeaseExpiryTimers } from './agent-lease-expiry-timers'
 import {
   CLAUDE_OWED_TASK_NOTIFICATION_LEASE_MS,
   oweClaudeAgentTaskNotification,
@@ -52,7 +52,7 @@ describe('Claude notification resource bounds', () => {
 
   it('shares one timer across 512 panes and publishes nothing for closed owners', () => {
     const state = createHookListenerState()
-    const timers = new ClaudeOwedNotificationExpiryTimers(state)
+    const timers = new AgentLeaseExpiryTimers(state)
     const publish = vi.fn()
     for (let index = 0; index < 512; index += 1) {
       const paneKey = `pane-${index}`
@@ -81,7 +81,7 @@ describe('Claude notification resource bounds', () => {
     oweClaudeAgentTaskNotification(tasks, 'agent', Date.now())
     state.claudeLaunchedBackgroundTasksByPaneKey.set('pane', tasks)
     state.claudeLeadStateByPaneKey.set('pane', { state: 'done', stateStartedAt: Date.now() })
-    const timers = new ClaudeOwedNotificationExpiryTimers(state)
+    const timers = new AgentLeaseExpiryTimers(state)
     const publish = vi.fn()
     timers.arm('pane', publish)
     expect(vi.getTimerCount()).toBe(1)

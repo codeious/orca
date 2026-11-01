@@ -19,7 +19,13 @@ export type AgentSessionQuestionAnswer = {
 
 /** What a client chose on a prompt: a decision id for an approval, per-question answers for a question. */
 export type AgentSessionPromptResponse =
-  | { kind: 'option'; optionId: string }
+  | {
+      kind: 'option'
+      optionId: string
+      /** A note and an edited plan, for an approval whose card says it takes them. */
+      comment?: string
+      editedSpecContent?: string
+    }
   | { kind: 'answers'; answers: AgentSessionQuestionAnswer[] }
 
 /** The questions an item asks: its grouped list, or the item itself as one question. */

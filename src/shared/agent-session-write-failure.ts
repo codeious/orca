@@ -3,6 +3,7 @@
 // chosen from it when it is shown (`agent-session-refusal-notice.ts`).
 
 import type { AgentSessionAccountKind } from './agent-session-availability'
+import { readAgentSessionHostText, type AgentSessionHostText } from './agent-session-host-text'
 import {
   readAgentSessionRefusalDetails,
   type AgentSessionRefusalReason
@@ -90,7 +91,8 @@ const DURABLE_FACT_KEYS: Partial<Record<AgentSessionWireRefusalCode, readonly st
 
 export type AgentSessionWriteRefusalDetails<C extends AgentSessionWireRefusalCode> = {
   reason?: AgentSessionRefusalReason<C>
-} & (C extends keyof DurableRefusalFacts ? DurableRefusalFacts[C] : Record<never, never>)
+} & AgentSessionHostText &
+  (C extends keyof DurableRefusalFacts ? DurableRefusalFacts[C] : Record<never, never>)
 
 /** A refused write: its code, and what the host said about it that outlives the reply. */
 export type AgentSessionWriteRefusal = {
@@ -118,11 +120,14 @@ function agentSessionWriteRefusal(
   details: unknown
 ): AgentSessionWriteRefusal {
   const durable: readonly string[] = ['reason', ...(DURABLE_FACT_KEYS[code] ?? [])]
-  const kept = Object.fromEntries(
-    Object.entries(readAgentSessionRefusalDetails(code, details) ?? {}).filter(([key]) =>
-      durable.includes(key)
+  const kept = {
+    ...readAgentSessionHostText(details),
+    ...Object.fromEntries(
+      Object.entries(readAgentSessionRefusalDetails(code, details) ?? {}).filter(([key]) =>
+        durable.includes(key)
+      )
     )
-  )
+  }
   const refusal = {
     kind: 'refused',
     code,

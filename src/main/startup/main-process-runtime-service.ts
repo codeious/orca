@@ -25,6 +25,7 @@ import { getPreferredPairingOffer } from '../../shared/runtime-environments'
 import { fingerprintOrchestrationPeer } from '../runtime/orchestration/environment-transport'
 import { callRuntimeEnvironment } from '../ipc/runtime-environment-transport-routing'
 import { mainProcessState as state } from './main-process-state'
+import { openMcpSignInOnThisMachine } from './mcp-sign-in-opener'
 import {
   codexStructuredLaunchHomeResolvers,
   prepareCodexRuntimeHomeForLaunch
@@ -129,6 +130,7 @@ export function initializeMainProcessRuntime(): OrcaRuntimeService {
     retireAgentHookCompatibilityAuthority: (paneKey) =>
       agentHookServer.retirePaneAuthority(paneKey),
     checkHookAgentPresence: (paneKey) => agentHookServer.checkAgentPresence(paneKey),
+    droidSessionHolder: (sessionId) => agentHookServer.droidSessionHolder(sessionId),
     reconcileAgentStatusForEndedProcess: (paneKeys) =>
       agentHookServer.reconcileEndedProcessForPaneKeys(paneKeys),
     dropAgentStatusForRemovedWorktree: (worktreeId, host) =>
@@ -148,6 +150,8 @@ export function initializeMainProcessRuntime(): OrcaRuntimeService {
         preparePinnedLaunchHome: (home) => prepareCodexPinnedLaunchHome(home)
       }),
     ...codexStructuredLaunchHomeResolvers,
+    // Why: a window is the test inside; `orca serve` runs this too and must open nothing.
+    openMcpSignIn: openMcpSignInOnThisMachine,
     prepareCodexCatalogProbeHome: (homePath) =>
       state.codexRuntimeHome?.prepareHostCodexHomeForReadOnlyAppServer(
         homePath,

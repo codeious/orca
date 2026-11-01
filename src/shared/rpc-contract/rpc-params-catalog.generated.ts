@@ -54,6 +54,7 @@ import {
 import { CreateAgentSessionParams, EnsureAgentSessionParams } from './agent-session-params'
 import { ReadVisualParams } from './agent-session-visual-params'
 import {
+  AiVaultDroidSessionHolderParams,
   AiVaultListSessionsParams,
   AiVaultPrepareSessionResumeParams,
   AiVaultSessionTitlesParams
@@ -495,6 +496,8 @@ import {
 } from './speech-params'
 import { RepoAddRemote, SshBrowseDir, SshTarget, SshTargetAdd, SshTargetUpdate } from './ssh-params'
 import { ContinueInterruptedParams } from './structured-agent-session-continue-params'
+import { DroidCommandParams } from './structured-agent-session-droid-command-params'
+import { McpSignInOpenedParams } from './structured-agent-session-mcp-sign-in-params'
 import {
   AcknowledgeAttentionParams,
   AgentsParams,
@@ -636,10 +639,12 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSession.conversationOutline': OptionsParams,
   'agentSession.create': CreateParams,
   'agentSession.createSupport': CreateSupportParams,
+  'agentSession.droidCommand': DroidCommandParams,
   'agentSession.ensure': AttachParams,
   'agentSession.handoffStatus': HandoffStatusParams,
   'agentSession.history': HistoryParams,
   'agentSession.hold': HoldParams,
+  'agentSession.mcpSignInOpened': McpSignInOpenedParams,
   'agentSession.modelCatalog': ModelCatalogParams,
   'agentSession.options': OptionsParams,
   'agentSession.queuedMessageDelete': QueuedMessageActionParams,
@@ -671,6 +676,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSessionAttachment.uploadStart': AttachmentUploadStartParams,
   'agentTeams.prepareLaunch': AgentTeamsPrepareLaunch,
   'agentTeams.tmuxCompat': AgentTeamsTmuxCompat,
+  'aiVault.droidSessionHolder': AiVaultDroidSessionHolderParams,
   'aiVault.listSessions': AiVaultListSessionsParams,
   'aiVault.prepareSessionResume': AiVaultPrepareSessionResumeParams,
   'aiVault.resolveSessionTitles': AiVaultSessionTitlesParams,

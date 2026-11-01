@@ -8,6 +8,7 @@ export type StructuredAgentSessionSendMutation = {
   envelope: AgentSessionMutationEnvelope
   body: AgentJournalMessageItem
   delivery?: 'queue-if-active'
+  afterReply?: true
 }
 
 /** What every send fingerprint covers: the message without its sender, which never reaches the
@@ -37,9 +38,15 @@ export function structuredAgentSessionMessageSendMutation(message: {
   expectedRuntimeFence: number
   body: AgentJournalMessageItem
   delivery?: 'queue-if-active'
+  /** Droid's wait placement; send only to a host advertising `agent-session.after-reply.v1`. */
+  afterReply?: true
 }): StructuredAgentSessionSendMutation {
-  // `delivery` joins the OPERATION fingerprint exactly as the host digests it; never the body's.
-  const delivery = message.delivery ? { delivery: message.delivery } : {}
+  // `delivery` and `afterReply` join the OPERATION fingerprint exactly as the host digests them;
+  // never the body's.
+  const controls = {
+    ...(message.delivery ? { delivery: message.delivery } : {}),
+    ...(message.afterReply ? { afterReply: true as const } : {})
+  }
   return {
     envelope: {
       sessionId: message.sessionId,
@@ -48,11 +55,11 @@ export function structuredAgentSessionMessageSendMutation(message: {
       payloadFingerprint: structuredAgentSessionPayloadFingerprint({
         method: 'agentSession.send',
         sessionId: message.sessionId,
-        fields: { body: agentSessionMessagePayload(message.body), ...delivery }
+        fields: { body: agentSessionMessagePayload(message.body), ...controls }
       })
     },
     body: message.body,
-    ...delivery
+    ...controls
   }
 }
 

@@ -785,61 +785,6 @@ describe('remote hook service installers', () => {
     }
   })
 
-  it('installs remote Droid hooks into Factory settings.json (issue #7253)', async () => {
-    const { sftp, fs } = createFakeSftp()
-
-    const status = await new DroidHookService().installRemote(sftp, '/home/dev')
-
-    expect(status.state).toBe('installed')
-    expect(status.configPath).toBe('/home/dev/.factory/settings.json')
-    const config = JSON.parse(fs.files.get('/home/dev/.factory/settings.json')!) as {
-      hooks: Record<string, { matcher?: string; hooks?: { command: string }[] }[]>
-    }
-    for (const eventName of [
-      'SessionStart',
-      'UserPromptSubmit',
-      'Stop',
-      'SubagentStop',
-      'PreToolUse',
-      'PostToolUse',
-      'PermissionRequest',
-      'Notification'
-    ]) {
-      const definition = config.hooks[eventName]?.[0]
-      const command = definition?.hooks?.[0]?.command
-      expect(command).toContain('/home/dev/.orca/agent-hooks/droid-hook.sh')
-      expect(command).toMatch(/^if \[ -f /)
-    }
-    // Tool/permission events carry a `*` matcher; lifecycle events do not.
-    expect(config.hooks.PreToolUse?.[0]?.matcher).toBe('*')
-    expect(config.hooks.PostToolUse?.[0]?.matcher).toBe('*')
-    expect(config.hooks.PermissionRequest?.[0]?.matcher).toBe('*')
-    expect(config.hooks.Stop?.[0]?.matcher).toBeUndefined()
-    const script = fs.files.get('/home/dev/.orca/agent-hooks/droid-hook.sh')
-    expect(script).toContain('#!/bin/sh')
-    expect(script).toContain('/hook/droid')
-    expect(fs.modes.get('/home/dev/.orca/agent-hooks/droid-hook.sh')).toBe(0o755)
-  })
-
-  it('does not overwrite a malformed remote Factory settings.json', async () => {
-    const original = '{"hooks": }'
-    const { sftp, fs } = createFakeSftp({
-      '/home/dev/.factory/settings.json': original
-    })
-
-    const status = await new DroidHookService().installRemote(sftp, '/home/dev')
-
-    expect(status).toMatchObject({
-      agent: 'droid',
-      state: 'error',
-      configPath: '/home/dev/.factory/settings.json',
-      managedHooksPresent: false,
-      detail: 'Could not parse remote Factory settings.json'
-    })
-    expect(fs.files.get('/home/dev/.factory/settings.json')).toBe(original)
-    expect(fs.files.get('/home/dev/.orca/agent-hooks/droid-hook.sh')).toBeUndefined()
-  })
-
   it('installs remote Hermes plugin files and enables the plugin', async () => {
     const { sftp, fs } = createFakeSftp()
 

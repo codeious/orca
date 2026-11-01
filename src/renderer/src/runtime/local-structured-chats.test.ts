@@ -57,6 +57,29 @@ describe("startup's restore of this machine's structured chats", () => {
     expect(step).toHaveBeenCalledOnce()
   })
 
+  // An agent set to Chat opens chats with the switch off, so the machinery must be there.
+  it('restores when an agent is set to Chat while the switch is off', async () => {
+    const step = vi.fn(async () => undefined)
+
+    await restoreLocalStructuredChatsAtStartup(
+      { experimentalNativeChat: false, agentLaunchModes: { droid: 'chat' } },
+      step
+    )
+
+    expect(step).toHaveBeenCalledOnce()
+  })
+
+  it('runs no census when every agent is set to Terminal and the switch is off', async () => {
+    const step = vi.fn(async () => undefined)
+
+    await restoreLocalStructuredChatsAtStartup(
+      { experimentalNativeChat: false, agentLaunchModes: { droid: 'terminal' } },
+      step
+    )
+
+    expect(step).not.toHaveBeenCalled()
+  })
+
   it('never restores in the browser client', async () => {
     mocks.isWebClient = true
     mocks.held = true

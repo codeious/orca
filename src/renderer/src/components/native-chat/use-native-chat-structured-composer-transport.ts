@@ -5,13 +5,16 @@ import type {
   NativeChatOptionPickerRequest,
   NativeChatStructuredComposerTransport
 } from './native-chat-composer-types'
+import { answerDroidHostCommand } from './droid-help-keys'
+import type { DroidRewind } from './use-droid-rewind'
+import { useDroidSessionCommands } from './use-droid-session-commands'
 import type { NativeChatStructuredViewProps } from './native-chat-view-types'
 import type { useStructuredAgentSession } from './use-structured-agent-session'
 import type { StructuredAgentSessionQueuedMessagesController } from './use-structured-agent-session-queued-messages'
 
 /** What the composer of a structured chat sends, picks and runs through, from the chat's controller. */
 export function useNativeChatStructuredComposerTransport(args: {
-  props: Pick<NativeChatStructuredViewProps, 'agent' | 'sessionId' | 'target'>
+  props: Pick<NativeChatStructuredViewProps, 'agent' | 'sessionId' | 'target' | 'tabId'>
   controller: ReturnType<typeof useStructuredAgentSession>
   /** Sends now, restarts a failed start with the message, or refuses while the chat starts. */
   sendThroughLaunch: (
@@ -27,9 +30,21 @@ export function useNativeChatStructuredComposerTransport(args: {
   onError: NativeChatStructuredComposerTransport['onError']
   onSubmitted: () => void
   queuedMessages: Pick<StructuredAgentSessionQueuedMessagesController, 'queueHold' | 'queueResume'>
+  /** A Droid chat's rewind, for `/rewind-conversation` and Esc three times. */
+  droidRewind?: Pick<DroidRewind, 'open'> | undefined
 }): NativeChatStructuredComposerTransport {
   const { props, controller, sendThroughLaunch, starting, worktreeId, optionPickerRequest } = args
-  const { setOptionPickerRequest, onError, onSubmitted, queuedMessages } = args
+  const { setOptionPickerRequest, onError, onSubmitted, queuedMessages, droidRewind } = args
+  const rewindConversation = droidRewind?.open
+  const droidSessionCommands = useDroidSessionCommands({
+    tabId: props.tabId,
+    sessionId: props.sessionId,
+    target: props.target,
+    agent: props.agent,
+    optionSnapshot: controller.optionSnapshot,
+    optionSurface: controller.optionSurface,
+    ...(rewindConversation ? { rewindConversation } : {})
+  })
   const acceptsImages = useStructuredAgentAcceptsImages(props.target, props.agent)
   return useMemo((): NativeChatStructuredComposerTransport => {
     const threadGoal = controller.threadGoal
@@ -37,19 +52,18 @@ export function useNativeChatStructuredComposerTransport(args: {
       ? (objective: string) => threadGoal.change({ kind: 'set', objective })
       : null
     return {
-      send: (text, attachments) =>
-        sendThroughLaunch(text, attachments.length > 0, () =>
-          controller.send(
-            text,
-            attachments.map(({ path, connectionId }) => ({
-              path,
-              previewUri: path,
-              ...(connectionId ? { connectionId } : {})
-            }))
-          )
-        ),
-      dispatchCommand: (text: string) =>
-        dispatchStructuredAgentSessionComposerCommand(text, {
+      send: (text, attachments, options) =>
+        sendThroughLaunch(text, attachments.length > 0, () => {
+          const images = attachments.map(({ path, connectionId }) => ({
+            path,
+            previewUri: path,
+            ...(connectionId ? { connectionId } : {})
+          }))
+          return options ? controller.send(text, images, options) : controller.send(text, images)
+        }),
+      dispatchCommand: (text: string) => {
+        droidSessionCommands?.noteSubmit(text)
+        return dispatchStructuredAgentSessionComposerCommand(text, {
           agent: props.agent,
           snapshot: controller.optionSnapshot,
           invokeAction: async (id) => {
@@ -59,8 +73,11 @@ export function useNativeChatStructuredComposerTransport(args: {
           setOption: controller.setStructuredOption,
           conversationCommands: controller.conversationCommands,
           runConversationCommand: controller.runConversationCommand,
-          ...(setThreadGoalObjective ? { setThreadGoalObjective } : {})
-        }),
+          ...(setThreadGoalObjective ? { setThreadGoalObjective } : {}),
+          ...(props.agent === 'droid' ? { answerHostCommand: answerDroidHostCommand } : {}),
+          ...(droidSessionCommands ? { runHostCommand: droidSessionCommands.runHostCommand } : {})
+        })
+      },
       ...(setThreadGoalObjective ? { threadGoal: { setObjective: setThreadGoalObjective } } : {}),
       sendOut: controller.sendOut || starting,
       optionsSurface: controller.optionSurface,
@@ -78,11 +95,24 @@ export function useNativeChatStructuredComposerTransport(args: {
       runtimeEnvironmentId:
         props.target.kind === 'local' ? null : (props.target.environmentId ?? null),
       queueHold: queuedMessages.queueHold,
-      queueResume: queuedMessages.queueResume
+      queueResume: queuedMessages.queueResume,
+      ...(rewindConversation
+        ? {
+            // What stopped it is said in the composer; a confirmed rewind or a cancel says nothing.
+            openRewind: () =>
+              void rewindConversation().then(({ error }) => {
+                if (error) {
+                  onError(error)
+                }
+              })
+          }
+        : {})
     }
   }, [
     acceptsImages,
     controller,
+    droidSessionCommands,
+    rewindConversation,
     worktreeId,
     onError,
     onSubmitted,

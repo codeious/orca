@@ -11,6 +11,7 @@
 // structured request with the refusal that says why.
 
 import type { AgentSessionAccountKind } from '../../shared/agent-session-availability'
+import type { DroidSessionDeps } from '../droid/droid-session'
 import type { PiRpcSessionDeps } from '../pi/rpc-session'
 import type { PermissionMode } from '@anthropic-ai/claude-agent-sdk'
 import { existsSync } from 'node:fs'
@@ -102,6 +103,9 @@ export type StructuredAgentSessionRuntimeDeps = {
   resolveCodexCommand?: (options?: { pathEnv?: string | null; homePath?: string }) => string
   resolveClaudeCommand?: () => string
   openPiConnection?: PiRpcSessionDeps['openConnection']
+  openDroidConnection?: DroidSessionDeps['openConnection']
+  /** Opens a Droid MCP sign-in link on this machine; absent on a host with no way to. */
+  openMcpSignIn?: DroidSessionDeps['openMcpSignIn']
   /** Which version-gated flags a Claude CLI takes; absent never passes one. */
   claudeCliFlags?: ClaudeCliFlagSupport
   /** Gives each chat a visuals folder and the skill that teaches it, and sweeps folders whose chat
@@ -318,6 +322,7 @@ async function installOnJournal(
     probeOwner: createStructuredAgentSessionOwnerProbe(deps.hostId),
     probeOwners: createStructuredAgentSessionOwnerProbes(deps.hostId),
     resolveWorkspacePath: deps.resolveWorkspacePath,
+    restingLaunchArgs: deps.resolveLaunchArgs,
     logger: deps.logger,
     ...(deps.onSessionStatusChanged ? { onSessionStatusChanged: deps.onSessionStatusChanged } : {}),
     ...(deps.statusSink ? { statusSink: deps.statusSink } : {}),

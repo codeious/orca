@@ -6,6 +6,7 @@ import {
   AGENT_SESSION_PROMPT_CANCEL_RUNTIME_CAPABILITY,
   AGENT_SESSION_REWIND_RUNTIME_CAPABILITY
 } from '../../../shared/protocol-version'
+import { AGENT_SESSION_DROID_COMMAND_RUNTIME_CAPABILITY } from '../../../shared/structured-agent-session-surface-capabilities'
 
 const mocks = vi.hoisted(() => ({
   subscribe: vi.fn(),
@@ -125,6 +126,47 @@ describe('callStructuredAgentSession rewind capability', () => {
       timeoutMs: 195_000
     })
     expect(mocks.call).toHaveBeenCalledWith(target, 'agentSession.send', params)
+  })
+})
+
+describe('callStructuredAgentSession Droid command capability', () => {
+  const target = { kind: 'environment', environmentId: 'env-1' } as const
+  const params = { sessionId: 'session-1', command: { name: 'context' } }
+
+  beforeEach(() => {
+    vi.resetAllMocks()
+    mocks.call.mockResolvedValue({ name: 'credits', factoryCredits: null })
+    mocks.supportsCapability.mockResolvedValue(true)
+  })
+
+  it('tells the person to update an older server instead of calling it', async () => {
+    mocks.supportsCapability.mockResolvedValue(false)
+
+    await expect(
+      callStructuredAgentSession(target, 'agentSession.droidCommand', params)
+    ).rejects.toThrow('Droid chat commands need a newer Orca server')
+    expect(mocks.supportsCapability).toHaveBeenCalledExactlyOnceWith(
+      'env-1',
+      AGENT_SESSION_DROID_COMMAND_RUNTIME_CAPABILITY
+    )
+    expect(mocks.call).not.toHaveBeenCalled()
+  })
+
+  it('waits as long as a compaction and the start of an agent at rest can take', async () => {
+    await callStructuredAgentSession(target, 'agentSession.droidCommand', params)
+
+    expect(mocks.call).toHaveBeenCalledExactlyOnceWith(
+      target,
+      'agentSession.droidCommand',
+      params,
+      { timeoutMs: 195_000 }
+    )
+  })
+
+  it('calls the local build without a probe', async () => {
+    await callStructuredAgentSession({ kind: 'local' }, 'agentSession.droidCommand', params)
+
+    expect(mocks.supportsCapability).not.toHaveBeenCalled()
   })
 })
 

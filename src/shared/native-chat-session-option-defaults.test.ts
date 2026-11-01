@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   clearNativeChatSessionOptionModel,
   narrowStructuredLaunchSeedOptions,
+  parseStructuredLaunchSeedOptions,
   resolveNativeChatSessionOptionDefaults,
   resolveStructuredLaunchSeedOptions,
   updateNativeChatSessionOptionDefaults
@@ -165,6 +166,31 @@ describe('narrowStructuredLaunchSeedOptions', () => {
       model: 'opus',
       effort: 'high'
     })
+  })
+
+  it('seeds a saved Spec choice as text, on or off', () => {
+    expect(narrowStructuredLaunchSeedOptions({ model: 'opus', planMode: true })).toEqual({
+      model: 'opus',
+      planMode: 'true'
+    })
+    expect(narrowStructuredLaunchSeedOptions({ model: 'opus', planMode: false })).toEqual({
+      model: 'opus',
+      planMode: 'false'
+    })
+    expect(
+      resolveStructuredLaunchSeedOptions(
+        { droid: { model: 'opus', valuesByModel: { opus: { planMode: true } } } },
+        'droid'
+      )
+    ).toEqual({ model: 'opus', planMode: 'true' })
+  })
+
+  it('reads a Spec seed from storage only when it decodes', () => {
+    expect(parseStructuredLaunchSeedOptions({ model: 'opus', planMode: 'true' })).toEqual({
+      model: 'opus',
+      planMode: 'true'
+    })
+    expect(parseStructuredLaunchSeedOptions({ planMode: 'spec' })).toBeUndefined()
   })
 
   it('drops ids no structured create may seed', () => {

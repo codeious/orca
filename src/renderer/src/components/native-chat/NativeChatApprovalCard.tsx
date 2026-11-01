@@ -10,14 +10,20 @@ import {
   isPlanApprovalSubject
 } from '../../../../shared/agent-session-approval-subject'
 import { NativeChatCodeBlock } from './NativeChatCodeBlock'
-import type { ChatApproval } from './native-chat-interactive-prompt'
+import type { ChatApproval, ChatApprovalNotes } from './native-chat-interactive-prompt'
+import {
+  NativeChatApprovalCommentField,
+  NativeChatApprovalPlanEditButton,
+  NativeChatApprovalPlanEditor,
+  useNativeChatApprovalNotes
+} from './NativeChatApprovalNotes'
 import { NativeChatPromptCollapseToggle } from './NativeChatPromptCollapse'
 import { useNativeChatPromptCardFocus } from './use-native-chat-prompt-card-focus'
 
 export type NativeChatApprovalCardProps = {
   approval: ChatApproval
-  /** Deliver the option's transport-specific response token. */
-  onChoose: (option: string) => void
+  /** Deliver the option's transport-specific response token, with what was typed when the card takes it. */
+  onChoose: (option: string, notes?: ChatApprovalNotes) => void
   /** Cancel the active provider turn while this card owns the composer region. */
   onCancel?: () => void
   /** Without `onCancel`: fold the card to a strip and give the input back, writing nothing. */
@@ -46,6 +52,7 @@ export function NativeChatApprovalCard({
   allowFileUriLinks = false
 }: NativeChatApprovalCardProps): React.JSX.Element {
   const cardRef = useRef<HTMLDivElement>(null)
+  const notes = useNativeChatApprovalNotes(approval)
   const neededPath = approvalBlockedPathToShow(approval)
   // A newer Orca's subject: its detail is shown, and only the card's cancel answers.
   const newerSubject = isNewerApprovalSubject(approval.subject)
@@ -130,15 +137,20 @@ export function NativeChatApprovalCard({
               ) : null}
               {isPlanApprovalSubject(approval.subject) ? (
                 <div data-native-chat-approval-plan="true">
-                  <NativeChatMarkdown
-                    content={approval.subject.text}
-                    variant="document"
-                    className="text-sm text-chat-foreground"
-                    renderCodeBlock={NativeChatCodeBlock}
-                    {...(onLinkClick ? { onLinkClick } : {})}
-                    allowFileUriLinks={allowFileUriLinks}
-                    linkifyFilePaths={onLinkClick !== undefined}
-                  />
+                  {notes.editedPlan === null ? (
+                    <NativeChatMarkdown
+                      content={approval.subject.text}
+                      variant="document"
+                      className="text-sm text-chat-foreground"
+                      renderCodeBlock={NativeChatCodeBlock}
+                      {...(onLinkClick ? { onLinkClick } : {})}
+                      allowFileUriLinks={allowFileUriLinks}
+                      linkifyFilePaths={onLinkClick !== undefined}
+                    />
+                  ) : (
+                    <NativeChatApprovalPlanEditor notes={notes} disabled={isSubmitting} />
+                  )}
+                  <NativeChatApprovalPlanEditButton notes={notes} disabled={isSubmitting} />
                   {approval.subject.filePath ? (
                     <p className="mt-2 break-all">
                       <span className="font-medium text-foreground/80">
@@ -167,13 +179,21 @@ export function NativeChatApprovalCard({
               ) : null}
             </div>
           ) : null}
+          <NativeChatApprovalCommentField notes={notes} disabled={isSubmitting} />
           <div data-native-chat-approval-actions="true" className="flex shrink-0 flex-wrap gap-2">
             {approval.options.map((opt, i) => (
               <button
                 key={`${opt.label}-${i}`}
                 type="button"
                 disabled={newerSubject || isSubmitting}
-                onClick={() => onChoose(opt.send)}
+                onClick={() => {
+                  const typed = notes.collect()
+                  if (typed) {
+                    onChoose(opt.send, typed)
+                  } else {
+                    onChoose(opt.send)
+                  }
+                }}
                 className={cn(
                   'rounded-md px-4 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
                   i === 0

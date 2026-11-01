@@ -22,6 +22,10 @@ import { emptyAgentSessionBatch } from './agent-session-empty-batch'
 import { readAgentSessionHydrationPage } from './agent-session-history-page'
 import { rememberSessionActivity } from './structured-agent-session-activity-retention'
 import { refreshDerivedStopNotes } from './agent-session-stop-note-refresh'
+import {
+  AgentSessionMcpSignInForwarding,
+  type McpSignInCaller
+} from './agent-session-mcp-sign-in-forwarding'
 
 export type AgentSessionSubscriberEmit = (event: AgentSessionSubscribeEvent) => void
 export type AgentSessionSubscribeInput = {
@@ -29,6 +33,7 @@ export type AgentSessionSubscribeInput = {
   sessionId: string
   emit: AgentSessionSubscriberEmit
   cursor?: AgentJournalCursor
+  mcpSignInCaller?: McpSignInCaller
 }
 
 export type Subscriber = {
@@ -43,6 +48,7 @@ export type Subscriber = {
   queuePublication?: QueuePublication
   /** Fingerprint of the background-task roster last SENT. */
   backgroundTasks?: string
+  closeMcpSignIn?: () => void
 }
 
 export type AgentSessionSubscribersHooks = {
@@ -57,6 +63,7 @@ export type AgentSessionSubscribersHooks = {
 }
 
 export class AgentSessionSubscribers {
+  readonly mcpSignIn = new AgentSessionMcpSignInForwarding()
   private readonly bySession = new Map<string, Map<string, Subscriber>>()
   private readonly activityBySession = new Map<string, AgentSessionTurnActivity>()
 
@@ -77,6 +84,7 @@ export class AgentSessionSubscribers {
     fence: number
     emit: AgentSessionSubscriberEmit
     cursor?: AgentJournalCursor
+    mcpSignInCaller?: McpSignInCaller
   }): () => void {
     const liveCursor = input.journal.cursor()
     const subscriber: Subscriber = {
@@ -89,6 +97,20 @@ export class AgentSessionSubscribers {
     const session = this.bySession.get(input.sessionId) ?? new Map<string, Subscriber>()
     session.set(input.id, subscriber)
     this.bySession.set(input.sessionId, session)
+    if (input.mcpSignInCaller) {
+      subscriber.closeMcpSignIn = this.mcpSignIn.subscribe(input.id, {
+        ...input.mcpSignInCaller,
+        sessionId: input.sessionId,
+        send: (mcpSignInOpen) =>
+          this.emit(subscriber, {
+            type: 'batch',
+            sessionId: input.sessionId,
+            batch: emptyAgentSessionBatch(subscriber.cursor),
+            fence: subscriber.fence,
+            mcpSignInOpen
+          })
+      })
+    }
 
     const hostNow = this.now()
     if (input.cursor) {
@@ -270,6 +292,7 @@ export class AgentSessionSubscribers {
   }
 
   private drop(subscriber: Subscriber): void {
+    subscriber.closeMcpSignIn?.()
     const session = this.bySession.get(subscriber.sessionId)
     session?.delete(subscriber.id)
     if (session?.size === 0) {

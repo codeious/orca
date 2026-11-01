@@ -3,6 +3,7 @@ import {
   getTextDrivenNativeChatCommands
 } from './native-chat-agent-profiles'
 import type { AgentType } from './agent-status-types'
+import { DROID_HOST_COMMAND_NAMES, isDroidHostCommandName } from './droid-command-registry'
 import type { SessionOptionDescriptor, SessionOptionValue } from './native-chat-session-options'
 import type { SlashCommandSuggestion } from './native-chat-slash-commands'
 import type { AgentSessionConversationCommand } from './agent-session-conversation-command'
@@ -40,6 +41,15 @@ export type StructuredAgentSessionComposerOptions = {
   /** Present only where the host can set this session's goal; otherwise `/goal`
    *  stays message text the agent acts on itself. */
   setThreadGoalObjective?: (objective: string) => Promise<boolean>
+  /** The host's own reply to a command it claims but has no action for, shown as information in
+   *  place of the refusal; null keeps the refusal. The text is never sent to the model. */
+  answerHostCommand?: (name: string) => string | null
+  /** Runs a Droid command the host carries out itself (a session switch, a quit), ahead of the
+   *  conversation commands of the same name. Null leaves the command to the shared handling. */
+  runHostCommand?: (
+    name: string,
+    argument: string
+  ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'> | null>
 }
 
 /** What the chat shows a refused command waiting on: the agent working, a pending prompt, its
@@ -55,11 +65,22 @@ export type StructuredAgentSessionCommandOutcome = {
   handled: boolean
   accepted: boolean
   error: string | null
+  /** What the host answered the command with: said as information, where `error` is a failure. */
+  info?: string
+  /** A button beside `info`; running it takes the line away. */
+  infoAction?: { label: string; onClick: () => void }
   /** The refusal is said only while this still holds. */
   refusedWhile?: StructuredAgentSessionCommandRefusalCause
 }
 
-function commandParts(text: string): { name: string; argument: string } | null {
+function commandParts(text: string, agent?: AgentType): { name: string; argument: string } | null {
+  if (agent === 'droid') {
+    // Droid's host-owned text must never fall through to the model, even with multiline arguments.
+    const match = /^\/([^\s]+)(?:\s+(.*))?$/s.exec(text.trim())
+    if (match && isDroidHostCommandName(match[1]!.toLowerCase())) {
+      return { name: match[1]!.toLowerCase(), argument: match[2]?.trim() ?? '' }
+    }
+  }
   if (!text.startsWith('/')) {
     return null
   }
@@ -99,7 +120,8 @@ function structuredRecognizedCommands(agent: AgentType): readonly SlashCommandSu
   return [
     ...STRUCTURED_AGENT_SESSION_SLASH_COMMANDS,
     ...CONVERSATION_COMMANDS,
-    ...getHostClaimedNativeChatCommands(agent)
+    ...getHostClaimedNativeChatCommands(agent),
+    ...(agent === 'droid' ? DROID_HOST_COMMAND_NAMES.map((name) => ({ name })) : [])
   ]
 }
 
@@ -110,7 +132,7 @@ export function isStructuredAgentSessionComposerCommand(
   text: string,
   agent: AgentType = 'codex'
 ): boolean {
-  const command = commandParts(text)
+  const command = commandParts(text, agent)
   return Boolean(
     command && structuredRecognizedCommands(agent).some((entry) => entry.name === command.name)
   )
@@ -166,7 +188,7 @@ export async function dispatchStructuredAgentSessionComposerCommand(
   text: string,
   controller: StructuredAgentSessionComposerOptions
 ): Promise<StructuredAgentSessionCommandOutcome> {
-  const command = commandParts(text)
+  const command = commandParts(text, controller.agent)
   if (command?.name === 'goal' && controller.setThreadGoalObjective) {
     if (!command.argument) {
       return { handled: true, accepted: false, error: 'Describe the goal after /goal.' }
@@ -180,6 +202,16 @@ export async function dispatchStructuredAgentSessionComposerCommand(
   }
   if (!command || !isStructuredAgentSessionComposerCommand(text, controller.agent)) {
     return { handled: false, accepted: false, error: null }
+  }
+  if (
+    controller.agent === 'droid' &&
+    controller.runHostCommand &&
+    isDroidHostCommandName(command.name)
+  ) {
+    const outcome = await controller.runHostCommand(command.name, command.argument)
+    if (outcome) {
+      return { handled: true, ...outcome }
+    }
   }
   if (command.name === 'clear' || command.name === 'compact') {
     if (command.argument) {
@@ -198,7 +230,10 @@ export async function dispatchStructuredAgentSessionComposerCommand(
     return { handled: true, ...(await controller.runConversationCommand(command.name)) }
   }
   if (command.name !== 'model' && command.name !== 'effort') {
-    return unavailable(command.name)
+    const answer = controller.answerHostCommand?.(command.name)
+    return answer
+      ? { handled: true, accepted: true, error: null, info: answer }
+      : unavailable(command.name)
   }
   const descriptor = controller.snapshot.find((entry) => entry.id === command.name)
   if (!descriptor || descriptor.kind.type !== 'select') {

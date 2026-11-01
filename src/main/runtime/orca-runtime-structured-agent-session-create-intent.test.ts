@@ -41,8 +41,50 @@ function createCodexIntentRuntime(
       worktree: `id:${workspaceId}`,
       agent: 'codex'
     })
-  return { prepareCodexStructuredLaunch, createIntent }
+  return { runtime, prepareCodexStructuredLaunch, createIntent }
 }
+
+describe('a create the host refuses over what is installed', () => {
+  const unsupported = { supported: false, reason: 'agent' } as const
+
+  it('names the release and the floor when it is too old, not a host that cannot run it', async () => {
+    const { runtime, createIntent } = createCodexIntentRuntime({})
+    vi.spyOn(runtime, 'getStructuredAgentSessionCreateSupport').mockResolvedValue({
+      ...unsupported,
+      unsupportedVersion: {
+        agentName: 'Droid',
+        found: '0.230.0',
+        floor: '0.238.0',
+        updateCommand: 'droid update'
+      }
+    })
+
+    await expect(createIntent()).rejects.toMatchObject({
+      message: 'structured_agent_session_unsupported',
+      refusal: {
+        code: 'structured_agent_session_unsupported',
+        details: {
+          reason: 'versionUnsupported',
+          version: '0.230.0',
+          floor: '0.238.0',
+          updateCommand: 'droid update'
+        }
+      }
+    })
+  })
+
+  it('stays a host that cannot run it when no release is to blame', async () => {
+    const { runtime, createIntent } = createCodexIntentRuntime({})
+    vi.spyOn(runtime, 'getStructuredAgentSessionCreateSupport').mockResolvedValue(unsupported)
+
+    await expect(createIntent()).rejects.toMatchObject({
+      refusal: {
+        code: 'structured_agent_session_unsupported',
+        details: { reason: 'hostUnsupported' }
+      }
+    })
+  })
+})
 
 describe('structured Codex folder trust', () => {
   it('takes a floating chat directory from the host-resolved workspace', async () => {

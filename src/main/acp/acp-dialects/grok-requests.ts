@@ -3,7 +3,7 @@ import {
   isValidAgentSessionQuestionAnswers,
   legacyAgentSessionQuestionAnswers
 } from '../../../shared/agent-session-question-answer'
-import { AcpRpcError } from '../acp-errors'
+import { AcpRpcError, JSON_RPC_INVALID_PARAMS } from '../acp-errors'
 import { pendingAcpResolution } from '../acp-timeline-requests'
 import type { AcpRequestPresentation, AcpRequestSettlement } from './acp-dialect'
 
@@ -29,7 +29,7 @@ const planRequestSchema = z.object({
 function questionRequest(params: unknown): AcpRequestPresentation {
   const parsed = questionRequestSchema.safeParse(params)
   if (!parsed.success) {
-    throw new AcpRpcError(-32602, 'Invalid agent question request')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid agent question request')
   }
   const questions = parsed.data.questions.map((question, index) => ({
     id: `q${index + 1}`,
@@ -65,7 +65,10 @@ function questionRequest(params: unknown): AcpRequestPresentation {
           : answer
       )
       if (!answers || !choices || !isValidAgentSessionQuestionAnswers(questions, choices)) {
-        throw new AcpRpcError(-32602, 'Question answer must answer every offered question')
+        throw new AcpRpcError(
+          JSON_RPC_INVALID_PARAMS,
+          'Question answer must answer every offered question'
+        )
       }
       return {
         outcome: 'accepted',
@@ -107,7 +110,7 @@ const PLAN_SHOWN_FEEDBACK =
 function settlePlanRequest(params: unknown): AcpRequestSettlement {
   const parsed = planRequestSchema.safeParse(params)
   if (!parsed.success) {
-    throw new AcpRpcError(-32602, 'Invalid agent plan request')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid agent plan request')
   }
   return {
     reply: { outcome: 'abandoned', feedback: PLAN_SHOWN_FEEDBACK },

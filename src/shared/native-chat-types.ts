@@ -25,6 +25,7 @@ import type {
 import type { AgentType } from './agent-status-types'
 import type { NativeChatToolMetadata } from './native-chat-tool-identity'
 import type { AgentMessageSource } from './agent-session-message-source'
+import type { AgentSessionHostText } from './agent-session-host-text'
 
 export type { AgentType }
 
@@ -46,9 +47,11 @@ export const NATIVE_CHAT_ROLES = ['user', 'assistant', 'tool', 'reasoning', 'sys
 export type NativeChatRole = (typeof NATIVE_CHAT_ROLES)[number]
 
 /** Plain prose / markdown. The assistant body, a user prompt, reasoning text. */
-export type NativeChatTextBlock = {
+export type NativeChatTextBlock = AgentSessionHostText & {
   type: 'text'
   text: string
+  /** Optional provider-authored compaction prose under the status label. */
+  summaryText?: string
   /** Optional journal display hints; readers narrow only the values they know. */
   presentation?: string
   contextClear?: AgentSessionProviderContextBoundary

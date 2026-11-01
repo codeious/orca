@@ -2,6 +2,7 @@
 import { OrcaRuntimeWithTerminalDrivers } from './orca-runtime-terminal-drivers'
 import { confirmRunTerminalShellAlone, readRunTerminalClientUse } from './run-terminal-client-use'
 import { ALL_EXECUTION_HOSTS_SCOPE, type ExecutionHostScope } from '../../shared/execution-host'
+import type { DroidMcpSignInOpener } from '../droid/droid-mcp-sign-in'
 import { RuntimePreservedBranchCleanup } from './runtime-preserved-branch-cleanup'
 import type { IPtyProvider } from '../providers/types'
 import type {
@@ -21,6 +22,7 @@ import type {
   AiVaultPrepareSessionResumeArgs,
   AiVaultPrepareSessionResumeResult
 } from '../../shared/ai-vault-resume-preparation'
+import type { AiVaultDroidSessionHolderResult } from '../../shared/ai-vault-droid-session-holder'
 import type { AgentSessionClaimSigner } from './agent-session-claim-identity'
 import type { AgentStatus } from '../../shared/agent-detection'
 import { RuntimeLegacyWorkerTerminalRecoveryPersistence } from './runtime-legacy-worker-terminal-recovery-persistence'
@@ -125,6 +127,10 @@ export class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeWithTermin
     | ((paneKey: string) => Promise<'live' | 'unverifiable' | 'exited' | null>)
     | null
 
+  protected readonly droidSessionHolderFn:
+    | ((sessionId: string) => Promise<AiVaultDroidSessionHolderResult>)
+    | null
+
   protected readonly reconcileAgentStatusForEndedProcessFn:
     | ((paneKeys: Iterable<string>) => void)
     | null
@@ -154,6 +160,8 @@ export class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeWithTermin
     | null
 
   protected readonly prepareCodexCatalogProbeHomeFn: ((homePath: string) => void) | null
+
+  protected readonly openMcpSignInFn: DroidMcpSignInOpener | null
 
   protected readonly agentSessionClaimSigner: AgentSessionClaimSigner
 
@@ -351,7 +359,10 @@ export class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeWithTermin
       this.workspaceSessionWorktreeHasRuntimeOwnedPtyCandidate(session, worktreeId, tabs)
   })
 
-  protected readonly aiVault = new RuntimeAiVaultCommands(() => this.prepareAiVaultSessionResumeFn)
+  protected readonly aiVault = new RuntimeAiVaultCommands(
+    () => this.prepareAiVaultSessionResumeFn,
+    () => this.droidSessionHolderFn
+  )
 
   protected readonly claudeAgentTeams = new ClaudeAgentTeamsService()
 

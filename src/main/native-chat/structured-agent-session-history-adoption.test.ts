@@ -101,6 +101,22 @@ describe('findConflictingStructuredAdoption', () => {
     ).toBeNull()
   })
 
+  it('names the Droid chat that already holds a Droid session, and only a Droid chat', () => {
+    const owner = ownership({ sessionId: 'droid_owner', provider: 'droid' })
+    const input = { providerSessionId: 'thread-1', selfSessionId: 'droid_new' }
+
+    expect(
+      findConflictingStructuredAdoption({ ...input, agent: 'droid', ownership: [owner] })
+    ).toBe(owner)
+    expect(
+      findConflictingStructuredAdoption({
+        ...input,
+        agent: 'droid',
+        ownership: [ownership({ provider: 'codex' })]
+      })
+    ).toBeNull()
+  })
+
   it('finds nothing when no session holds the conversation', () => {
     expect(
       findConflictingStructuredAdoption({

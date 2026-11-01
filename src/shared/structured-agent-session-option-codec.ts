@@ -1,6 +1,10 @@
 import type { SessionOptionValue } from './native-chat-session-options'
 
-const STRUCTURED_BOOLEAN_OPTION_IDS = new Set(['fastMode'])
+const STRUCTURED_BOOLEAN_OPTION_IDS = new Set(['fastMode', 'planMode'])
+
+export function isStructuredBooleanOptionId(optionId: string): boolean {
+  return STRUCTURED_BOOLEAN_OPTION_IDS.has(optionId)
+}
 
 export function encodeStructuredAgentSessionOptionValue(
   optionId: string,

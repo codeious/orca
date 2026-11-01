@@ -5,6 +5,7 @@ import {
 } from '../../../shared/execution-host'
 import type { AppState } from '@/store/types'
 import { findWorktreeById } from '@/store/slices/worktree-helpers'
+import type { ManagedOrcadEnvironmentSummary } from '../../../shared/managed-orcad-execution-host'
 import { requestsCwdOutsideWorkspaceRootForWorkspace } from '../../../shared/terminal-startup-cwd'
 import type { TuiAgent } from '../../../shared/tui-agent'
 import { workspaceKindForWorktreeId } from '../../../shared/workspace-launch-kind'
@@ -52,7 +53,9 @@ export type AgentLaunchRouteStore = {
    *  in the intersection so these lookups resolve to the full records. */
   worktreesByRepo?: AppState['worktreesByRepo']
   folderWorkspaces?: AppState['folderWorkspaces']
-} & Parameters<typeof getExecutionHostIdForWorktree>[0] &
+  /** Which paired servers are an SSH host's managed Orca server. */
+  runtimeEnvironments?: readonly ManagedOrcadEnvironmentSummary[]
+} & Omit<Parameters<typeof getExecutionHostIdForWorktree>[0], 'runtimeEnvironments'> &
   Parameters<typeof getLocalProjectExecutionRuntimeContext>[0] &
   Parameters<typeof getConnectionIdFromState>[0]
 
