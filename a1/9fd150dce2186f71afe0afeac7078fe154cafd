@@ -1,0 +1,41 @@
+src/main/agent-launch/agent-launch-executor.test.ts
+  h_476903bd8a47d9 9,17,229-254
+src/main/agent-launch/agent-launch-mode.ts
+  h_476903bd8a47d9 239,245-248,250-251
+  s_a71ca3b06ed7b3::t_b2fbe5743c5c15 23,27-30,92-96,240-244,249,333
+src/main/native-chat/structured-agent-session-create-support.test.ts
+  h_476903bd8a47d9 19-50
+  s_a71ca3b06ed7b3::t_6c8ba09a6922e7 1-18,51-60
+src/shared/agent-launch-intent.ts
+  h_476903bd8a47d9 142-143
+src/main/native-chat/structured-agent-session-create-support.ts
+  h_476903bd8a47d9 5-6,10-12,18,26,29-32
+  s_a71ca3b06ed7b3::t_6476c95fe13285 7-9,13-14,19-20,33-34,37-40
+src/main/agent-launch/agent-launch-mode-settings.ts
+  s_a71ca3b06ed7b3::t_9bac81116fe474 1-19
+src/main/runtime/rpc/methods/orchestration-worker-start-mode.ts
+  s_a71ca3b06ed7b3::t_ece87a283fce58 59
+src/main/runtime/session-tabs/structured-session-create-support.ts
+  s_a71ca3b06ed7b3::t_942d6672e2cf21 30,46-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a19fd150dce2186f71afe0afeac7078fe154cafd",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
