@@ -40,6 +40,18 @@ src/main/acp/acp-peer-handlers.ts
   s_a71ca3b06ed7b3::t_079906a332c7d2 1-11
 src/main/acp/acp-response-settlement.ts
   s_a71ca3b06ed7b3::t_7b6a6e3de26cb3 43
+config/scripts/vitest-real-agent-home-write-guard.test.ts
+  s_a71ca3b06ed7b3::t_9ff959242a77fd 73-78
+config/scripts/vitest-real-agent-home-write-guard.ts
+  s_a71ca3b06ed7b3::t_b5683f7eba78d0 19-20
+src/main/agent-hooks/installer-utils-remote.test.ts
+  h_476903bd8a47d9 24,47-50,233-269
+src/main/agent-hooks/installer-utils-remote.ts
+  h_476903bd8a47d9 35,40,42-43,46,48-51,53
+src/main/agent-cli-version-probe.test.ts
+  h_476903bd8a47d9 87,89-91,96
+src/main/agent-cli-version-probe.ts
+  h_476903bd8a47d9 59,92
 ---
 {
   "schema_version": "authorship/3.0.0",
