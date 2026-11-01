@@ -1,0 +1,18 @@
+src/main/jsonl-rpc/session-lifecycle.test.ts
+  h_476903bd8a47d9 1-278
+src/main/jsonl-rpc/session-lifecycle.ts
+  h_476903bd8a47d9 1-152
+src/main/pi/rpc-session.ts
+  h_476903bd8a47d9 12,70,94,99-115,121,150,208-209,213,217,221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9d9b65335092f9a60be5d950f9ee42faadaaabd0",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
