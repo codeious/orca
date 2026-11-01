@@ -17,6 +17,58 @@ src/main/runtime/rpc/methods/orchestration-worker-start-mode.ts
   s_a71ca3b06ed7b3::t_ece87a283fce58 59
 src/main/runtime/session-tabs/structured-session-create-support.ts
   s_a71ca3b06ed7b3::t_942d6672e2cf21 30,46-48
+config/scripts/vitest-real-agent-home-write-guard.test.ts
+  s_a71ca3b06ed7b3::t_9ff959242a77fd 73-78
+config/scripts/vitest-real-agent-home-write-guard.ts
+  s_a71ca3b06ed7b3::t_b5683f7eba78d0 19-20
+src/main/agent-hooks/installer-utils-remote.test.ts
+  h_476903bd8a47d9 24,47-50,233-269
+src/main/agent-hooks/installer-utils-remote.ts
+  h_476903bd8a47d9 35,40,42-43,46,48-51,53
+src/main/agent-cli-version-probe.test.ts
+  h_476903bd8a47d9 87,89-91,96
+src/main/agent-cli-version-probe.ts
+  h_476903bd8a47d9 59,92
+src/main/acp/acp-dialects/grok-background-task-stop.ts
+  h_476903bd8a47d9 2,18
+src/main/acp/acp-dialects/grok-requests.ts
+  h_476903bd8a47d9 6,32,68-71,111
+src/main/acp/acp-dialects/grok-subagent-stop.ts
+  h_476903bd8a47d9 2,18
+src/main/acp/acp-dialects/omp-dialect.ts
+  h_476903bd8a47d9 2
+src/main/acp/acp-errors.ts
+  h_476903bd8a47d9 4-13,39,64
+src/main/acp/acp-incoming-request-start.test.ts
+  h_476903bd8a47d9 1-83
+src/main/acp/acp-incoming-requests.ts
+  h_476903bd8a47d9 1-6,8,25-29,46,53,57,72-84,87-90,108,111-114
+src/main/acp/acp-json-rpc-peer-dialect.test.ts
+  h_476903bd8a47d9 1-206
+src/main/acp/acp-json-rpc-peer.ts
+  h_476903bd8a47d9 11-13,15,23,34-35,39-46,53-54,109,119,121-122,167,172,253,266-271,283,293,298-300,304,313
+src/main/acp/acp-oversized-lines.ts
+  h_476903bd8a47d9 3,23
+src/main/acp/acp-peer-dialect.ts
+  h_476903bd8a47d9 1-28,30-55,57-63
+src/main/acp/acp-rpc-envelope.ts
+  h_476903bd8a47d9 19-25,38,40,46-47,50
+src/main/acp/acp-session-runtime.ts
+  h_476903bd8a47d9 112,266,273
+src/main/acp/acp-session-setup.ts
+  h_476903bd8a47d9 67
+src/main/acp/acp-structured-prompts.ts
+  h_476903bd8a47d9 9,43-46,62
+src/main/acp/acp-timeline-requests.ts
+  h_476903bd8a47d9 5,22,45-48,78
+src/main/jsonl-rpc/session-lifecycle.test.ts
+  h_476903bd8a47d9 1-130,137-280
+src/main/jsonl-rpc/session-lifecycle.ts
+  h_476903bd8a47d9 1-17,19-118,123-151
+src/main/jsonl-rpc/session-adapter.ts
+  s_a71ca3b06ed7b3::t_2475786471ea33 1-2,4-96,100-262
+src/main/pi/rpc-session-adapter.ts
+  s_a71ca3b06ed7b3::t_fef89820b565c8 43,119-120
 ---
 {
   "schema_version": "authorship/3.0.0",
