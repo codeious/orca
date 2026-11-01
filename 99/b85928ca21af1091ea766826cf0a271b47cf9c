@@ -1,0 +1,14 @@
+src/shared/structured-native-chat-launch-route.test.ts
+  h_476903bd8a47d9 166-176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "99b85928ca21af1091ea766826cf0a271b47cf9c",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
