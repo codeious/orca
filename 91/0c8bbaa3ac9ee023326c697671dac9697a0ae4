@@ -1,0 +1,43 @@
+src/main/persistence/applying-settings/settings-update-agent-launch-modes.test.ts
+  s_a71ca3b06ed7b3::t_110eb7ce56e91a 1-65
+src/main/persistence/applying-settings/settings-update.ts
+  s_a71ca3b06ed7b3::t_f842dc47f4ca65 4,116-120
+src/main/persistence/loading-store/normalize-loaded-global-settings.test.ts
+  s_a71ca3b06ed7b3::t_313f9648c33ad9 113-136
+src/main/persistence/loading-store/normalize-loaded-global-settings.ts
+  s_a71ca3b06ed7b3::t_2ed6806e3887b7 1,75-76
+src/main/runtime/runtime-client-settings.ts
+  s_a71ca3b06ed7b3::t_7991e33ae17662 12,36,80,118
+src/main/runtime/runtime-store-contract.ts
+  s_a71ca3b06ed7b3::t_43da3656494bdb 97
+src/renderer/src/store/slices/settings-agent-launch-modes.test.ts
+  s_a71ca3b06ed7b3::t_ec032fd6289997 1-49
+src/renderer/src/store/slices/settings.ts
+  s_a71ca3b06ed7b3::t_a896a378864acf 20,115-119
+src/renderer/src/web/preload-api/web-preference-normalization.ts
+  s_a71ca3b06ed7b3::t_ec3e126e5b1844 25,169-171
+src/shared/agent-launch-mode-preference.test.ts
+  s_a71ca3b06ed7b3::t_5266ac94a67d4c 1-156
+src/shared/agent-launch-mode-preference.ts
+  s_a71ca3b06ed7b3::t_9169eaba0775d4 1-48
+src/shared/default-global-settings.ts
+  s_a71ca3b06ed7b3::t_d66ec82e8b38d5 223
+src/shared/rpc-contract/client-settings-params.ts
+  s_a71ca3b06ed7b3::t_96b68cd3325eb3 10,109-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "910c8bbaa3ac9ee023326c697671dac9697a0ae4",
+  "prompts": {},
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
