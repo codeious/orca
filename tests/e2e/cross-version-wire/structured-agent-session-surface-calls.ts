@@ -104,6 +104,12 @@ export const STRUCTURED_CALLS: {
     hostMethod: 'droidCommand',
     result: { name: 'context', report: null }
   },
+  // Generic clients cannot open sign-in links; without desktop negotiation no ack reaches the host.
+  {
+    method: 'agentSession.mcpSignInOpened',
+    hostMethod: null,
+    result: { accepted: false }
+  },
   {
     method: 'agentSession.handoffStatus',
     hostMethod: 'handoffStatus',

@@ -84,6 +84,7 @@ export function structuredHostStub(
     setOption: vi.fn(async () => ({ ok: true, replayed: false })),
     changeThreadGoal: vi.fn(async () => ({ ok: true, replayed: false })),
     droidCommand: vi.fn(async () => ({ name: 'context', report: null })),
+    mcpSignInOpened: vi.fn(() => false),
     handoffStatus: vi.fn(async () => ({ owner: 'native' })),
     readOptions: vi.fn(async () => ({ models: [], current: { model: 'gpt-live' } })),
     modelCatalog: vi.fn(() => ({ origin: 'unknown' as const })),
@@ -119,6 +120,7 @@ export function installableHost(
 ): StructuredAgentSessionHost {
   const host = {
     ...hostCalls,
+    mcpSignIn: { acknowledge: hostCalls.mcpSignInOpened },
     // The catalog read checks the session's record for a floating chat's own folder; none here.
     deps: {
       modelCatalog: { read: hostCalls.modelCatalog },

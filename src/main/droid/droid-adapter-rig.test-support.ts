@@ -134,7 +134,12 @@ export async function setupDroidAdapter(
   extraDeps: Partial<
     Pick<
       DroidSessionDeps,
-      'realpath' | 'onTitle' | 'logger' | 'openMcpSignIn' | 'readCompactionSummary'
+      | 'realpath'
+      | 'onTitle'
+      | 'logger'
+      | 'openMcpSignIn'
+      | 'forwardMcpSignIn'
+      | 'readCompactionSummary'
     >
   > = {},
   /** The execution host the session is on: `local`, or a `runtime:<guid>` for a remote runtime. */

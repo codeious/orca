@@ -9,7 +9,11 @@ import type {
 } from '../../../shared/droid-host-command'
 import type { StructuredAgentSessionAdapter } from './structured-agent-session-adapter'
 import type { StructuredAgentSessionHostSession } from './structured-agent-session-host-types'
-import { runStructuredAgentSessionDroidCommand } from './structured-agent-session-droid-command'
+import {
+  bindMcpSignInCaller,
+  runStructuredAgentSessionDroidCommand
+} from './structured-agent-session-droid-command'
+import { AgentSessionMcpSignInForwarding } from './agent-session-mcp-sign-in-forwarding'
 import { createStructuredAgentSessionLogger } from './structured-agent-session-logger'
 
 const SESSION = 'session-1'
@@ -79,6 +83,83 @@ function rig(
 }
 
 type StructuredAgentSessionDroidCommand = NonNullable<StructuredAgentSessionAdapter['droidCommand']>
+
+describe('the MCP sign-in caller command binding', () => {
+  const caller = { callerKey: 'desktop', connectionId: 'connection' }
+  const signIn = { name: 'mcp', action: { kind: 'sign-in', serverName: 'intended' } } as const
+
+  it.each([undefined, caller])(
+    'guards a sign-in even when its first caller is %s',
+    async (firstCaller) => {
+      const forwarding = new AgentSessionMcpSignInForwarding()
+      const send = vi.fn()
+      forwarding.subscribe('reader', { ...caller, sessionId: SESSION, send })
+      let finish = () => {}
+      const runCommand = vi.fn(
+        () =>
+          new Promise<DroidHostCommandResult>((resolve) => {
+            finish = () => resolve(RESULT)
+          })
+      )
+      const run = bindMcpSignInCaller(forwarding, runCommand)
+      const pending = run(SESSION, signIn, firstCaller)
+      const failure = await run(SESSION, signIn).catch((error: unknown) => error)
+      const oppositeFailure = await run(SESSION, signIn, caller).catch((error: unknown) => error)
+      const notOpened = forwarding.open(SESSION, 'private-challenge', 'other') === false
+      finish()
+      await pending
+      expect(runCommand).toHaveBeenCalledOnce()
+      expect(failure).toMatchObject({
+        textKey: 'components.native-chat.droidHost.mcpSignInIncomplete'
+      })
+      expect(oppositeFailure).toMatchObject({
+        textKey: 'components.native-chat.droidHost.mcpSignInIncomplete'
+      })
+      expect(notOpened).toBe(true)
+      expect(send).not.toHaveBeenCalled()
+      runCommand.mockResolvedValueOnce(RESULT)
+      expect(await run(SESSION, signIn)).toEqual(RESULT)
+    }
+  )
+
+  it('rejects another server before and during the intended acknowledgment without consuming it', async () => {
+    const forwarding = new AgentSessionMcpSignInForwarding()
+    let requestId = ''
+    const send = vi.fn((request: { requestId: string }) => {
+      requestId = request.requestId
+    })
+    forwarding.subscribe('reader', { ...caller, sessionId: SESSION, send })
+    let finish = () => {}
+    const run = bindMcpSignInCaller(
+      forwarding,
+      () =>
+        new Promise<DroidHostCommandResult>((resolve) => {
+          finish = () => resolve(RESULT)
+        })
+    )
+    const pending = run(SESSION, signIn, caller)
+    const before = forwarding.open(SESSION, 'private-challenge', 'other')
+    const notSentBefore = send.mock.calls.length === 0
+    const intended = forwarding.open(SESSION, 'private-challenge', 'intended')
+    const during = forwarding.open(SESSION, 'private-challenge', 'other')
+    const acknowledged = forwarding.acknowledge(
+      SESSION,
+      requestId,
+      caller.connectionId,
+      caller.callerKey,
+      true
+    )
+    finish()
+    const answer = await pending
+    expect(before).toBe(false)
+    expect(notSentBefore).toBe(true)
+    expect(during).toBe(false)
+    expect(send).toHaveBeenCalledOnce()
+    expect(acknowledged).toBe(true)
+    expect(await intended).toBe(true)
+    expect(answer).toEqual(RESULT)
+  })
+})
 
 describe('a Droid chat command on the host', () => {
   it('runs on the live child under the fence it holds and answers with the child result', async () => {

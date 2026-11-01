@@ -12,6 +12,25 @@ import { journalOpenReadRefusal } from '../agent-session-journal/journal-open-fa
 import type { StructuredAgentSessionHostSession } from './structured-agent-session-host-types'
 import type { StructuredAgentSessionMutationContext } from './structured-agent-session-mutation-context'
 import { AGENT_SESSION_NOT_ATTACHED } from './structured-agent-session-mutation-refusals'
+import type {
+  AgentSessionMcpSignInForwarding,
+  McpSignInCaller
+} from './agent-session-mcp-sign-in-forwarding'
+
+export function bindMcpSignInCaller(
+  forwarding: AgentSessionMcpSignInForwarding,
+  runCommand: (
+    sessionId: string,
+    command: DroidHostCommandRequest
+  ) => Promise<DroidHostCommandResult>
+) {
+  return (sessionId: string, command: DroidHostCommandRequest, caller?: McpSignInCaller) => {
+    const run = () => runCommand(sessionId, command)
+    return command.name === 'mcp' && command.action.kind === 'sign-in'
+      ? forwarding.run(sessionId, caller, command.action.serverName, run)
+      : run()
+  }
+}
 
 type DroidCommandContext = Pick<
   StructuredAgentSessionMutationContext,

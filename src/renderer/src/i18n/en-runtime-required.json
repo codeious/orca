@@ -2842,6 +2842,7 @@
         "forkFailed": "Droid did not return a new session for the fork. Try again.",
         "mcpDuplicate": "Droid already has an MCP server named {{serverName}}.",
         "mcpLinkNotOpened": "Orca could not open the sign-in link for {{serverName}} on this host.",
+        "mcpLinkOpened": "Orca opened the sign-in link for {{serverName}} in your browser on this computer.",
         "mcpNotAdded": "Droid did not add {{serverName}}.",
         "mcpNotOff": "Droid did not turn {{serverName}} off.",
         "mcpNotOn": "Droid did not turn {{serverName}} on.",

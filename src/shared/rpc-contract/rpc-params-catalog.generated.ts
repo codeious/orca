@@ -497,6 +497,7 @@ import {
 import { RepoAddRemote, SshBrowseDir, SshTarget, SshTargetAdd, SshTargetUpdate } from './ssh-params'
 import { ContinueInterruptedParams } from './structured-agent-session-continue-params'
 import { DroidCommandParams } from './structured-agent-session-droid-command-params'
+import { McpSignInOpenedParams } from './structured-agent-session-mcp-sign-in-params'
 import {
   AcknowledgeAttentionParams,
   AgentsParams,
@@ -643,6 +644,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSession.handoffStatus': HandoffStatusParams,
   'agentSession.history': HistoryParams,
   'agentSession.hold': HoldParams,
+  'agentSession.mcpSignInOpened': McpSignInOpenedParams,
   'agentSession.modelCatalog': ModelCatalogParams,
   'agentSession.options': OptionsParams,
   'agentSession.queuedMessageDelete': QueuedMessageActionParams,

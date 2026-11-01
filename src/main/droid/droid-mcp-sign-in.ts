@@ -1,6 +1,35 @@
 import { z } from 'zod'
 import type { DroidHostCopyKey } from '../../shared/droid-host-copy'
-import { DroidHostTextError } from './droid-host-text'
+import { DroidHostTextError, droidHostText } from './droid-host-text'
+import type { DroidSessionDeps } from './droid-session'
+import type { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
+
+export function createDroidSessionMcpSignIn(
+  deps: Pick<DroidSessionDeps, 'openMcpSignIn' | 'forwardMcpSignIn' | 'logger'>,
+  sessionId: string,
+  lane: Pick<JsonlRpcTimelineLane, 'apply'>
+): DroidMcpSignIn {
+  return new DroidMcpSignIn({
+    open: deps.openMcpSignIn,
+    forward: deps.forwardMcpSignIn
+      ? (serverName, url) => deps.forwardMcpSignIn?.(sessionId, url, serverName) ?? false
+      : undefined,
+    ...(!deps.openMcpSignIn && deps.forwardMcpSignIn
+      ? {
+          opened: (serverName: string) =>
+            lane.apply([
+              {
+                type: 'item.update',
+                item: `mcp-opened:${Date.now()}`,
+                body: { kind: 'status', ...droidHostText('mcpLinkOpened', { serverName }) }
+              }
+            ])
+        }
+      : {}),
+    warn: (message, fields) =>
+      deps.logger.warn(message, { scope: 'droid-mcp', sessionId, ...fields })
+  })
+}
 
 // The sign-in link goes to the opener and no further: it is never stored, logged, journaled or
 // answered, and Droid's `message` (which may repeat it) is never read.
@@ -25,6 +54,8 @@ type Waiting = { serverName: string; stop: (error: Error) => void }
 
 type DroidMcpSignInDeps = {
   open?: DroidMcpSignInOpener
+  forward?: (serverName: string, url: string) => boolean | Promise<boolean>
+  opened?: (serverName: string) => void
   warn: (message: string, fields: { serverName: string }) => void
 }
 
@@ -33,6 +64,8 @@ export class DroidMcpSignInStopped extends DroidHostTextError {}
 
 export class DroidMcpSignIn {
   private readonly waiting = new Set<Waiting>()
+  // Browser fallback is not remote cancellation; untagged challenges must not reach a later caller.
+  private readonly forwardingAttempts = new Map<string, object>()
   /** The state last opened per server, so a repeat opens no second tab; forgotten when a sign-in starts or ends. */
   private readonly opened = new Map<string, string>()
 
@@ -54,6 +87,14 @@ export class DroidMcpSignIn {
 
   /** Runs a sign-in request, ending it early when the link cannot be opened or Droid reports it stopped. */
   async run<T>(serverName: string, authenticate: () => Promise<T>): Promise<T> {
+    const forwarded = !this.deps.open && this.deps.forward !== undefined
+    if (forwarded && this.forwardingAttempts.has(serverName)) {
+      throw new DroidMcpSignInStopped('mcpSignInIncomplete', { serverName })
+    }
+    const attempt = {}
+    if (forwarded) {
+      this.forwardingAttempts.set(serverName, attempt)
+    }
     // Registered before the request goes out: the challenge can arrive ahead of its answer.
     let stop: (error: Error) => void = () => {}
     const stopped = new Promise<never>((_resolve, reject) => {
@@ -63,7 +104,13 @@ export class DroidMcpSignIn {
     this.waiting.add(entry)
     this.opened.delete(serverName)
     try {
-      return await Promise.race([authenticate(), stopped])
+      const authenticated = authenticate().then((answer) => {
+        if (this.forwardingAttempts.get(serverName) === attempt) {
+          this.forwardingAttempts.delete(serverName)
+        }
+        return answer
+      })
+      return await Promise.race([authenticated, stopped])
     } finally {
       this.waiting.delete(entry)
       this.opened.delete(serverName)
@@ -71,13 +118,24 @@ export class DroidMcpSignIn {
   }
 
   private openLink({ serverName, authUrl, state }: z.infer<typeof requiredSchema>): void {
+    if (
+      !this.deps.open &&
+      this.deps.forward &&
+      ![...this.waiting].some((entry) => entry.serverName === serverName)
+    ) {
+      return
+    }
     if (state !== undefined) {
       if (this.opened.get(serverName) === state) {
         return
       }
       this.opened.set(serverName, state)
     }
-    const { open } = this.deps
+    const open =
+      this.deps.open ??
+      (this.deps.forward
+        ? (url: string) => this.deps.forward?.(serverName, url) ?? false
+        : undefined)
     if (!open) {
       this.linkNotOpened(serverName)
       return
@@ -93,6 +151,8 @@ export class DroidMcpSignIn {
       .then((opened) => {
         if (!opened) {
           this.linkNotOpened(serverName)
+        } else {
+          this.deps.opened?.(serverName)
         }
       })
   }
@@ -106,6 +166,7 @@ export class DroidMcpSignIn {
   }
 
   private finish({ serverName, outcome }: z.infer<typeof completedSchema>): void {
+    this.forwardingAttempts.delete(serverName)
     this.opened.delete(serverName)
     if (outcome === 'cancelled') {
       this.stopWaiting(serverName, 'mcpSignInCancelled')

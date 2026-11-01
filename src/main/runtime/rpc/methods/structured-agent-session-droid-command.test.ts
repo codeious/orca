@@ -66,7 +66,7 @@ describe('agentSession.droidCommand', () => {
       STRUCTURED_CLIENT
     )
 
-    expect(hostCalls.droidCommand).toHaveBeenCalledWith(SESSION, command)
+    expect(hostCalls.droidCommand).toHaveBeenCalledWith(SESSION, command, undefined)
     expect(response).toMatchObject({ ok: true, result: { name: 'credits', factoryCredits: 12 } })
   })
 

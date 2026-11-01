@@ -11,6 +11,7 @@ export type RetainedRemoteRuntimeSubscription = RemoteRuntimeSubscription & {
   setupController: AbortController
   environmentId: string
   ownerWebContentsId: number
+  sessionId?: string
   removeDestroyedListener: () => void
   notifyClosed: () => void
 }
@@ -205,14 +206,31 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(args: {
         subscription.close()
         return { subscriptionId, requestId: subscription.requestId }
       }
+      const sendRequest = subscription.sendRequest?.bind(subscription)
       remoteRuntimeSubscriptions.set(subscriptionId, {
         setupController,
         requestId: subscription.requestId,
         environmentId: environment.id,
         ownerWebContentsId,
+        sessionId:
+          args.method === 'agentSession.subscribe' &&
+          typeof args.params === 'object' &&
+          args.params !== null &&
+          'sessionId' in args.params &&
+          typeof args.params.sessionId === 'string'
+            ? args.params.sessionId
+            : undefined,
         removeDestroyedListener,
         notifyClosed,
         sendBinary: (bytes) => subscription?.sendBinary(bytes) ?? false,
+        sendRequest: sendRequest
+          ? (method, params, timeoutMs) => {
+              if (!transportIsCurrent() || setupController.signal.aborted) {
+                throw new Error('Runtime environment pairing changed; refresh and try again')
+              }
+              return sendRequest(method, params, timeoutMs)
+            }
+          : undefined,
         close: () => {
           removeDestroyedListener()
           subscription?.close()

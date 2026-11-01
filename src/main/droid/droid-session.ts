@@ -17,7 +17,11 @@ import {
   readDroidCompactionSummary,
   type DroidCompactionSummaryReader
 } from './droid-compaction-summary'
-import { DroidMcpSignIn, type DroidMcpSignInOpener } from './droid-mcp-sign-in'
+import {
+  createDroidSessionMcpSignIn,
+  type DroidMcpSignIn,
+  type DroidMcpSignInOpener
+} from './droid-mcp-sign-in'
 import {
   droidOptionParams,
   droidSavedOptionPicks,
@@ -71,6 +75,11 @@ export type DroidSessionDeps = {
   realpath?: (path: string) => Promise<string>
   /** Opens an MCP sign-in link on the machine Orca runs on. Absent on a host with no way to. */
   openMcpSignIn?: DroidMcpSignInOpener
+  forwardMcpSignIn?: (
+    sessionId: string,
+    url: string,
+    serverName: string
+  ) => boolean | Promise<boolean>
 }
 
 /** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. A picked
@@ -182,11 +191,7 @@ export class DroidSession {
       warn: (message, fields) =>
         deps.logger.warn(message, { scope: 'droid-context', sessionId, ...fields })
     })
-    this.mcpSignIn = new DroidMcpSignIn({
-      ...(deps.openMcpSignIn ? { open: deps.openMcpSignIn } : {}),
-      warn: (message, fields) =>
-        deps.logger.warn(message, { scope: 'droid-mcp', sessionId, ...fields })
-    })
+    this.mcpSignIn = createDroidSessionMcpSignIn(deps, sessionId, this.lane)
     this.turns = new DroidTurns({
       lane: this.lane,
       generation,

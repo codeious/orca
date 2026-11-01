@@ -178,6 +178,8 @@ export function paramsFor(method: string): unknown {
     }
     case 'agentSession.droidCommand':
       return { sessionId: SESSION, command: { name: 'context' } }
+    case 'agentSession.mcpSignInOpened':
+      return { sessionId: SESSION, requestId: 'open-request', opened: false }
     case 'agentSession.history':
       return { sessionId: SESSION, direction: 'tail' }
     case 'agentSession.acknowledgeAttention':

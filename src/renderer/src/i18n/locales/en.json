@@ -18091,6 +18091,7 @@
         "mcpDuplicate": "Droid already has an MCP server named {{serverName}}.",
         "mcpUnknown": "Droid has no MCP server named {{serverName}}.",
         "mcpLinkNotOpened": "Orca could not open the sign-in link for {{serverName}} on this host.",
+        "mcpLinkOpened": "Orca opened the sign-in link for {{serverName}} in your browser on this computer.",
         "mcpSignInCancelled": "Sign-in to {{serverName}} was cancelled.",
         "mcpSignInIncomplete": "Sign-in to {{serverName}} did not finish.",
         "autonomyUnknown": "Droid has no autonomy level named {{value}}"
