@@ -1,0 +1,30 @@
+config/scripts/vitest-real-agent-home-write-guard.test.ts
+  s_a71ca3b06ed7b3::t_9ff959242a77fd 73-78
+config/scripts/vitest-real-agent-home-write-guard.ts
+  s_a71ca3b06ed7b3::t_b5683f7eba78d0 19-20
+src/main/agent-hooks/installer-utils-remote.test.ts
+  h_476903bd8a47d9 24,47-50,233-269
+src/main/agent-hooks/installer-utils-remote.ts
+  h_476903bd8a47d9 35,40,42-43,46,48-51,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "387b539d8d3d2bca603c51574f7f947e970af243",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
