@@ -163,6 +163,17 @@ describe('Droid on a paired runtime host, including orcad SSH', () => {
     expect(runtimeHost()).toEqual({ supported: true })
   })
 
+  it('keeps Droid off chat when the host does not list Droid', () => {
+    expect(runtimeHost({ hostStructuredAgents: undefined })).toEqual({
+      supported: false,
+      blocker: 'agent-without-structured-session'
+    })
+    expect(runtimeHost({ hostStructuredAgents: ['claude'] })).toEqual({
+      supported: false,
+      blocker: 'agent-without-structured-session'
+    })
+  })
+
   it.each(['claude', 'codex', 'pi', 'grok', 'droid'] as const)(
     'keeps unknown runtime capabilities closed for %s',
     (agent) => {
