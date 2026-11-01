@@ -1,0 +1,29 @@
+src/main/automations/headless-automation-agent-launch.test.ts
+  s_a71ca3b06ed7b3::t_e67bc063ba707c 6-8,10,210-223
+src/main/runtime/rpc/methods/agent-launch-floating-workspace.test.ts
+  s_a71ca3b06ed7b3::t_7ca5476cd4dd7b 87-122
+src/main/runtime/runtime-client-settings-agent-launch-modes-projection.test.ts
+  s_a71ca3b06ed7b3::t_68d09070fd7b81 5-8,35-50
+src/renderer/src/lib/agent-launch-routing.test.ts
+  s_a71ca3b06ed7b3::t_b681392c453a74 9-13,152-233
+src/renderer/src/lib/agent-launch-through-host-agent-setting.test.ts
+  s_a71ca3b06ed7b3::t_5f70d81e574646 1-40
+src/renderer/src/lib/agent-launch-through-host.ts
+  s_a71ca3b06ed7b3::t_c462f4add0b1e8 26,144-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "85241f97f7233ee53aad348b4f1a523db9c527f0",
+  "prompts": {},
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
