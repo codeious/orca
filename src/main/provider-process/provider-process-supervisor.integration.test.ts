@@ -78,6 +78,13 @@ const RECORDS_SIGTERM_PROVIDER = String.raw`
   setInterval(() => {}, 60000)
 `
 
+// Closes its stdout shortly after a first line and keeps running, ignoring its stdin end.
+const ENDS_STDOUT_AND_STAYS_ALIVE_PROVIDER = String.raw`
+  process.stdout.write(JSON.stringify({ provider: process.pid }) + '\n')
+  setTimeout(() => process.stdout.end(), 100)
+  setInterval(() => {}, 60000)
+`
+
 // Answers a one-shot request only after the session stdin-end grace, then exits with its own code.
 const ONE_SHOT_PROVIDER = String.raw`
   process.on('SIGTERM', () => {
@@ -518,6 +525,58 @@ describe.runIf(process.platform !== 'win32')('POSIX provider supervisor processe
       stdinEndGraceMs - 20
     )
     expect(await waitFor(() => !alive(pids.supervisor), 3_000)).toBe(true)
+  })
+
+  it("relays a provider's stdout end while the provider keeps running", async () => {
+    const { supervisor } = launchSupervisor(
+      { forwardOutputEnd: true },
+      {},
+      { command: process.execPath, args: ['-e', ENDS_STDOUT_AND_STAYS_ALIVE_PROVIDER] }
+    )
+    let ended = false
+    supervisor.stdout!.once('end', () => (ended = true))
+    const { provider } = await readPids(supervisor, ['provider'])
+
+    expect(await waitFor(() => ended, 2_000)).toBe(true)
+    expect(alive(provider)).toBe(true)
+    expect(alive(supervisor.pid!)).toBe(true)
+  })
+
+  it('keeps its stdout open when the provider ends its stdout and the launch did not opt in', async () => {
+    const { supervisor } = launchSupervisor(
+      {},
+      {},
+      { command: process.execPath, args: ['-e', ENDS_STDOUT_AND_STAYS_ALIVE_PROVIDER] }
+    )
+    let ended = false
+    supervisor.stdout!.once('end', () => (ended = true))
+    const { provider } = await readPids(supervisor, ['provider'])
+
+    expect(await waitFor(() => ended, 1_000)).toBe(false)
+    expect(alive(provider)).toBe(true)
+  })
+
+  it('relays all of the provider output to a slow owner before exiting when it forwards the output end', async () => {
+    const bytes = 4 * 1024 * 1024
+    const { supervisor, exit } = launchSupervisor(
+      { forwardOutputEnd: true },
+      {},
+      {
+        command: process.execPath,
+        args: ['-e', `process.stdout.write('x'.repeat(${bytes})); process.exitCode = 3`]
+      }
+    )
+    let received = 0
+    supervisor.stdout!.on('data', (chunk: Buffer) => {
+      received += chunk.byteLength
+      supervisor.stdout!.pause()
+      setTimeout(() => supervisor.stdout!.resume(), 5)
+    })
+    const closed = new Promise((resolve) => supervisor.once('close', resolve))
+
+    await expect(exit).resolves.toEqual({ code: 3, signal: null })
+    await closed
+    expect(received).toBe(bytes)
   })
 
   describe('one-shot lifetime', () => {
