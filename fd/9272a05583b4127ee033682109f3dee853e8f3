@@ -1,0 +1,19 @@
+src/main/droid/droid-text-command.ts
+  s_ed79b846e95547::t_9446de7c0e9174 4,7-13,15,20-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fd9272a05583b4127ee033682109f3dee853e8f3",
+  "prompts": {},
+  "sessions": {
+    "s_ed79b846e95547": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a380474f-90f8-4792-9f3a-88671b8c97bd",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
