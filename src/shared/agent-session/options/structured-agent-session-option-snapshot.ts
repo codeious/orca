@@ -27,6 +27,10 @@ import { withUnlistedEffort } from './structured-agent-session-unlisted-effort'
 import { structuredAgentSessionPermissionDescriptor } from './structured-agent-session-permission-option'
 import type { StructuredAgentSessionOptionState } from './structured-agent-session-options'
 import { withSpecModeSnapshot } from '../../structured-agent-session-spec-option'
+import {
+  sessionScopedOptionAccepts,
+  sessionScopedOptionSnapshot
+} from './agent-session-session-options'
 
 /** Unpickable placeholder cannot become a launch selection before a real model answer. */
 const PROVIDER_DEFAULT_MODEL_PLACEHOLDER: SessionOptionDescriptor = {
@@ -66,6 +70,16 @@ export function structuredAgentSessionShownModel(
     controlsModelId: currentId ?? supplied,
     isCliDefault: currentId !== null && currentId === defaultId
   }
+}
+
+/** The model a pick's values were chosen under: the chat's own, else the default shown. */
+export function structuredAgentSessionControlsModelId(
+  state: StructuredAgentSessionOptionState
+): string | null {
+  return state.catalog
+    ? structuredAgentSessionShownModel(state.catalog, state.catalog.models, state.record)
+        .controlsModelId
+    : null
 }
 
 /** Only the chat’s verified listing describes a model; an unlisted chat model has no inferred capabilities. */
@@ -221,7 +235,12 @@ export function structuredAgentSessionOptionSnapshot(
   state: StructuredAgentSessionOptionState
 ): SessionOptionDescriptor[] {
   const permission = structuredAgentSessionPermissionDescriptor(state)
-  const options = withSpecModeSnapshot(modelOptionSnapshot(state), state.record).map((option) =>
+  const extra = sessionScopedOptionSnapshot(state)
+  const base = withSpecModeSnapshot(modelOptionSnapshot(state), state.record)
+  const options = [
+    ...base.filter((row) => !extra.some((option) => option.id === row.id)),
+    ...extra
+  ].map((option) =>
     (state.fastModeRestricted && option.id === 'fastMode') ||
     (state.listingInProgress && ['effort', 'serviceTier', 'fastMode'].includes(option.id))
       ? { ...option, settable: false }
@@ -252,6 +271,10 @@ export function canSetStructuredAgentSessionOption(
 ): boolean {
   if (!interactionReady || pending || (id === 'fastMode' && state.fastModeRestricted)) {
     return false
+  }
+  const sessionOption = snapshot.find((entry) => entry.id === id && entry.scope === 'session')
+  if (sessionOption) {
+    return sessionScopedOptionAccepts(sessionOption, value)
   }
   if (id === 'permissionMode') {
     const descriptor = snapshot.find((entry) => entry.id === id)

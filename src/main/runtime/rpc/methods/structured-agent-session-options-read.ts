@@ -23,6 +23,7 @@ import type { AgentSessionModelCatalogResult } from '../../../../shared/agent-se
 import { structuredAgentSessionOptionModels } from '../../../native-chat/agent-session-wire/structured-agent-session-option-models'
 import { finishedListingIds } from '../../../../shared/agent-session/options/structured-agent-session-options'
 import { projectHostCommandCatalog } from './structured-agent-session-host-command'
+import { AGENT_SESSION_SESSION_OPTIONS_CAPABILITY } from '../../../../shared/agent-session/options/agent-session-session-options'
 
 export const STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS = [
   defineMethod({
@@ -58,7 +59,13 @@ export const STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS = [
     handler: async (params, ctx) => {
       const readsWithoutModel = clientReadsOptionsWithoutModel(ctx)
       const host = await requireInstalledStructuredHost(ctx, params.sessionId)
-      const result = await host.readOptions(params.sessionId, { readsWithoutModel })
+      const read = await host.readOptions(params.sessionId, { readsWithoutModel })
+      const { sessionOptions: _sessionOptions, ...compatible } = read
+      const result =
+        ctx.clientKind === undefined ||
+        ctx.clientCapabilities?.includes(AGENT_SESSION_SESSION_OPTIONS_CAPABILITY)
+          ? read
+          : compatible
       if (result.current.model === undefined && !readsWithoutModel) {
         return {
           ...result,
