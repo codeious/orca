@@ -17,27 +17,15 @@ import { rewindRefusal } from './structured-rewind-refusal'
 import type { StructuredAgentSessionLogger } from './structured-agent-session-logger'
 import type { JournalOperationReceipt } from '../agent-session-journal/journal-row-writer'
 import type { AgentJournalCursor } from '../../../shared/agent-session-journal-identity'
+import type { StructuredAgentRegistry } from './structured-agent-registry'
+import { persistRewindRecord } from './structured-rewind-record'
+export { persistRewindRecord } from './structured-rewind-record'
 
 type RewindRecoveryDeps = {
+  agents?: StructuredAgentRegistry
   store: AgentSessionRecordStore
   logger: StructuredAgentSessionLogger
   nameProviderConversation?: (record: AgentSessionRecord) => void
-}
-
-export function persistRewindRecord(
-  store: AgentSessionRecordStore,
-  sessionId: string,
-  fence: number,
-  rewind: AgentSessionRewindRecord
-): Promise<unknown> {
-  // Drop legacy copied history; the retained journal remains authoritative.
-  const { retained: _retained, hydrationVerified: _hydrationVerified, ...current } = rewind
-  return store.transitionHandoff(sessionId, (record) => {
-    if (record.lease.runtimeFence !== fence) {
-      throw new Error('agent_session_checkpoint_stale')
-    }
-    return { ...record, rewind: current }
-  })
 }
 
 /** Pre-fork Claude rewinds never ran; refuse them without blocking the already-attached chat. */
@@ -84,7 +72,8 @@ export type StructuredRewindRecoveryEvidence = {
 function rewindJournalCut(
   record: AgentSessionRecord | null,
   journal: AgentSessionJournal,
-  rewind: AgentSessionRewindRecord
+  rewind: AgentSessionRewindRecord,
+  agents?: StructuredAgentRegistry
 ): { alreadyReplaced: boolean; cut: StructuredRewindCut | null } {
   const alreadyReplaced = journal.cursor().epoch !== rewind.expectedEpoch
   const head = record && agentSessionProviderHandleChainHead(record.providerHandleChain)?.handle
@@ -94,7 +83,8 @@ function rewindJournalCut(
       : structuredRewindCut(journal, {
           itemId: rewind.itemId,
           provider: record.provider,
-          nativeId: head.nativeId
+          nativeId: head.nativeId,
+          rewindMessageTarget: agents?.definition(record.provider)?.rewindMessageTarget
         })
   return { alreadyReplaced, cut }
 }
@@ -127,7 +117,7 @@ export async function recoverStructuredRewind(
 
 /** Supply the record a pending commit will expose to apply. */
 export async function readStructuredRewindRecovery(
-  { store }: RewindRecoveryDeps,
+  { store, agents }: RewindRecoveryDeps,
   sessionId: string,
   journal: AgentSessionJournal,
   fence: number,
@@ -141,7 +131,7 @@ export async function readStructuredRewindRecovery(
     return null
   }
   const target = parseAgentJournalItemKey(rewind.providerItemId ?? rewind.itemId)
-  const { cut } = rewindJournalCut(record, journal, rewind)
+  const { cut } = rewindJournalCut(record, journal, rewind, agents)
   if (
     target?.provider === 'claude' ||
     rewind.phase !== 'prepared' ||
@@ -189,7 +179,12 @@ export async function applyStructuredRewindRecovery(
     await settleUnsupportedClaudeRewind(deps, sessionId, fence, rewind)
     return
   }
-  const { alreadyReplaced, cut } = rewindJournalCut(store.getRecord(sessionId), journal, rewind)
+  const { alreadyReplaced, cut } = rewindJournalCut(
+    store.getRecord(sessionId),
+    journal,
+    rewind,
+    deps.agents
+  )
   if (!alreadyReplaced && !cut) {
     throw new Error('agent_session_rewind:invalid-target')
   }

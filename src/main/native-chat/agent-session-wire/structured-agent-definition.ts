@@ -6,6 +6,10 @@ import type { AgentSessionModelOption } from '../../../shared/agent-session/agen
 
 export type StructuredAgentDefinition = AgentSessionStoredAgent & {
   capabilities: AgentSessionCapabilities
+  rewindMessageTarget?: (
+    itemId: string,
+    providerSessionId: string
+  ) => { sessionId: string; uuid: string } | null
   /** Absent means Orca never supplies this agent’s managed runtime. */
   managedRuntime?: () => boolean
   restingOptions: {

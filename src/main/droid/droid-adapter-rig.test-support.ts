@@ -132,7 +132,9 @@ export type DroidAdapterRig = {
 export async function setupDroidAdapter(
   launch: Partial<DroidResolvedLaunch> = {},
   script?: (connection: FakeConnection) => void,
-  extraDeps: Partial<Pick<DroidSessionDeps, 'realpath' | 'logger' | 'onSpecHandoff'>> = {},
+  extraDeps: Partial<
+    Pick<DroidSessionDeps, 'realpath' | 'logger' | 'onSpecHandoff' | 'readCompactionSummary'>
+  > = {},
   /** The execution host the session is on: `local`, or a `runtime:<guid>` for a remote runtime. */
   hostId = 'local'
 ): Promise<DroidAdapterRig> {

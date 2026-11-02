@@ -97,7 +97,12 @@ function Chat({
   queueFollowUps: boolean
   hostStopping?: boolean
 }): React.JSX.Element {
-  const props = { agent: 'claude', sessionId: 'session-1', target: { kind: 'local' } } as const
+  const props = {
+    agent: 'claude',
+    sessionId: 'session-1',
+    tabId: 'chat-1',
+    target: { kind: 'local' }
+  } as const
   const controller = useStructuredAgentSession({
     ...props,
     isVisible: true,

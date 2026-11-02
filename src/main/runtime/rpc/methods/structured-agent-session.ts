@@ -1,4 +1,8 @@
 import { STRUCTURED_AGENT_SESSION_CLOSE_METHOD } from './structured-agent-session-close-method'
+import {
+  projectHostCommandCatalog,
+  STRUCTURED_AGENT_SESSION_HOST_COMMAND_METHODS
+} from './structured-agent-session-host-command'
 import { clientRequestsCommands } from './structured-agent-session-policy'
 import {
   clientReadsCurrentRequests,
@@ -73,6 +77,7 @@ import { ORCA_LAYOUT_OWNER_IS_MAIN } from '../../../../shared/layout-owner-switc
 import { refusingStructuredAgentSessionCreatesClosedFirst } from './structured-agent-session-close-before-create'
 
 export const STRUCTURED_AGENT_SESSION_METHODS = [
+  ...STRUCTURED_AGENT_SESSION_HOST_COMMAND_METHODS,
   defineMethod({
     name: 'agentSession.rewind',
     permission: 'workspace',
@@ -117,15 +122,22 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
     requires: ['accounts'],
     permission: 'workspace',
     params: CreateParams,
-    handler: ORCA_LAYOUT_OWNER_IS_MAIN
-      ? refusingStructuredAgentSessionCreatesClosedFirst(handleStructuredAgentSessionCreate)
-      : handleStructuredAgentSessionCreate
+    handler: async (params, ctx) =>
+      projectHostCommandCatalog(
+        await (
+          ORCA_LAYOUT_OWNER_IS_MAIN
+            ? refusingStructuredAgentSessionCreatesClosedFirst(handleStructuredAgentSessionCreate)
+            : handleStructuredAgentSessionCreate
+        )(params, ctx),
+        ctx
+      )
   }),
   defineMethod({
     name: 'agentSession.ensure',
     permission: 'workspace',
     params: AttachParams,
-    handler: async (params, ctx) => attachClientSuppliedLocation(params, ctx)
+    handler: async (params, ctx) =>
+      projectHostCommandCatalog(await attachClientSuppliedLocation(params, ctx), ctx)
   }),
   defineMethod({
     name: 'agentSession.send',
@@ -197,20 +209,23 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
     params: HistoryParams,
     handler: async (params, ctx) => {
       const host = await requireInstalledHost(ctx, params.sessionId)
-      return projectTurnItemHistory(
-        projectQueuedImageCardHistory(
-          projectBackgroundTaskHistory(
-            await host.history(
-              params,
-              undefined,
-              clientSupportsSnapshotCatchUp(ctx) && clientReadsCurrentRequests(ctx)
+      return projectHostCommandCatalog(
+        projectTurnItemHistory(
+          projectQueuedImageCardHistory(
+            projectBackgroundTaskHistory(
+              await host.history(
+                params,
+                undefined,
+                clientSupportsSnapshotCatchUp(ctx) && clientReadsCurrentRequests(ctx)
+              ),
+              ctx
             ),
             ctx
           ),
-          ctx
+          ctx,
+          host.sessionAgent(params.sessionId)
         ),
-        ctx,
-        host.sessionAgent(params.sessionId)
+        ctx
       )
     }
   }),
@@ -237,10 +252,13 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
           projectQueuedImageCardPublication(publication, ctx),
         emit: (event) =>
           emit(
-            projectTurnItemEvent(
-              projectBackgroundTaskEvent(event, ctx),
-              ctx,
-              host.sessionAgent(params.sessionId)
+            projectHostCommandCatalog(
+              projectTurnItemEvent(
+                projectBackgroundTaskEvent(event, ctx),
+                ctx,
+                host.sessionAgent(params.sessionId)
+              ),
+              ctx
             )
           ),
         ...(params.cursor ? { cursor: params.cursor } : {}),

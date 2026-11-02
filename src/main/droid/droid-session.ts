@@ -6,13 +6,10 @@ import { providerTimelineSink } from '../native-chat/agent-session-timeline/prov
 import {
   AgentSessionPreSpawnError,
   type StructuredAgentSessionAdapter,
-  type AgentSessionDispatchOutcome,
-  type StructuredAgentSessionAcquireInput,
-  type StructuredAgentSessionLifecycleEvent
+  type StructuredAgentSessionAcquireInput
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
-import type { StructuredAgentSessionLogger } from '../native-chat/agent-session-wire/structured-agent-session-logger'
 import type { ProviderProcessLaunch } from '../provider-process/provider-process-launch'
-import { DroidAgentConnection, type DroidAgentConnectionOptions } from './droid-agent-connection'
+import { DroidAgentConnection } from './droid-agent-connection'
 import { droidAutonomyCapRow } from './droid-autonomy-cap-notice'
 import { DroidContextUsage } from './droid-context-usage'
 import {
@@ -27,42 +24,16 @@ import { DroidReportedSettings, type DroidStartSettings } from './droid-session-
 import { readStartedSession } from './droid-started-session'
 import { droidProviderLink, type DroidResolvedLaunch } from './droid-structured-launch-resolution'
 import { DroidTurns } from './droid-turns'
+import { continueDroidSession } from './droid-session-continuation'
 import { isSupportedDroidProtocol } from './droid-version-support'
-import { droidSpecHandoffHandlers, type DroidSpecHandoff } from './droid-spec-handoff'
+import { droidSpecHandoffHandlers } from './droid-spec-handoff'
+import {
+  readDroidCompactionSummary,
+  type DroidCompactionSummaryReader
+} from './droid-compaction-summary'
 
-export type DroidConnection = Pick<
-  DroidAgentConnection,
-  | 'request'
-  | 'close'
-  | 'pauseReading'
-  | 'resumeReading'
-  | 'pid'
-  | 'closed'
-  | 'rootVerdict'
-  | 'processless'
-  | 'lastCloseResult'
-  | 'onExit'
-  | 'protocolVersion'
->
-
-export type DroidSessionDeps = {
-  onSpecHandoff?: (sourceSessionId: string, handoff: DroidSpecHandoff) => Promise<void>
-  openConnection?: (
-    launch: ProviderProcessLaunch,
-    handlers: DroidAgentConnectionOptions
-  ) => DroidConnection
-  onLifecycle: (event: StructuredAgentSessionLifecycleEvent) => void
-  onSettled: (input: {
-    sessionId: string
-    clientMessageId: string
-    fence: number
-    outcome: AgentSessionDispatchOutcome
-  }) => void
-  onIdle: (input: { sessionId: string }) => void
-  logger: StructuredAgentSessionLogger
-  /** Resolves a folder to its real path; replaced in tests. */
-  realpath?: (path: string) => Promise<string>
-}
+import type { DroidConnection, DroidSessionDeps } from './droid-session-deps'
+export type { DroidConnection, DroidSessionDeps } from './droid-session-deps'
 
 /** Where the child starts: a new Droid session in `cwd`, or the one `resumeId` names. A picked
  *  level was chosen in the chat; otherwise it is the one Agent Permissions asks for. */
@@ -90,6 +61,7 @@ export class DroidSession {
   readonly model = new DroidSessionModel()
   readonly options: DroidSessionOptions
   readonly context: DroidContextUsage
+  readonly readCompactionSummary: (sessionId: string) => ReturnType<DroidCompactionSummaryReader>
   /** Droid's own id for the session this child holds, once the start has answered. */
   droidSessionId: string | undefined
 
@@ -109,6 +81,9 @@ export class DroidSession {
       throw new Error('Droid structured chat requires the shared timeline sink')
     }
     const sessionId = input.identity.sessionId
+    const echoes = new Map<string, string>()
+    this.readCompactionSummary = (id) =>
+      (deps.readCompactionSummary ?? readDroidCompactionSummary)(launch, id)
     this.lane = new JsonlRpcTimelineLane({
       sink,
       sessionId,
@@ -119,9 +94,13 @@ export class DroidSession {
       resumeReading: () => this.connection?.resumeReading(),
       onFailed: (reason) => this.fail(new Error(reason)),
       onInputAccepted: (clientMessageId) => {
+        const messageId = echoes.get(clientMessageId)
+        echoes.delete(clientMessageId)
         this.lifecycle.settle(clientMessageId, {
           state: 'accepted',
-          providerIdentity: { provider: 'orca', clientMessageId }
+          providerIdentity: messageId
+            ? { provider: 'legacy', agent: 'droid', sessionId, recordId: messageId }
+            : { provider: 'orca', clientMessageId }
         })
       }
     })
@@ -163,6 +142,7 @@ export class DroidSession {
         deps.logger.warn(message, { scope: 'droid-context', sessionId, ...fields })
     })
     this.turns = new DroidTurns({
+      rememberEcho: (clientId, messageId) => echoes.set(clientId, messageId),
       lane: this.lane,
       generation,
       request: this.request,
@@ -266,6 +246,18 @@ export class DroidSession {
   close(requested = true): ReturnType<DroidConnection['close']> {
     return this.lifecycle.close(requested)
   }
+
+  continueIn = (id: string): Promise<void> =>
+    continueDroidSession(
+      this,
+      {
+        input: this.input,
+        begin: this.begin,
+        deps: this.deps,
+        generation: this.generation
+      },
+      id
+    )
 
   fail(error: Error): void {
     this.lifecycle.fail(error)
