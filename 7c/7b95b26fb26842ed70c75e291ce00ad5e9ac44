@@ -1,0 +1,143 @@
+src/main/agent-launch/agent-launch-executor.test.ts
+  h_476903bd8a47d9 109-134
+src/main/agent-launch/agent-launch-mode.ts
+  h_476903bd8a47d9 11,240,245-248,250-251,283-284,308
+  s_a71ca3b06ed7b3::t_b2fbe5743c5c15 24,28-31,93-97,242-244,249,332
+src/main/native-chat/structured-agent-session-create-support.test.ts
+  h_476903bd8a47d9 19-50
+  s_a71ca3b06ed7b3::t_6c8ba09a6922e7 1-18,51-60
+src/shared/agent-launch-intent.ts
+  h_476903bd8a47d9 142-143
+src/main/native-chat/structured-agent-session-create-support.ts
+  h_476903bd8a47d9 4,6,7,11,11-13,19,22-25,22-27,30-33
+  s_a71ca3b06ed7b3::t_6476c95fe13285 7,12-13,26-27,30-33
+src/main/agent-launch/agent-launch-mode-settings.ts
+  s_a71ca3b06ed7b3::t_9bac81116fe474 1-19
+src/main/runtime/rpc/methods/orchestration-worker-start-mode.ts
+  s_a71ca3b06ed7b3::t_ece87a283fce58 59
+src/main/runtime/session-tabs/structured-session-create-support.ts
+  s_a71ca3b06ed7b3::t_942d6672e2cf21 30
+config/scripts/vitest-real-agent-home-write-guard.test.ts
+  s_a71ca3b06ed7b3::t_9ff959242a77fd 73-78
+config/scripts/vitest-real-agent-home-write-guard.ts
+  s_a71ca3b06ed7b3::t_b5683f7eba78d0 19-20
+src/main/agent-hooks/installer-utils-remote.test.ts
+  h_476903bd8a47d9 24,47-50,233-269
+src/main/agent-hooks/installer-utils-remote.ts
+  h_476903bd8a47d9 35,40,42-43,46,48-51,53
+src/main/agent-cli-version-probe.test.ts
+  h_476903bd8a47d9 87,89-91,96
+src/main/agent-cli-version-probe.ts
+  h_476903bd8a47d9 59,92
+src/main/acp/acp-dialects/grok-background-task-stop.ts
+  h_476903bd8a47d9 2,18
+src/main/acp/acp-dialects/grok-requests.ts
+  h_476903bd8a47d9 6,32,68-71,111
+src/main/acp/acp-dialects/grok-subagent-stop.ts
+  h_476903bd8a47d9 2,18
+src/main/acp/acp-dialects/omp-dialect.ts
+  h_476903bd8a47d9 2
+src/main/acp/acp-errors.ts
+  h_476903bd8a47d9 4-13,39,64
+src/main/acp/acp-incoming-request-start.test.ts
+  h_476903bd8a47d9 1-83
+src/main/acp/acp-incoming-requests.ts
+  h_476903bd8a47d9 1-6,8,25-29,46,53,57,72-84,87-90,108,111-114
+src/main/acp/acp-json-rpc-peer-dialect.test.ts
+  h_476903bd8a47d9 1-206
+src/main/acp/acp-json-rpc-peer.ts
+  h_476903bd8a47d9 11-13,22,33-34,38-45,52-53,108,118,120-121,166,171,252,265-270,282,292,297-299,303,312
+src/main/acp/acp-oversized-lines.ts
+  h_476903bd8a47d9 3,23
+src/main/acp/acp-peer-dialect.ts
+  h_476903bd8a47d9 1-28,30-55,57-63
+src/main/acp/acp-rpc-envelope.ts
+  h_476903bd8a47d9 19-25,38,40,46-47,50
+src/main/acp/acp-session-runtime.ts
+  h_476903bd8a47d9 112,266,273
+src/main/acp/acp-session-setup.ts
+  h_476903bd8a47d9 67
+  s_a71ca3b06ed7b3::t_62f23db0c0af13 2-7
+src/main/acp/acp-structured-prompts.ts
+  h_476903bd8a47d9 9,43-46,62
+src/main/acp/acp-timeline-requests.ts
+  h_476903bd8a47d9 5,22,45-48,78
+src/main/jsonl-rpc/session-lifecycle.test.ts
+  h_476903bd8a47d9 1-130,137-280
+src/main/jsonl-rpc/session-lifecycle.ts
+  h_476903bd8a47d9 1-17,19-118,123-151
+src/main/jsonl-rpc/session-adapter.ts
+  s_a71ca3b06ed7b3::t_2475786471ea33 1-2,4-96,100-262
+  s_a71ca3b06ed7b3::t_38ad03fd2c7bf8 97-99
+src/main/pi/rpc-session-adapter.ts
+  s_a71ca3b06ed7b3::t_fef89820b565c8 43,119-120
+src/main/acp/acp-peer-handlers.ts
+  s_a71ca3b06ed7b3::t_413cf8f1356967 1-11
+src/main/native-chat/agent-session-wire/structured-agent-session-failed-create-refusal.ts
+  h_476903bd8a47d9 55-83,111-122,192-195
+src/main/native-chat/agent-session-wire/structured-agent-session-refusal-details.test.ts
+  h_476903bd8a47d9 26,165-230
+src/main/runtime/orca-runtime-structured-agent-session-create-intent.test.ts
+  h_476903bd8a47d9 62-103
+src/renderer/src/components/native-chat/agent-session-availability-words-text.ts
+  h_476903bd8a47d9 23-24,88,97-108
+src/renderer/src/components/native-chat/agent-session-failure-words-text.test.ts
+  h_476903bd8a47d9 115-141
+src/renderer/src/i18n/en-runtime-required.json
+  h_476903bd8a47d9 1531-1532
+src/renderer/src/i18n/locales/en.json
+  h_476903bd8a47d9 19407-19408
+src/renderer/src/i18n/locales/es.json
+  h_476903bd8a47d9 18958-18959
+src/renderer/src/i18n/locales/fr.json
+  h_476903bd8a47d9 19178-19179
+src/renderer/src/i18n/locales/ja.json
+  h_476903bd8a47d9 18515-18516
+src/renderer/src/i18n/locales/ko.json
+  h_476903bd8a47d9 18515-18516
+src/renderer/src/i18n/locales/zh.json
+  h_476903bd8a47d9 18481-18482
+src/shared/agent-session/failures/agent-session-failure-words.test.ts
+  h_476903bd8a47d9 11,204-238
+src/shared/agent-session/failures/agent-session-refusal-notice.test.ts
+  h_476903bd8a47d9 358-363,467
+src/shared/agent-session/failures/agent-session-refusal-reason-words.ts
+  h_476903bd8a47d9 194-197
+src/shared/agent-session-release-sentence.ts
+  h_476903bd8a47d9 4-23
+src/shared/agent-session/failures/agent-session-wire-refusals.test.ts
+  h_476903bd8a47d9 186-220
+mobile/src/tasks/agent-launch-request.test.ts
+  h_476903bd8a47d9 106-139
+mobile/src/tasks/agent-launch-request.ts
+  h_476903bd8a47d9 10,95
+src/renderer/src/lib/agent-launch-through-host.test.ts
+  h_476903bd8a47d9 88-89,90-91
+src/renderer/src/lib/agent-session/launch/structured-agent-session-host-admission.ts
+  h_476903bd8a47d9 6-8,63,66-69
+src/renderer/src/lib/unsupported-agent-version-toast.ts
+  h_476903bd8a47d9 1-26
+src/shared/unsupported-agent-version.ts
+  h_476903bd8a47d9 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7c7b95b26fb26842ed70c75e291ce00ad5e9ac44",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
