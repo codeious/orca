@@ -54,6 +54,9 @@ import type { AgentChatPermissionChoice } from '../../../shared/agent-chat-permi
 import type { AgentSessionSwitchResult } from '../../../shared/agent-session-switch-execution'
 
 export type StructuredAgentSessionCaller = {
+  mcpSignInCaller?: { callerKey: string; connectionId: string }
+  localMcpSignIn?: boolean
+  openMcpSignIn?: (url: string) => boolean | Promise<boolean>
   callerKey: string
   readsOptionsWithoutModel?: boolean
 }
@@ -148,6 +151,7 @@ export type StructuredAgentSessionHostSession = {
 }
 
 export type StructuredAgentSessionHostDeps = {
+  openMcpSignIn?: (url: string) => boolean | Promise<boolean>
   store: AgentSessionRecordStore
   adapter: StructuredAgentSessionAdapter
   /** Capabilities come from registry declarations, never adapters. */

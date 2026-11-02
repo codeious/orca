@@ -1,5 +1,6 @@
 import { STRUCTURED_AGENT_SESSION_CLOSE_METHOD } from './structured-agent-session-close-method'
 import {
+  mcpSignInCallerFor,
   projectHostCommandCatalog,
   STRUCTURED_AGENT_SESSION_HOST_COMMAND_METHODS
 } from './structured-agent-session-host-command'
@@ -244,6 +245,7 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
       }
       // Resolve after opening snapshot/missed batch; a racing close disposes the bound stream.
       dispose = await host.subscribe({
+        mcpSignInCaller: mcpSignInCallerFor(ctx),
         commandsOnRequest: clientRequestsCommands(ctx),
         readsCurrentRequests: clientReadsCurrentRequests(ctx),
         id: subscriptionId,

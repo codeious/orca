@@ -3,6 +3,7 @@ import {
   installChildSessionSearchService
 } from '../ai-vault-search/session-search-enablement'
 import { LOCAL_EXECUTION_HOST_ID } from '../../shared/execution-host'
+import { openMcpSignInOnThisMachine } from './mcp-sign-in-opener'
 import { sessionSearchScopeCatalogFromStore } from '../ai-vault-search/session-search-store-scope-catalog'
 import { getCanonicalUserDataPath } from '../persistence/loading-store/user-data-path'
 import { app } from 'electron'
@@ -126,6 +127,7 @@ export function initializeMainProcessRuntime(): OrcaRuntimeService {
       preparePinnedLaunchHome: (home) => prepareCodexPinnedLaunchHome(home)
     })),
     ...codexStructuredLaunchHomeResolvers,
+    openMcpSignIn: openMcpSignInOnThisMachine,
     prepareCodexCatalogProbeHome: (homePath) =>
       state.codexRuntimeHome?.prepareHostCodexHomeForReadOnlyAppServer(
         homePath,

@@ -68,6 +68,7 @@ export async function installOnJournal(
   })
   const nameProvider = (record: AgentSessionRecord): void => void providerNaming.push(record)
   host = new StructuredAgentSessionHost({
+    openMcpSignIn: deps.openMcpSignIn,
     store,
     adapter,
     nameProviderConversation: (record) => void providerNaming.push(record, true),

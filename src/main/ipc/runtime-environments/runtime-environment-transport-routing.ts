@@ -1,4 +1,5 @@
 import { getRuntimeEnvironmentStatus } from './runtime-environment-status-probe'
+import { createRuntimeEnvironmentMcpSignInReceiver } from '../runtime-environment-mcp-sign-in-receiver'
 import { getPreferredPairedRuntimeConnection } from '../../../shared/runtime-environments'
 import { ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES } from '../../../shared/electron-remote-runtime-client-capabilities'
 import { resolveEnvironment, markEnvironmentUsed } from '../../../shared/runtime-environment-store'
@@ -187,6 +188,10 @@ export async function subscribeRuntimeEnvironment(
   const environment = await resolveManagedRuntimeEnvironment(userDataPath, selector, preparation)
   const pairedConnection = getPreferredPairedRuntimeConnection(environment)
   const effectiveTimeoutMs = timeoutMs ?? DEFAULT_REMOTE_RUNTIME_TIMEOUT_MS
+  const mcpSignIn =
+    method === 'agentSession.subscribe'
+      ? createRuntimeEnvironmentMcpSignInReceiver(params, isCurrent, signal)
+      : undefined
   let markedUsed = false
   const markUsedOnce = (runtimeId: string): void => {
     if (markedUsed || !isCurrent()) {
@@ -197,6 +202,7 @@ export async function subscribeRuntimeEnvironment(
   }
   const callbacksWithMarkUsed = {
     onResponse: (response: RuntimeRpcResponse<unknown>) => {
+      response = mcpSignIn?.receive(response) ?? response
       if (response.ok === true) {
         markUsedOnce(response._meta.runtimeId)
       }
@@ -204,13 +210,16 @@ export async function subscribeRuntimeEnvironment(
     },
     onBinary: (bytes: Uint8Array<ArrayBufferLike>) =>
       callbacks.onEvent({ type: 'binary' as const, bytes }),
-    onError: (error: { code: string; message: string }) =>
+    onError: (error: { code: string; message: string }) => {
+      mcpSignIn?.close()
       callbacks.onEvent({
         type: 'error' as const,
         code: error.code,
         message: withRuntimeUnreachableHint(environment, error.message, pairedConnection.endpoint)
-      }),
+      })
+    },
     onClose: () => {
+      mcpSignIn?.close()
       callbacks.onEvent({ type: 'close' as const })
       callbacks.onClose()
     }
@@ -229,7 +238,7 @@ export async function subscribeRuntimeEnvironment(
         signal
       })
     }
-    return await subscribeRemoteRuntimeRequest(
+    const subscription = await subscribeRemoteRuntimeRequest(
       pairedConnection,
       method,
       params,
@@ -237,7 +246,9 @@ export async function subscribeRuntimeEnvironment(
       callbacksWithMarkUsed,
       { clientCapabilities: ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES, signal }
     )
+    return mcpSignIn?.bind(subscription) ?? subscription
   } catch (error) {
+    mcpSignIn?.close()
     if (error instanceof Error) {
       error.message = withRuntimeUnreachableHint(
         environment,

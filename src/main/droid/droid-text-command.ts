@@ -1,16 +1,26 @@
 import type { AgentSessionHostCommandResult } from '../../shared/agent-session/agent-session-host-command'
 import { DROID_TEXT_COMMANDS } from './droid-command-catalog'
 import type { DroidSession } from './droid-session'
+import { runDroidServiceCommand } from './droid-service-command'
 
 export async function runDroidTextCommand(
-  session: Pick<DroidSession, 'context' | 'lane'>,
-  input: { name: string; argument: string; operationId: string }
+  session: Pick<DroidSession, 'context' | 'lane' | 'request' | 'mcpSignIn'>,
+  input: {
+    name: string
+    argument: string
+    operationId: string
+    openMcpSignIn?: (url: string) => boolean | Promise<boolean>
+  }
 ): Promise<AgentSessionHostCommandResult> {
-  if (input.argument) {
+  if (input.argument && input.name !== 'mcp' && input.name !== 'skills') {
     throw new Error(`/${input.name} does not take arguments`)
   }
   let text: string
   switch (input.name) {
+    case 'mcp':
+    case 'skills':
+      text = await runDroidServiceCommand(session, input)
+      break
     case 'context': {
       const report = await session.context.refresh()
       text = report

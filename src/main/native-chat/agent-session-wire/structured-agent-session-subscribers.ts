@@ -1,10 +1,10 @@
 import type { AgentSessionSubscribeInput } from './agent-session-subscribe-input'
+import { AgentSessionMcpSignInForwarding } from './agent-session-mcp-sign-in-forwarding'
+import { bindSessionMcpSignIn } from './structured-agent-session-mcp-sign-in'
 export type { AgentSessionSubscribeInput } from './agent-session-subscribe-input'
-import type { CurrentRequestsSubscriber } from './agent-session-current-requests'
+import type { Subscriber } from './agent-session-subscriber'
+export type { Subscriber, AgentSessionSubscriberEmit } from './agent-session-subscriber'
 // Advance subscriber cursors independently, sending resets or reducer-projected batches as needed.
-
-// Advance subscriber cursors independently, sending resets or reducer-projected batches as needed.
-import type { AgentJournalCursor } from '../../../shared/agent-session-journal-identity'
 import type {
   AgentSessionHistoryPage,
   AgentSessionSubscribeEvent,
@@ -14,8 +14,7 @@ import {
   backgroundTaskFingerprint,
   emitSubscriberFrame,
   subscriberCommandsChanged,
-  type SubscriberFieldHooks,
-  type SubscriberFieldState
+  type SubscriberFieldHooks
 } from './agent-session-subscriber-frame-fields'
 import type { QueuePublication } from './structured-agent-session-queued-publication'
 import {
@@ -32,20 +31,6 @@ import { refreshDerivedStopNotes } from './agent-session-stop-note-refresh'
 import { refreshPublishedWork } from './agent-session-work-refresh'
 import type { StructuredAgentSessionCurrentWork } from './structured-agent-session-current-work'
 
-export type AgentSessionSubscriberEmit = (event: AgentSessionSubscribeEvent) => void
-export type Subscriber = CurrentRequestsSubscriber &
-  SubscriberFieldState & {
-    id: string
-    emit: AgentSessionSubscriberEmit
-    cursor: AgentJournalCursor
-    fence: number
-    snapshotCatchUp?: boolean
-    /** Last frame’s current-work key; row-free changes still require a frame. */
-    workView?: string
-    /** Semantic history baseline actually emitted, independent of token/row progress. */
-    historyView?: string
-  }
-
 export type AgentSessionSubscribersHooks = {
   readCommands?: SubscriberFieldHooks['readCommands']
   /** Stable identity avoids serialization until queue changes. */
@@ -60,6 +45,7 @@ export type AgentSessionSubscribersHooks = {
 }
 
 export class AgentSessionSubscribers {
+  readonly mcpSignIn = new AgentSessionMcpSignInForwarding()
   private readonly bySession = new Map<string, Map<string, Subscriber>>()
   private readonly activityBySession = new Map<string, AgentSessionTurnActivity>()
 
@@ -92,6 +78,7 @@ export class AgentSessionSubscribers {
     const session = this.bySession.get(input.sessionId) ?? new Map<string, Subscriber>()
     session.set(input.id, subscriber)
     this.bySession.set(input.sessionId, session)
+    subscriber.closeMcpSignIn = bindSessionMcpSignIn(this.mcpSignIn, input, subscriber)
 
     const hostNow = this.now()
     if (input.cursor) {
@@ -316,6 +303,7 @@ export class AgentSessionSubscribers {
   }
 
   private drop(subscriber: Subscriber): void {
+    subscriber.closeMcpSignIn?.()
     const session = this.bySession.get(subscriber.sessionId)
     session?.delete(subscriber.id)
     if (session?.size === 0) {
