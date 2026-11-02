@@ -1,0 +1,147 @@
+src/main/acp/acp-incoming-requests.ts
+  s_767cf5531d83f7::t_72951afc1f33a9 3,8,25-29,53,57,72-84,87-90
+src/main/acp/acp-json-rpc-peer.ts
+  s_767cf5531d83f7::t_b17a02279df989 11-13,15,17-18,20,22,33-34,38-45,52-53,60,97,108,118,120-121,135,166,171,228,243-246,252,265-273,282,292,297-299,303,312
+src/main/acp/acp-peer-dialect.ts
+  s_767cf5531d83f7::t_55dc38c99b6218 1-63
+src/main/acp/acp-peer-handlers.ts
+  s_767cf5531d83f7::t_25d29684236270 1-11
+src/main/acp/acp-response-settlement.ts
+  s_767cf5531d83f7::t_b6282233f4b974 48
+src/main/acp/acp-rpc-envelope.ts
+  s_767cf5531d83f7::t_ec9cc78398dd8b 2,19-31,33-34,38,40-41,46-47,50
+src/main/droid/__fixtures__/end-of-turn-interrupt.jsonl
+  s_767cf5531d83f7::t_9ae45c06c62e86 1-36
+src/main/droid/__fixtures__/queue-end-of-turn.jsonl
+  s_767cf5531d83f7::t_b791923d270360 1-48
+src/main/droid/droid-account-home.ts
+  s_767cf5531d83f7::t_bcc2a4f0007c1d 1-17
+src/main/droid/droid-agent-connection-supervisor.integration.test.ts
+  s_767cf5531d83f7::t_f24c85c7af7b8e 1-84
+src/main/droid/droid-approvals.test.ts
+  s_767cf5531d83f7::t_300d6c5133d531 1-254
+src/main/droid/droid-autonomy-cap-notice.ts
+  s_767cf5531d83f7::t_0c1e1b5d796dc4 1-32
+src/main/droid/droid-autonomy-cap.test.ts
+  s_767cf5531d83f7::t_7d4575512dd6ea 1-77
+src/main/droid/droid-autonomy-level.test.ts
+  s_767cf5531d83f7::t_6269c456e32590 1-69
+src/main/droid/droid-autonomy-level.ts
+  s_767cf5531d83f7::t_763d3b310b3dc7 1-38
+src/main/droid/droid-configured-default.test.ts
+  s_767cf5531d83f7::t_19c309b4e1faa7 2-530
+src/main/droid/droid-context-usage.test-support.ts
+  s_767cf5531d83f7::t_6d948e7847b0af 1-54
+src/main/droid/droid-context-usage.test.ts
+  s_767cf5531d83f7::t_07f3025634eb22 1-75
+src/main/droid/droid-context-usage.ts
+  s_767cf5531d83f7::t_93a89136baee4c 1-99
+src/main/droid/droid-environment.test.ts
+  s_767cf5531d83f7::t_8788d17a5e5d64 1-51
+src/main/droid/droid-environment.ts
+  s_767cf5531d83f7::t_48c93413bfc633 1-27
+src/main/droid/droid-exec-launch.test.ts
+  s_767cf5531d83f7::t_0cbe2901066309 1-76
+src/main/droid/droid-exec-launch.ts
+  s_767cf5531d83f7::t_06de66af1bc459 1-52
+src/main/droid/droid-fixture-privacy.test.ts
+  s_767cf5531d83f7::t_d12c0e14dfdeba 1-74
+src/main/droid/droid-json-rpc-peer.ts
+  s_767cf5531d83f7::t_fa2d939f81535e 1-117
+src/main/droid/droid-message-visibility.ts
+  s_767cf5531d83f7::t_0154799404666a 1-5
+src/main/droid/droid-messages.ts
+  s_767cf5531d83f7::t_8bdeb5ea07b839 1-139
+src/main/droid/droid-model-catalog-probe.test.ts
+  s_767cf5531d83f7::t_884327efa0ef14 1-211
+src/main/droid/droid-model-catalog-probe.ts
+  s_767cf5531d83f7::t_5791c5a6d8a616 1-111
+src/main/droid/droid-model-options.ts
+  s_767cf5531d83f7::t_d51c6fa44720fe 1-192
+src/main/droid/droid-peer-limits.test.ts
+  s_767cf5531d83f7::t_b175b390593b21 1-21
+src/main/droid/droid-peer-limits.ts
+  s_767cf5531d83f7::t_77f8833e38a192 1-9
+src/main/droid/droid-prompt.test.ts
+  s_767cf5531d83f7::t_5f9ac5a059186b 1-57
+src/main/droid/droid-prompt.ts
+  s_767cf5531d83f7::t_2142d86df026e6 1-42
+src/main/droid/droid-prompts.ts
+  s_767cf5531d83f7::t_c4e71f34407cb9 1-178
+src/main/droid/droid-question-requests.ts
+  s_767cf5531d83f7::t_e48da34400c1bb 1-108
+src/main/droid/droid-questions.test.ts
+  s_767cf5531d83f7::t_05f45f4fcc0468 1-466
+src/main/droid/droid-recording.test-support.ts
+  s_767cf5531d83f7::t_0c829bb6e47e6c 1-151
+src/main/droid/droid-rpc-envelope.ts
+  s_767cf5531d83f7::t_bafc1aaee7c1a4 1-27
+src/main/droid/droid-rpc-errors.ts
+  s_767cf5531d83f7::t_5ec312617f1f99 1-18,20-23
+src/main/droid/droid-session-adapter.ts
+  s_767cf5531d83f7::t_c3a567074c623d 1-131
+src/main/droid/droid-session-id.test.ts
+  s_767cf5531d83f7::t_ebf91e97a63e0d 1-18
+src/main/droid/droid-session-id.ts
+  s_767cf5531d83f7::t_3c14318c4890db 1-6
+src/main/droid/droid-session-model.ts
+  s_767cf5531d83f7::t_746461a0afd337 1-100
+src/main/droid/droid-session-notifications.ts
+  s_767cf5531d83f7::t_3ff6252b716628 1-103
+src/main/droid/droid-session-options.ts
+  s_767cf5531d83f7::t_a2eaa2336c24fa 1-256
+src/main/droid/droid-session-settings.test.ts
+  s_767cf5531d83f7::t_731c271466cd90 1-124
+src/main/droid/droid-session-settings.ts
+  s_767cf5531d83f7::t_b35fdd64229b09 1-128
+src/main/droid/droid-session.ts
+  s_767cf5531d83f7::t_008636b92a38d7 1-297
+src/main/droid/droid-started-session.ts
+  s_767cf5531d83f7::t_aaa209f21a42da 1-57
+src/main/droid/droid-structured-launch-resolution.ts
+  s_767cf5531d83f7::t_805c82cfbd3778 1-6,8-133
+src/main/droid/droid-turns.test.ts
+  s_767cf5531d83f7::t_c8b9b1ec43a546 1-401
+src/main/droid/droid-turns.ts
+  s_767cf5531d83f7::t_d95b6804ddd5a9 1-312
+src/main/droid/fixtures/ask-user-multiselect.jsonl
+  s_767cf5531d83f7::t_8351ba843d5a4c 1-39
+src/main/droid/fixtures/autonomy-cap-clamp.jsonl
+  s_767cf5531d83f7::t_a560b93659ab62 1-35
+src/main/droid/fixtures/autonomy-high-rules.jsonl
+  s_767cf5531d83f7::t_b14100fdd377e1 1-95
+src/main/droid/fixtures/autonomy-off-exec-and-patch.jsonl
+  s_767cf5531d83f7::t_47a31af8081fdb 1-96
+src/main/droid/fixtures/legacy-blocklist-and-denylist.jsonl
+  s_767cf5531d83f7::t_ee85c894c5beaf 1-53
+src/main/droid/fixtures/model-blocked-by-org.jsonl
+  s_767cf5531d83f7::t_3970d81b8e4754 1-11
+src/main/droid/fixtures/spec-plan-approval-off.jsonl
+  s_767cf5531d83f7::t_92da5a868163ea 1-35
+src/main/droid/fixtures/update-settings-acks.jsonl
+  s_767cf5531d83f7::t_9081ecd6f5f53c 1-51
+src/main/native-chat/provider-recording-privacy.test-support.ts
+  s_767cf5531d83f7::t_3ba8dc7fd92c06 1-63
+src/shared/droid-autonomy-options.ts
+  s_767cf5531d83f7::t_b4cfb15c8b21f0 1-32
+src/shared/droid-chat-version-floor.ts
+  s_767cf5531d83f7::t_6a5a351ce6ae61 1-2
+src/shared/droid-spec-pair-options.ts
+  s_767cf5531d83f7::t_7afffb91664b85 1-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3ca3e275fe459d5dca19f665493cb95762925e25",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
