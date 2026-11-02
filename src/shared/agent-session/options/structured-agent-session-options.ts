@@ -166,12 +166,13 @@ export function applyStructuredAgentSessionOptions(
       ...(current.model ? { model: current.model } : {}),
       ...(current.effort ? { effort: current.effort } : {}),
       ...(current.fastMode !== undefined ? { fastMode: current.fastMode } : {}),
-      ...(current.serviceTier ? { serviceTier: current.serviceTier } : {})
+      ...(current.serviceTier ? { serviceTier: current.serviceTier } : {}),
+      ...(current.planMode !== undefined ? { planMode: current.planMode } : {})
     },
     (id) =>
       current.defaulted?.some((key) => key === id)
         ? 'default'
-        : current.confirmed?.includes(id)
+        : current.confirmed?.includes(id) || id === 'planMode'
           ? 'reported'
           : id === 'serviceTier' && current.defaulted !== undefined
             ? 'applied'

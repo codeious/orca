@@ -191,6 +191,8 @@ export type AgentJournalApprovalItem = {
   blockedPath?: string
   matchedAskRule?: AgentJournalApprovalMatchedAskRule
   subject?: AgentJournalApprovalSubject
+  acceptsComment?: boolean
+  acceptsPlanEdit?: boolean
   detail: string | null
   options: AgentJournalPromptOption[]
   resolution: AgentJournalResolution

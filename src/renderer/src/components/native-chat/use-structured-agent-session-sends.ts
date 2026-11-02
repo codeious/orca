@@ -1,8 +1,11 @@
+import {
+  useStructuredAgentSessionHostWaitsForReply,
+  useStructuredAgentSessionHostCapabilityState
+} from '@/runtime/structured-agent-session-host-capability'
 import type {
   StructuredAgentSessionSendControl,
   StructuredAgentSessionAttachment
 } from '../../../../shared/agent-session/requests/structured-agent-session-send-mutation'
-import { useStructuredAgentSessionHostCapabilityState } from '@/runtime/structured-agent-session-host-capability'
 import { AGENT_SESSION_SEND_SKILLS_RUNTIME_CAPABILITY } from '../../../../shared/agent-session/agent-session-create-capabilities'
 import type { StructuredAgentSessionSendRequest } from './structured-agent-session-send-slot'
 import { useCallback, useEffect, useEffectEvent, useSyncExternalStore } from 'react'
@@ -78,6 +81,7 @@ export function useStructuredAgentSessionSends(args: {
     getStructuredAgentSessionSendNotice(sessionId)
   )
   const held = useSyncExternalStore(subscribe, () => structuredAgentSessionSendsHeld(sessionId))
+  const hostWaitsForReply = useStructuredAgentSessionHostWaitsForReply(target)
 
   useEffect(() => {
     noteStructuredAgentSessionFence(sessionId, fence)
@@ -125,6 +129,7 @@ export function useStructuredAgentSessionSends(args: {
           ? { usageLimitContinuationOfTurnItemId: request.usageLimitContinuationOfTurnItemId }
           : {}),
         ...(delivery ? { delivery } : {}),
+        ...(request?.afterReply && hostWaitsForReply ? { afterReply: true } : {}),
         ...captured,
         ...(takesSkills && request?.skills?.length ? { skills: request.skills } : {}),
         ...(stopping ? { sentWhileStopping: true as const } : {})
@@ -145,6 +150,7 @@ export function useStructuredAgentSessionSends(args: {
         : true
     },
     [
+      hostWaitsForReply,
       isWorking,
       queue,
       queuedMessageIds,

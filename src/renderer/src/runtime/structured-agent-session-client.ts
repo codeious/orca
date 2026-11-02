@@ -16,6 +16,7 @@ import {
   AGENT_SESSION_REWIND_RUNTIME_CAPABILITY
 } from '../../../shared/agent-session/agent-session-runtime-capabilities'
 import {
+  AGENT_SESSION_APPROVAL_NOTES_CAPABILITY,
   STRUCTURED_AGENT_SESSION_CLI_SOURCE_RUNTIME_CAPABILITY,
   STRUCTURED_AGENT_SESSION_REGENERATE_NAME_RUNTIME_CAPABILITY,
   STRUCTURED_AGENT_SESSION_RENAME_RUNTIME_CAPABILITY
@@ -114,6 +115,12 @@ export function supportsStructuredAgentSessionQuietRepeatedStop(
   target: RuntimeClientTarget
 ): Promise<boolean> {
   return structuredAgentSessionHostSupports(target, AGENT_SESSION_REPEATED_STOP_RUNTIME_CAPABILITY)
+}
+
+export function supportsStructuredAgentSessionApprovalNotes(
+  target: RuntimeClientTarget
+): Promise<boolean> {
+  return structuredAgentSessionHostSupports(target, AGENT_SESSION_APPROVAL_NOTES_CAPABILITY)
 }
 
 export function supportsStructuredAgentSessionQuestionAnswers(

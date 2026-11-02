@@ -93,6 +93,7 @@ export function useMobileStructuredSendWithOutcome(args: {
   sendOptions?: () => Readonly<Record<string, string>> | undefined
   // An older host refuses a send body carrying `skills`; there the `$name` text stands alone.
   takesSkills?: boolean
+  waitsForReply?: boolean
 }): (
   text: string,
   images?: string[],
@@ -121,7 +122,8 @@ export function useMobileStructuredSendWithOutcome(args: {
     sessionId,
     stateRef,
     stopping,
-    takesSkills
+    takesSkills,
+    waitsForReply
   } = args
   return useCallback(
     async (
@@ -221,6 +223,7 @@ export function useMobileStructuredSendWithOutcome(args: {
         text: wireText,
         attachments: imageAttachments,
         skills,
+        ...(intent?.afterReply && waitsForReply ? { afterReply: true as const } : {}),
         // Resolved from the chat as it is now: a hold-menu choice made mid-turn may land after it.
         ...(mobileStructuredSendQueues(queueCapable, queueFollowUps, stateRef.current, {
           alternate: intent?.alternate,
@@ -261,7 +264,8 @@ export function useMobileStructuredSendWithOutcome(args: {
       sessionId,
       stateRef,
       stopping,
-      takesSkills
+      takesSkills,
+      waitsForReply
     ]
   )
 }

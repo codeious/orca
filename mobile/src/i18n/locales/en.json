@@ -2766,7 +2766,12 @@
       "reason": "Reason: ",
       "needsAccessTo": "Needs access to: ",
       "planFile": "Plan file: {{filePath}}",
-      "newerVersionRequired": "This request needs a newer version of Orca."
+      "newerVersionRequired": "This request needs a newer version of Orca.",
+      "comment": "Comment",
+      "commentPlaceholder": "Add a comment for the agent (optional)",
+      "editedPlan": "Edited plan",
+      "editPlan": "Edit plan",
+      "discardEdits": "Discard edits"
     },
     "promptCard": {
       "terminalExplanation": "Answer this OMP question in the terminal.",

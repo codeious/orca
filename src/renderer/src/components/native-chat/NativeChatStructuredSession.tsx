@@ -1,5 +1,6 @@
 import { NativeChatCrewFrame, NativeChatCrewPanel } from '../orchestration-crew/NativeChatCrewPanel'
 import { NativeChatUsageLimitActionsProvider } from './NativeChatUsageLimitActions'
+import { getNativeChatAgentProfile } from '../../../../shared/native-chat/native-chat-agent-profiles'
 import { useNativeChatHandOff } from './use-native-chat-hand-off'
 import { cn } from '@/lib/utils'
 import { NATIVE_CHAT_APPEARANCE_ROOT_CLASS } from './native-chat-appearance-style'
@@ -51,7 +52,7 @@ import {
   cancelStructuredPrompt,
   nativeChatStructuredStopControls
 } from './native-chat-structured-stop-controls'
-import { chatApprovalFromJournal } from '../../../../shared/native-chat/input/native-chat-interactive-prompt'
+import { useStructuredChatApproval } from './use-structured-chat-approval'
 import { useAppStore } from '../../store'
 import { structuredAgentLabel } from '@/lib/agent-session/launch/structured-agent-session-launch-label'
 import { useNativeChatStructuredComposerTransport } from './use-native-chat-structured-composer-transport'
@@ -184,7 +185,7 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
   const installLayout = viewState.kind === 'empty' ? 'hero' : 'strip'
   const install = useNativeChatInstallSlot(props, agentLabel, installLayout)
   const canMention = composerShown && install.unavailableHint === undefined
-  const approval = prompt?.body.kind === 'approval' ? chatApprovalFromJournal(prompt.body) : null
+  const approval = useStructuredChatApproval(prompt?.body, props.target)
   const cancelPrompt = () => cancelStructuredPrompt(controller, prompt, props.agent)
   const rootInput = useNativeChatRootInputRouting({
     tabId: props.tabId,
@@ -365,8 +366,8 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
             <NativeChatApprovalCard
               key={`${prompt.itemId}:${prompt.revision}`}
               approval={approval}
-              onChoose={(optionId) =>
-                void promptResponse.respond(prompt, { kind: 'option', optionId })
+              onChoose={(optionId, notes) =>
+                void promptResponse.respond(prompt, { kind: 'option', optionId, ...notes })
               }
               isSubmitting={promptResponse.holds(prompt)}
               onCancel={cancelPrompt}
@@ -378,6 +379,7 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
             <NativeChatStructuredQuestionCard
               key={`${prompt.itemId}:${prompt.revision}`}
               questions={agentSessionPromptQuestions(questionBody)}
+              cancelOnEscape={getNativeChatAgentProfile(props.agent)?.questionCancelOnEscape}
               onAnswer={(response) => void promptResponse.respond(prompt, response)}
               isSubmitting={promptResponse.holds(prompt)}
               onCancel={cancelPrompt}

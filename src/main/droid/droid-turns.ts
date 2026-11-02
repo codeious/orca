@@ -66,8 +66,7 @@ export class DroidTurns {
     id: string,
     at: number,
     params: { text: string },
-    before?: () => Promise<void>,
-    options: { afterReply?: true } = {}
+    before?: () => Promise<void>
   ): Promise<AgentSessionDispatchOutcome> {
     if (this.ended) {
       throw new Error('Droid session ended before dispatch')
@@ -96,13 +95,9 @@ export class DroidTurns {
       }
     }
     try {
-      // Captured on Droid 0.251.0: `end_of_turn` steers at the next tool boundary and `end_of_loop`
-      // answers after the reply in progress, both inside the running turn. The names read the other way.
       await this.deps.request(
         'droid.add_user_message',
-        this.turnInFlight(send)
-          ? { ...params, queuePlacement: options.afterReply ? 'end_of_loop' : 'end_of_turn' }
-          : params,
+        this.turnInFlight(send) ? { ...params, queuePlacement: 'end_of_turn' } : params,
         {
           onId: (requestId) => {
             send.requestId = requestId

@@ -59,6 +59,7 @@ export function structuredAgentSessionStatusSummary({
   const effort = record?.options?.effort
   const fastMode = record?.options?.fastMode
   const serviceTier = record?.options?.serviceTier
+  const planMode = record?.options?.planMode
   const launchDirectory = record ? agentSessionPinnedLaunchDirectory(record) : undefined
   return {
     sessionId,
@@ -84,6 +85,7 @@ export function structuredAgentSessionStatusSummary({
     ...(effort ? { effort } : {}),
     ...(fastMode ? { fastMode } : {}),
     ...(serviceTier ? { serviceTier } : {}),
+    ...(planMode ? { planMode } : {}),
     ...childWork,
     ...(providerSession ? { providerSession } : {}),
     ...(launchDirectory ? { launchDirectory } : {}),

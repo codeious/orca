@@ -26,6 +26,7 @@ import {
 import { withUnlistedEffort } from './structured-agent-session-unlisted-effort'
 import { structuredAgentSessionPermissionDescriptor } from './structured-agent-session-permission-option'
 import type { StructuredAgentSessionOptionState } from './structured-agent-session-options'
+import { withSpecModeSnapshot } from '../../structured-agent-session-spec-option'
 
 /** Unpickable placeholder cannot become a launch selection before a real model answer. */
 const PROVIDER_DEFAULT_MODEL_PLACEHOLDER: SessionOptionDescriptor = {
@@ -220,7 +221,7 @@ export function structuredAgentSessionOptionSnapshot(
   state: StructuredAgentSessionOptionState
 ): SessionOptionDescriptor[] {
   const permission = structuredAgentSessionPermissionDescriptor(state)
-  const options = modelOptionSnapshot(state).map((option) =>
+  const options = withSpecModeSnapshot(modelOptionSnapshot(state), state.record).map((option) =>
     state.fastModeRestricted && option.id === 'fastMode' ? { ...option, settable: false } : option
   )
   return permission ? [...options, permission] : options
@@ -263,6 +264,7 @@ export function canSetStructuredAgentSessionOption(
     (['model', 'effort', 'serviceTier', 'personality'].includes(id) &&
       typeof value === 'string' &&
       value.length > 0) ||
-    (id === 'fastMode' && typeof value === 'boolean')
+    (id === 'fastMode' && typeof value === 'boolean') ||
+    (id === 'planMode' && state.record.values.planMode !== undefined && typeof value === 'boolean')
   )
 }

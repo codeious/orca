@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { isPlanApprovalSubject } from '../../shared/agent-session/agent-session-approval-subject'
 import {
   formatToolInput,
   truncateToolDetail
@@ -56,6 +57,7 @@ export function droidPermissionPresentation(
   }
   const { toolUses, options } = parsed.data
   const plan = toolUses.find((use) => use.confirmationType === PLAN_CONFIRMATION)
+  const takesNotes = plan?.details?.supportsClientStartedHandoff === true
   const reported = environment.autonomyLevels()
   const offered = options.filter(({ value }) => {
     if (!plan) {
@@ -90,7 +92,15 @@ export function droidPermissionPresentation(
     resolution: pendingDroidResolution
   })
   return {
-    body: bounded,
+    body: takesNotes
+      ? {
+          ...bounded,
+          acceptsComment: true,
+          ...(isPlanApprovalSubject(bounded.subject) && bounded.subject.text === text
+            ? { acceptsPlanEdit: true }
+            : {})
+        }
+      : bounded,
     reply: (response) => {
       if (response === null) {
         return { selectedOption: REFUSAL }
@@ -98,7 +108,13 @@ export function droidPermissionPresentation(
       if (response.kind !== 'option' || !offered.some(({ value }) => value === response.optionId)) {
         throw new Error('Choose one of the options Droid offered')
       }
-      return { selectedOption: response.optionId }
+      return {
+        selectedOption: response.optionId,
+        ...(takesNotes && response.comment?.trim() ? { comment: response.comment } : {}),
+        ...(takesNotes && response.editedSpecContent?.trim()
+          ? { editedSpecContent: response.editedSpecContent }
+          : {})
+      }
     }
   }
 }

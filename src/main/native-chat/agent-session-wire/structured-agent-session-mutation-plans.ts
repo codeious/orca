@@ -168,7 +168,7 @@ export function sendPlan(
       // Replay requested queue sends from card/handoff, including withdrawn cards; direct sends
       // must answer from submissions readable by clients that never supplied delivery.
       const queued =
-        params.delivery === 'queue-if-active'
+        params.delivery === 'queue-if-active' || params.afterReply
           ? queuedSendAnswer(ctx.journal, clientMessageId)
           : null
       if (queued) {
@@ -295,7 +295,9 @@ export function promptPlan(
       itemId: params.itemId,
       expectedRevision: params.expectedRevision,
       optionId: params.optionId,
-      answers: params.answers
+      answers: params.answers,
+      comment: params.comment,
+      editedSpecContent: params.editedSpecContent
     },
     // Retain the resolved or previously recorded prompt answer in the receipt.
     commandReceipt: {

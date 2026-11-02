@@ -36,7 +36,10 @@ export type NativeChatOptionPickerRequest = {
 }
 
 /** How one send goes: `alternate` does the other thing than the follow-up setting. */
-export type NativeChatComposerSendIntent = Pick<StructuredAgentSessionSendRequest, 'alternate'>
+export type NativeChatComposerSendIntent = Pick<
+  StructuredAgentSessionSendRequest,
+  'alternate' | 'afterReply'
+>
 
 export type NativeChatStructuredComposerTransport = {
   capturePresentation: CaptureStructuredAgentSessionPresentation
