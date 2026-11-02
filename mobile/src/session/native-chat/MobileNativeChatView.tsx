@@ -54,7 +54,10 @@ import {
   NO_COMPOSER_TRAY,
   type ComposerTrayProps
 } from './composer/use-mobile-native-chat-composer-tray'
-import type { MobileChatPermission } from './input/mobile-native-chat-permission'
+import type {
+  MobileChatPermission,
+  MobileChatPermissionResponder
+} from './input/mobile-native-chat-permission'
 import type { MobileChatQuestion } from './input/mobile-native-chat-question'
 import type { MobileNativeChatSessionOptionPickersProps } from './input/MobileNativeChatSessionOptionPickers'
 import { MobileNativeChatScrollRootsBoundary } from '../MobileNativeChatScrollRootsBoundary'
@@ -134,7 +137,7 @@ type ChatViewProps = MobileNativeChatSendProps & {
   onAnswerQuestion?: (text: string, prompt?: MobileChatQuestion['prompt']) => Promise<boolean>
   permission?: MobileChatPermission | null
   promptKey?: string | null
-  onRespondPermission?: (send: string) => Promise<boolean>
+  onRespondPermission?: MobileChatPermissionResponder
   onOpenFile?: (relativePath: string) => void
   keyboardInset?: number
 }

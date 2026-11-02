@@ -34,6 +34,9 @@ export type AgentSessionPromptRequest = {
   /** Legacy clients pack question answers into optionId. */
   optionId?: string
   answers?: AgentSessionQuestionAnswer[]
+  /** Only on an approval whose card says it takes them. */
+  comment?: string
+  editedSpecContent?: string
 }
 
 function invalid(
@@ -48,9 +51,25 @@ function readPromptChoice(
   input: AgentSessionPromptRequest
 ): { response: AgentSessionPromptResponse; selectedOptionId: string } | null {
   if (prompt.kind === 'approval') {
+    if (
+      (input.comment !== undefined && prompt.acceptsComment !== true) ||
+      (input.editedSpecContent !== undefined && prompt.acceptsPlanEdit !== true)
+    ) {
+      return null
+    }
     const optionId = input.optionId
     return optionId !== undefined && prompt.options.some((option) => option.id === optionId)
-      ? { response: { kind: 'option', optionId }, selectedOptionId: optionId }
+      ? {
+          response: {
+            kind: 'option',
+            optionId,
+            ...(input.comment === undefined ? {} : { comment: input.comment }),
+            ...(input.editedSpecContent === undefined
+              ? {}
+              : { editedSpecContent: input.editedSpecContent })
+          },
+          selectedOptionId: optionId
+        }
       : null
   }
   const answers =

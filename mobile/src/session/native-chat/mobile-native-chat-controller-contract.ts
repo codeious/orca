@@ -5,7 +5,10 @@ import type { MobileSessionView } from '../../storage/session-view-preferences'
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import type { AskAnswerSelection } from '../../../../src/shared/native-chat-ask-answer'
 import type { AskPrompt } from '../../../../src/shared/native-chat/input/native-chat-ask-types'
-import type { MobileChatPermission } from './input/mobile-native-chat-permission'
+import type {
+  MobileChatPermission,
+  MobileChatPermissionResponder
+} from './input/mobile-native-chat-permission'
 import type { MobileChatQuestion } from './input/mobile-native-chat-question'
 import type {
   NativeChatLiveTurnIndicator,
@@ -83,7 +86,7 @@ export type MobileNativeChatController = {
     itemId: string
     expectedRevision: number
   }) => Promise<boolean>
-  handleNativeChatRespondPermission: (text: string) => Promise<boolean>
+  handleNativeChatRespondPermission: MobileChatPermissionResponder
   handleNativeChatStop: () => void
   nativeChatQueued: MobileStructuredQueuedMessageControls
   nativeChatBackgroundTasks: MobileStructuredBackgroundTasks | null

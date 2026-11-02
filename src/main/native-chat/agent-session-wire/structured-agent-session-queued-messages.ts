@@ -114,6 +114,7 @@ export async function maybeQueueStructuredAgentSessionSend(
     envelope: { clientOperationId: string }
     body: AgentJournalMessageItem
     delivery?: 'queue-if-active'
+    afterReply?: true
     queuedImageCards?: boolean
     options?: Readonly<Record<string, string>>
     selection?: Readonly<Record<string, string>>
@@ -128,7 +129,7 @@ export async function maybeQueueStructuredAgentSessionSend(
 > {
   const clientMessageId = params.envelope.clientOperationId
   if (
-    params.delivery !== 'queue-if-active' ||
+    (params.delivery !== 'queue-if-active' && !params.afterReply) ||
     (params.queuedImageCards === false &&
       params.body.blocks.some((block) => block.type === 'image-ref'))
   ) {

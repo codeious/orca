@@ -215,6 +215,7 @@ export type AgentSessionStatusSummary = {
    *  client re-reads options. Absent from older hosts. */
   effort?: string
   fastMode?: string
+  planMode?: string
   serviceTier?: string
   /** The tool the running turn is inside, else the last one it used. Absent unless `status`
    *  is 'working'. */

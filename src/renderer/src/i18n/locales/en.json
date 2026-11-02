@@ -19924,8 +19924,13 @@
         "plan": {
           "file": "Plan file",
           "reviewTitle": "Review proposed plan",
-          "refineHint": "Refine plan closes the review so you can send what to change."
-        }
+          "refineHint": "Refine plan closes the review so you can send what to change.",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "Not delivered — check the terminal",
       "subagents": {

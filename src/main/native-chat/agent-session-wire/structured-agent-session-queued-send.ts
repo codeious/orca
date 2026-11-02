@@ -11,6 +11,7 @@ export async function runQueueableStructuredAgentSessionSend(
     envelope: { clientOperationId: string }
     body: AgentJournalMessageItem
     delivery?: 'queue-if-active'
+    afterReply?: true
     queuedImageCards?: boolean
     options?: Readonly<Record<string, string>>
     userSend?: true
