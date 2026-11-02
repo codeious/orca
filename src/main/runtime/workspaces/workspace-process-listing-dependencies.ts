@@ -22,8 +22,17 @@ import type { Repo } from '../../../shared/repo-types'
 import { escalateChatWorkerError } from '../orchestration/chat-worker-error-escalation'
 import type { StructuredAgentSessionRequestFailure } from '../../native-chat/agent-session-wire/structured-agent-session-request-failures'
 import type { StructuredAgentSessionHostDeps } from '../../native-chat/agent-session-wire/structured-agent-session-host-types'
+import type { OrcaRuntimeWithRestoreStructuredAgentSessionTabsOnce } from '../session-tabs/structured-session-tab-restoration'
+import { isWorkspaceNotificationMuted } from '../workspace-notification-mute'
 
 export abstract class OrcaRuntimeWithWorktreePsDependencies extends OrcaRuntimeWithStartTuiIdleVisibleReadProbe {
+  abstract publishStructuredAgentSessionTab(
+    ...args: Parameters<
+      OrcaRuntimeWithRestoreStructuredAgentSessionTabsOnce['publishStructuredAgentSessionTab']
+    >
+  ): ReturnType<
+    OrcaRuntimeWithRestoreStructuredAgentSessionTabsOnce['publishStructuredAgentSessionTab']
+  >
   /** Apply the host-owning desktop's account overlay to configured agent environment. */
   protected structuredAgentLaunchEnv(
     agent: StructuredAgentId,
@@ -135,6 +144,17 @@ export abstract class OrcaRuntimeWithWorktreePsDependencies extends OrcaRuntimeW
 
   listRepos(): Repo[] {
     return this.store?.getRepos() ?? []
+  }
+
+  isWorkspaceNotificationMuted(workspaceId: string): boolean {
+    const store = this.store
+    return (
+      !!store &&
+      isWorkspaceNotificationMuted(
+        { store, resolvedWorktrees: this.resolvedWorktrees.peek()?.worktrees ?? null },
+        workspaceId
+      )
+    )
   }
 
   /** A chat worker whose request settled failed tells the Run that dispatched it. */

@@ -8,6 +8,7 @@ import type {
 import { DROID_RUNTIME_METADATA } from './droid-runtime-metadata'
 import { DroidSessionAdapter } from './droid-session-adapter'
 import { createDroidLaunchResolver } from './droid-structured-launch-resolution'
+import { openDroidSpecContinuation } from './droid-spec-continuation'
 
 /** The environment every Droid child starts from: a chat's launch and a model listing alike. */
 function droidEnvironment({
@@ -47,6 +48,12 @@ function createDroidAdapter(context: StructuredAgentAdapterContext): StructuredA
       })
     },
     onIdle: ({ sessionId }) => context.host()?.publishWorkChanged(sessionId),
+    ...(deps.publishContinuationTab
+      ? {
+          onSpecHandoff: (sessionId, handoff) =>
+            openDroidSpecContinuation(context, sessionId, handoff)
+        }
+      : {}),
     logger: deps.logger
   })
 }

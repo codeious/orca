@@ -28,6 +28,7 @@ import { readStartedSession } from './droid-started-session'
 import { droidProviderLink, type DroidResolvedLaunch } from './droid-structured-launch-resolution'
 import { DroidTurns } from './droid-turns'
 import { isSupportedDroidProtocol } from './droid-version-support'
+import { droidSpecHandoffHandlers, type DroidSpecHandoff } from './droid-spec-handoff'
 
 export type DroidConnection = Pick<
   DroidAgentConnection,
@@ -45,6 +46,7 @@ export type DroidConnection = Pick<
 >
 
 export type DroidSessionDeps = {
+  onSpecHandoff?: (sourceSessionId: string, handoff: DroidSpecHandoff) => Promise<void>
   openConnection?: (
     launch: ProviderProcessLaunch,
     handlers: DroidAgentConnectionOptions
@@ -139,8 +141,12 @@ export class DroidSession {
         this.turns.end()
       }
     })
+    const handoffs = droidSpecHandoffHandlers(sessionId, deps.onSpecHandoff, (events) =>
+      this.lane.apply(events)
+    )
     this.prompts = new DroidPrompts(this.lane, {
-      autonomyLevels: () => this.settings.current.availableAutonomyLevels
+      autonomyLevels: () => this.settings.current.availableAutonomyLevels,
+      ...handoffs.environment
     })
     this.options = new DroidSessionOptions({
       request: this.request,
@@ -166,6 +172,7 @@ export class DroidSession {
         deps.onIdle({ sessionId })
       },
       settings: (report) => this.settings.receive(report),
+      specHandoff: handoffs.receive,
       warn: (message, fields) =>
         deps.logger.warn(message, { scope: 'droid-steer', sessionId, ...fields })
     })

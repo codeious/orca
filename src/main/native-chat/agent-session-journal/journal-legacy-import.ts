@@ -24,6 +24,7 @@ import { readLegacyImportTranscript } from './journal-legacy-transcript-stream'
 import { readOpenCodeNativeChatTranscriptFull } from '../transcript-opencode'
 import { createLegacyIdentityTracker } from './journal-legacy-identity'
 import { createPiTranscriptCollector } from './journal-pi-active-branch'
+import { decodeDroidTranscriptLine } from '../transcript-line-decoders-droid'
 import { createNewestItemWindow } from './journal-newest-item-window'
 import type { JournalReplacementItem } from './journal-epoch-replacement'
 import {
@@ -89,7 +90,10 @@ export async function prepareLegacyTranscriptImport(input: {
   const limits = options.limits ?? LEGACY_IMPORT_BLOCK_LIMITS
   // OMP retained Pi's format, so its decoder also reads Pi sessions.
   const transcriptAgent =
-    input.agent === 'pi' ? 'omp' : resolveNativeChatTranscriptAgent(input.agent)
+    input.agent === 'pi'
+      ? 'omp'
+      : (resolveNativeChatTranscriptAgent(input.agent) ??
+        (isLineDecodedTranscriptAgent(input.agent) ? input.agent : null))
   if (!transcriptAgent) {
     return { ok: false, error: `Unsupported agent for journal import: ${input.agent}` }
   }
@@ -191,8 +195,13 @@ const TRANSCRIPT_DECODERS = {
   codex: (line: string, fallbackId: string) =>
     decodeCodexTranscriptLine(line, fallbackId, { historyImport: true }),
   grok: decodeGrokTranscriptLine,
-  omp: decodeOmpTranscriptLine
+  omp: decodeOmpTranscriptLine,
+  droid: decodeDroidTranscriptLine
 } as const
+
+function isLineDecodedTranscriptAgent(agent: string): agent is keyof typeof TRANSCRIPT_DECODERS {
+  return Object.hasOwn(TRANSCRIPT_DECODERS, agent)
+}
 
 /** Bound during decode so memory follows retained history rather than source-file size. */
 async function decodeReplacementItems(input: {

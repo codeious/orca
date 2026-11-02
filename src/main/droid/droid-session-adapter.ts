@@ -107,7 +107,9 @@ export class DroidSessionAdapter
     this.session(input.sessionId, input.fence).prompts.respond(
       input.itemId,
       input.response,
-      input.commit
+      input.commit,
+      true,
+      input.operationId
     )
   readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = (input) =>
     this.session(input.sessionId, input.fence).options.read()

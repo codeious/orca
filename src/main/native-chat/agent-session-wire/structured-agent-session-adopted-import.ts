@@ -77,7 +77,7 @@ async function readAdoptedTranscript(
   if (!prepared.ok) {
     throw new Error(prepared.error)
   }
-  if (prepared.items.length === 0) {
+  if (prepared.items.length === 0 && !adopt.allowEmpty) {
     throw agentSessionRefusalError('agent_session_identity_required', {
       reason: prepared.sourceEmpty ? 'transcriptNotFound' : 'transcriptUnreadable'
     })

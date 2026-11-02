@@ -81,6 +81,7 @@ import {
   AiVaultDeleteSessionParams,
   AiVaultListSessionsParams,
   AiVaultPrepareSessionResumeParams,
+  AiVaultSessionHolderParams,
   AiVaultSessionTitlesParams
 } from './ai-vault-params'
 import {
@@ -842,6 +843,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'aiVault.resolveSessionTitles': AiVaultSessionTitlesParams,
   'aiVault.searchSessions': AiVaultSearchRequestSchema,
   'aiVault.searchStatus': AiVaultSearchStatusRequestSchema,
+  'aiVault.sessionHolder': AiVaultSessionHolderParams,
   'aiVault.setSearchEnabled': AiVaultSetSearchEnabledParamsSchema,
   'artifacts.delete': ArtifactsDeleteParams,
   'artifacts.getPublishedLink': SourceRequest,

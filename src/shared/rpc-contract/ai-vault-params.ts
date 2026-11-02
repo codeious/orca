@@ -9,6 +9,11 @@ export const AI_VAULT_SCOPE_PATH_MAX_LENGTH = 4096
 
 export const AI_VAULT_LIMIT_MAX = 2000
 
+export const AiVaultSessionHolderParams = z.strictObject({
+  agent: z.enum(AI_VAULT_AGENTS),
+  sessionId: z.string().min(1).max(512)
+})
+
 export const executionHostIdSchema = z.string().transform((value, ctx): `runtime:${string}` => {
   const parsed = parseExecutionHostId(value)
   if (parsed?.kind === 'runtime') {

@@ -3,6 +3,7 @@ import {
   resolveAiVaultSessionLaunchTargetOrNotify
 } from './ai-vault-session-launch-feedback'
 import { useCallback, useState } from 'react'
+import { useConfirmationDialog } from '@/components/confirmation-dialog-context'
 import { toast } from 'sonner'
 import {
   buildAiVaultResumeCopyCommandForWorktree,
@@ -48,6 +49,7 @@ export function useAiVaultSessionLaunchActions({
   targetState: AiVaultSessionResumeTargetState
   agentCmdOverrides?: Partial<Record<AiVaultAgent, string | null>>
 }) {
+  const confirm = useConfirmationDialog()
   const [continuationRequest, setContinuationRequest] =
     useState<AgentSessionContinuationRequest | null>(null)
 
@@ -207,10 +209,12 @@ export function useAiVaultSessionLaunchActions({
         session,
         session.agent,
         worktreeId,
-        newAgentLaunchRequestId()
+        newAgentLaunchRequestId(),
+        undefined,
+        confirm
       )
     },
-    [activeWorktree?.id, activeWorktreeId]
+    [activeWorktree?.id, activeWorktreeId, confirm]
   )
 
   const handleContinueInNewSession = useCallback(
