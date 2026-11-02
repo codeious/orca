@@ -7,6 +7,8 @@ import {
 } from './input/native-chat-slash-commands'
 
 export type NativeChatAgentProfile = {
+  conversationCommandAliases?: Readonly<Record<string, 'clear' | 'compact'>>
+  sessionActions?: readonly ('rename' | 'fork')[]
   questionCancelOnEscape?: true
   confirmUnverifiableResume?: true
   skillPrefix: '$' | '/'
@@ -40,7 +42,9 @@ const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfi
     skillPrefix: '/',
     skillSourceOwner: 'droid',
     questionCancelOnEscape: true,
-    confirmUnverifiableResume: true
+    confirmUnverifiableResume: true,
+    conversationCommandAliases: { new: 'clear', compress: 'compact' },
+    sessionActions: ['rename', 'fork']
   },
   codex: {
     skillPrefix: '$',

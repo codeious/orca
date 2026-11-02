@@ -11,6 +11,7 @@ import type { useStructuredAgentSession } from './use-structured-agent-session'
 import type { AgentType } from '../../../../shared/agent-status-types'
 import { translate } from '@/i18n/i18n'
 import { structuredAgentLabel } from '@/lib/agent-session/launch/structured-agent-session-launch-label'
+import { runStructuredComposerSessionAction } from './structured-composer-session-action'
 
 function nativeChatSessionAttachmentNotReadyNotice(agent: AgentType, starting: boolean): string {
   const label = structuredAgentLabel(agent)
@@ -28,7 +29,7 @@ function nativeChatSessionAttachmentNotReadyNotice(agent: AgentType, starting: b
 }
 
 export function useNativeChatStructuredComposerTransport(args: {
-  props: Pick<NativeChatStructuredViewProps, 'agent' | 'sessionId' | 'target'>
+  props: Pick<NativeChatStructuredViewProps, 'agent' | 'sessionId' | 'target' | 'tabId'>
   controller: ReturnType<typeof useStructuredAgentSession>
   /** Sends now, restarts a failed start with the message, or refuses while the chat starts. */
   sendThroughLaunch: (
@@ -91,6 +92,18 @@ export function useNativeChatStructuredComposerTransport(args: {
           conversationCommands: controller.conversationCommands,
           compactInstructions: controller.compactInstructions,
           runConversationCommand: controller.runConversationCommand,
+          runHostCommand: controller.runHostCommand,
+          runSessionAction: (name, argument) =>
+            runStructuredComposerSessionAction(
+              {
+                target: props.target,
+                tabId: props.tabId,
+                sessionId: props.sessionId,
+                controller
+              },
+              name,
+              argument
+            ),
           ...(setThreadGoalObjective ? { setThreadGoalObjective } : {})
         }).then(localizeStructuredComposerOutcome),
       ...(setThreadGoalObjective ? { threadGoal: { setObjective: setThreadGoalObjective } } : {}),
@@ -129,6 +142,7 @@ export function useNativeChatStructuredComposerTransport(args: {
     onSubmitted,
     optionPickerRequest,
     props.agent,
+    props.tabId,
     props.sessionId,
     props.target,
     sendBlockedReason,

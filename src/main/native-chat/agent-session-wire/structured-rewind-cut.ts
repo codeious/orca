@@ -13,6 +13,7 @@ import type {
 } from '../../../shared/agent-session/journal/agent-session-journal-types'
 import type { AgentSessionJournal } from '../agent-session-journal/journal-store'
 import type { JournalReplacementItem } from '../agent-session-journal/journal-epoch-replacement'
+import type { StructuredAgentDefinition } from './structured-agent-definition'
 
 export type StructuredRewindCut = {
   /** Excludes rows below the /clear floor. */
@@ -30,7 +31,12 @@ export type StructuredRewindCut = {
 
 export function structuredRewindCut(
   journal: AgentSessionJournal,
-  target: { itemId: string; provider: string; nativeId: string }
+  target: {
+    itemId: string
+    provider: string
+    nativeId: string
+    rewindMessageTarget?: StructuredAgentDefinition['rewindMessageTarget']
+  }
 ): StructuredRewindCut | null {
   const snapshot = journal.snapshot()
   const floor = journal.context.floor()
@@ -40,7 +46,15 @@ export function structuredRewindCut(
   const { providerKey, omitted, nativeIdentity } = savedRewindKeys(snapshot.submissions)
   const selected = items.find((item) => item.itemId === target.itemId)
   const key = selected ? nativeIdentity(selected.itemId) : null
-  if (key?.provider === 'claude' && target.provider === 'claude') {
+  const messageTarget = selected
+    ? target.rewindMessageTarget?.(providerKey(selected.itemId), target.nativeId)
+    : null
+  const beforeMessage =
+    messageTarget ??
+    (key?.provider === 'claude' && target.provider === 'claude'
+      ? { sessionId: key.sessionId, uuid: key.uuid }
+      : null)
+  if (beforeMessage) {
     // Messages before an earlier fork still cut at their original position.
     const boundary = items.findIndex((item) => item.itemId === target.itemId)
     const keptTurns = new Set(items.slice(0, boundary).flatMap((item) => scopedTurn(item) ?? []))
@@ -53,7 +67,7 @@ export function structuredRewindCut(
       )
     })
     return {
-      beforeMessage: { sessionId: key.sessionId, uuid: key.uuid },
+      beforeMessage,
       kept: keptRows.map((item) => keptRow(journal, item, providerKey))
     }
   }

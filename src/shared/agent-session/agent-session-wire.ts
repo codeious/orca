@@ -421,6 +421,8 @@ export type AgentSessionModelCatalogResult = {
 export type AgentSessionSlashCommand = {
   name: string
   kind: 'command' | 'skill'
+  /** Requires host-command.v1; never send this token as a provider message. */
+  hostCommand?: true
   /** Membership is authoritative, but this provider report did not classify the name. */
   kindUnspecified?: true
   /** Provider-authored row text; absent when the report carried names only. */

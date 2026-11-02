@@ -1,5 +1,6 @@
 import { AGENT_SESSION_PERMISSION_OWN_RUNTIME_CAPABILITY } from './agent-session-permission-modes-capability'
 import { AI_VAULT_SESSION_HOLDER_CAPABILITY } from '../ai-vault-session-holder'
+import { AGENT_SESSION_HOST_COMMAND_CAPABILITY } from './agent-session-host-command'
 export const AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY = 'agent-session.after-reply.v1' as const
 export const AGENT_SESSION_APPROVAL_NOTES_CAPABILITY = 'agent-session.approval-notes.v1' as const
 // Registered-agent hosts accept only their agentSession.agents inventory; offer agents beyond Claude/Codex only after negotiation.
@@ -52,6 +53,7 @@ export const AGENT_SESSION_COMMANDS_ON_REQUEST_CAPABILITY =
   'agent-session.commands-on-request.v1' as const
 
 export const STRUCTURED_AGENT_SESSION_SURFACE_RUNTIME_CAPABILITIES = [
+  AGENT_SESSION_HOST_COMMAND_CAPABILITY,
   AI_VAULT_SESSION_HOLDER_CAPABILITY,
   AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY,
   AGENT_SESSION_APPROVAL_NOTES_CAPABILITY,

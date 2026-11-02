@@ -1,6 +1,7 @@
 import type { ClaudeAccountRecipe } from '../../../shared/agent-session/lifecycle/agent-session-acquired-account'
 import type { StructuredAgentSessionAdmitFreshInput } from './structured-agent-session-input-admission'
 import type { AiVaultConversationCopy } from '../../../shared/ai-vault-resume-preparation'
+import type { AgentSessionHostCommandResult } from '../../../shared/agent-session/agent-session-host-command'
 import type { AgentChatPermissionChoice } from '../../../shared/agent-chat-permission-mode'
 import type {
   AgentSessionRewindFork,
@@ -240,6 +241,7 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
   }): Promise<
     { ok: true; fork: AgentSessionRewindFork } | { ok: false; reason: AgentSessionRewindReason }
   >
+  forkForRewindRequiresAcquisition?: true
   /** Return provider compaction admission; translator ends the command turn unless child-exit recovery does first. */
   compact?(input: {
     sessionId: string
@@ -279,6 +281,13 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
   holdsLiveProviderProcess?(sessionId: string, acquisitionGeneration: string): boolean
   /** Undefined preserves the client catalog when the provider reports none. */
   readCommands?(sessionId: string): AgentSessionSlashCommand[] | undefined
+  hostCommand?(input: {
+    sessionId: string
+    fence: number
+    name: string
+    argument: string
+    operationId: string
+  }): Promise<AgentSessionHostCommandResult>
   atRestCommands?: StructuredAgentSessionAtRestCommands
   /** Claim the live callback, build reply, commit journal CAS, then answer; reject unbuildable replies before commit. */
   answerPrompt(input: {

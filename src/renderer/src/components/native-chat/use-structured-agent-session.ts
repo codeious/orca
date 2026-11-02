@@ -5,6 +5,7 @@ import { useMemo, useRef } from 'react'
 import { useStructuredAgentSessionSendOptions } from './use-structured-agent-session-send-options'
 import { useStructuredAgentSessionSends } from './use-structured-agent-session-sends'
 import { useStructuredAgentSessionCommandWrite } from './use-structured-agent-session-command-write'
+import { structuredSessionProviderCommands } from './structured-session-provider-command-write'
 import { structuredAgentSessionSendQueues } from './structured-agent-session-queue-request'
 import {
   nativeChatQueueFollowUps,
@@ -220,6 +221,7 @@ export function useStructuredAgentSession(args: StructuredAgentSessionViewArgs) 
     capturePresentation
   })
   return {
+    ...structuredSessionProviderCommands(write, target),
     epoch: state.epoch,
     /** Whether a live `/clear` is fading the old transcript out, and how many this view drew. */
     contextClear,

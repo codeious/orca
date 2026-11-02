@@ -69,6 +69,38 @@ export async function dispatchMobileStructuredCommand(input: {
   let unknown = false
   const outcome = await dispatchStructuredAgentSessionComposerCommand(input.text, {
     ...input.controller,
+    runHostCommand: async (name, argument) => {
+      if (input.pending.current) {
+        return { accepted: false, error: null }
+      }
+      input.pending.current = true
+      try {
+        const result = await requestStructuredAgentSessionMutation({
+          client: input.client,
+          sessionId: input.sessionId,
+          expectedRuntimeFence: input.fence,
+          method: 'agentSession.hostCommand',
+          fingerprintMethod: 'agentSession.hostCommand',
+          fields: { name, argument },
+          timeoutMs: input.timeoutMs
+        })
+        unknown = result.status === 'unknown'
+        return {
+          accepted: result.status === 'accepted',
+          error:
+            result.status === 'accepted'
+              ? null
+              : result.status === 'unknown'
+                ? translate(
+                    'session.structuredComposerCommand.operationUnconfirmed',
+                    'Conversation operation was not confirmed.'
+                  )
+                : result.message
+        }
+      } finally {
+        input.pending.current = false
+      }
+    },
     runConversationCommand: async (command, instructions) => {
       const held = (hold: Parameters<typeof heldConversationCommandParts>[1]) =>
         mobileAgentSessionWriteNoticeText(heldConversationCommandParts(command, hold))

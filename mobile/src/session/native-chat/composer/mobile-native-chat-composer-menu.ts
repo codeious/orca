@@ -61,7 +61,8 @@ export function mobileComposerCatalog({
         agent,
         structured.conversationCommands,
         reported,
-        structured.compactInstructions
+        structured.compactInstructions,
+        false
       )
     : getMobileNativeChatCommands(agent)
   return {

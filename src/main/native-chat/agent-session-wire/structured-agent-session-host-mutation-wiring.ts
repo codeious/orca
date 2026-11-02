@@ -15,6 +15,8 @@ import {
 } from './structured-agent-session-options-read'
 import { IN_PROCESS_OPTIONS_READER } from './structured-agent-session-option-observation'
 import { settleStructuredAgentSessionLateDispatch } from './structured-agent-session-late-dispatch'
+import { runStructuredAgentSessionHostCommand } from './structured-agent-session-host-command'
+import { copyStructuredAgentSessionConversation } from './structured-agent-session-copy-conversation'
 import * as agentStart from './structured-agent-session-agent-start'
 import type { StructuredAgentSessionAttachContext } from './structured-agent-session-attach-context'
 import type { AgentSessionRewindParams } from '../../../shared/agent-session/lifecycle/agent-session-rewind'
@@ -88,6 +90,14 @@ export function structuredAgentSessionMutationDelegates(
   attachContext: () => StructuredAgentSessionAttachContext
 ) {
   return {
+    copyConversation: (
+      caller: StructuredAgentSessionCaller,
+      params: { envelope: Parameters<typeof copyStructuredAgentSessionConversation>[2] }
+    ) => copyStructuredAgentSessionConversation(context(), caller, params.envelope),
+    hostCommand: (
+      caller: StructuredAgentSessionCaller,
+      params: Parameters<typeof runStructuredAgentSessionHostCommand>[2]
+    ) => runStructuredAgentSessionHostCommand(context(), caller, params),
     cancel: (
       caller: StructuredAgentSessionCaller,
       params: Parameters<typeof cancelStructuredAgentSessionTurn>[2]

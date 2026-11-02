@@ -112,7 +112,7 @@ export function savedRewindKeys(submissions: readonly AgentJournalSubmission[]) 
     hasSubmission: (itemId: string) => providerKeys.has(itemId),
     nativeIdentity: (itemId: string) => {
       const key = parseAgentJournalItemKey(providerKey(itemId))
-      return key?.provider === 'claude' || key?.provider === 'codex' ? key : null
+      return key && key.provider !== 'orca' ? key : null
     }
   }
 }

@@ -1,4 +1,7 @@
-import { getTextDrivenNativeChatCommands } from '../../native-chat/native-chat-agent-profiles'
+import {
+  getNativeChatAgentProfile,
+  getTextDrivenNativeChatCommands
+} from '../../native-chat/native-chat-agent-profiles'
 import type { AgentType } from '../../agent-status-types'
 import type {
   SessionOptionDescriptor,
@@ -52,6 +55,14 @@ export type StructuredAgentSessionComposerOptions = {
   runConversationCommand?: (
     command: AgentSessionConversationCommand,
     instructions?: string
+  ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'>>
+  runHostCommand?: (
+    name: string,
+    argument: string
+  ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'>>
+  runSessionAction?: (
+    name: 'rename' | 'fork',
+    argument: string
   ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'>>
   /** Without host goal support, /goal remains agent-handled text. */
   setThreadGoalObjective?: (objective: string) => Promise<boolean>
@@ -123,15 +134,24 @@ export function structuredSessionSlashCommands(
   agent: AgentType,
   conversationCommands: readonly AgentSessionConversationCommand[] | undefined,
   reported: readonly AgentSessionSlashCommand[] | undefined,
-  compactInstructions?: boolean
+  compactInstructions = false,
+  sessionActions = true
 ): readonly SlashCommandSuggestion[] {
   const hostOwned = structuredSlashCommands(conversationCommands, agent, compactInstructions)
+  const profile = getNativeChatAgentProfile(agent)
+  const extra = [
+    ...Object.entries(profile?.conversationCommandAliases ?? {})
+      .filter(([, command]) => conversationCommands?.includes(command))
+      .map(([name]) => ({ name })),
+    ...(sessionActions ? (profile?.sessionActions ?? []).map((name) => ({ name })) : [])
+  ]
   if (reported === undefined) {
-    return hostOwned
+    return [...hostOwned, ...extra]
   }
   const offered = new Set(hostOwned.map(({ name }) => name))
   return [
     ...hostOwned,
+    ...extra,
     ...sessionSlashCommandSuggestions(agent, reported).filter(({ name }) => !offered.has(name))
   ]
 }
@@ -145,32 +165,37 @@ function structuredRecognizedCommands(): readonly SlashCommandSuggestion[] {
  *  would be silently dropped, whereas a pass-through command is a real send. */
 export function isStructuredAgentSessionComposerCommand(
   text: string,
-  _agent: AgentType = 'codex',
-  _reported?: readonly AgentSessionSlashCommand[]
+  agent: AgentType = 'codex',
+  reported?: readonly AgentSessionSlashCommand[]
 ): boolean {
   const command = commandParts(text)
   return Boolean(
-    command && structuredRecognizedCommands().some((entry) => entry.name === command.name)
+    command &&
+    (structuredRecognizedCommands().some((entry) => entry.name === command.name) ||
+      reported?.some((entry) => entry.hostCommand && entry.name === command.name) ||
+      getNativeChatAgentProfile(agent)?.conversationCommandAliases?.[command.name] ||
+      getNativeChatAgentProfile(agent)?.sessionActions?.some((name) => name === command.name))
   )
 }
 
 /** Host actions send no message; /goal is an action only on hosts that set goals. */
-export function isStructuredAgentSessionHostCommand(text: string, hostSetsGoals: boolean): boolean {
+export function isStructuredAgentSessionHostCommand(
+  text: string,
+  hostSetsGoals: boolean,
+  agent?: AgentType,
+  reported?: readonly AgentSessionSlashCommand[]
+): boolean {
   return (
-    isStructuredAgentSessionComposerCommand(text) ||
+    isStructuredAgentSessionComposerCommand(text, agent, reported) ||
     (hostSetsGoals && isStructuredAgentSessionGoalCommand(text))
   )
 }
 
 export function prepareStructuredAgentSessionComposerCommand(
-  _agent: AgentType,
-  _reported?: readonly AgentSessionSlashCommand[]
+  agent: AgentType,
+  reported?: readonly AgentSessionSlashCommand[]
 ): (text: string) => boolean {
-  const names = new Set(structuredRecognizedCommands().map((entry) => entry.name))
-  return (text) => {
-    const command = commandParts(text)
-    return command !== null && names.has(command.name)
-  }
+  return (text) => isStructuredAgentSessionComposerCommand(text, agent, reported)
 }
 
 /** `/clear` or `/compact` alone: a conversation command with nothing after it. */
@@ -193,6 +218,8 @@ export function structuredAgentSessionCommandChangesConversation(text: string): 
   const command = commandParts(text)
   return (
     command?.name === 'clear' ||
+    command?.name === 'new' ||
+    command?.name === 'compress' ||
     command?.name === 'compact' ||
     (command?.name === 'goal' && command.argument !== '')
   )
@@ -223,6 +250,24 @@ export async function dispatchStructuredAgentSessionComposerCommand(
   controller: StructuredAgentSessionComposerOptions
 ): Promise<StructuredAgentSessionCommandOutcome> {
   const command = commandParts(text)
+  if (
+    command &&
+    controller.sessionCommands?.some((entry) => entry.hostCommand && entry.name === command.name)
+  ) {
+    return controller.runHostCommand
+      ? { handled: true, ...(await controller.runHostCommand(command.name, command.argument)) }
+      : unavailable(command.name)
+  }
+  const profile = getNativeChatAgentProfile(controller.agent)
+  const action = profile?.sessionActions?.find((name) => name === command?.name)
+  if (action && command) {
+    return controller.runSessionAction
+      ? { handled: true, ...(await controller.runSessionAction(action, command.argument)) }
+      : unavailable(action)
+  }
+  if (command && profile?.conversationCommandAliases?.[command.name]) {
+    command.name = profile.conversationCommandAliases[command.name]!
+  }
   if (command?.name === 'goal' && controller.setThreadGoalObjective) {
     if (!command.argument) {
       return {

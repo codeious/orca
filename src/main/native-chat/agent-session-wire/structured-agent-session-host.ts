@@ -2,7 +2,7 @@ import * as usageLimit from './structured-agent-session-host-background'
 import { createStructuredAgentSessionConversationReads } from './structured-agent-session-conversation-reads'
 import { continuationContextReader as contextReader } from './structured-agent-session-continuation-context'
 import { structuredAgentStartJournal } from './structured-agent-start-journal'
-import { StructuredConversationCommandController } from './structured-conversation-command-controller'
+import { StructuredConversationCommandController as CommandController } from './structured-conversation-command-controller'
 // Serialize durable mutations per conversation; open at rest and start a child only when work needs it.
 
 import type { AgentSessionSubscribeInput } from './structured-agent-session-subscribers'
@@ -31,10 +31,7 @@ import { createStructuredAgentSessionWorkspaceSleeper } from './structured-agent
 export type { StructuredAgentSessionHostDeps } from './structured-agent-session-host-types'
 
 export class StructuredAgentSessionHost {
-  private readonly conversationCommands = new StructuredConversationCommandController(
-    () => this.mutationContext(),
-    this
-  )
+  private readonly conversationCommands = new CommandController(() => this.mutationContext(), this)
   private readonly sessions = createStructuredAgentSessionPublicationWiring({
     client: () => this.clientDelivery,
     delivery: () => this.conversationDelivery,
@@ -286,6 +283,8 @@ export class StructuredAgentSessionHost {
     () => this.attachContext()
   )
   cancel = this.mutations.cancel
+  hostCommand = this.mutations.hostCommand
+  copyConversation = this.mutations.copyConversation
   respondToPrompt = this.mutations.respondToPrompt
   setOption = this.mutations.setOption
   changeThreadGoal = this.mutations.changeThreadGoal
@@ -304,9 +303,9 @@ export class StructuredAgentSessionHost {
 
   readonly continuationContext: ReturnType<typeof contextReader>
 
-  observeConversationPublications: typeof this.sessions.observeConversationPublications = (
-    ...args
-  ) => this.sessions.observeConversationPublications(...args)
+  observeConversationPublications = this.sessions.observeConversationPublications.bind(
+    this.sessions
+  )
   journalSnapshot = (sessionId: string) => this.backgroundTasks.journalSnapshot(sessionId)
   queuedSendAnswer = this.reads.queuedSendAnswer
   /** What became of one send, answered by key, for callers that follow many sends. */

@@ -21,6 +21,7 @@ import {
 import type { AgentSessionModelCatalogResult } from '../../../../shared/agent-session/agent-session-wire'
 import { structuredAgentSessionOptionModels } from '../../../native-chat/agent-session-wire/structured-agent-session-option-models'
 import { finishedListingIds } from '../../../../shared/agent-session/options/structured-agent-session-listing-verified-ids'
+import { projectHostCommandCatalog } from './structured-agent-session-host-command'
 
 export const STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS = [
   defineMethod({
@@ -42,9 +43,11 @@ export const STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS = [
     permission: 'workspace',
     params: OptionsParams,
     handler: async (params, ctx) =>
-      (await requireInstalledStructuredHost(ctx, params.sessionId)).readCommands(
-        params.sessionId,
-        clientRequestsCommands(ctx)
+      projectHostCommandCatalog(
+        await (
+          await requireInstalledStructuredHost(ctx, params.sessionId)
+        ).readCommands(params.sessionId, clientRequestsCommands(ctx)),
+        ctx
       )
   }),
   defineMethod({

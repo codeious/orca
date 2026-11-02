@@ -174,6 +174,14 @@ export class StructuredAgentSessionAdapterRouter implements StructuredAgentSessi
   readCommands: NonNullable<StructuredAgentSessionAdapter['readCommands']> = (sessionId) =>
     this.liveOwnerOrNull(sessionId)?.readCommands?.(sessionId)
 
+  hostCommand: NonNullable<StructuredAgentSessionAdapter['hostCommand']> = (input) => {
+    const run = this.owner(input.sessionId).hostCommand
+    if (!run) {
+      throw new Error('This agent does not support host commands')
+    }
+    return run(input)
+  }
+
   atRestCommands: StructuredAgentSessionAtRestCommands = {
     read: (record) =>
       this.agents.registration(record.provider)?.adapter.atRestCommands?.read(record),

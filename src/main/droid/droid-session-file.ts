@@ -2,12 +2,14 @@ import { open, readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { asRecord } from '../ai-vault/session-scanner-record-value'
 import { isDroidSessionId } from './droid-session-id'
+import type { DroidCompactionSummary } from './droid-compaction-summary'
 
 // The same two roots the vault scanner lists Droid sessions from.
 const SESSION_ROOTS = ['sessions', 'projects'] as const
 
 // A `session_start` row is a few hundred bytes; a longer first row is not one worth trusting.
 const SESSION_START_MAX_BYTES = 64 * 1024
+const COMPACTION_TAIL_MAX_BYTES = 1024 * 1024
 
 /**
  * Droid files a session as `<root>/<folder slug>/<id>.jsonl` under its account home. The id comes
@@ -48,6 +50,45 @@ export async function readDroidSessionStart(
     return null
   }
   return { id: row.id, ...(typeof row.cwd === 'string' ? { cwd: row.cwd } : {}) }
+}
+
+/** A bounded tail excludes old tool output and summaries. */
+export async function readDroidSessionCompaction(
+  filePath: string
+): Promise<DroidCompactionSummary | null> {
+  const handle = await open(filePath, 'r').catch(() => null)
+  if (!handle) {
+    return null
+  }
+  try {
+    const size = (await handle.stat()).size
+    const start = Math.max(0, size - COMPACTION_TAIL_MAX_BYTES)
+    const buffer = Buffer.alloc(Math.min(size, COMPACTION_TAIL_MAX_BYTES))
+    const { bytesRead } = await handle.read(buffer, 0, buffer.length, start)
+    const text = buffer.toString('utf8', 0, bytesRead)
+    const complete = text.slice(start ? text.indexOf('\n') + 1 : 0, text.lastIndexOf('\n') + 1)
+    for (const line of complete.split('\n').toReversed()) {
+      let row: Record<string, unknown> | null
+      try {
+        row = asRecord(JSON.parse(line))
+      } catch {
+        continue
+      }
+      if (row?.type !== 'compaction_state') {
+        continue
+      }
+      return typeof row.id === 'string' &&
+        typeof row.summaryText === 'string' &&
+        row.summaryText.trim()
+        ? { id: row.id, text: row.summaryText }
+        : null
+    }
+    return null
+  } catch {
+    return null
+  } finally {
+    await handle.close()
+  }
 }
 
 async function readFirstRow(filePath: string): Promise<Record<string, unknown> | null> {

@@ -418,7 +418,12 @@ describe('Droid session turns', () => {
         fence: 7,
         outcome: {
           state: 'accepted',
-          providerIdentity: { provider: 'orca', clientMessageId: 'send-1' }
+          providerIdentity: {
+            provider: 'legacy',
+            agent: 'droid',
+            sessionId,
+            recordId: 'user-hello'
+          }
         }
       })
     )
