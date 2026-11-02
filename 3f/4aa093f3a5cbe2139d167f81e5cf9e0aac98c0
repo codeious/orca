@@ -1,0 +1,20 @@
+src/main/droid/droid-configured-default.test.ts
+  h_476903bd8a47d9 1
+src/main/droid/droid-structured-launch-resolution.test.ts
+  h_476903bd8a47d9 5
+src/main/droid/droid-structured-launch-resolution.ts
+  h_476903bd8a47d9 7
+src/main/runtime/structured-chat-naming-runtime.test.ts
+  h_476903bd8a47d9 218,268-278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3f4aa093f3a5cbe2139d167f81e5cf9e0aac98c0",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
