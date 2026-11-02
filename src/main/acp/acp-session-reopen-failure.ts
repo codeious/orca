@@ -2,10 +2,9 @@ import { agentSessionFailureFact } from '../../shared/agent-session/failures/age
 import { agentSessionFailureWords } from '../../shared/agent-session/failures/agent-session-failure-words'
 import type { AgentSessionProviderHandleLink } from '../../shared/agent-session/lifecycle/agent-session-provider-handle'
 import type { ProviderTimelineEvent } from '../native-chat/agent-session-timeline/provider-timeline-event'
-import { AcpAuthRequiredError, AcpRpcError } from './acp-errors'
+import { AcpAuthRequiredError, AcpRpcError, ACP_RESOURCE_NOT_FOUND } from './acp-errors'
 import type { AcpStructuredLaunch } from './acp-structured-launch-resolution'
 
-const ACP_RESOURCE_NOT_FOUND = -32002
 export const ACP_REOPEN_FAILED = 'ACP agent could not reopen its saved session; starting a new one'
 
 export function acpReopenTakeover(
