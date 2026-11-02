@@ -647,7 +647,7 @@ describe('remote hook service installers', () => {
     expect(status).toMatchObject({
       agent: 'droid',
       state: 'error',
-      configPath: '/home/dev/.factory/settings.json',
+      configPath: '/home/dev/.factory/hooks.json',
       managedHooksPresent: false,
       detail: 'Could not parse remote Factory settings.json'
     })

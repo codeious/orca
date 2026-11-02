@@ -113,7 +113,7 @@ const JSON_INSTALLERS = [
   {
     agent: 'droid',
     timeout: MANAGED_HOOK_TIMEOUT_SECONDS,
-    configPath: `${REMOTE_HOME}/.factory/settings.json`,
+    configPath: `${REMOTE_HOME}/.factory/hooks.json`,
     install: (sftp: SFTPWrapper) => new DroidHookService().installRemote(sftp, REMOTE_HOME)
   },
   {
@@ -263,7 +263,7 @@ describe('managed agent hook timeouts', () => {
     try {
       const status = new DroidHookService().install()
       expect(status.state).toBe('installed')
-      const config = JSON.parse(readFileSync(join(homeDir, '.factory', 'settings.json'), 'utf8'))
+      const config = JSON.parse(readFileSync(join(homeDir, '.factory', 'hooks.json'), 'utf8'))
       const carriers = countManagedCarriersWithTimeout(
         config,
         MANAGED_HOOK_TIMEOUT_SECONDS,
