@@ -130,6 +130,7 @@ export async function attemptStructuredAgentSessionSend(args: {
     expectedRuntimeFence: fence,
     body: entry.body,
     ...(entry.delivery ? { delivery: entry.delivery } : {}),
+    ...(entry.afterReply ? { afterReply: true } : {}),
     ...(entry.options ? { options: entry.options } : {}),
     ...(entry.selection !== undefined ? { selection: entry.selection } : {}),
     ...(entry.usageLimitContinuationOfTurnItemId

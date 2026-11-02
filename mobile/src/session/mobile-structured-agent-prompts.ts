@@ -123,13 +123,17 @@ function decodeQuestionFreeTextAnswer(value: string): {
 }
 
 export function projectStructuredPermission(
-  prompt: StructuredApprovalItem | null
+  prompt: StructuredApprovalItem | null,
+  takesNotes = false
 ): MobileChatPermission | null {
   if (prompt?.body.kind !== 'approval') {
     return null
   }
+  const { acceptsComment, acceptsPlanEdit, ...approval } = chatApprovalFromJournal(prompt.body)
   return {
-    ...chatApprovalFromJournal(prompt.body),
+    ...approval,
+    ...(takesNotes && acceptsComment ? { acceptsComment: true } : {}),
+    ...(takesNotes && acceptsPlanEdit ? { acceptsPlanEdit: true } : {}),
     prompt: { itemId: prompt.itemId, expectedRevision: prompt.revision },
     options: prompt.body.options.map((option) => ({
       label: option.label,

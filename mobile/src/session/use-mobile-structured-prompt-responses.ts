@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import type { MobileChatPermissionResponder } from './native-chat/input/mobile-native-chat-permission'
 import type { AgentSessionPromptResult } from '../../../src/shared/agent-session/agent-session-wire'
 import type { AgentJournalQuestionItem } from '../../../src/shared/agent-session/journal/agent-session-journal-types'
 import {
@@ -28,15 +29,28 @@ export function useMobileStructuredPromptResponses(args: {
   mutate: StructuredAgentSessionMutate
   // Older hosts require answers packed into optionId.
   questionAnswersSupported: boolean | null
+  approvalNotesSupported?: boolean
   onSendError: (message: string) => void
 }): {
-  respondPermission: (optionId: string) => Promise<boolean>
+  respondPermission: MobileChatPermissionResponder
   respondQuestion: (answer: string, rendered?: MobileChatQuestion['prompt']) => Promise<boolean>
 } {
-  const { mutate, onSendError, questionAnswersSupported, stateRef } = args
+  const { mutate, onSendError, questionAnswersSupported, stateRef, approvalNotesSupported } = args
 
   const respondPermission = useCallback(
-    async (optionId: string): Promise<boolean> => {
+    async (
+      optionId: string,
+      notes?: Parameters<MobileChatPermissionResponder>[1]
+    ): Promise<boolean> => {
+      const prompt = actionableStructuredApproval(stateRef.current)
+      if (
+        (notes?.comment !== undefined &&
+          (!approvalNotesSupported || !prompt?.body.acceptsComment)) ||
+        (notes?.editedSpecContent !== undefined &&
+          (!approvalNotesSupported || !prompt?.body.acceptsPlanEdit))
+      ) {
+        return false
+      }
       const target = structuredApprovalResponseTarget(
         optionId,
         actionableStructuredApproval(stateRef.current)
@@ -47,7 +61,7 @@ export function useMobileStructuredPromptResponses(args: {
       const result = await mutate<AgentSessionPromptResult>(
         'agentSession.respondToApproval',
         'agentSession.respondTo:approval',
-        target
+        { ...target, ...notes }
       )
       if (result.status === 'unknown') {
         onSendError('Response unconfirmed — check chat before retrying')
@@ -55,7 +69,7 @@ export function useMobileStructuredPromptResponses(args: {
       }
       return result.status === 'accepted'
     },
-    [mutate, onSendError, stateRef]
+    [mutate, onSendError, stateRef, approvalNotesSupported]
   )
 
   const sendAnswers = useCallback(

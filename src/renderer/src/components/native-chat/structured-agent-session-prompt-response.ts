@@ -1,4 +1,5 @@
 import {
+  supportsStructuredAgentSessionApprovalNotes,
   supportsStructuredAgentSessionQuestionAnswers,
   supportsStructuredAgentSessionPromptCancel
 } from '@/runtime/structured-agent-session-client'
@@ -27,7 +28,18 @@ export async function respondToStructuredAgentSessionPrompt({
   const promptTarget = { itemId: item.itemId, expectedRevision: item.revision }
   let fields: Record<string, unknown>
   if (response.kind === 'option') {
-    fields = { ...promptTarget, optionId: response.optionId }
+    const hasNotes = response.comment !== undefined || response.editedSpecContent !== undefined
+    if (hasNotes && !(await supportsStructuredAgentSessionApprovalNotes(action.target))) {
+      return null
+    }
+    fields = {
+      ...promptTarget,
+      optionId: response.optionId,
+      ...(response.comment !== undefined ? { comment: response.comment } : {}),
+      ...(response.editedSpecContent !== undefined
+        ? { editedSpecContent: response.editedSpecContent }
+        : {})
+    }
   } else if (await supportsStructuredAgentSessionQuestionAnswers(action.target)) {
     // Negotiated before mutate fingerprints the call: older hosts reject the strict field.
     fields = { ...promptTarget, answers }

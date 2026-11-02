@@ -19,6 +19,7 @@ export type StructuredAgentSessionSendInput = {
   attachments?: readonly StructuredAgentSessionAttachment[]
   /** Asks the host to hold it as a card while the agent works; decided once, at the send. */
   delivery?: 'queue-if-active'
+  afterReply?: true
   /** The composer's model and effort for the turn it starts, read once at the send. */
   selection?: Readonly<Record<string, string>>
   options?: Readonly<Record<string, string>>
@@ -34,7 +35,7 @@ export type StructuredAgentSessionSendInput = {
 
 export type StructuredAgentSessionSendRequest = Pick<
   StructuredAgentSessionSendInput,
-  'callerKeepsText' | 'usageLimitContinuationOfTurnItemId' | 'skills'
+  'callerKeepsText' | 'usageLimitContinuationOfTurnItemId' | 'skills' | 'afterReply'
 > & {
   onSettled?: (outcome: StructuredAgentSessionSendOutcome) => void
   /** Do the other thing than the follow-up setting: Cmd/Ctrl+Enter, or the phone's hold menu. */
@@ -56,6 +57,7 @@ export function takeStructuredAgentSessionSendSlot(
     previewUris: attachments.map((attachment) => attachment.previewUri),
     queuedAt: input.now ?? Date.now(),
     ...(input.delivery ? { delivery: input.delivery } : {}),
+    ...(input.afterReply ? { afterReply: true } : {}),
     ...(input.options ? { options: { ...input.options } } : {}),
     ...(input.selection !== undefined ? { selection: { ...input.selection } } : {}),
     ...(input.usageLimitContinuationOfTurnItemId

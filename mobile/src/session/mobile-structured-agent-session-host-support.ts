@@ -1,6 +1,8 @@
 import {
   AGENT_SESSION_COMMANDS_ON_REQUEST_CAPABILITY,
-  AGENT_SESSION_COHERENT_MODEL_CATALOG_CAPABILITY
+  AGENT_SESSION_COHERENT_MODEL_CATALOG_CAPABILITY,
+  AGENT_SESSION_APPROVAL_NOTES_CAPABILITY,
+  AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY
 } from '../../../src/shared/agent-session/structured-agent-session-surface-capabilities'
 import {
   AGENT_SESSION_CONVERSATION_STOP_RUNTIME_CAPABILITY,
@@ -31,6 +33,8 @@ import {
 import { SKILL_DISCOVER_WORKSPACE_CAPABILITY } from '../../../src/shared/skill-install-capability'
 
 export type StructuredAgentSessionHostSupport = {
+  approvalNotes?: boolean
+  afterReply?: boolean
   commandsOnRequest?: boolean
   coherentModelCatalog?: boolean
   promptCancel: boolean
@@ -68,6 +72,8 @@ export function structuredAgentSessionHostSupport(
   capabilities: readonly string[]
 ): StructuredAgentSessionHostSupport {
   return {
+    approvalNotes: capabilities.includes(AGENT_SESSION_APPROVAL_NOTES_CAPABILITY),
+    afterReply: capabilities.includes(AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY),
     commandsOnRequest: capabilities.includes(AGENT_SESSION_COMMANDS_ON_REQUEST_CAPABILITY),
     coherentModelCatalog: capabilities.includes(AGENT_SESSION_COHERENT_MODEL_CATALOG_CAPABILITY),
     promptCancel: capabilities.includes(AGENT_SESSION_PROMPT_CANCEL_RUNTIME_CAPABILITY),

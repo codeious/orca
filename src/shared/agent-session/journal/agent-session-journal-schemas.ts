@@ -226,6 +226,8 @@ const KnownItemBody = z.discriminatedUnion('kind', [
     blockedPath: z.string().optional(),
     matchedAskRule: ApprovalMatchedAskRule.optional(),
     subject: ApprovalSubject.optional(),
+    acceptsComment: z.boolean().optional(),
+    acceptsPlanEdit: z.boolean().optional(),
     detail: z.string().nullable(),
     options: z.array(PromptOption),
     resolution: Resolution
