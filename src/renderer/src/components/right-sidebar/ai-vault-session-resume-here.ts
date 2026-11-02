@@ -181,7 +181,8 @@ function resumeInPlaceOf(
         void Promise.resolve(ownerShown).then(resolve, resolve)
         return owner !== undefined
       }
-    }
+    },
+    here.confirm
   )
   return settled
 }

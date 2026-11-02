@@ -273,6 +273,7 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
   atRestCommands?: StructuredAgentSessionAtRestCommands
   /** Claim the live callback, build reply, commit journal CAS, then answer; reject unbuildable replies before commit. */
   answerPrompt(input: {
+    operationId?: string
     sessionId: string
     itemId: string
     kind: 'approval' | 'question'

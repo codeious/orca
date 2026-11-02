@@ -12,6 +12,7 @@ import {
   type DroidPromptPresentation
 } from './droid-prompt-presentation'
 import { DroidRpcError } from './droid-rpc-errors'
+import { droidPlanOptionLevel, startsDroidSpecHandoff } from './droid-spec-handoff'
 
 const detailsSchema = z.looseObject({
   fullCommand: z.string().optional(),
@@ -39,13 +40,6 @@ const REFUSAL = 'cancel'
 
 /** A plan's ending Orca cannot follow: `proceed_edit` needs an editor of Droid's, and a new session is
  *  the client's to start only when the request says so. */
-const unanswerableFromPlan = (value: string): boolean =>
-  value === 'proceed_edit' || value.startsWith('proceed_new_session')
-
-function droidPlanOptionLevel(value: string): string | null {
-  return value.match(/_auto_run_(low|medium|high)$/)?.[1] ?? null
-}
-
 /** Throws a `DroidRpcError` for a request Orca cannot show, so Droid is told rather than left waiting. */
 export function droidPermissionPresentation(
   params: unknown,
@@ -58,6 +52,7 @@ export function droidPermissionPresentation(
   const { toolUses, options } = parsed.data
   const plan = toolUses.find((use) => use.confirmationType === PLAN_CONFIRMATION)
   const takesNotes = plan?.details?.supportsClientStartedHandoff === true
+  const handsOff = takesNotes && environment.beginSpecHandoff !== undefined
   const reported = environment.autonomyLevels()
   const offered = options.filter(({ value }) => {
     if (!plan) {
@@ -65,7 +60,8 @@ export function droidPermissionPresentation(
     }
     const level = droidPlanOptionLevel(value)
     return (
-      !unanswerableFromPlan(value) &&
+      value !== 'proceed_edit' &&
+      (handsOff || !startsDroidSpecHandoff(value)) &&
       (level === null || reported === undefined || reported.includes(level))
     )
   })
@@ -101,15 +97,25 @@ export function droidPermissionPresentation(
             : {})
         }
       : bounded,
-    reply: (response) => {
+    reply: (response, operationId) => {
       if (response === null) {
         return { selectedOption: REFUSAL }
       }
       if (response.kind !== 'option' || !offered.some(({ value }) => value === response.optionId)) {
         throw new Error('Choose one of the options Droid offered')
       }
+      const handoff = handsOff && startsDroidSpecHandoff(response.optionId)
+      if (handoff && !operationId) {
+        throw new Error('A plan handoff requires a host operation ID')
+      }
       return {
         selectedOption: response.optionId,
+        ...(handoff && operationId
+          ? {
+              clientStartsHandoffSession: true,
+              specHandoffId: environment.beginSpecHandoff?.(response.optionId, operationId)
+            }
+          : {}),
         ...(takesNotes && response.comment?.trim() ? { comment: response.comment } : {}),
         ...(takesNotes && response.editedSpecContent?.trim()
           ? { editedSpecContent: response.editedSpecContent }

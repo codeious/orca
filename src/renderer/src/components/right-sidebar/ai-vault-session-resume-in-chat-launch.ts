@@ -29,6 +29,8 @@ import { resolveWebSessionVisibleTabId } from '@/runtime/web-session-focus-inten
 import type { TuiAgent } from '../../../../shared/tui-agent'
 import type { StructuredAgentLaunchSettlement } from '@/lib/structured-agent-launch-settlement'
 import type { NativeChatComposerFocusIntent } from '@/components/native-chat/use-native-chat-composer-reveal-focus'
+import type { ConfirmationDialogContextValue } from '@/components/confirmation-dialog-context'
+import { allowAiVaultChatResume } from './ai-vault-session-holder-check'
 
 /** A chat the resumed one takes the place of: it opens right after that tab. */
 export type AiVaultChatReplacement = {
@@ -55,7 +57,8 @@ export async function resumeAiVaultSessionInNewChat(
   rowAgent: CliConversationRowAgent,
   worktreeId: string,
   requestId: AgentLaunchRequestId,
-  replacing?: AiVaultChatReplacement
+  replacing?: AiVaultChatReplacement,
+  confirm?: ConfirmationDialogContextValue
 ): Promise<void> {
   try {
     const recordingHost = parseRoutableExecutionHostId(session.executionHostId)
@@ -68,6 +71,10 @@ export async function resumeAiVaultSessionInNewChat(
       throw new Error('The conversation workspace is no longer on its recording host.')
     }
     const executionHostId = recordingHost.id
+    if (!(await allowAiVaultChatResume(workspaceOwner.target, session, confirm))) {
+      replacing?.onSettled(null)
+      return
+    }
     // Reuse terminal preparation to repin Codex rows from legacy shared homes before host lookup.
     const [preparedSession, agent] = await Promise.all([
       prepareAiVaultSessionForResume(session),

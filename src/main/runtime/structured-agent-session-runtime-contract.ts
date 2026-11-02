@@ -70,6 +70,11 @@ export type StructuredAgentSessionRuntimeDeps = StructuredAgentSessionTransportO
   /** See `StructuredAgentSessionHostDeps.onSessionTabHidden`. */
   onSessionTabHidden?: StructuredAgentSessionHostDeps['onSessionTabHidden']
   assertNoTerminalWriter?: StructuredAgentSessionHostDeps['assertNoTerminalWriter']
+  publishContinuationTab?: (input: {
+    workspaceId: string
+    sessionId: string
+    agent: AgentSessionRecord['provider']
+  }) => Promise<void>
   /** Host-owned phone delivery and reconciliation from the current journal projection. */
   attentionDelivery?: StructuredAttentionMobileDelivery
   /** Every live turn completion and pending prompt, with the host's status at that edge. */
