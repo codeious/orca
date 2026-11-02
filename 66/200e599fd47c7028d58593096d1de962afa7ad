@@ -1,0 +1,35 @@
+src/main/droid/droid-permission-requests.ts
+  s_ed79b846e95547::t_28758b620954c7 2,60,95-103,111-117
+src/main/native-chat/agent-session-wire/structured-agent-session-host-mutations.ts
+  s_ed79b846e95547::t_12931305b5cfee 63
+src/main/native-chat/agent-session-wire/structured-agent-session-turns-prompt.ts
+  s_ed79b846e95547::t_1f0bc25bcbfff8 37-39,54-59,62-72
+src/renderer/src/components/native-chat/structured-agent-session-prompt-response.ts
+  s_ed79b846e95547::t_f6b20d24b7b180 2,6,32-49
+src/renderer/src/i18n/locales/en.json
+  s_ed79b846e95547::t_96dc113158a163 19985-19991
+src/shared/agent-session/agent-session-wire.ts
+  s_ed79b846e95547::t_bafe21ace5c77a 224
+src/shared/agent-session/structured-agent-session-surface-capabilities.ts
+  s_ed79b846e95547::t_c40e0138fb44e8 2-3,54-55
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_ed79b846e95547::t_4e7cde03df3181 10,38-42
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_ed79b846e95547::t_b45ec3aa1ec4ee 604
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "66200e599fd47c7028d58593096d1de962afa7ad",
+  "prompts": {},
+  "sessions": {
+    "s_ed79b846e95547": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a380474f-90f8-4792-9f3a-88671b8c97bd",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
