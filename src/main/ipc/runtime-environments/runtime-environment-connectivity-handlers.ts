@@ -252,12 +252,7 @@ function registerPassiveCallHandler(
       if (isHostSpawnFencedForWslMoveUndo(environment.id, args.method)) {
         return wslMoveUndoSpawnFencedResponse(environment, args.method)
       }
-      const forwarded = forwardMcpSignInRequest(
-        environment,
-        subscriptions,
-        () => event.sender.id,
-        args
-      )
+      const forwarded = forwardMcpSignInRequest(environment, subscriptions, event.sender.id, args)
       if (forwarded) {
         return forwarded
       }

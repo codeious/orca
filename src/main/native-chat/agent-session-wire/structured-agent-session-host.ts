@@ -53,8 +53,7 @@ export class StructuredAgentSessionHost {
     this.sessions,
     (sessionId) => this.usageLimitContinue?.readState(sessionId)
   )
-  private readonly subscribers = this.clientDelivery.subscribers
-  readonly mcpSignIn = this.subscribers.mcpSignIn
+  readonly mcpSignIn = this.clientDelivery.subscribers.mcpSignIn
   private readonly tasks = new StructuredAgentSessionTaskQueue()
   private readonly runtimeState: StructuredAgentSessionHostRuntimeState
   private readonly startup: ReturnType<typeof createStartupRecovery>
@@ -74,7 +73,7 @@ export class StructuredAgentSessionHost {
     this.backgroundTasks = new BackgroundTasks(
       deps,
       this.sessions,
-      this.subscribers,
+      this.clientDelivery.subscribers,
       (sessionId) => this.lifetime.conversation(sessionId),
       this.clientDelivery.readChildWork,
       this.clientDelivery.childWorkIncomplete
@@ -163,8 +162,8 @@ export class StructuredAgentSessionHost {
     this.eventRecovery.handle(event)
 
   // Keep inference so publishStatus stays required in the attach-context spread.
-  private lifetimeContext() {
-    return {
+  private lifetimeContext = () =>
+    ({
       deps: this.deps,
       runtimeState: this.runtimeState,
       sessions: this.sessions,
@@ -173,12 +172,11 @@ export class StructuredAgentSessionHost {
       generationEnded: this.clientDelivery.publishGenerationEnded,
       wakeDelivery: (sessionId: string) => this.conversationDelivery.loop.wake(sessionId),
       endExitedChild: this.eventRecovery.endExitedChildUnderSerialize
-    } satisfies StructuredAgentSessionLifetimeContext
-  }
+    }) satisfies StructuredAgentSessionLifetimeContext
 
   private attachContext = (): StructuredAgentSessionAttachContext => ({
     ...this.lifetimeContext(),
-    subscribers: this.subscribers,
+    subscribers: this.clientDelivery.subscribers,
     tasks: this.tasks,
     reconcileLeases: (sessionId) => this.runtimeState.reconcileLeases(sessionId),
     serialize: (sessionId, task) => this.serialize(sessionId, task),
@@ -256,7 +254,7 @@ export class StructuredAgentSessionHost {
     mutationWiring.createStructuredAgentSessionHostMutationContext({
       deps: this.deps,
       sessions: this.sessions,
-      subscribers: this.subscribers,
+      subscribers: this.clientDelivery.subscribers,
       lifetime: this.lifetime,
       clientDelivery: this.clientDelivery,
       conversationDelivery: this.conversationDelivery,
@@ -334,7 +332,8 @@ export class StructuredAgentSessionHost {
   publishWorkChanged: (sessionId: string) => void = this.clientDelivery.publishGenerationEnded
 
   publishChildWorkEvidence = this.clientDelivery.publishChildWork
-  unsubscribe = (sessionId: string, id: string): void => this.subscribers.close(sessionId, id)
+  unsubscribe = (sessionId: string, id: string): void =>
+    this.clientDelivery.subscribers.close(sessionId, id)
 
   /** Retains no per-session subscription. */
   subscribeStatus = this.clientDelivery.subscribeStatus
@@ -350,7 +349,7 @@ export class StructuredAgentSessionHost {
 
   collaboratorsForTests = () => ({
     sessions: this.sessions,
-    subscribers: this.subscribers,
+    subscribers: this.clientDelivery.subscribers,
     runtimeState: this.runtimeState,
     conversationDelivery: this.conversationDelivery,
     lifetime: this.lifetime,

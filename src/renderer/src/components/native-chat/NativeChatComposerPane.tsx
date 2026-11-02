@@ -20,11 +20,10 @@ import { useNativeChatSessionOptions } from './use-native-chat-session-options'
 import { useNativeChatDictation } from './use-native-chat-dictation'
 import { useNativeChatSessionOptionCommand } from './use-native-chat-session-option-command'
 import type * as C from './native-chat-composer-types'
-import { useNativeChatPtyComposerSend } from './use-native-chat-pty-composer-send'
-import { useNativeChatStructuredComposerSend } from './use-native-chat-structured-composer-send'
+import { useNativeChatComposerSendRoutes } from './use-native-chat-composer-send-routes'
+import { useNativeChatComposerDroidKeys } from './use-native-chat-composer-droid-keys'
 import { useImeEnterGestureOwnership } from '@/lib/ime-composition-keyboard-event'
 import { useNativeChatComposerAppMenuSelection } from './use-native-chat-composer-app-menu-selection'
-import { useNativeChatComposerSubmit } from './use-native-chat-composer-submit'
 import { useNativeChatComposerCommandPicker } from './use-native-chat-composer-command-picker'
 
 type ComposerHandle = C.NativeChatComposerHandle
@@ -234,17 +233,6 @@ export const NativeChatComposerPane = forwardRef<ComposerHandle, C.NativeChatCom
     const contextUsageSummary = useNativeChatContextUsageSummary(structuredTransport)
     const sessionOptionsSnapshot = structuredTransport?.optionSnapshot ?? ptySessionOptionsSnapshot
 
-    const sendStructured = useNativeChatStructuredComposerSend({
-      agent,
-      draftScopeKey,
-      imageAttachments,
-      structuredTransport,
-      isComposing: imeEnterGesture.isComposing,
-      clearSkillOrigin,
-      setDraft,
-      setCaret
-    })
-
     const ptyCommandRouting = {
       agent,
       disabled,
@@ -261,28 +249,21 @@ export const NativeChatComposerPane = forwardRef<ComposerHandle, C.NativeChatCom
       clearImageAttachments,
       setNotice
     }
-    const sendPty = useNativeChatPtyComposerSend({
+    const { sendStructured, submission } = useNativeChatComposerSendRoutes({
       draftScopeKey,
       ...ptyCommandRouting,
       draft,
+      caret,
       imageAttachments,
+      structuredTransport,
+      isComposing: imeEnterGesture.isComposing,
       launchDraft: launchSeed?.launchDraft,
       launchDraftResolved: launchSeed?.launchDraftResolved === true,
       readTerminalDraft: launchSeed?.readTerminalDraft,
       classifySend,
       onOptimisticSend,
       optimisticSendOutcome,
-      terminalTabId
-    })
-    const submission = useNativeChatComposerSubmit({
-      structuredTransport,
-      draftScopeKey,
-      draft,
-      caret,
-      imageAttachments,
-      disabled,
-      sendPty,
-      sendStructured,
+      terminalTabId,
       submitEmpty: launchPrompt?.onEmptySubmit,
       consumeOrcaCommand: pending || launchPrompt ? undefined : resume.consume,
       matchesOrcaCommand: pending || launchPrompt ? undefined : resume.matchesDraft,
@@ -330,6 +311,23 @@ export const NativeChatComposerPane = forwardRef<ComposerHandle, C.NativeChatCom
     })
 
     const handleKeyDown = useNativeChatComposerKeyDown({
+      agent: editSession ? undefined : agent,
+      droidKeys: useNativeChatComposerDroidKeys({
+        agent: editSession ? undefined : agent,
+        snapshot: sessionOptionsSnapshot,
+        surface: disabled || editSession ? null : sessionOptionsSurface,
+        isWorking: isWorking || inputOwnedByCard,
+        inert: inputOwnedByCard,
+        stopTurn: isWorking && onStop ? interrupt : undefined,
+        input: textareaRef,
+        draft,
+        hasAttachments: imageAttachments.length > 0,
+        sendAfterReply:
+          !disabled && !inputOwnedByCard && !editSession && structuredTransport
+            ? () => send({ afterReply: true })
+            : undefined,
+        clear: { setDraft, setCaret, setActiveSuggestion, clearSkillOrigin, clearImageAttachments }
+      }),
       autocomplete,
       mentionFiles,
       completeMention,

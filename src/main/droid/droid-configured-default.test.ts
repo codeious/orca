@@ -1,4 +1,4 @@
-import { agentSessionConversationView } from '../../shared/agent-session-conversation-view'
+import { agentSessionConversationView } from '../../shared/agent-session/lifecycle/agent-session-conversation-view'
 import { agentSessionRecordFixture } from '../../shared/agent-session/lifecycle/agent-session-record.test-fixture'
 // Droid's list names no model a new chat runs, so the composer stays empty until a no-pick session
 // reports the model and effort it resolved. A workspace `.factory` that sets one hides that default.

@@ -2,7 +2,7 @@ import { homedir } from 'node:os'
 import { basename, dirname } from 'node:path'
 import { requireLegacyAgentSessionAccountHome } from '../../shared/agent-session/lifecycle/agent-session-account-home'
 import type { resolveCliCommand } from '../../shared/node-cli-command-resolution'
-import type { AgentCliVersionReader } from '../agent-cli-version-probe'
+import type { AgentCliVersionReader } from '../agent-launch/preflight/agent-cli-version-probe'
 import { AgentModelCatalogListingStoppedError } from '../native-chat/agent-model-catalog/agent-model-catalog-failures'
 import { AGENT_MODEL_CATALOG_PROBE_TIMEOUT_MS } from '../native-chat/agent-model-catalog/agent-model-catalog-probe-runner'
 import type {

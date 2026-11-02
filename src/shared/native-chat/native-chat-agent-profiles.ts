@@ -1,4 +1,5 @@
 import type { AgentType } from '../agent-status-types'
+import { DROID_COMPOSER_KEYS, type DroidComposerKey } from '../droid-composer-keys'
 import type { SkillDiscoverySource } from '../skills'
 import {
   getAgentSlashCommands,
@@ -7,6 +8,7 @@ import {
 } from './input/native-chat-slash-commands'
 
 export type NativeChatAgentProfile = {
+  composerKeyClaims?: Readonly<Partial<Record<NodeJS.Platform, readonly DroidComposerKey[]>>>
   conversationCommandAliases?: Readonly<Record<string, 'clear' | 'compact'>>
   sessionActions?: readonly ('rename' | 'fork')[]
   questionCancelOnEscape?: true
@@ -39,6 +41,11 @@ const OPENCODE_PROFILE: NativeChatAgentProfile = {
 
 const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfile>> = {
   droid: {
+    composerKeyClaims: {
+      darwin: DROID_COMPOSER_KEYS,
+      win32: DROID_COMPOSER_KEYS.filter((key) => key !== 'ctrlL' && key !== 'ctrlN'),
+      linux: DROID_COMPOSER_KEYS.filter((key) => key !== 'ctrlL' && key !== 'ctrlN')
+    },
     skillPrefix: '/',
     skillSourceOwner: 'droid',
     questionCancelOnEscape: true,
@@ -93,6 +100,15 @@ export function getNativeChatAgentProfile(
   agent: AgentType | null | undefined
 ): NativeChatAgentProfile | null {
   return agent ? (NATIVE_CHAT_AGENT_PROFILES[agent] ?? null) : null
+}
+
+const NO_COMPOSER_KEY_CLAIMS: readonly DroidComposerKey[] = []
+
+export function getNativeChatComposerKeyClaims(
+  agent: AgentType | null | undefined,
+  platform: NodeJS.Platform
+): readonly DroidComposerKey[] {
+  return getNativeChatAgentProfile(agent)?.composerKeyClaims?.[platform] ?? NO_COMPOSER_KEY_CLAIMS
 }
 
 /** Shared catalog for send/collision/envelope classification; Grok remains skills-only until its command catalog is verified. */

@@ -1,26 +1,39 @@
-// The toasts a host-admitted launch shows when its host declines or can't be reached.
-
 import { toast } from 'sonner'
-import type { TuiAgent } from '../../../../../shared/tui-agent'
-import type { ExecutionHostId } from '../../../../../shared/execution-host'
 import { translate } from '@/i18n/i18n'
-import { useAppStore } from '@/store/index'
 import { selectExecutionHostDisplayLabel } from '@/lib/execution-host-display-label'
 import { structuredAgentLabel } from '@/lib/agent-session/launch/structured-agent-session-launch-label'
 import { structuredChatUnavailableText } from '@/lib/agent-session/launch/structured-agent-session-launch-failure'
+import type { TuiAgent } from '../../../../../shared/tui-agent'
+import type { ExecutionHostId } from '../../../../../shared/execution-host'
+import { useAppStore } from '@/store/index'
+import type { AgentCliInstallationProblem } from '../../../../../shared/agent-cli-installation-problem'
+import { agentCliTooOldWords } from '../../../../../shared/agent-session/failures/agent-session-failure-copy'
+import { sayAgentSessionFailureTranslated } from '@/components/native-chat/agent-session-failure-words-text'
 
-export function notifyExplicitChatFailure(agent: TuiAgent, reason?: string): void {
+export function notifyExplicitChatFailure(
+  agent: TuiAgent,
+  reason?: string,
+  installation?: AgentCliInstallationProblem
+): void {
   toast.error(
     translate(
       'auto.components.tab.bar.QuickLaunchButton.chatUnavailableAfterSelection',
       "Couldn't start a {{value0}} chat.",
       { value0: structuredAgentLabel(agent) }
     ),
-    { description: structuredChatUnavailableText(reason) }
+    {
+      description: installation
+        ? agentCliTooOldWords(installation, sayAgentSessionFailureTranslated)
+        : structuredChatUnavailableText(reason)
+    }
   )
 }
 
-export function notifyHostDeclined(agent: TuiAgent, explain = true): void {
+export function notifyHostDeclined(
+  agent: TuiAgent,
+  explain = true,
+  installation?: AgentCliInstallationProblem
+): void {
   const agentLabel = structuredAgentLabel(agent)
   toast.info(
     translate(
@@ -30,11 +43,13 @@ export function notifyHostDeclined(agent: TuiAgent, explain = true): void {
     ),
     explain
       ? {
-          description: translate(
-            'components.native-chat.structuredSessionHostDeclinedDescription',
-            "This workspace can't run a {{value0}} chat.",
-            { value0: agentLabel }
-          )
+          description: installation
+            ? agentCliTooOldWords(installation, sayAgentSessionFailureTranslated)
+            : translate(
+                'components.native-chat.structuredSessionHostDeclinedDescription',
+                "This workspace can't run a {{value0}} chat.",
+                { value0: agentLabel }
+              )
         }
       : undefined
   )

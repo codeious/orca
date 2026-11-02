@@ -37,6 +37,7 @@ import type {
 import { NativeChatImageRowProvider } from './NativeChatImageReferencePill'
 import { focusMountedNativeChatEditor, mountedEditorView } from './native-chat-mounted-editor-view'
 import { NativeChatUnkernedRunDecorations } from './native-chat-unkerned-run-decorations'
+import { useDroidComposerFocusEvents } from './use-droid-composer-focus-mirror'
 
 import { useNativeChatComposerMount } from './native-chat-composer-mount'
 
@@ -52,6 +53,7 @@ export const NativeChatPromptEditor = memo(
 
 function NativePromptEditor({
   scopeKey,
+  agent,
   positionTarget,
   imageRow = NO_IMAGES,
   inputRef,
@@ -64,6 +66,7 @@ function NativePromptEditor({
   className,
   ...events
 }: NativeChatPromptEditorProps): React.JSX.Element {
+  const focusEvents = useDroidComposerFocusEvents(agent, events)
   const historyPaths = useMemo(() => createNativeChatPastedTextHistory(scopeKey ?? ''), [scopeKey])
   const adopted = useRef(readNativeChatDraftSnapshot(scopeKey, initialValue))
   const userOwned = useRef(false)
@@ -402,6 +405,7 @@ function NativePromptEditor({
         <EditorContent
           editor={editor}
           {...events}
+          {...focusEvents}
           onCompositionStartCapture={claimSelection}
           data-disabled={disabled || undefined}
           className="data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"

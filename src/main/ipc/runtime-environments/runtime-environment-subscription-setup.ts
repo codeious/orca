@@ -177,6 +177,7 @@ export function crewSubscriptionSetupFailure(
 }
 
 export type RetainedRemoteRuntimeSubscription = RemoteRuntimeSubscription & {
+  mcpSignInSessionId?: string
   setupController: AbortController
   environmentId: string
   ownerWebContentsId: number

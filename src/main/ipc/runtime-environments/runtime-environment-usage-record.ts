@@ -1,4 +1,15 @@
 import { markEnvironmentUsed } from '../../../shared/runtime-environment-store'
+import type { RuntimeRpcResponse } from '../../../shared/runtime-rpc-envelope'
+
+export function markEnvironmentUsedFromResponse(
+  userDataPath: string,
+  environmentId: string,
+  response: RuntimeRpcResponse<unknown>
+): void {
+  if (response.ok === true) {
+    markEnvironmentUsed(userDataPath, environmentId, { runtimeId: response._meta.runtimeId })
+  }
+}
 
 /** Subscription callbacks cannot reject to a caller; usage writes must tolerate removed or unreadable environments. */
 export function recordRuntimeEnvironmentUsage(

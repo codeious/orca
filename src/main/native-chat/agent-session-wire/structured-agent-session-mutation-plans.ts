@@ -5,11 +5,7 @@ import { readNoChoiceOptionResult } from './structured-agent-session-option-obse
 import type { AgentChildWorkEvidence } from '../../../shared/agent-status-child-work-evidence'
 import type { AgentChildWorkView } from '../../../shared/agent-status-child-work-view'
 import type { AgentJournalMessageItem } from '../../../shared/agent-session/journal/agent-session-journal-types'
-import {
-  AGENT_MESSAGE_SOURCE,
-  USER_MESSAGE_SOURCE,
-  type AgentSessionMessageSource
-} from '../../../shared/agent-session/agent-session-message-source'
+import * as messageSource from '../../../shared/agent-session/agent-session-message-source'
 import type { AgentSessionOperationOutcome } from '../../../shared/agent-session/lifecycle/agent-session-operation-ledger'
 import type {
   AgentSessionCancelResult,
@@ -123,11 +119,11 @@ function sendSource(params: {
   body: AgentJournalMessageItem
   userSend?: true
   personsMessage?: true
-}): AgentSessionMessageSource | undefined {
+}): messageSource.AgentSessionMessageSource | undefined {
   if (params.userSend || params.personsMessage) {
-    return USER_MESSAGE_SOURCE
+    return messageSource.USER_MESSAGE_SOURCE
   }
-  return params.body.from ? AGENT_MESSAGE_SOURCE : undefined
+  return params.body.from ? messageSource.AGENT_MESSAGE_SOURCE : undefined
 }
 
 export function sendPlan(
@@ -228,7 +224,7 @@ export function conversationCommandPlan(params: {
       const sent = await performSend(ctx, {
         clientMessageId,
         origin: 'client',
-        source: USER_MESSAGE_SOURCE,
+        source: messageSource.USER_MESSAGE_SOURCE,
         payloadFingerprint: params.envelope.payloadFingerprint,
         body: structuredAgentSessionCompactBody(params.instructions)
       })

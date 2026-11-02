@@ -78,7 +78,7 @@ beforeEach(() => {
     pendingSubscriptions,
     recordLayoutFrame: vi.fn()
   })
-  registerRuntimeEnvironmentPassiveHandlers(() => '/profile', subscriptions)
+  registerRuntimeEnvironmentPassiveHandlers(() => '/profile', undefined, subscriptions)
 })
 afterEach(() => {
   for (const stream of subscriptions.values()) {

@@ -1,6 +1,7 @@
 import type { KnownRuntimeEnvironment } from '../../../shared/runtime-environments'
 import type { RuntimeRpcResponse } from '../../../shared/runtime-rpc-envelope'
 import type { RetainedRemoteRuntimeSubscription } from './runtime-environment-subscription-handlers'
+import type { RemoteRuntimeSubscription } from '../../../shared/remote-runtime/remote-runtime-client'
 import { runtimeEnvironmentRevisionFailure } from './runtime-environment-revision-guard'
 
 type McpSignInRequest = {
@@ -9,6 +10,31 @@ type McpSignInRequest = {
   timeoutMs?: number
   expectedEnvironmentPairingRevision?: number
   expectedEnvironmentRuntimeId?: string
+}
+
+export function mcpSignInSubscriptionFields(
+  method: string,
+  params: unknown,
+  subscription: RemoteRuntimeSubscription,
+  isCurrent: () => boolean
+): Pick<RetainedRemoteRuntimeSubscription, 'mcpSignInSessionId' | 'sendRequest'> {
+  return {
+    ...(method === 'agentSession.subscribe' &&
+    typeof params === 'object' &&
+    params !== null &&
+    'sessionId' in params &&
+    typeof params.sessionId === 'string'
+      ? { mcpSignInSessionId: params.sessionId }
+      : {}),
+    sendRequest: subscription.sendRequest
+      ? (method, params, timeoutMs) => {
+          if (!isCurrent()) {
+            throw new Error('This chat connection is no longer current.')
+          }
+          return subscription.sendRequest!(method, params, timeoutMs)
+        }
+      : undefined
+  }
 }
 
 export function forwardMcpSignInRequest(

@@ -1,4 +1,5 @@
 import { subscribeWebWorkspaceSleep } from './web-workspace-sleep-notices'
+import { webWindowFocusApi } from './web-window-focus-api'
 import type { AgentSessionAttachmentClipboardTarget } from '../../../../shared/agent-session/agent-session-attachments'
 import { saveClipboardImageAsWebAgentSessionAttachment } from './web-agent-session-attachment-upload'
 import { savePastedTextAsWebAgentSessionAttachment } from './web-pasted-text-upload'
@@ -295,12 +296,7 @@ export function createWebUiApi(): NonNullable<Partial<PreloadApi>['ui']> {
     // Why: a paired web client has no OS sleep signal; occlusion-driven visibilitychange already covers wake recovery.
     onSystemResumed: () => noopUnsubscribe,
     syncTrafficLights: () => {},
-    setMarkdownEditorFocused: () => {},
-    setRichMarkdownContextMenuTarget: () => {},
-    markPlainTextContextMenuTarget: () => {},
-    setTerminalInputFocused: () => {},
-    setFloatingFocus: () => {},
-    setShortcutRecorderFocused: () => {},
+    ...webWindowFocusApi,
     onRichMarkdownContextCommand: () => noopUnsubscribe,
     onFullscreenChanged: () => noopUnsubscribe,
     minimize: () => {},

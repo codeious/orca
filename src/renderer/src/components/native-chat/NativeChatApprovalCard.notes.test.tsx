@@ -7,7 +7,7 @@ import { NativeChatApprovalCard } from './NativeChatApprovalCard'
 import {
   chatApprovalFromJournal,
   type ChatApproval
-} from '../../../../shared/native-chat-interactive-prompt'
+} from '../../../../shared/native-chat/input/native-chat-interactive-prompt'
 
 afterEach(cleanup)
 

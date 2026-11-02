@@ -1,5 +1,8 @@
 import type { resolveCliCommand } from '../../shared/node-cli-command-resolution'
-import { readAgentCliVersion, type AgentCliVersionReader } from '../agent-cli-version-probe'
+import {
+  readAgentCliVersion,
+  type AgentCliVersionReader
+} from '../agent-launch/preflight/agent-cli-version-probe'
 import {
   resolveStructuredAgentCommand,
   type StructuredAgentCommand,

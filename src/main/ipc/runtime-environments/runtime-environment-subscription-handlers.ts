@@ -1,21 +1,11 @@
-import {
-  assertCrewSubscriptionInputs,
-  runtimeEnvironmentSubscriptionId,
-  assertSettledCrewSubscriptionCurrent,
-  assertCrewSubscriptionCurrent,
-  resolveSubscriptionEnvironment,
-  crewSubscriptionSetupFailure,
-  type RuntimeEnvironmentSubscribeArgs,
-  type CrewSubscriptionSetupResult,
-  type RuntimeEnvironmentSetupFailure,
-  type RuntimeEnvironmentSubscriptionHandlerDependencies,
-  assertSubscriptionPairingCurrent
-} from './runtime-environment-subscription-setup'
+import { registerRuntimeEnvironmentSubscriptionControls } from './runtime-environment-subscription-control'
+import * as setup from './runtime-environment-subscription-setup'
 import { ipcMain } from 'electron'
 import { abortWhenRendererGone } from '../renderer-lifetime-abort'
 import type { RemoteRuntimeSubscription } from '../../../shared/remote-runtime/remote-runtime-client'
 import { getRuntimeEnvironmentTransportGeneration } from './runtime-environment-transport-generation'
 import { subscribeRuntimeEnvironment } from './runtime-environment-transport-routing'
+import { mcpSignInSubscriptionFields } from './runtime-environment-mcp-sign-in-routing'
 
 export type {
   RetainedRemoteRuntimeSubscription,
@@ -23,7 +13,7 @@ export type {
 } from './runtime-environment-subscription-setup'
 
 export function registerRuntimeEnvironmentSubscriptionHandlers(
-  args: RuntimeEnvironmentSubscriptionHandlerDependencies
+  args: setup.RuntimeEnvironmentSubscriptionHandlerDependencies
 ): void {
   const {
     getUserDataPath,
@@ -36,22 +26,24 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
     'runtimeEnvironments:subscribe',
     async (
       event,
-      args: RuntimeEnvironmentSubscribeArgs
-    ): Promise<{ subscriptionId: string; requestId: string } | CrewSubscriptionSetupResult> => {
-      const subscriptionId = runtimeEnvironmentSubscriptionId(args)
+      args: setup.RuntimeEnvironmentSubscribeArgs
+    ): Promise<
+      { subscriptionId: string; requestId: string } | setup.CrewSubscriptionSetupResult
+    > => {
+      const subscriptionId = setup.runtimeEnvironmentSubscriptionId(args)
       const crewResult = args.setupResult === 'crew'
-      let failure: RuntimeEnvironmentSetupFailure | undefined
+      let failure: setup.RuntimeEnvironmentSetupFailure | undefined
       let setupSignal: AbortSignal | undefined
       let operation: 'environment-resolution' | 'subscription' = 'environment-resolution'
       try {
-        assertCrewSubscriptionInputs(
+        setup.assertCrewSubscriptionInputs(
           args,
           crewResult,
           subscriptionId,
           remoteRuntimeSubscriptions,
           pendingSubscriptions
         )
-        const { environment, pairingRevision } = resolveSubscriptionEnvironment(
+        const { environment, pairingRevision } = setup.resolveSubscriptionEnvironment(
           getUserDataPath(),
           args
         )
@@ -63,7 +55,7 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
         const setupController = new AbortController()
         setupSignal = setupController.signal
         const assertCrewCurrent = (): void =>
-          assertCrewSubscriptionCurrent(
+          setup.assertCrewSubscriptionCurrent(
             event,
             sender,
             getUserDataPath,
@@ -209,13 +201,13 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
         if (pendingSubscriptions.get(subscriptionId) === pending) {
           pendingSubscriptions.delete(subscriptionId)
         }
-        assertSettledCrewSubscriptionCurrent(
+        setup.assertSettledCrewSubscriptionCurrent(
           crewResult,
           assertCrewCurrent,
           disposeRendererLifetime,
           subscription
         )
-        assertSubscriptionPairingCurrent(
+        setup.assertSubscriptionPairingCurrent(
           getUserDataPath,
           environment,
           pairingRevision,
@@ -235,13 +227,12 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
             : { subscriptionId, requestId: subscription.requestId }
         }
         remoteRuntimeSubscriptions.set(subscriptionId, {
-          ...(args.method === 'agentSession.subscribe' &&
-          typeof args.params === 'object' &&
-          args.params !== null &&
-          'sessionId' in args.params &&
-          typeof args.params.sessionId === 'string'
-            ? { mcpSignInSessionId: args.params.sessionId }
-            : {}),
+          ...mcpSignInSubscriptionFields(
+            args.method,
+            args.params,
+            subscription,
+            () => transportIsCurrent() && !setupController.signal.aborted
+          ),
           setupController,
           requestId: subscription.requestId,
           environmentId: environment.id,
@@ -249,14 +240,6 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
           disposeRendererLifetime,
           notifyClosed,
           sendBinary: (bytes) => subscription?.sendBinary(bytes) ?? false,
-          sendRequest: subscription.sendRequest
-            ? (method, params, timeoutMs) => {
-                if (!transportIsCurrent() || setupController.signal.aborted) {
-                  throw new Error('This chat connection is no longer current.')
-                }
-                return subscription.sendRequest!(method, params, timeoutMs)
-              }
-            : undefined,
           close: () => {
             disposeRendererLifetime()
             subscription?.close()
@@ -269,54 +252,18 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
         if (!crewResult) {
           throw error
         }
-        return crewSubscriptionSetupFailure(subscriptionId, error, failure, operation, setupSignal)
+        return setup.crewSubscriptionSetupFailure(
+          subscriptionId,
+          error,
+          failure,
+          operation,
+          setupSignal
+        )
       }
     }
   )
-  ipcMain.handle(
-    'runtimeEnvironments:unsubscribe',
-    (event, args: { subscriptionId: string }): { unsubscribed: boolean } => {
-      const pending = pendingSubscriptions.get(args.subscriptionId)
-      if (pending?.ownerWebContentsId === event.sender.id) {
-        pending.close()
-        return { unsubscribed: true }
-      }
-      const subscription = remoteRuntimeSubscriptions.get(args.subscriptionId)
-      if (!subscription || subscription.ownerWebContentsId !== event.sender.id) {
-        return { unsubscribed: false }
-      }
-      remoteRuntimeSubscriptions.delete(args.subscriptionId)
-      subscription.close()
-      return { unsubscribed: true }
-    }
-  )
-  ipcMain.on(
-    'runtimeEnvironments:subscriptionBinary',
-    (event, args: { subscriptionId?: unknown; bytes?: unknown }) => {
-      if (typeof args.subscriptionId !== 'string') {
-        return
-      }
-      const bytes = toBinaryPayload(args.bytes)
-      if (!bytes) {
-        return
-      }
-      const subscription = remoteRuntimeSubscriptions.get(args.subscriptionId)
-      if (subscription?.ownerWebContentsId === event.sender.id) {
-        subscription.sendBinary(bytes)
-      }
-    }
-  )
-}
-
-function toBinaryPayload(value: unknown): Uint8Array<ArrayBufferLike> | null {
-  if (value instanceof Uint8Array) {
-    return value
-  }
-  if (value instanceof ArrayBuffer) {
-    return new Uint8Array(value)
-  }
-  if (ArrayBuffer.isView(value)) {
-    return new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
-  }
-  return null
+  registerRuntimeEnvironmentSubscriptionControls({
+    remoteRuntimeSubscriptions,
+    pendingSubscriptions
+  })
 }

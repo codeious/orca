@@ -1,7 +1,7 @@
 import type { AgentSessionSubscribeInput } from './agent-session-subscribe-input'
 import type { AgentSessionMcpSignInForwarding } from './agent-session-mcp-sign-in-forwarding'
 import type { StructuredAgentSessionCaller } from './structured-agent-session-host-types'
-import type { AgentJournalCursor } from '../../../shared/agent-session-journal-identity'
+import type { AgentJournalCursor } from '../../../shared/agent-session/journal/agent-session-journal-identity'
 import { emptyAgentSessionBatch } from './agent-session-empty-batch'
 import type { runStructuredAgentSessionHostCommand } from './structured-agent-session-host-command'
 

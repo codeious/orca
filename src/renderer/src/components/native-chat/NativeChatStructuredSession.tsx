@@ -48,10 +48,7 @@ import { useStructuredAgentSessionHostExecution } from './StructuredAgentSession
 import { useNativeChatRewindHost } from './use-native-chat-rewind-host'
 import { NativeChatRewindContext } from './native-chat-rewind-context'
 import { NativeChatQueuedMessageList } from './NativeChatQueuedMessageList'
-import {
-  cancelStructuredPrompt,
-  nativeChatStructuredStopControls
-} from './native-chat-structured-stop-controls'
+import * as stops from './native-chat-structured-stop-controls'
 import { useStructuredChatApproval } from './use-structured-chat-approval'
 import { useAppStore } from '../../store'
 import { structuredAgentLabel } from '@/lib/agent-session/launch/structured-agent-session-launch-label'
@@ -101,7 +98,7 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
     ...(provisionalLaunch.launch ? { launch: provisionalLaunch.launch } : {})
   })
   useRecheckNativeChatFileLinksWhenTurnEnds(controller.isWorking)
-  const stopControls = nativeChatStructuredStopControls(controller, hostExecution.stopping)
+  const stopControls = stops.nativeChatStructuredStopControls(controller, hostExecution.stopping)
   const { composerError, reportComposerError } = useNativeChatComposerError(
     controller.commandRefusalCauses
   )
@@ -186,7 +183,7 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
   const install = useNativeChatInstallSlot(props, agentLabel, installLayout)
   const canMention = composerShown && install.unavailableHint === undefined
   const approval = useStructuredChatApproval(prompt?.body, props.target)
-  const cancelPrompt = () => cancelStructuredPrompt(controller, prompt, props.agent)
+  const cancelPrompt = () => stops.cancelStructuredPrompt(controller, prompt, props.agent)
   const rootInput = useNativeChatRootInputRouting({
     tabId: props.tabId,
     rootRef,

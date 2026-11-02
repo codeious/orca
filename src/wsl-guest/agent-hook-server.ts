@@ -18,10 +18,7 @@ import type { createServer } from 'node:http'
 import { randomUUID } from 'node:crypto'
 import { join } from 'node:path'
 
-import {
-  ORCA_HOOK_PROTOCOL_VERSION,
-  ORCA_HOOK_RAW_JSON_TRANSPORT
-} from '../shared/agent-hook-types'
+import * as hookProtocol from '../shared/agent-hook-types'
 import {
   clearAllListenerCaches,
   clearPaneCacheState,
@@ -190,9 +187,9 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
       port: this.port,
       token: this.token,
       env: this.env,
-      version: ORCA_HOOK_PROTOCOL_VERSION,
+      version: hookProtocol.ORCA_HOOK_PROTOCOL_VERSION,
       openCodeTui: true,
-      transport: ORCA_HOOK_RAW_JSON_TRANSPORT
+      transport: hookProtocol.ORCA_HOOK_RAW_JSON_TRANSPORT
     })
     return this.endpointFileWritten
   }

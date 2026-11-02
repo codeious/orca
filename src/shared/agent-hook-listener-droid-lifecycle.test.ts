@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   clearAllListenerCaches,
   clearPaneCacheState,
-  movePaneCacheState,
-  paneHasStateClaims
+  movePaneCacheState
 } from './agent-hook-listener/listener-state'
+import { paneHasStateClaims } from './agent-hook-listener/pane-state-claims'
 import {
   CHILD_ID,
   LEAD_ID,

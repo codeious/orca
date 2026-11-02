@@ -4,7 +4,7 @@ import type { StructuredPromptItem } from '../../../../shared/agent-session/view
 import {
   chatApprovalFromJournal,
   type ChatApproval
-} from '../../../../shared/native-chat-interactive-prompt'
+} from '../../../../shared/native-chat/input/native-chat-interactive-prompt'
 import type { RuntimeClientTarget } from '../../../../shared/runtime-client-target'
 
 export function useStructuredChatApproval(

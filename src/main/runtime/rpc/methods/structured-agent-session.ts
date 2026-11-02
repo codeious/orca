@@ -1,3 +1,4 @@
+import { STRUCTURED_AGENT_SESSION_SLEEP_WORKSPACE_METHOD } from './structured-agent-session-sleep-workspace'
 import { STRUCTURED_AGENT_SESSION_USAGE_LIMIT_CONTINUE_METHODS } from './structured-agent-session-usage-limit-continue'
 import { STRUCTURED_AGENT_SESSION_CLOSE_METHOD } from './structured-agent-session-close-method'
 import {
@@ -68,13 +69,10 @@ import {
   HistoryParams,
   RewindParams,
   SendParams,
-  SleepWorkspaceParams,
   SubscribeParams,
   UnsubscribeParams
 } from './structured-agent-session-schemas'
 import { sendStructuredAgentSessionForClient } from './structured-agent-session-send-compatibility'
-import { getStructuredAgentSessionHost } from '../../../native-chat/agent-session-wire/structured-agent-session-registry'
-import { LOCAL_EXECUTION_HOST_ID } from '../../../../shared/execution-host'
 import { ORCA_LAYOUT_OWNER_IS_MAIN } from '../../../../shared/layout-owner-switch'
 import { refusingStructuredAgentSessionCreatesClosedFirst } from './structured-agent-session-close-before-create'
 import {
@@ -167,55 +165,7 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
   }),
   ...STRUCTURED_AGENT_SESSION_QUEUED_METHODS,
   STRUCTURED_AGENT_SESSION_CLOSE_METHOD,
-  defineMethod({
-    name: 'agentSession.sleepWorkspace',
-    permission: 'workspace',
-    params: SleepWorkspaceParams,
-    handler: async (params, ctx) => {
-      requireStructuredCapability(ctx)
-      if (params.markAsleep) {
-        return (await requireInstalledHost(ctx)).sleepWorkspace(params.workspaceId, true)
-      }
-      const installed = getStructuredAgentSessionHost()
-      if (installed) {
-        return installed.sleepWorkspace(params.workspaceId, params.markAsleep)
-      }
-      let store: Awaited<ReturnType<typeof ctx.runtime.openAgentSessionRecordStore>>
-      try {
-        store = await ctx.runtime.openAgentSessionRecordStore()
-      } catch (error) {
-        const appeared = getStructuredAgentSessionHost()
-        if (appeared) {
-          return appeared.sleepWorkspace(params.workspaceId, params.markAsleep)
-        }
-        console.warn('[agent-session] workspace sleep record inventory unavailable', error)
-        return { stoppedSessionIds: [], failures: [{ reason: 'inventory-unavailable' }] }
-      }
-      const appeared = getStructuredAgentSessionHost()
-      if (appeared) {
-        return appeared.sleepWorkspace(params.workspaceId, params.markAsleep)
-      }
-      try {
-        const records = store
-          .listConversations()
-          .filter(
-            (record) =>
-              record.location.workspaceId === params.workspaceId &&
-              record.location.executionHostId === LOCAL_EXECUTION_HOST_ID
-          )
-        const stoppedSessionIds = records
-          .filter((record) => record.neverStarted)
-          .map((record) => record.sessionId)
-        const failures = records
-          .filter((record) => !record.neverStarted)
-          .map((record) => ({ sessionId: record.sessionId, reason: 'stop-unverifiable' as const }))
-        return failures.length > 0 ? { stoppedSessionIds, failures } : { stoppedSessionIds }
-      } catch (error) {
-        console.warn('[agent-session] workspace sleep record inventory failed', error)
-        return { stoppedSessionIds: [], failures: [{ reason: 'inventory-unavailable' }] }
-      }
-    }
-  }),
+  STRUCTURED_AGENT_SESSION_SLEEP_WORKSPACE_METHOD,
   ...STRUCTURED_AGENT_SESSION_PROMPT_RESPONSE_METHODS,
   defineMethod({
     name: 'agentSession.history',

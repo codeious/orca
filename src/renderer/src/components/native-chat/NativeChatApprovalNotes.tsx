@@ -6,7 +6,7 @@ import { isPlanApprovalSubject } from '../../../../shared/agent-session/agent-se
 import type {
   ChatApproval,
   ChatApprovalNotes
-} from '../../../../shared/native-chat-interactive-prompt'
+} from '../../../../shared/native-chat/input/native-chat-interactive-prompt'
 import { collectChatApprovalNotes } from '../../../../shared/native-chat-approval-notes'
 
 export type NativeChatApprovalNotesState = {

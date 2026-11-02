@@ -3,9 +3,9 @@ import {
   clearAllListenerCaches,
   clearPaneCacheState,
   createHookListenerState,
-  movePaneCacheState,
-  paneHasStateClaims
+  movePaneCacheState
 } from './listener-state'
+import { paneHasStateClaims } from './pane-state-claims'
 
 describe('provider hook state slots', () => {
   it('moves and clears registered claims without disturbing other panes or map aliases', () => {

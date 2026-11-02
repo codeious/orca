@@ -4,10 +4,10 @@ import {
   type AgentSessionProviderHandleLink
 } from '../../shared/agent-session/lifecycle/agent-session-provider-handle'
 import { isLegacyAgentSessionAccountHome } from '../../shared/agent-session/lifecycle/agent-session-account-home'
-import type { AgentSessionJournalIdentity } from '../../shared/agent-session-journal-identity'
+import type { AgentSessionJournalIdentity } from '../../shared/agent-session/journal/agent-session-journal-identity'
 import { LOCAL_EXECUTION_HOST_ID } from '../../shared/execution-host'
 import type { resolveCliCommand } from '../../shared/node-cli-command-resolution'
-import type { readAgentCliVersion } from '../agent-cli-version-probe'
+import type { readAgentCliVersion } from '../agent-launch/preflight/agent-cli-version-probe'
 import { AgentSessionPreSpawnError } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { AgentCliInstallationError } from '../native-chat/agent-cli-installation-error'
 import type { StructuredAgentCommandSettings } from '../native-chat/structured-agent-command-resolution'

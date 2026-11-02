@@ -12,11 +12,6 @@ import {
   type StructuredLaunchAdmission
 } from '@/lib/agent-session/launch/structured-agent-session-host-admission'
 import { holdEmptyWorkspaceDefaultSurfaceForLaunch } from '@/lib/empty-workspace-default-surface-claims'
-import {
-  notifyExplicitChatFailure,
-  notifyHostDeclined,
-  notifyHostUnreachable
-} from '@/lib/agent-session/launch/structured-agent-session-launch-admission-notices'
 import { StructuredAgentSessionCreateRefusalError } from '@/lib/agent-session/launch/structured-agent-session-launch-errors'
 import type {
   StructuredAgentLaunchHooks,
@@ -35,9 +30,9 @@ import {
   notifyExplicitChatFailure,
   notifyHostDeclined,
   notifyHostUnreachable
-} from './structured-agent-session-launch-host-notice'
+} from './structured-agent-session-launch-admission-notices'
 
-export { notifyHostDeclined } from './structured-agent-session-launch-host-notice'
+export { notifyHostDeclined } from './structured-agent-session-launch-admission-notices'
 
 export type AgentTerminalLaunchCompletion = {
   outcome: WebRuntimeTerminalCreateOutcome

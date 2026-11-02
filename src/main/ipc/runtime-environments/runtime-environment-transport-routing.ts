@@ -9,13 +9,16 @@ import { getRuntimeEnvironmentStatus } from './runtime-environment-status-probe'
 import { createRuntimeEnvironmentMcpSignInReceiver } from '../runtime-environment-mcp-sign-in-receiver'
 import { getPreferredPairedRuntimeConnection } from '../../../shared/runtime-environments'
 import { ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES } from '../../../shared/electron-remote-runtime-client-capabilities'
-import { resolveEnvironment, markEnvironmentUsed } from '../../../shared/runtime-environment-store'
+import { resolveEnvironment } from '../../../shared/runtime-environment-store'
 import {
   requireWslHostWithoutStart,
   resolveManagedRuntimeEnvironment,
   type ManagedRuntimeCallPreparation
 } from './runtime-environment-managed-tunnel'
-import { recordRuntimeEnvironmentUsage } from './runtime-environment-usage-record'
+import {
+  markEnvironmentUsedFromResponse,
+  recordRuntimeEnvironmentUsage
+} from './runtime-environment-usage-record'
 import type {
   RuntimeOrchestrationEnvelope,
   RuntimeRpcResponse
@@ -296,16 +299,6 @@ export async function subscribeRuntimeEnvironment(
     }
     crewAttempt?.observeFailure(runtimeEnvironmentSetupFailure(error, 'subscription'))
     throw error
-  }
-}
-
-function markEnvironmentUsedFromResponse(
-  userDataPath: string,
-  environmentId: string,
-  response: RuntimeRpcResponse<unknown>
-): void {
-  if (response.ok === true) {
-    markEnvironmentUsed(userDataPath, environmentId, { runtimeId: response._meta.runtimeId })
   }
 }
 

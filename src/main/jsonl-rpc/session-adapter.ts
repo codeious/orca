@@ -10,7 +10,7 @@ import {
   type StructuredAgentSessionAcquireInput,
   type StructuredAgentSessionAdapter
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
-import type { DescendantTreeVerdict } from '../pty-descendant-exit-verification'
+import type { DescendantTreeVerdict } from '../pty/process-retirement/pty-descendant-exit-verification'
 import { ProviderAcquisitionStarts } from '../provider-process/provider-acquisition-starts'
 import type { ProviderProcessCloseResult } from '../provider-process/provider-process-close'
 import { providerSpawnedProcessIdentity } from '../provider-process/provider-spawned-process-identity'
