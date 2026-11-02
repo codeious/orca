@@ -56,7 +56,12 @@ export function registerWslHookFsHandlers(
     WSL_HOOK_FS_METHODS.readFile,
     async (params): Promise<WslFsResult<{ content: string }>> => {
       try {
-        const content = await fs.readFile(scoped(params.path), 'utf8')
+        // The organization policy is read-only; every mutation remains home-scoped.
+        const path = resolveRaw(params.path)
+        const content = await fs.readFile(
+          path === '/etc/factory/settings.json' ? path : scoped(path),
+          'utf8'
+        )
         return { ok: true, content }
       } catch (err) {
         return failure(err)

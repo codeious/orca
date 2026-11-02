@@ -21,6 +21,7 @@ function createFakeSftp(
     plainRenameOverwrites?: boolean
     openSshRename?: boolean
     failDotFileWrites?: boolean
+    unreadablePath?: string
   } = {}
 ): {
   sftp: SFTPWrapper
@@ -43,6 +44,10 @@ function createFakeSftp(
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: This fake implements every SFTP operation exercised below.
   const sftp = {
     readFile: (path: string, _enc: string, cb: (err: unknown, data?: string) => void): void => {
+      if (opts.unreadablePath === path) {
+        cb({ code: 3, message: `permission denied ${path}` })
+        return
+      }
       const v = fs.files.get(path)
       if (v === undefined) {
         cb(noEntryError(path))
@@ -223,6 +228,43 @@ describe('installer-utils-remote', () => {
       { kind: 'chmod', path: tempPath },
       { kind: 'rename', path: tempPath, destination: '/home/u/.claude/settings.json' }
     ])
+  })
+
+  it('keeps no backup unless the caller asks for one', async () => {
+    const { sftp, fs } = createFakeSftp()
+    const path = '/home/u/.claude/settings.json'
+    fs.files.set(path, '{"old":true}\n')
+
+    await writeHooksJsonRemote(sftp, path, { next: true })
+    expect(fs.files.has(`${path}.bak`)).toBe(false)
+
+    await writeHooksJsonRemote(sftp, path, { later: true }, { backup: true })
+    expect(fs.files.get(`${path}.bak`)).toBe('{\n  "next": true\n}\n')
+  })
+
+  it('refuses to replace a file it was asked to back up but cannot read', async () => {
+    const path = '/home/u/.factory/hooks.json'
+    const { sftp, fs } = createFakeSftp({ unreadablePath: path })
+    fs.files.set(path, 'mine\n')
+
+    await expect(
+      writeHooksJsonRemote(sftp, path, { a: 1 }, { backup: true })
+    ).rejects.toMatchObject({ code: 3 })
+
+    expect(fs.files.get(path)).toBe('mine\n')
+    expect(fs.files.has(`${path}.bak`)).toBe(false)
+  })
+
+  it('writes the backup as temp + rename, so a symlinked .bak is replaced', async () => {
+    const { sftp, fs } = createFakeSftp({ openSshRename: true })
+    const path = '/home/u/.factory/hooks.json'
+    fs.files.set(path, 'before\n')
+
+    await writeHooksJsonRemote(sftp, path, { a: 1 }, { backup: true })
+
+    // Why: the backup goes down as temp + rename, so a pre-placed `.bak` link is replaced, never followed.
+    expect(fs.openSshRenameCount).toBe(2)
+    expect(fs.files.get(`${path}.bak`)).toBe('before\n')
   })
 
   it('preserves existing config file mode across atomic replacement', async () => {
