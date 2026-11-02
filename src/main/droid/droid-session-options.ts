@@ -18,6 +18,7 @@ import {
 import { isDroidMethodNotFound } from './droid-missing-method'
 import type { DroidSavedPicks } from './droid-model-options'
 import { DroidRpcError } from './droid-rpc-errors'
+import { droidSessionOptionDescriptors } from './droid-session-option-descriptors'
 import type { DroidSessionModel } from './droid-session-model'
 import {
   parseDroidSettings,
@@ -94,7 +95,11 @@ export class DroidSessionOptions {
   async read(): ReturnType<DroidSessionModel['read']> {
     const { request, settings, model, requested } = this.deps
     const listed = await model.read(request)
-    return { ...listed, current: droidCurrentOptions(settings.current, requested, listed.current) }
+    const answer = {
+      ...listed,
+      current: droidCurrentOptions(settings.current, requested, listed.current)
+    }
+    return { ...answer, sessionOptions: droidSessionOptionDescriptors(settings.current, answer) }
   }
 
   /**

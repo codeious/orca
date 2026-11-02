@@ -21,7 +21,7 @@ async function commandIn(
   const command: StructuredAgentSessionCommandRun = {
     ...turn,
     clientMessageId,
-    running: { kind: 'turn', turnId: turn.turnId, state: 'running', requestedAt: Date.now() }
+    running: { kind: 'turn', turnId: turn.turnId, state: 'running', requestedAt: 1 }
   }
   h.rig.eventSink.appendItem(command.identity, command.running, {
     turnScope: AGENT_JOURNAL_THREAD_SCOPE

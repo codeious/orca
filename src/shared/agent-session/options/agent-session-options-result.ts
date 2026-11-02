@@ -3,6 +3,7 @@ import type { AgentJournalThreadGoal } from '../journal/agent-session-journal-ty
 import type { AgentSessionConversationCommand } from '../agent-session-conversation-command'
 import type { AgentSessionContextUsage } from '../agent-session-context-usage'
 import type { AgentSessionRewindSupport } from '../lifecycle/agent-session-rewind'
+import type { SessionOptionDescriptor } from '../../native-chat/input/native-chat-session-options'
 import type {
   AgentSessionFastModeState,
   AgentSessionFastModeSupport,
@@ -16,6 +17,7 @@ export type AgentSessionAcceptedInputSources = Partial<
 /** Provider-reported choices and effective next-turn values. Additive read-only
  *  surface so older hosts can reject it without changing structured v1 writes. */
 export type AgentSessionOptionsResult = {
+  sessionOptions?: SessionOptionDescriptor[]
   /** This host verified that account selection moves this chat with its history intact. */
   canSwitchAccount?: boolean
   /** Saved conversation on this execution host, resolved from the record's own account store. */

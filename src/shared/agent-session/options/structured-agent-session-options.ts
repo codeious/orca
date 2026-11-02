@@ -11,13 +11,17 @@ import {
 } from '../../native-chat/input/native-chat-session-option-defaults'
 import { AGENT_CHAT_PERMISSION_MODE_OPTION_ID } from '../../agent-chat-permission-mode'
 import { usesInstalledAgentModelCatalog } from '../../agent-model-catalog-ownership'
-import { structuredAgentSessionShownModel } from './structured-agent-session-option-snapshot'
-import type { SessionOptionValue } from '../../native-chat/input/native-chat-session-options'
+import { structuredAgentSessionControlsModelId } from './structured-agent-session-option-snapshot'
+import type {
+  SessionOptionDescriptor,
+  SessionOptionValue
+} from '../../native-chat/input/native-chat-session-options'
 import type {
   AgentSessionAcceptedInputSources,
   AgentSessionOptionsResult
 } from './agent-session-options-result'
 import { labelFromModelId } from '../../model-id-label'
+import { replaceSessionScopedOptions } from './agent-session-session-options'
 import type { AgentSessionModelCatalogResult } from '../agent-session-wire'
 import { listingVerifiedModelIds } from './structured-agent-session-listing-verified-ids'
 import {
@@ -45,6 +49,7 @@ export function structuredAgentSessionOptionCatalog(
 }
 
 export type StructuredAgentSessionOptionState = {
+  sessionOptions?: SessionOptionDescriptor[]
   catalog: AgentSessionOptionCatalog | null
   /** Catalog provenance, independent of known input: seed offers no replacement models;
    * builtin enables static rows only after unavailable discovery. */
@@ -157,6 +162,7 @@ export function applyStructuredAgentSessionOptions(
   launch: { newLaunch: boolean; coherentCatalog?: boolean } = { newLaunch: false }
 ): StructuredAgentSessionOptionState {
   const { current } = result
+  replaceSessionScopedOptions(state, result.sessionOptions)
   const installed = usesInstalledAgentModelCatalog(state.record.agent, launch.coherentCatalog)
   const keepCatalog = installed || result.modelsKnown === false
   // Catalog defaults supply picker context without claiming the chat chose them.
@@ -182,6 +188,7 @@ export function applyStructuredAgentSessionOptions(
   return {
     ...state,
     optionsAnswerPresent: true,
+    sessionOptions: result.sessionOptions,
     reportedEffort: state.record.agent === 'pi' ? current.reportedEffort : undefined,
     catalog: keepCatalog
       ? state.catalog
@@ -209,16 +216,6 @@ export function applyStructuredAgentSessionOptions(
     permissionMode: result.current.permissionMode ?? null,
     reportedPermissionMode: result.current.reportedPermissionMode
   }
-}
-
-/** The model a pick's other values were chosen under: the chat's own, else the default shown. */
-function structuredAgentSessionControlsModelId(
-  state: StructuredAgentSessionOptionState
-): string | null {
-  return state.catalog
-    ? structuredAgentSessionShownModel(state.catalog, state.catalog.models, state.record)
-        .controlsModelId
-    : null
 }
 
 /** Runtime reports describe the process whose options answer carried them; a newer fence has none until it answers. */
@@ -267,7 +264,10 @@ export function commitStructuredAgentSessionOptionValues(
   origin: 'picked' | 'seeded' = 'picked'
 ): StructuredAgentSessionOptionState {
   let next = state
-  for (const id of STRUCTURED_LAUNCH_OPTION_IDS) {
+  for (const id of [
+    ...STRUCTURED_LAUNCH_OPTION_IDS,
+    ...(state.sessionOptions ?? []).filter((row) => row.scope === 'session').map((row) => row.id)
+  ]) {
     const value = values[id]
     if (value !== undefined) {
       next = commitStructuredAgentSessionOption(next, id, value, origin)
