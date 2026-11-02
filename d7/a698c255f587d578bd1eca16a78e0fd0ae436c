@@ -1,0 +1,1275 @@
+src/main/agent-launch/agent-launch-executor.test.ts
+  h_476903bd8a47d9 109-134
+src/main/agent-launch/agent-launch-mode.ts
+  h_476903bd8a47d9 11,240,245-248,250-251,283-284,308
+  s_a71ca3b06ed7b3::t_b2fbe5743c5c15 24,28-31,93-97,242-244,249,332
+src/main/native-chat/structured-agent-session-create-support.test.ts
+  h_476903bd8a47d9 19-50
+  s_a71ca3b06ed7b3::t_6c8ba09a6922e7 1-18,51-60
+src/shared/agent-launch-intent.ts
+  h_476903bd8a47d9 142-143
+src/main/native-chat/structured-agent-session-create-support.ts
+  h_476903bd8a47d9 4,6,7,11,11-13,19,22-25,22-27,30-33
+  s_a71ca3b06ed7b3::t_6476c95fe13285 7,12-13,26-27,30-33
+src/main/agent-launch/agent-launch-mode-settings.ts
+  s_a71ca3b06ed7b3::t_9bac81116fe474 1-19
+src/main/runtime/rpc/methods/orchestration-worker-start-mode.ts
+  s_a71ca3b06ed7b3::t_ece87a283fce58 59
+src/main/runtime/session-tabs/structured-session-create-support.ts
+  s_a71ca3b06ed7b3::t_942d6672e2cf21 30
+  s_a71ca3b06ed7b3::t_1e1be9351e9c0b 46-50
+config/scripts/vitest-real-agent-home-write-guard.test.ts
+  s_a71ca3b06ed7b3::t_9ff959242a77fd 73-78
+config/scripts/vitest-real-agent-home-write-guard.ts
+  s_a71ca3b06ed7b3::t_b5683f7eba78d0 19-20
+src/main/agent-hooks/installer-utils-remote.test.ts
+  h_476903bd8a47d9 24,47-50,233-269
+src/main/agent-hooks/installer-utils-remote.ts
+  h_476903bd8a47d9 35,40,42-43,46,48-51,53
+src/main/agent-cli-version-probe.test.ts
+  h_476903bd8a47d9 87,89-91,96
+src/main/agent-cli-version-probe.ts
+  h_476903bd8a47d9 59,92
+src/main/acp/acp-dialects/grok-background-task-stop.ts
+  h_476903bd8a47d9 2,18
+src/main/acp/acp-dialects/grok-requests.ts
+  h_476903bd8a47d9 6,32,68-71,111
+src/main/acp/acp-dialects/grok-subagent-stop.ts
+  h_476903bd8a47d9 2,18
+src/main/acp/acp-dialects/omp-dialect.ts
+  h_476903bd8a47d9 2
+src/main/acp/acp-errors.ts
+  h_476903bd8a47d9 4-13,39,64
+src/main/acp/acp-incoming-request-start.test.ts
+  h_476903bd8a47d9 1-83
+src/main/acp/acp-incoming-requests.ts
+  h_476903bd8a47d9 1-6,8,25-29,46,53,57,72-84,87-90,108,111-114
+src/main/acp/acp-json-rpc-peer-dialect.test.ts
+  h_476903bd8a47d9 1-206
+src/main/acp/acp-json-rpc-peer.ts
+  h_476903bd8a47d9 11-13,22,33-34,38-45,52-53,108,118,120-121,166,171,252,265-270,282,292,297-299,303,312
+src/main/acp/acp-oversized-lines.ts
+  h_476903bd8a47d9 3,23
+src/main/acp/acp-peer-dialect.ts
+  h_476903bd8a47d9 1-28,30-55,57-63
+src/main/acp/acp-rpc-envelope.ts
+  h_476903bd8a47d9 19-25,38,40,46-47,50
+src/main/acp/acp-session-runtime.ts
+  h_476903bd8a47d9 112,266,273
+src/main/acp/acp-session-setup.ts
+  h_476903bd8a47d9 67
+  s_a71ca3b06ed7b3::t_62f23db0c0af13 2-7
+src/main/acp/acp-structured-prompts.ts
+  h_476903bd8a47d9 9,43-46,62
+src/main/acp/acp-timeline-requests.ts
+  h_476903bd8a47d9 5,22,45-48,78
+src/main/jsonl-rpc/session-lifecycle.test.ts
+  h_476903bd8a47d9 1-130,137-280
+src/main/jsonl-rpc/session-lifecycle.ts
+  h_476903bd8a47d9 1-17,19-118,123-151
+src/main/jsonl-rpc/session-adapter.ts
+  s_a71ca3b06ed7b3::t_2475786471ea33 1,3,5-59,62-99,103-136,138-143,144-146,147-148,150-175,208-234,240-261,263-274,277-300
+  s_a71ca3b06ed7b3::t_38ad03fd2c7bf8 100-102
+  s_a71ca3b06ed7b3::t_6c0ff4172bb550 2,60-61,137,149,176-207,235-239,262,275-276
+src/main/pi/rpc-session-adapter.ts
+  s_a71ca3b06ed7b3::t_fef89820b565c8 43,119-120
+src/main/acp/acp-peer-handlers.ts
+  s_a71ca3b06ed7b3::t_413cf8f1356967 1-11
+src/main/native-chat/agent-session-wire/structured-agent-session-failed-create-refusal.ts
+  h_476903bd8a47d9 55-83,111-122,192-195
+src/main/native-chat/agent-session-wire/structured-agent-session-refusal-details.test.ts
+  h_476903bd8a47d9 26,165-230
+  s_a71ca3b06ed7b3::t_d190e3a5bc6a43 18-21
+src/main/runtime/orca-runtime-structured-agent-session-create-intent.test.ts
+  h_476903bd8a47d9 62-103
+src/renderer/src/components/native-chat/agent-session-availability-words-text.ts
+  h_476903bd8a47d9 23-24,88,97-108
+src/renderer/src/components/native-chat/agent-session-failure-words-text.test.ts
+  h_476903bd8a47d9 115-141
+src/renderer/src/i18n/en-runtime-required.json
+  h_476903bd8a47d9 1600-1601
+src/renderer/src/i18n/locales/en.json
+  h_476903bd8a47d9 19426-19427
+  s_a71ca3b06ed7b3::t_70fc3a4fb80222 13547-13558,14774-14775,14878-14879,15102-15106,19685-19698,19941-19942,19962-19968,20326-20488
+src/renderer/src/i18n/locales/es.json
+  h_476903bd8a47d9 18965-18966
+  s_a71ca3b06ed7b3::t_b339a35877f1d6 14295-14296,14402-14403,14616-14620
+src/renderer/src/i18n/locales/fr.json
+  h_476903bd8a47d9 19185-19186
+  s_a71ca3b06ed7b3::t_9bcedccf8bd26b 14519-14520,14626-14627,14840-14844
+src/renderer/src/i18n/locales/ja.json
+  h_476903bd8a47d9 18522-18523
+  s_a71ca3b06ed7b3::t_9aff320d8da615 13933-13934,14034-14035,14249-14253
+src/renderer/src/i18n/locales/ko.json
+  h_476903bd8a47d9 18522-18523
+  s_a71ca3b06ed7b3::t_2b2cfbe8f30960 13933-13934,14034-14035,14249-14253
+src/renderer/src/i18n/locales/zh.json
+  h_476903bd8a47d9 18488-18489
+  s_a71ca3b06ed7b3::t_b4353217376999 13933-13934,14034-14035,14249-14253
+src/shared/agent-session/failures/agent-session-failure-words.test.ts
+  h_476903bd8a47d9 11,204-238
+src/shared/agent-session/failures/agent-session-refusal-notice.test.ts
+  h_476903bd8a47d9 358-363,467
+src/shared/agent-session/failures/agent-session-refusal-reason-words.ts
+  h_476903bd8a47d9 196-199
+  s_a71ca3b06ed7b3::t_4ba1abc6e638c3 59,103-104
+src/shared/agent-session-release-sentence.ts
+  h_476903bd8a47d9 4-23
+src/shared/agent-session/failures/agent-session-wire-refusals.test.ts
+  h_476903bd8a47d9 186-220
+mobile/src/tasks/agent-launch-request.test.ts
+  h_476903bd8a47d9 106-139
+mobile/src/tasks/agent-launch-request.ts
+  h_476903bd8a47d9 10,95
+src/renderer/src/lib/agent-launch-through-host.test.ts
+  h_476903bd8a47d9 88-89,90-91
+src/renderer/src/lib/agent-session/launch/structured-agent-session-host-admission.ts
+  h_476903bd8a47d9 6-8,63,66-69
+src/renderer/src/lib/unsupported-agent-version-toast.ts
+  h_476903bd8a47d9 1-26
+src/shared/unsupported-agent-version.ts
+  h_476903bd8a47d9 1-48
+.gitignore
+  s_a71ca3b06ed7b3::t_c5d02802546b38 106-111
+CONTEXT.md
+  s_a71ca3b06ed7b3::t_afd90a5542c856 1-111
+docs/adr/0001-structured-droid-sessions-use-stream-jsonrpc.md
+  s_a71ca3b06ed7b3::t_4ddaf1f698a6f4 1-20
+docs/adr/0002-plan-mode-is-an-agent-neutral-session-option.md
+  s_a71ca3b06ed7b3::t_a3298ec429192b 1-19
+docs/adr/0003-droid-launch-mode-is-a-per-agent-setting.md
+  s_a71ca3b06ed7b3::t_14c0d0f2443e4e 1-28
+docs/adr/0004-droid-hooks-live-in-hooks-json-and-config-uis-follow-claude-parity.md
+  s_a71ca3b06ed7b3::t_3c1517d7b51512 1-26
+docs/adr/0005-owned-missions-live-in-droid-terminal-sessions-and-report-as-child-work.md
+  s_a71ca3b06ed7b3::t_fd95c1e6462207 1-39
+docs/adr/0006-droid-computers-are-plain-ssh-hosts-and-orca-stays-out-of-factory-cloud-api.md
+  s_a71ca3b06ed7b3::t_2ea0102b4a1b23 1-26
+docs/adr/0007-orca-keeps-one-writer-per-droid-session-among-the-writers-it-can-see.md
+  s_a71ca3b06ed7b3::t_ad5fbdf45719a6 1-33
+docs/adr/0008-mission-control-steers-only-through-the-panes-terminal-and-reads-detail-from-version-gated-files.md
+  s_a71ca3b06ed7b3::t_c19fc9318b7daf 1-44
+docs/agents/domain.md
+  s_a71ca3b06ed7b3::t_323ba7b08ba176 1-51
+docs/agents/issue-tracker.md
+  s_a71ca3b06ed7b3::t_289cfbc564a3fe 1-45
+docs/agents/triage-labels.md
+  s_a71ca3b06ed7b3::t_9f27a08f5edf7a 1-15
+docs/specs/droid-first-class.md
+  s_a71ca3b06ed7b3::t_812547ee010729 1-586
+mobile/src/session/mobile-structured-agent-session-rpc.ts
+  s_a71ca3b06ed7b3::t_e96d059c39374a 178-179
+mobile/src/session/native-chat/input/MobileNativeChatAsk.tsx
+  s_a71ca3b06ed7b3::t_1dac6fe2c49520 60-62
+package.json
+  s_a71ca3b06ed7b3::t_3955c8c0f38814 267
+pnpm-lock.yaml
+  s_a71ca3b06ed7b3::t_6deb22c7ad5ed2 191,303-305,1209-1212,5917-5925,6019-6024,7849-7853,8157-8159,8657-8681,8943-8967,9086,12984-12989,13073-13078,15327-15328,15538-15541,15546-15547
+src/main/acp/acp-fixture-privacy.test.ts
+  s_a71ca3b06ed7b3::t_7b983b6739176d 3
+src/main/acp/acp-launch-specs-composer-key-agents.test.ts
+  s_a71ca3b06ed7b3::t_b51a21fa7b7a36 1-12
+src/main/agent-hooks/managed-hook-timeout.test.ts
+  s_a71ca3b06ed7b3::t_1d064a2e756fe7 116,266
+src/main/agent-hooks/posix-hook-command.ts
+  s_a71ca3b06ed7b3::t_a30808ab8775ae 9,16-17
+src/main/agent-hooks/server-codex-normalization.test.ts
+  s_a71ca3b06ed7b3::t_29b4cda7c125ef 385,407-410,420-429
+src/main/agent-hooks/server-droid-background-child-lease.test.ts
+  s_a71ca3b06ed7b3::t_859f8e37e3022f 1-114
+src/main/agent-hooks/server-droid-exit-watch-replay.test.ts
+  s_a71ca3b06ed7b3::t_2c8cc5517f409f 1-236
+src/main/agent-hooks/server-droid-exit-watch.test.ts
+  s_a71ca3b06ed7b3::t_a601ad1dec04bd 1-241
+src/main/agent-hooks/server-droid-session-holder.test.ts
+  s_a71ca3b06ed7b3::t_83bea5a567aad9 1-314
+src/main/agent-hooks/server/server-agent-presence.ts
+  s_a71ca3b06ed7b3::t_785ced7e836293 16-21,33,53-102
+src/main/agent-hooks/server/server-lifecycle.ts
+  s_a71ca3b06ed7b3::t_40485100199430 276
+src/main/agent-hooks/server/server-status-update.ts
+  s_a71ca3b06ed7b3::t_6ea2a737c635a1 14,28,37
+src/main/ai-vault/runtime-droid-session-holder.test.ts
+  s_a71ca3b06ed7b3::t_f4c31dba895d3f 1-85
+src/main/ai-vault/runtime-droid-session-holder.ts
+  s_a71ca3b06ed7b3::t_ef599a4c2a0ac7 1-28
+src/main/ai-vault/session-scanner-droid-parser.ts
+  s_a71ca3b06ed7b3::t_66438578939ef2 11,72,119-121
+src/main/ai-vault/shell-command-segments.ts
+  s_a71ca3b06ed7b3::t_146973b0fceb2e 1-106
+src/main/ai-vault/structured-session-ownership.test.ts
+  s_a71ca3b06ed7b3::t_7553aec598e318 35-36,375-533
+src/main/ai-vault/structured-session-resume-grammar.test.ts
+  s_a71ca3b06ed7b3::t_1907fcdb2003e4 1-217
+src/main/ai-vault/structured-session-resume-grammar.ts
+  s_a71ca3b06ed7b3::t_6bdeecd5d998ef 1-217
+src/main/droid/__fixtures__/end-of-turn-interrupt.jsonl
+  s_a71ca3b06ed7b3::t_70d5371d9b4b13 1-36
+src/main/droid/__fixtures__/queue-end-of-loop.jsonl
+  s_a71ca3b06ed7b3::t_4dbf40d59c8a17 1-55
+src/main/droid/__fixtures__/queue-end-of-turn.jsonl
+  s_a71ca3b06ed7b3::t_b4d763d9a10320 1-48
+src/main/droid/droid-account-home.ts
+  s_a71ca3b06ed7b3::t_5ad8e97d4b355e 1-17
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_a71ca3b06ed7b3::t_764e281b9a2937 1-233
+src/main/droid/droid-agent-connection-supervisor.integration.test.ts
+  s_a71ca3b06ed7b3::t_982a5fedb67ac8 1-84
+src/main/droid/droid-agent-connection.test.ts
+  s_a71ca3b06ed7b3::t_cc154bf5afe55f 1-291
+src/main/droid/droid-agent-connection.ts
+  s_a71ca3b06ed7b3::t_a6c1ac543cf086 1-233
+src/main/droid/droid-agent-definition.test.ts
+  s_a71ca3b06ed7b3::t_c5538e6940dcc7 1-41
+src/main/droid/droid-agent-definition.ts
+  s_a71ca3b06ed7b3::t_7098fbe4d247d3 1-49
+src/main/droid/droid-approvals.test.ts
+  s_a71ca3b06ed7b3::t_17561d6597ccec 1-254
+src/main/droid/droid-autonomy-cap-notice.ts
+  s_a71ca3b06ed7b3::t_1528b3787a9ce3 1-32
+src/main/droid/droid-autonomy-cap.test.ts
+  s_a71ca3b06ed7b3::t_2d11b787908c4b 1-77
+src/main/droid/droid-autonomy-level.test.ts
+  s_a71ca3b06ed7b3::t_5eed6da75191d3 1-69
+src/main/droid/droid-autonomy-level.ts
+  s_a71ca3b06ed7b3::t_31d3a582d807ab 1-38
+src/main/droid/droid-autonomy-picker.test.ts
+  s_a71ca3b06ed7b3::t_247b88d832bdc2 1-295
+src/main/droid/droid-bug-report.test.ts
+  s_a71ca3b06ed7b3::t_33af300168fc6f 1-60
+src/main/droid/droid-clear-new-start.test.ts
+  s_a71ca3b06ed7b3::t_e9326efbf4ee22 1-152
+src/main/droid/droid-cli-conversations.ts
+  s_a71ca3b06ed7b3::t_a8aac5713b1c17 1-19
+src/main/droid/droid-compaction-summary.test.ts
+  s_a71ca3b06ed7b3::t_353784526baba1 1-100
+src/main/droid/droid-compaction-summary.ts
+  s_a71ca3b06ed7b3::t_87d7f27c54d6e3 1-64
+src/main/droid/droid-compress-summary.test.ts
+  s_a71ca3b06ed7b3::t_4223e6e59d907d 1-195
+src/main/droid/droid-configured-default.test.ts
+  s_a71ca3b06ed7b3::t_3fb7d59f5b301c 1-530
+src/main/droid/droid-context-usage.test-support.ts
+  s_a71ca3b06ed7b3::t_e8d32a0a830da7 1-54
+src/main/droid/droid-context-usage.test.ts
+  s_a71ca3b06ed7b3::t_bbe5e892aeeeee 1-75
+src/main/droid/droid-context-usage.ts
+  s_a71ca3b06ed7b3::t_6eda77f9aca9ec 1-99
+src/main/droid/droid-cwd-and-skills.test.ts
+  s_a71ca3b06ed7b3::t_bfbee3b8903cd2 1-367
+src/main/droid/droid-environment.test.ts
+  s_a71ca3b06ed7b3::t_37ac16ae0e0eb6 1-51
+src/main/droid/droid-environment.ts
+  s_a71ca3b06ed7b3::t_d8603e6702c8b1 1-27
+src/main/droid/droid-exec-launch.test.ts
+  s_a71ca3b06ed7b3::t_d85155e2b1aeda 1-76
+src/main/droid/droid-exec-launch.ts
+  s_a71ca3b06ed7b3::t_fe7b6c267c2cf2 1-52
+src/main/droid/droid-fixture-privacy.test.ts
+  s_a71ca3b06ed7b3::t_513df5e36337dd 1-74
+src/main/droid/droid-fork-and-rewind.test.ts
+  s_a71ca3b06ed7b3::t_e86808260952ba 1-241
+src/main/droid/droid-fork-and-rewind.ts
+  s_a71ca3b06ed7b3::t_0d0bcafce239e5 1-102
+src/main/droid/droid-hook-config.ts
+  s_a71ca3b06ed7b3::t_2994b36a88ced0 1-140
+src/main/droid/droid-hook-script.test.ts
+  s_a71ca3b06ed7b3::t_e6d935665803e4 1-68
+src/main/droid/droid-hook-script.ts
+  s_a71ca3b06ed7b3::t_b843992ff322e8 1-86
+src/main/droid/droid-hook-status.ts
+  s_a71ca3b06ed7b3::t_55c57e06c4f7ed 1-85
+src/main/droid/droid-hooks-file.test-fixture.ts
+  s_a71ca3b06ed7b3::t_bf758948028258 1-32
+src/main/droid/droid-host-command-text.test.ts
+  s_a71ca3b06ed7b3::t_8ea1c7441ff7cc 1-171
+src/main/droid/droid-host-commands.test.ts
+  s_a71ca3b06ed7b3::t_d163aebb48e098 1-391
+src/main/droid/droid-host-commands.ts
+  s_a71ca3b06ed7b3::t_82fd25f06cab0d 1-150
+src/main/droid/droid-host-copy-coverage.test.ts
+  s_a71ca3b06ed7b3::t_6f1fbf220954bf 1-189
+src/main/droid/droid-host-text.ts
+  s_a71ca3b06ed7b3::t_0153a0632024da 1-28
+src/main/droid/droid-json-rpc-peer-wire.test.ts
+  s_a71ca3b06ed7b3::t_f4ae1311bf952d 1-107
+src/main/droid/droid-json-rpc-peer.test.ts
+  s_a71ca3b06ed7b3::t_f0790e03c4a8cf 1-341
+src/main/droid/droid-json-rpc-peer.ts
+  s_a71ca3b06ed7b3::t_0b92865011d749 1-122
+src/main/droid/droid-launch-resolution.test.ts
+  s_a71ca3b06ed7b3::t_bca509dfa67681 1-63
+src/main/droid/droid-launch-resolution.ts
+  s_a71ca3b06ed7b3::t_121bb4e32aae47 1-67
+src/main/droid/droid-mcp-sign-in.test.ts
+  s_a71ca3b06ed7b3::t_735576647255bd 1-404
+src/main/droid/droid-mcp-sign-in.ts
+  s_a71ca3b06ed7b3::t_bac8faa92171d8 1-185
+src/main/droid/droid-mcp-ssh-forward.test.ts
+  s_a71ca3b06ed7b3::t_32df896811570d 1-553
+src/main/droid/droid-mcp.test.ts
+  s_a71ca3b06ed7b3::t_e04a05e880d764 1-370
+src/main/droid/droid-mcp.ts
+  s_a71ca3b06ed7b3::t_3983138573bb2b 1-174
+src/main/droid/droid-message-visibility.ts
+  s_a71ca3b06ed7b3::t_f2e6e469969648 1-5
+src/main/droid/droid-messages.ts
+  s_a71ca3b06ed7b3::t_d51723737f093f 1-139
+src/main/droid/droid-missing-method.test.ts
+  s_a71ca3b06ed7b3::t_b678e1d96cf745 1-141
+src/main/droid/droid-missing-method.ts
+  s_a71ca3b06ed7b3::t_8826652faad683 1-40
+src/main/droid/droid-model-catalog-probe.test.ts
+  s_a71ca3b06ed7b3::t_12cc1cd9823a0f 1-211
+src/main/droid/droid-model-catalog-probe.ts
+  s_a71ca3b06ed7b3::t_60cd87053b9762 1-111
+src/main/droid/droid-model-options.ts
+  s_a71ca3b06ed7b3::t_fee3bc11dbd144 1-192
+src/main/droid/droid-org-policy.ts
+  s_a71ca3b06ed7b3::t_28276e75bd3f52 1-21
+src/main/droid/droid-peer-limits.test.ts
+  s_a71ca3b06ed7b3::t_819bdbc7fd12d9 1-21
+src/main/droid/droid-peer-limits.ts
+  s_a71ca3b06ed7b3::t_5e9e044d991b1f 1-9
+src/main/droid/droid-permission-requests.ts
+  s_a71ca3b06ed7b3::t_88a27b7b11dd28 1-129
+src/main/droid/droid-pick-options-requests.ts
+  s_a71ca3b06ed7b3::t_8ffff687413779 1-101
+src/main/droid/droid-pick-options.test.ts
+  s_a71ca3b06ed7b3::t_66a4dd70f5485d 1-291
+src/main/droid/droid-prompt-presentation.ts
+  s_a71ca3b06ed7b3::t_a04c1ca6d367ea 1-33
+src/main/droid/droid-prompt.test.ts
+  s_a71ca3b06ed7b3::t_46fa01e94da5b8 1-57
+src/main/droid/droid-prompt.ts
+  s_a71ca3b06ed7b3::t_42ac78fd2b000b 1-42
+src/main/droid/droid-prompts.ts
+  s_a71ca3b06ed7b3::t_a170fc1e7bc285 1-178
+src/main/droid/droid-question-requests.ts
+  s_a71ca3b06ed7b3::t_6b5157464aa97c 1-108
+src/main/droid/droid-questions.test.ts
+  s_a71ca3b06ed7b3::t_69b0aa3478ac77 1-466
+src/main/droid/droid-queue-placement.test.ts
+  s_a71ca3b06ed7b3::t_b6a1390e2edf1e 1-155
+src/main/droid/droid-real-cli-session-test-support.ts
+  s_a71ca3b06ed7b3::t_068b774134b9cc 1-94
+src/main/droid/droid-real-cli-test-gate.test.ts
+  s_a71ca3b06ed7b3::t_f47f6c2e0eb92f 1-48
+src/main/droid/droid-real-cli-test-gate.ts
+  s_a71ca3b06ed7b3::t_c2cfcc11cb6254 1-25
+src/main/droid/droid-recording.test-support.ts
+  s_a71ca3b06ed7b3::t_107876d07f1b36 1-151
+src/main/droid/droid-refused-model.test.ts
+  s_a71ca3b06ed7b3::t_9179a3c93b5d91 1-149
+src/main/droid/droid-rpc-envelope.test.ts
+  s_a71ca3b06ed7b3::t_b008089bb8979a 1-85
+src/main/droid/droid-rpc-envelope.ts
+  s_a71ca3b06ed7b3::t_85c7d11e750ccd 1-27
+src/main/droid/droid-rpc-errors.ts
+  s_a71ca3b06ed7b3::t_7e3e3f61ae2fb4 1-25
+src/main/droid/droid-runtime-metadata.ts
+  s_a71ca3b06ed7b3::t_f6edc6f484c8d1 1-36
+src/main/droid/droid-runtime-registration.test.ts
+  s_a71ca3b06ed7b3::t_84d68fd01feed3 1-241
+src/main/droid/droid-runtime-registration.ts
+  s_a71ca3b06ed7b3::t_3fdd87edff3e3c 1-65
+src/main/droid/droid-session-adapter.test.ts
+  s_a71ca3b06ed7b3::t_ec708cc2949a24 1-648
+src/main/droid/droid-session-adapter.ts
+  s_a71ca3b06ed7b3::t_405ce2dcb34912 1-142
+src/main/droid/droid-session-file.test.ts
+  s_a71ca3b06ed7b3::t_b363aea8bdd9b2 1-79
+src/main/droid/droid-session-file.ts
+  s_a71ca3b06ed7b3::t_a19efcd06e5675 1-118
+src/main/droid/droid-session-id.test.ts
+  s_a71ca3b06ed7b3::t_cc0007a05962ec 1-18
+src/main/droid/droid-session-id.ts
+  s_a71ca3b06ed7b3::t_1f960376516ada 1-6
+src/main/droid/droid-session-model.ts
+  s_a71ca3b06ed7b3::t_8331439fc099fa 1-100
+src/main/droid/droid-session-notifications.ts
+  s_a71ca3b06ed7b3::t_0d70404b5552ca 1-103
+src/main/droid/droid-session-options.ts
+  s_a71ca3b06ed7b3::t_088b8c9b1ae8d7 1-249
+src/main/droid/droid-session-real-cli.test.ts
+  s_a71ca3b06ed7b3::t_6f881dedfea4d7 1-191
+src/main/droid/droid-session-settings.test.ts
+  s_a71ca3b06ed7b3::t_daa74873903ad7 1-124
+src/main/droid/droid-session-settings.ts
+  s_a71ca3b06ed7b3::t_ff61c48fbaae2d 1-128
+src/main/droid/droid-session-title.test.ts
+  s_a71ca3b06ed7b3::t_de5b81aeaaacfd 1-171
+src/main/droid/droid-session-title.ts
+  s_a71ca3b06ed7b3::t_73c44e0058dd07 1-47
+src/main/droid/droid-session.ts
+  s_a71ca3b06ed7b3::t_861243d259486e 1-321
+src/main/droid/droid-skills.ts
+  s_a71ca3b06ed7b3::t_de54ed092f77de 1-55
+src/main/droid/droid-spec-approval.test.ts
+  s_a71ca3b06ed7b3::t_e43b2ac4b9b00e 1-412
+src/main/droid/droid-spec-handoff.ts
+  s_a71ca3b06ed7b3::t_f95e24755f1922 1-61
+src/main/droid/droid-spec-option.test.ts
+  s_a71ca3b06ed7b3::t_b30878de38ffe7 1-529
+src/main/droid/droid-spec-pair.test.ts
+  s_a71ca3b06ed7b3::t_c8a1296fe36d79 1-267
+src/main/droid/droid-started-session.ts
+  s_a71ca3b06ed7b3::t_5d9353b776f79c 1-57
+src/main/droid/droid-steering.test.ts
+  s_a71ca3b06ed7b3::t_711038c7f7d86b 1-412
+src/main/droid/droid-structured-launch-resolution.test.ts
+  s_a71ca3b06ed7b3::t_21653a54d8e0ae 1-233
+src/main/droid/droid-structured-launch-resolution.ts
+  s_a71ca3b06ed7b3::t_11ddcc91666532 1-132
+src/main/droid/droid-turns.test.ts
+  s_a71ca3b06ed7b3::t_6e3e73a2398619 1-401
+src/main/droid/droid-turns.ts
+  s_a71ca3b06ed7b3::t_3b02bc876419bf 1-312
+src/main/droid/droid-version-support.test.ts
+  s_a71ca3b06ed7b3::t_6e15705c9bbbe7 1-65
+src/main/droid/droid-version-support.ts
+  s_a71ca3b06ed7b3::t_8840871247431a 1-45
+src/main/droid/droid-working-folder.ts
+  s_a71ca3b06ed7b3::t_37f91ce627e2cb 1-52
+src/main/droid/fixtures/ask-user-multiselect.jsonl
+  s_a71ca3b06ed7b3::t_51075724c7b99b 1-39
+src/main/droid/fixtures/autonomy-cap-clamp.jsonl
+  s_a71ca3b06ed7b3::t_4346a8e5edd376 1-35
+src/main/droid/fixtures/autonomy-high-rules.jsonl
+  s_a71ca3b06ed7b3::t_1d3defbae3dc3a 1-95
+src/main/droid/fixtures/autonomy-off-exec-and-patch.jsonl
+  s_a71ca3b06ed7b3::t_929c0b58bf14b6 1-96
+src/main/droid/fixtures/change-working-directory.jsonl
+  s_a71ca3b06ed7b3::t_e4bd39b97471e8 1-6
+src/main/droid/fixtures/compact-session.jsonl
+  s_a71ca3b06ed7b3::t_89d5712b6bd9e3 1-5
+src/main/droid/fixtures/fork-and-rewind.jsonl
+  s_a71ca3b06ed7b3::t_5b9ede75cab163 1-10
+src/main/droid/fixtures/legacy-blocklist-and-denylist.jsonl
+  s_a71ca3b06ed7b3::t_bb00d5b636ab54 1-53
+src/main/droid/fixtures/mcp.jsonl
+  s_a71ca3b06ed7b3::t_382e809d2687ed 1-21
+src/main/droid/fixtures/model-blocked-by-org.jsonl
+  s_a71ca3b06ed7b3::t_64bd0137dbb9bf 1-11
+src/main/droid/fixtures/rename-session.jsonl
+  s_a71ca3b06ed7b3::t_feec1652f1eaaa 1-4
+src/main/droid/fixtures/skills.jsonl
+  s_a71ca3b06ed7b3::t_cd63f994949101 1-10
+src/main/droid/fixtures/spec-exit-spec-mode-handoff.jsonl
+  s_a71ca3b06ed7b3::t_6e5fe9abb68e96 1-60
+src/main/droid/fixtures/spec-plan-approval-off.jsonl
+  s_a71ca3b06ed7b3::t_051f14cb0be571 1-35
+src/main/droid/fixtures/update-settings-acks.jsonl
+  s_a71ca3b06ed7b3::t_f6bc611b21d370 1-51
+src/main/droid/hook-service-real-cli.test.ts
+  s_a71ca3b06ed7b3::t_67753fc1409310 1-170
+src/main/droid/hook-service-remote.test.ts
+  s_a71ca3b06ed7b3::t_85b5a151dec333 1-167
+src/main/droid/hook-service.ts
+  s_a71ca3b06ed7b3::t_de6f74a64b8821 4-5,12-14,16-23,26-27,30-31,34-38,40-44,47-54,56-58,60,64-69,71,75-77,79-83,88-93,95,97-113,117,120-122,124-126,128-130,132-145,150,155,160-162,164-172
+src/main/droid/non-droid-milestone-baseline.test.ts
+  s_a71ca3b06ed7b3::t_238b19c2b0e462 1-335
+src/main/ipc/ai-vault-droid-session-holder-routing.test.ts
+  s_a71ca3b06ed7b3::t_1a86d86f535b8b 1-203
+src/main/ipc/ai-vault-droid-session-holder-routing.ts
+  s_a71ca3b06ed7b3::t_b8819af579f5ab 1-70
+src/main/ipc/ai-vault-subagent-list.ts
+  s_a71ca3b06ed7b3::t_fc4aa670f8df7d 1,43-50
+src/main/ipc/ai-vault-window-focus.ts
+  s_a71ca3b06ed7b3::t_4be2289f6aedf1 1-10
+src/main/ipc/ai-vault.test.ts
+  s_a71ca3b06ed7b3::t_7a964332190856 252-294
+src/main/ipc/ai-vault.ts
+  s_a71ca3b06ed7b3::t_c9bd397cdc509a 1,6,15-18,31,35-38,76,298-299,305
+src/main/ipc/external-http-url.test.ts
+  s_a71ca3b06ed7b3::t_0a4e379ac56a9b 1-15
+src/main/ipc/external-http-url.ts
+  s_a71ca3b06ed7b3::t_c178922a1bd2ec 1-10
+src/main/ipc/pty/host-env/assembly.ts
+  s_a71ca3b06ed7b3::t_5d508d9d0f2538 38,61
+src/main/ipc/pty/host-env/droid-terminal-environment.test.ts
+  s_a71ca3b06ed7b3::t_8d1badefc0e7e1 1-81
+src/main/ipc/register-core-handlers/close-notification-dismissals.ts
+  s_a71ca3b06ed7b3::t_3d16fdd515ae7e 1-17
+src/main/ipc/register-core-handlers/register-core-handlers.ts
+  s_a71ca3b06ed7b3::t_2b3c75b34032b2 1,111,273-275
+src/main/ipc/runtime-environment-mcp-sign-in-call-routing.test.ts
+  s_a71ca3b06ed7b3::t_1550698c379f51 1-266
+src/main/ipc/runtime-environment-mcp-sign-in-receiver.test.ts
+  s_a71ca3b06ed7b3::t_58fa8e804a3726 1-360
+src/main/ipc/runtime-environment-mcp-sign-in-receiver.ts
+  s_a71ca3b06ed7b3::t_06f317bd6339d5 1-114
+src/main/ipc/runtime-environments/runtime-environment-connectivity-handlers.ts
+  s_a71ca3b06ed7b3::t_847db836dd0ecb 1,8,183-186,188,223-226,230,247-250
+src/main/ipc/runtime-environments/runtime-environment-mcp-sign-in-routing.ts
+  s_a71ca3b06ed7b3::t_0fd6e65e5e04e8 1-63
+src/main/ipc/runtime-environments/runtime-environment-subscription-binary.ts
+  s_a71ca3b06ed7b3::t_b594d50b071dee 1-12
+src/main/ipc/runtime-environments/runtime-environment-subscription-handlers.ts
+  s_a71ca3b06ed7b3::t_6823b2b4d579bf 1,16,232,239-245,248-255
+src/main/ipc/runtime-environments/runtime-environment-transport-routing.ts
+  s_a71ca3b06ed7b3::t_a7ef70285d6ff1 2,191-194,205,213-214,219-220,222,241,249,251
+src/main/ipc/runtime-environments/runtime-environments.ts
+  s_a71ca3b06ed7b3::t_38c0ae4e007338 156
+src/main/ipc/shell.ts
+  s_a71ca3b06ed7b3::t_643608f2051035 2,147-148
+src/main/jsonl-rpc/session-adapter.test.ts
+  s_a71ca3b06ed7b3::t_13b977367106a0 78,94,105,107,154,158-166,175-181,251,259,261,264-266,277,279,281-283,297,299-301,312,314-316,326,328,331-333,347,350,352,354,387
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.ts
+  s_a71ca3b06ed7b3::t_2eca10a04be923 73
+src/main/native-chat/agent-model-catalog/agent-project-git-common-root.ts
+  s_a71ca3b06ed7b3::t_ee9d75fa48239c 1-55
+src/main/native-chat/agent-model-catalog/agent-project-model-config-keys.ts
+  s_a71ca3b06ed7b3::t_218b9e28b4e832 187-208
+src/main/native-chat/agent-model-catalog/agent-project-model-override.test.ts
+  s_a71ca3b06ed7b3::t_db1f1ad1a3f047 273-327
+src/main/native-chat/agent-model-catalog/agent-project-model-override.ts
+  s_a71ca3b06ed7b3::t_a46f444b845313 10,13,60-61,116-123,228-230
+src/main/native-chat/agent-session-journal/adopted-transcript-source.ts
+  s_a71ca3b06ed7b3::t_6f9276d7944471 77-79
+src/main/native-chat/agent-session-journal/journal-droid-compaction-import.ts
+  s_a71ca3b06ed7b3::t_2904112e2c09b1 1-30
+src/main/native-chat/agent-session-journal/journal-item-identity.test.ts
+  s_a71ca3b06ed7b3::t_6687c4e78f0f93 107-116
+src/main/native-chat/agent-session-journal/journal-legacy-identity.ts
+  s_a71ca3b06ed7b3::t_df9b74e3e16a02 14
+src/main/native-chat/agent-session-journal/journal-legacy-import-droid.test.ts
+  s_a71ca3b06ed7b3::t_ee2b726d457b98 1-143
+src/main/native-chat/agent-session-journal/journal-legacy-import.ts
+  s_a71ca3b06ed7b3::t_59fbf00bccba8c 1-2,94-98,200-201,254-260
+src/main/native-chat/agent-session-journal/journal-prompt-body-bounds.ts
+  s_a71ca3b06ed7b3::t_884b36927cc046 110-122
+src/main/native-chat/agent-session-journal/journal-row-builders.ts
+  s_a71ca3b06ed7b3::t_f5f542c5bb4868 304
+src/main/native-chat/agent-session-journal/journal-row-schema.ts
+  s_a71ca3b06ed7b3::t_ffee6c2c1ae5aa 132
+src/main/native-chat/agent-session-journal/journal-storage-row-schema.ts
+  s_a71ca3b06ed7b3::t_946c8158f304b3 108
+src/main/native-chat/agent-session-journal/journal-storage-schema.ts
+  s_a71ca3b06ed7b3::t_5d3b22cf5e4507 112-114,161
+src/main/native-chat/agent-session-journal/journal-store-contracts.ts
+  s_a71ca3b06ed7b3::t_4daa4c63f4ada4 125
+src/main/native-chat/agent-session-journal/journal-submission-after-reply.test.ts
+  s_a71ca3b06ed7b3::t_bafd3fb17fa9c6 1-109
+src/main/native-chat/agent-session-journal/journal-submission-fold.ts
+  s_a71ca3b06ed7b3::t_fcd31efd2e2f90 31
+src/main/native-chat/agent-session-wire/agent-session-mcp-sign-in-forwarding.ts
+  s_a71ca3b06ed7b3::t_efbcce5abb507f 1-129
+src/main/native-chat/agent-session-wire/agent-session-subscribe-input.ts
+  s_a71ca3b06ed7b3::t_913995e5e93c00 4,8
+src/main/native-chat/agent-session-wire/agent-session-subscriber.ts
+  s_a71ca3b06ed7b3::t_caed1a852993eb 1-38
+src/main/native-chat/agent-session-wire/structured-agent-definition.ts
+  s_a71ca3b06ed7b3::t_1a0cd31dc40171 17-33
+src/main/native-chat/agent-session-wire/structured-agent-session-adapter-router.ts
+  s_a71ca3b06ed7b3::t_c12dcfa7fb5432 1,128-135
+src/main/native-chat/agent-session-wire/structured-agent-session-adapter.ts
+  s_a71ca3b06ed7b3::t_e331449b7788ba 1,203,252-256
+src/main/native-chat/agent-session-wire/structured-agent-session-adopted-handle.test.ts
+  s_a71ca3b06ed7b3::t_a6b73accfae919 1-68
+src/main/native-chat/agent-session-wire/structured-agent-session-adopted-handle.ts
+  s_a71ca3b06ed7b3::t_7f91ddba4c24c0 1-74
+src/main/native-chat/agent-session-wire/structured-agent-session-adopted-import.test.ts
+  s_a71ca3b06ed7b3::t_0fc3750e6ff572 346-366
+src/main/native-chat/agent-session-wire/structured-agent-session-adopted-import.ts
+  s_a71ca3b06ed7b3::t_4b793407bc95ff 1,73,82-85,128-130,133,135-138,154-157,163-170
+src/main/native-chat/agent-session-wire/structured-agent-session-approval-notes.test.ts
+  s_a71ca3b06ed7b3::t_c1c8d2ff446dcf 1-151
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-autonomy-at-rest.test.ts
+  s_a71ca3b06ed7b3::t_dbf2b4b7756679 1-152
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-command.test.ts
+  s_a71ca3b06ed7b3::t_bc636c866bdfcc 1-300
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-command.ts
+  s_a71ca3b06ed7b3::t_93e82cc011f843 1-115
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-option-store.test-support.ts
+  s_a71ca3b06ed7b3::t_ae098c353155d5 1-25
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-spec-at-rest-read.test.ts
+  s_a71ca3b06ed7b3::t_04beff44b710d3 1-82
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-spec-pair-intent.test.ts
+  s_a71ca3b06ed7b3::t_7390863ce2e337 1-97
+src/main/native-chat/agent-session-wire/structured-agent-session-handover.ts
+  s_a71ca3b06ed7b3::t_fc822be71540c2 142,232,242
+src/main/native-chat/agent-session-wire/structured-agent-session-host-mutation-wiring.ts
+  s_a71ca3b06ed7b3::t_98a0d41cdb648e 28-29,93-94
+src/main/native-chat/agent-session-wire/structured-agent-session-host-runtime-state.ts
+  s_a71ca3b06ed7b3::t_64b01cc2a72f58 1-4,34,74
+src/main/native-chat/agent-session-wire/structured-agent-session-host-tabs.ts
+  s_a71ca3b06ed7b3::t_4e48315a67afee 9,14,40
+src/main/native-chat/agent-session-wire/structured-agent-session-host-teardown.ts
+  s_a71ca3b06ed7b3::t_d50e19c9192a06 181-196
+src/main/native-chat/agent-session-wire/structured-agent-session-host-types.ts
+  s_a71ca3b06ed7b3::t_423b276d621d63 171-175
+src/main/native-chat/agent-session-wire/structured-agent-session-host.ts
+  s_a71ca3b06ed7b3::t_74fc024b4f470e 1,18,58,61,210,244-252,290,305-307
+src/main/native-chat/agent-session-wire/structured-agent-session-mutation-plans.ts
+  s_a71ca3b06ed7b3::t_24a2707d5327b3 154,296-298
+src/main/native-chat/agent-session-wire/structured-agent-session-option-error.ts
+  s_a71ca3b06ed7b3::t_853cbb95d6c199 1-4,9-12,16-19,24
+src/main/native-chat/agent-session-wire/structured-agent-session-option-intent.ts
+  s_a71ca3b06ed7b3::t_d63aa6ba28c10c 19-22,93-106
+src/main/native-chat/agent-session-wire/structured-agent-session-resting-options.ts
+  s_a71ca3b06ed7b3::t_96ff83ebf062be 23-25,75-86,164-165
+src/main/native-chat/agent-session-wire/structured-agent-session-send-after-reply.test.ts
+  s_a71ca3b06ed7b3::t_38ef389497d602 1-101
+src/main/native-chat/agent-session-wire/structured-agent-session-subscribers.ts
+  s_a71ca3b06ed7b3::t_6d645b189e6a91 1-3,17,34,67-80,305
+src/main/native-chat/agent-session-wire/structured-agent-session-turns-prompt.ts
+  s_a71ca3b06ed7b3::t_78a5e2dd45349f 37-39,54-59,62-72
+src/main/native-chat/agent-session-wire/structured-agent-session-turns.ts
+  s_a71ca3b06ed7b3::t_cdfdc4e9dbf853 97
+src/main/native-chat/provider-recording-privacy.test-support.ts
+  s_a71ca3b06ed7b3::t_11358bbfc52c67 1-63
+src/main/native-chat/structured-agent-configured-args.test.ts
+  s_a71ca3b06ed7b3::t_ece007c7d18511 33-37
+src/main/native-chat/transcript-line-decoders-droid.test.ts
+  s_a71ca3b06ed7b3::t_d54477c7c22203 1-98
+src/main/native-chat/transcript-line-decoders-droid.ts
+  s_a71ca3b06ed7b3::t_77c23084286d87 1-47
+src/main/provider-process/managed-provider-process-fallback-tree.test.ts
+  s_a71ca3b06ed7b3::t_d8d7037e2d24c7 7,54
+src/main/provider-process/managed-provider-process.ts
+  s_a71ca3b06ed7b3::t_f4f617af2dbc3e 46-47,91-93
+src/main/provider-process/provider-process-supervisor.integration.test.ts
+  s_a71ca3b06ed7b3::t_f1653ef16a34b6 81-87,530-581
+src/main/provider-process/provider-process-supervisor.test.ts
+  s_a71ca3b06ed7b3::t_ae42c4a021ab77 7,130-131
+src/main/provider-process/provider-process-supervisor.ts
+  s_a71ca3b06ed7b3::t_70beb7a2a90953 6-7,16,132-133,145-149,199-200,228-229,232,252,272-280,299
+src/main/runtime/agent-session-record-store-session-switch.test.ts
+  s_a71ca3b06ed7b3::t_99e9bb7d2ba5ad 1-299
+src/main/runtime/agent-session/ownership/agent-session-reservation-admission.test.ts
+  s_a71ca3b06ed7b3::t_aadc30fe0772ad 12-15,277-320
+src/main/runtime/agent-session/structured-agent-session-transport-overrides.ts
+  s_a71ca3b06ed7b3::t_d94abf8f36f0de 1,14-15
+src/main/runtime/construction/runtime-construction-dependencies.ts
+  s_a71ca3b06ed7b3::t_1753125099f706 24-25,28-29
+src/main/runtime/construction/runtime-construction.ts
+  s_a71ca3b06ed7b3::t_60e73b4eb5f5ae 82-83,270-271
+src/main/runtime/construction/runtime-host-bindings.ts
+  s_a71ca3b06ed7b3::t_af06ad5ee0b1e9 1-86
+src/main/runtime/construction/runtime-host-services.ts
+  s_a71ca3b06ed7b3::t_fc8bfb4dd5a899 9,44
+src/main/runtime/rpc/methods/ai-vault-droid-session-holder.test.ts
+  s_a71ca3b06ed7b3::t_7f03a9d5bd6c23 1-94
+src/main/runtime/rpc/methods/ai-vault.ts
+  s_a71ca3b06ed7b3::t_1365bbb90b0fdd 34,48-53
+src/main/runtime/rpc/methods/structured-agent-session-droid-adoption-replay.test.ts
+  s_a71ca3b06ed7b3::t_9672d43657abe9 1-352
+src/main/runtime/rpc/methods/structured-agent-session-droid-command.test.ts
+  s_a71ca3b06ed7b3::t_0fe69955f5d73a 1-198
+src/main/runtime/rpc/methods/structured-agent-session-droid-command.ts
+  s_a71ca3b06ed7b3::t_ce5e8926b6c74a 1-20
+src/main/runtime/rpc/methods/structured-agent-session-gate-classification.test-fixture.ts
+  s_a71ca3b06ed7b3::t_1904b0f4b29282 97-100
+src/main/runtime/rpc/methods/structured-agent-session-mcp-sign-in.test.ts
+  s_a71ca3b06ed7b3::t_8622087322d308 1-157
+src/main/runtime/rpc/methods/structured-agent-session-mcp-sign-in.ts
+  s_a71ca3b06ed7b3::t_24bebb30874994 1-45
+src/main/runtime/rpc/methods/structured-agent-session-schemas.ts
+  s_a71ca3b06ed7b3::t_272c5459eacb37 2-3
+src/main/runtime/rpc/methods/structured-agent-session.ts
+  s_a71ca3b06ed7b3::t_335e8530415906 53-57,237,286-287
+src/main/runtime/runtime-ai-vault-commands.test.ts
+  s_a71ca3b06ed7b3::t_8499da27293e72 1-46
+src/main/runtime/runtime-ai-vault-commands.ts
+  s_a71ca3b06ed7b3::t_4ea15dffd6611e 5-8,26-29,32-42
+src/main/runtime/runtime-service-command-surface.ts
+  s_a71ca3b06ed7b3::t_fbde5f9da93b11 14,125
+src/main/runtime/structured-agent-launch-support.test.ts
+  s_a71ca3b06ed7b3::t_a1647cfa1e7129 64-65,179
+src/main/runtime/structured-agent-launch-support.ts
+  s_a71ca3b06ed7b3::t_7afea3efc43422 17-18,34,156-176,179-180
+src/main/runtime/structured-agent-runtime-metadata.ts
+  s_a71ca3b06ed7b3::t_47fd5bfe2f0ed1 13,35,152
+src/main/runtime/structured-agent-runtime-registrations.ts
+  s_a71ca3b06ed7b3::t_599902ba59d84d 22,222-223
+src/main/runtime/structured-agent-session-droid-adoption.test-support.ts
+  s_a71ca3b06ed7b3::t_5628b5de2d018d 1-112
+src/main/runtime/structured-agent-session-droid-adoption.test.ts
+  s_a71ca3b06ed7b3::t_7a622a4492296f 1-112
+src/main/runtime/structured-agent-session-mcp-sign-in-forwarding.test.ts
+  s_a71ca3b06ed7b3::t_eb005f52e6a450 1-291
+src/main/runtime/workspaces/workspace-process-listing.ts
+  s_a71ca3b06ed7b3::t_7aa60ca3b62aab 202-207,250
+src/main/startup/main-process-runtime-service.ts
+  s_a71ca3b06ed7b3::t_af79ad2716ad07 6,130-132
+src/main/startup/mcp-sign-in-opener.test.ts
+  s_a71ca3b06ed7b3::t_828e0d4badd12f 1-49
+src/main/startup/mcp-sign-in-opener.ts
+  s_a71ca3b06ed7b3::t_d0d37177835e0b 1-18
+src/main/window/createMainWindow-droid-composer-focus-shortcuts.test.ts
+  s_a71ca3b06ed7b3::t_259944bdfd4258 1-282
+src/main/window/droid-composer-focus-mirror.ts
+  s_a71ca3b06ed7b3::t_f4240f648b4d76 1-38
+src/main/window/main-window-focus-lifecycle.ts
+  s_a71ca3b06ed7b3::t_fc8eea7f148f72 26,34,62,159,164-170,275-276,289-290,301-302,314
+src/main/window/main-window-shortcut-routing.ts
+  s_a71ca3b06ed7b3::t_57e878e7f08cd3 24,118-120
+src/preload/api/ai-vault-api.ts
+  s_a71ca3b06ed7b3::t_5e87f760ef88c0 26-29,37-39
+src/preload/api/ai-vault-bridge-droid-session-holder.test.ts
+  s_a71ca3b06ed7b3::t_acb55f368f829e 1-59
+src/preload/api/ai-vault-bridge.ts
+  s_a71ca3b06ed7b3::t_929f167841d143 1-7,61-69
+src/preload/api/ui-bridge-clipboard-and-window-controls.ts
+  s_a71ca3b06ed7b3::t_c3a79d2781c58f 161-163
+src/preload/api/ui-window-api.ts
+  s_a71ca3b06ed7b3::t_deaa676db0560e 60
+src/renderer/src/components/native-chat/NativeChatApprovalCard.notes.test.tsx
+  s_a71ca3b06ed7b3::t_03324d93bc8f4b 1-190
+src/renderer/src/components/native-chat/NativeChatApprovalCard.tsx
+  s_a71ca3b06ed7b3::t_4f95d21bf36c94 1-7,27-28,53,139,158,179,186-193
+src/renderer/src/components/native-chat/NativeChatApprovalNotes.tsx
+  s_a71ca3b06ed7b3::t_e8c9e7ef4d814b 1-136
+src/renderer/src/components/native-chat/NativeChatAutonomyPicker.test.tsx
+  s_a71ca3b06ed7b3::t_1734ff36acf6f5 1-189
+src/renderer/src/components/native-chat/NativeChatAutonomyPicker.tsx
+  s_a71ca3b06ed7b3::t_cc13d3112e2be9 1-88
+src/renderer/src/components/native-chat/NativeChatComposer.droid-turn-keys.test.tsx
+  s_a71ca3b06ed7b3::t_56137b72c0a986 1-403
+src/renderer/src/components/native-chat/NativeChatComposer.droid-wait.test.tsx
+  s_a71ca3b06ed7b3::t_3f853f5ce192d0 1-317
+src/renderer/src/components/native-chat/NativeChatComposerField.tsx
+  s_a71ca3b06ed7b3::t_d4af2d874a7478 330
+src/renderer/src/components/native-chat/NativeChatComposerPane.tsx
+  s_a71ca3b06ed7b3::t_34ac5301fec437 1,3,257,259,268,270-271,316-329,331-332
+src/renderer/src/components/native-chat/NativeChatMessageRow.test.tsx
+  s_a71ca3b06ed7b3::t_4db34ef2563fad 64-100
+src/renderer/src/components/native-chat/NativeChatMessageRow.tsx
+  s_a71ca3b06ed7b3::t_bafe3be953ebcf 26,89-98
+src/renderer/src/components/native-chat/NativeChatNoticeRow.test.tsx
+  s_a71ca3b06ed7b3::t_143363041b3212 1,18,25-47
+src/renderer/src/components/native-chat/NativeChatNoticeRow.tsx
+  s_a71ca3b06ed7b3::t_87278c957a7005 11,234,271-279
+src/renderer/src/components/native-chat/NativeChatPromptEditor.tsx
+  s_a71ca3b06ed7b3::t_6314468f4767f5 1,6,9,50,62,157-158,160-166,408
+src/renderer/src/components/native-chat/NativeChatQuestionCard.tsx
+  s_a71ca3b06ed7b3::t_bf12dfef103bc1 1,11-12,39-40,66,75-77,81-83,167-171,221-231,233,295-312,315-328
+src/renderer/src/components/native-chat/NativeChatQuestionOptionRow.tsx
+  s_a71ca3b06ed7b3::t_ad251613f42060 1-60
+src/renderer/src/components/native-chat/NativeChatQuestionSearch.tsx
+  s_a71ca3b06ed7b3::t_723608f006c672 1-26
+src/renderer/src/components/native-chat/NativeChatSessionOptionPickerTrigger.tsx
+  s_a71ca3b06ed7b3::t_61c0974f94f8cd 1-88
+src/renderer/src/components/native-chat/NativeChatSessionOptionPickers.tsx
+  s_a71ca3b06ed7b3::t_ee19d557b3dd12 29-31,339-346,371-386
+src/renderer/src/components/native-chat/NativeChatSpecPairPicker.test.tsx
+  s_a71ca3b06ed7b3::t_110163e72d66d8 1-255
+src/renderer/src/components/native-chat/NativeChatSpecPairPicker.tsx
+  s_a71ca3b06ed7b3::t_46991536774a92 1-135
+src/renderer/src/components/native-chat/NativeChatStructuredQuestionCard.test.tsx
+  s_a71ca3b06ed7b3::t_6bfbac242d535c 20,29,35-67,164-288
+src/renderer/src/components/native-chat/NativeChatStructuredQuestionCard.tsx
+  s_a71ca3b06ed7b3::t_31786a68bbd465 1-3,17,25-26,44,51-80
+src/renderer/src/components/native-chat/NativeChatStructuredSession.tsx
+  s_a71ca3b06ed7b3::t_8c68fbe730084f 19-23,37-38,105-110,194,204,208,371-372,380-386
+src/renderer/src/components/native-chat/agent-session-host-text.ts
+  s_a71ca3b06ed7b3::t_f00f72b19dbc29 1-20
+src/renderer/src/components/native-chat/agent-session-write-notice-text.ts
+  s_a71ca3b06ed7b3::t_39ee2f54154451 1,189,203-204,206-208
+src/renderer/src/components/native-chat/droid-child-command-words.ts
+  s_a71ca3b06ed7b3::t_3e30771b033ed5 1-99
+src/renderer/src/components/native-chat/droid-child-commands.test.ts
+  s_a71ca3b06ed7b3::t_a46ea63ce403c9 1-599
+src/renderer/src/components/native-chat/droid-child-commands.ts
+  s_a71ca3b06ed7b3::t_ae3ffb172126e3 1-283
+src/renderer/src/components/native-chat/droid-commands.test.ts
+  s_a71ca3b06ed7b3::t_5fcc550007a976 1-104
+src/renderer/src/components/native-chat/droid-commands.ts
+  s_a71ca3b06ed7b3::t_2cbb3fe293dac5 1-97
+src/renderer/src/components/native-chat/droid-cwd-and-skills-commands.test.ts
+  s_a71ca3b06ed7b3::t_0686c4fea45c58 1-225
+src/renderer/src/components/native-chat/droid-cwd-and-skills-commands.ts
+  s_a71ca3b06ed7b3::t_184f5d4ac9a163 1-116
+src/renderer/src/components/native-chat/droid-help-keys.test.ts
+  s_a71ca3b06ed7b3::t_230f664aea6430 1-116
+src/renderer/src/components/native-chat/droid-help-keys.ts
+  s_a71ca3b06ed7b3::t_f26a9acce5f6ef 1-58
+src/renderer/src/components/native-chat/droid-host-text.test.tsx
+  s_a71ca3b06ed7b3::t_9d5417a07653d9 1-141
+src/renderer/src/components/native-chat/droid-mcp-commands.test.ts
+  s_a71ca3b06ed7b3::t_de10da03ae86e9 1-262
+src/renderer/src/components/native-chat/droid-mcp-commands.ts
+  s_a71ca3b06ed7b3::t_7ad22de28a0853 1-223
+src/renderer/src/components/native-chat/droid-session-switch-notice.ts
+  s_a71ca3b06ed7b3::t_ef8e3aa9b1bc7d 1-32
+src/renderer/src/components/native-chat/native-chat-composer-draft-persistence.ts
+  s_a71ca3b06ed7b3::t_b10970bd42aaf1 60,72-77
+src/renderer/src/components/native-chat/native-chat-composer-draft-store.test-fixture.ts
+  s_a71ca3b06ed7b3::t_f565fbd03dda68 1-73
+src/renderer/src/components/native-chat/native-chat-composer-draft-store.test.ts
+  s_a71ca3b06ed7b3::t_3e24e22d73ec8d 2,4,6-12,441-444,452,734,738
+src/renderer/src/components/native-chat/native-chat-composer-input.ts
+  s_a71ca3b06ed7b3::t_59d5b1b2cbdaa9 27-30,36
+src/renderer/src/components/native-chat/native-chat-composer-notice.ts
+  s_a71ca3b06ed7b3::t_4b7ff7a80faeef 19-28
+src/renderer/src/components/native-chat/native-chat-composer-prompt-recall.test.tsx
+  s_a71ca3b06ed7b3::t_6da0b368a99922 1-2,86,93,134-144,147-154,156-174
+src/renderer/src/components/native-chat/native-chat-composer-types.ts
+  s_a71ca3b06ed7b3::t_2c9aad481032be 28-31,42-49,53
+src/renderer/src/components/native-chat/native-chat-interactive-prompt.ts
+  s_a71ca3b06ed7b3::t_0a114898445e49 2-6
+src/renderer/src/components/native-chat/native-chat-non-droid-agents.test-support.ts
+  s_a71ca3b06ed7b3::t_fb68472633bd73 1-11
+src/renderer/src/components/native-chat/native-chat-notice-row.test-fixture.tsx
+  s_a71ca3b06ed7b3::t_201f050db5b263 1-64
+src/renderer/src/components/native-chat/native-chat-prompt-editor-store-value.test.tsx
+  s_a71ca3b06ed7b3::t_a2bda5f66304dd 4,34-41,43,45-47,49,51,54,57-58,69-81,111-201
+src/renderer/src/components/native-chat/native-chat-question-search.ts
+  s_a71ca3b06ed7b3::t_1a2f514fc1d4f6 1-10
+src/renderer/src/components/native-chat/native-chat-selected-text.ts
+  s_a71ca3b06ed7b3::t_eedaf755bbaf3a 1-36
+src/renderer/src/components/native-chat/native-chat-structured-alternate-send.test.tsx
+  s_a71ca3b06ed7b3::t_c45b9557269e60 100-105
+src/renderer/src/components/native-chat/native-chat-structured-composer-dispatch.ts
+  s_a71ca3b06ed7b3::t_4272e62d9318c6 17
+src/renderer/src/components/native-chat/native-chat-structured-session-notices.host-answer.test.ts
+  s_a71ca3b06ed7b3::t_62ae204c71e5b4 1-50
+src/renderer/src/components/native-chat/native-chat-structured-session-notices.ts
+  s_a71ca3b06ed7b3::t_826493c4d53d1f 14-15,93,120-128
+src/renderer/src/components/native-chat/structured-agent-session-draft-controls.ts
+  s_a71ca3b06ed7b3::t_b7c62a20f0098c 1-61
+src/renderer/src/components/native-chat/structured-agent-session-pending-sends.ts
+  s_a71ca3b06ed7b3::t_3e08992debc510 13
+src/renderer/src/components/native-chat/structured-agent-session-prompt-response.test.ts
+  s_a71ca3b06ed7b3::t_c13c1fa3fa47c0 1-111
+src/renderer/src/components/native-chat/structured-agent-session-prompt-response.ts
+  s_a71ca3b06ed7b3::t_920f6a299effa3 2,31-42
+src/renderer/src/components/native-chat/structured-agent-session-send-attempt.ts
+  s_a71ca3b06ed7b3::t_f06da7096c818d 133
+src/renderer/src/components/native-chat/structured-agent-session-send-slot.ts
+  s_a71ca3b06ed7b3::t_17b707a2e6d9d2 22,38,60
+src/renderer/src/components/native-chat/use-droid-bug-command.test.tsx
+  s_a71ca3b06ed7b3::t_b57ca06375f756 1-66
+src/renderer/src/components/native-chat/use-droid-bug-command.ts
+  s_a71ca3b06ed7b3::t_2e3de810d927a5 1-104
+src/renderer/src/components/native-chat/use-droid-composer-focus-mirror.test.tsx
+  s_a71ca3b06ed7b3::t_5761a136ae46e4 1-80
+src/renderer/src/components/native-chat/use-droid-composer-focus-mirror.ts
+  s_a71ca3b06ed7b3::t_f57349fd95d6d8 1-44
+src/renderer/src/components/native-chat/use-droid-rewind.test.tsx
+  s_a71ca3b06ed7b3::t_8d85cbf01ba5a7 1-453
+src/renderer/src/components/native-chat/use-droid-rewind.ts
+  s_a71ca3b06ed7b3::t_738ca657559b58 1-267
+src/renderer/src/components/native-chat/use-droid-session-commands.test.tsx
+  s_a71ca3b06ed7b3::t_483bd73cf35b3a 1-435
+src/renderer/src/components/native-chat/use-droid-session-commands.ts
+  s_a71ca3b06ed7b3::t_6c46b900a816ce 1-179
+src/renderer/src/components/native-chat/use-droid-spec-handoff.test.tsx
+  s_a71ca3b06ed7b3::t_32cd916f563a8a 1-206
+src/renderer/src/components/native-chat/use-droid-spec-handoff.ts
+  s_a71ca3b06ed7b3::t_24572edaff8788 1-80
+src/renderer/src/components/native-chat/use-native-chat-composer-catalog.test.tsx
+  s_a71ca3b06ed7b3::t_b106d5ecc07845 1,26-44,111-190
+src/renderer/src/components/native-chat/use-native-chat-composer-droid-keys.ts
+  s_a71ca3b06ed7b3::t_6dac4b44b2f9d6 1-49
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown-droid.test.tsx
+  s_a71ca3b06ed7b3::t_6d8aa907924c97 1-521
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown-non-droid-agents.test.tsx
+  s_a71ca3b06ed7b3::t_5a54b6aad30cce 1-237
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown.ts
+  s_a71ca3b06ed7b3::t_7a5e99156ff353 1-6,29-30,53-54,125-130,138-160,163-166,185,220,227
+src/renderer/src/components/native-chat/use-native-chat-composer-notice.test.tsx
+  s_a71ca3b06ed7b3::t_2cd23189c440d2 3-7,16-97
+src/renderer/src/components/native-chat/use-native-chat-composer-notice.ts
+  s_a71ca3b06ed7b3::t_bcc033211bbda5 3,14,52,64-66,82-93
+src/renderer/src/components/native-chat/use-native-chat-composer-send-routes.ts
+  s_a71ca3b06ed7b3::t_eadd7eef250f94 1-15
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.refused-model.test.tsx
+  s_a71ca3b06ed7b3::t_5e4cbe01fa7963 1-299
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.session.test.tsx
+  s_a71ca3b06ed7b3::t_ab8c60a74d22e5 1-377
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.test.tsx
+  s_a71ca3b06ed7b3::t_b05bfedb913f6f 1-688
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.ts
+  s_a71ca3b06ed7b3::t_f6464a721f9787 1-113
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.wait.test.tsx
+  s_a71ca3b06ed7b3::t_9a4120cea3706b 1-71
+src/renderer/src/components/native-chat/use-native-chat-droid-turn-keys.test.tsx
+  s_a71ca3b06ed7b3::t_6fdcdfd18a88fc 1-169
+src/renderer/src/components/native-chat/use-native-chat-droid-turn-keys.ts
+  s_a71ca3b06ed7b3::t_a905764336c535 1-76
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-handback.test.tsx
+  s_a71ca3b06ed7b3::t_39b7e8bfc55c50 1-412
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-send.test.tsx
+  s_a71ca3b06ed7b3::t_7940555391cced 9-10,15,25-26,39-40,233-378
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-send.ts
+  s_a71ca3b06ed7b3::t_c8236bf99b8558 75-76,122,124-131
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.test.tsx
+  s_a71ca3b06ed7b3::t_5697159d702a63 1-248
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.ts
+  s_a71ca3b06ed7b3::t_6380d1bdbae7a9 1,9-11,34,36,57-72,88,102-104,115-116,118-119,150-152
+src/renderer/src/components/native-chat/use-structured-agent-session-mutate.ts
+  s_a71ca3b06ed7b3::t_17eb2edbb524dc 46-50,66-67,74-75,149-150
+src/renderer/src/components/native-chat/use-structured-agent-session-options.autonomy.test.tsx
+  s_a71ca3b06ed7b3::t_701b010aa3013e 1-257
+src/renderer/src/components/native-chat/use-structured-agent-session-options.spec-pair.test.tsx
+  s_a71ca3b06ed7b3::t_0f279a4cea5dc9 1-247
+src/renderer/src/components/native-chat/use-structured-agent-session-options.ts
+  s_a71ca3b06ed7b3::t_421a0318ab3755 1-4,19,71-75,121-131,146-149,177-183,190-193,195
+src/renderer/src/components/native-chat/use-structured-agent-session-refused-models.ts
+  s_a71ca3b06ed7b3::t_376ff0d17b47f1 1-44
+src/renderer/src/components/native-chat/use-structured-agent-session-sends.test.tsx
+  s_a71ca3b06ed7b3::t_6a7c3f8d013645 4,12-15,30-83
+src/renderer/src/components/native-chat/use-structured-agent-session-sends.ts
+  s_a71ca3b06ed7b3::t_6eefa5d97e380a 1-4,84,132,153
+src/renderer/src/components/native-chat/use-structured-agent-session.droid-queue.test.tsx
+  s_a71ca3b06ed7b3::t_932c2e79257fe7 1-135
+src/renderer/src/components/native-chat/use-structured-agent-session.ts
+  s_a71ca3b06ed7b3::t_817a3fb4bdfd20 128
+src/renderer/src/components/native-chat/use-structured-native-chat-pane-commands.droid-copy.test.tsx
+  s_a71ca3b06ed7b3::t_09dca6ecfb667a 1-168
+src/renderer/src/components/native-chat/use-structured-native-chat-pane-commands.tsx
+  s_a71ca3b06ed7b3::t_a840c39daba83a 18,36,80-82,107
+src/renderer/src/components/native-chat/use-structured-prompt-response-hold.ts
+  s_a71ca3b06ed7b3::t_400b7b9d53077d 1,36-48
+src/renderer/src/components/right-sidebar/AiVaultPanel.droid-resume.test.tsx
+  s_a71ca3b06ed7b3::t_8eed3e50bfe641 1-149
+src/renderer/src/components/right-sidebar/AiVaultPanel.tsx
+  s_a71ca3b06ed7b3::t_71fa09752409d6 206-207
+src/renderer/src/components/right-sidebar/AiVaultSessionActionMenuItems.tsx
+  s_a71ca3b06ed7b3::t_2329e9f638d9fc 28,51,97-101
+src/renderer/src/components/right-sidebar/AiVaultSessionRow.tsx
+  s_a71ca3b06ed7b3::t_b31aeaf51dba81 45,79-80,208,287
+src/renderer/src/components/right-sidebar/AiVaultSessionVirtualList.tsx
+  s_a71ca3b06ed7b3::t_9eaea0416ecc3f 97
+src/renderer/src/components/right-sidebar/AiVaultVirtualRow.test.tsx
+  s_a71ca3b06ed7b3::t_1e350d4540e51c 15-16,53-57,66,81,94-96,99,115,329-456
+src/renderer/src/components/right-sidebar/AiVaultVirtualRow.tsx
+  s_a71ca3b06ed7b3::t_4baff110cf3028 6,92,130-133,241-251
+src/renderer/src/components/right-sidebar/SessionRowTrailingActions.tsx
+  s_a71ca3b06ed7b3::t_eb203879644723 51,78,133-139,152-156,297
+src/renderer/src/components/right-sidebar/ai-vault-droid-holding-terminal.test.ts
+  s_a71ca3b06ed7b3::t_4d5350da727e98 1-105
+src/renderer/src/components/right-sidebar/ai-vault-droid-holding-terminal.ts
+  s_a71ca3b06ed7b3::t_c97bc6cbe2ae3c 1-27
+src/renderer/src/components/right-sidebar/ai-vault-droid-session-holder-check.test.ts
+  s_a71ca3b06ed7b3::t_689116ebd2e94d 1-123
+src/renderer/src/components/right-sidebar/ai-vault-droid-session-holder-check.ts
+  s_a71ca3b06ed7b3::t_d601d26b67ed04 1-66
+src/renderer/src/components/right-sidebar/ai-vault-original-pane-actions.ts
+  s_a71ca3b06ed7b3::t_1d9bcbfcba0a65 1,28,75,79-82
+src/renderer/src/components/right-sidebar/ai-vault-original-pane.ts
+  s_a71ca3b06ed7b3::t_f6571500a167b2 28-30,126,145
+src/renderer/src/components/right-sidebar/ai-vault-session-launch-actions.test.ts
+  s_a71ca3b06ed7b3::t_503a91472b4d6d 21,61
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-action.ts
+  s_a71ca3b06ed7b3::t_17b94ad0286140 1-52
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.host-list.test.ts
+  s_a71ca3b06ed7b3::t_bd74b798f25cc0 1-191
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.test.ts
+  s_a71ca3b06ed7b3::t_07f13df9fde5cd 13,26,56-89,91,194-202
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.ts
+  s_a71ca3b06ed7b3::t_69c7f754cd8d35 23,38-39,61,70,90,93,102-103
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat.ts
+  s_a71ca3b06ed7b3::t_c5f2f5f94e8b00 1-2,21,24-40,86-88,118-131
+src/renderer/src/components/right-sidebar/use-ai-vault-droid-holders.test.ts
+  s_a71ca3b06ed7b3::t_dc23665bba03d3 1-188
+src/renderer/src/components/right-sidebar/use-ai-vault-droid-holders.ts
+  s_a71ca3b06ed7b3::t_57a3df393ed330 1-58
+src/renderer/src/components/right-sidebar/use-ai-vault-panel-session-resume.ts
+  s_a71ca3b06ed7b3::t_28cbd81c33caec 11,25,67-72
+src/renderer/src/components/right-sidebar/use-ai-vault-row-resume-in-chat.test.ts
+  s_a71ca3b06ed7b3::t_c6196a6e2a6dca 1-267
+src/renderer/src/components/right-sidebar/use-ai-vault-row-resume-in-chat.ts
+  s_a71ca3b06ed7b3::t_cb53595ce51079 1-61
+src/renderer/src/components/settings/AgentsPane.test.tsx
+  s_a71ca3b06ed7b3::t_02104fb2fa1daa 555-565
+src/renderer/src/components/tab-bar/tab-session-history-switch.parity.test.ts
+  s_a71ca3b06ed7b3::t_fb55b6dbba3f1a 67
+src/renderer/src/lib/agent-launch-route-input.test.ts
+  s_a71ca3b06ed7b3::t_85f3a8947c749b 17,85,264
+src/renderer/src/lib/agent-launch-route-input.ts
+  s_a71ca3b06ed7b3::t_f18c2a50d70c10 9,56-58
+src/renderer/src/lib/agent-launch-route-registered-agents.test.ts
+  s_a71ca3b06ed7b3::t_7b132fd32b9499 72-77,80-85,92-98,149-244
+src/renderer/src/lib/agent-session-launch-plan.test.ts
+  s_a71ca3b06ed7b3::t_615415de0c7eea 217-257
+src/renderer/src/lib/agent-session-launch-plan.ts
+  s_a71ca3b06ed7b3::t_38ae132d827103 71-72,166-167,169-175
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-options.test.ts
+  s_a71ca3b06ed7b3::t_c9cfc25c81e314 102,326,329-330,481-695
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-options.ts
+  s_a71ca3b06ed7b3::t_ed332693a7cb2a 146-150
+src/renderer/src/lib/droid-chat-session-switch.test.ts
+  s_a71ca3b06ed7b3::t_eafc1242437734 1-611
+src/renderer/src/lib/droid-chat-session-switch.ts
+  s_a71ca3b06ed7b3::t_2845ff356a986f 1-149
+src/renderer/src/runtime/structured-agent-session-client.test.ts
+  s_a71ca3b06ed7b3::t_a9d818f527acc0 1,69-109
+src/renderer/src/runtime/structured-agent-session-client.ts
+  s_a71ca3b06ed7b3::t_70079721ce9020 1-6,39,96-101,144-164,166,188,190,192,194
+src/renderer/src/runtime/structured-agent-session-host-capabilities.ts
+  s_a71ca3b06ed7b3::t_7b4a5dd2a153df 1-26
+src/renderer/src/runtime/structured-agent-session-host-capability.ts
+  s_a71ca3b06ed7b3::t_00607484b51203 1,171-179
+src/renderer/src/web/preload-api/web-ai-vault-api.ts
+  s_a71ca3b06ed7b3::t_8fa5e725bb4669 10-14,107-120
+src/renderer/src/web/preload-api/web-ai-vault-droid-session-holder.test.ts
+  s_a71ca3b06ed7b3::t_2d9b9666358608 1-74
+src/renderer/src/web/preload-api/web-ui-api.ts
+  s_a71ca3b06ed7b3::t_4ca2c3df740d2a 10-17,38-52,79,137,301
+src/shared/__fixtures__/droid-new-clear-hooks.jsonl
+  s_a71ca3b06ed7b3::t_0ead38cb1d9f57 1-81
+src/shared/__fixtures__/droid-new-clear-hooks.meta.json
+  s_a71ca3b06ed7b3::t_e33b97b2561668 1-10
+src/shared/__fixtures__/droid-parent-process-hooks.jsonl
+  s_a71ca3b06ed7b3::t_db7f00ab697b61 1-140
+src/shared/__fixtures__/droid-parent-process-hooks.meta.json
+  s_a71ca3b06ed7b3::t_b426604b5fabf9 1-10
+src/shared/__fixtures__/droid-slow-start-hooks.jsonl
+  s_a71ca3b06ed7b3::t_acdd2f702c702e 1-270
+src/shared/__fixtures__/droid-slow-start-hooks.meta.json
+  s_a71ca3b06ed7b3::t_a3560d4c6483e0 1-10
+src/shared/__fixtures__/droid-subagent-hooks.jsonl
+  s_a71ca3b06ed7b3::t_8d6d7d00a998d3 1-71
+src/shared/__fixtures__/droid-subagent-hooks.meta.json
+  s_a71ca3b06ed7b3::t_cfd2cc3dc1ba2a 1-10
+src/shared/__fixtures__/droid-tree-resume-hooks.jsonl
+  s_a71ca3b06ed7b3::t_27c5e5f3ffa019 1-126
+src/shared/__fixtures__/droid-tree-resume-hooks.meta.json
+  s_a71ca3b06ed7b3::t_f7b150171af367 1-10
+src/shared/__fixtures__/droid-two-command-hooks.jsonl
+  s_a71ca3b06ed7b3::t_9ad8d2c28c02e0 1-39
+src/shared/__fixtures__/droid-two-command-hooks.meta.json
+  s_a71ca3b06ed7b3::t_0617cd6e6f1c7a 1-10
+src/shared/agent-hook-listener-claude-task-notification.test.ts
+  s_a71ca3b06ed7b3::t_e5d85f6baa9563 14,331
+src/shared/agent-hook-listener-droid-children.test.ts
+  s_a71ca3b06ed7b3::t_89186f02232a63 1-250
+src/shared/agent-hook-listener-droid-driver.ts
+  s_a71ca3b06ed7b3::t_a95d2f5cdb7a29 1-106
+src/shared/agent-hook-listener-droid-ended-row.test.ts
+  s_a71ca3b06ed7b3::t_7ed3e8f74fe41e 1-100
+src/shared/agent-hook-listener-droid-replay.test.ts
+  s_a71ca3b06ed7b3::t_8d9f65561c8300 1-252
+src/shared/agent-hook-listener-droid-sessions.test.ts
+  s_a71ca3b06ed7b3::t_0953f4321fd628 1-168
+src/shared/agent-hook-listener-hermes-codex-droid.test.ts
+  s_a71ca3b06ed7b3::t_77579b820535cf 275
+src/shared/agent-hook-listener.ts
+  s_a71ca3b06ed7b3::t_5cb50f2a40fe11 1-5,8,33-37,49,195,205-209,227-240,242,251-255,264-268,287,306
+src/shared/agent-hook-listener/hook-normalization-policy.ts
+  s_a71ca3b06ed7b3::t_39ef60bca2f8cb 1-50
+src/shared/agent-hook-listener/listener-state.ts
+  s_a71ca3b06ed7b3::t_1211149c9d2ce9 20,36,127,222,268-269,282,311,314
+src/shared/agent-hook-listener/listener-turn-cache.ts
+  s_a71ca3b06ed7b3::t_4ab0dfc0c55197 1-13
+src/shared/agent-hook-listener/provider-dispatch.ts
+  s_a71ca3b06ed7b3::t_43632e0891e520 58,146-153
+src/shared/agent-hook-listener/providers/droid-events.ts
+  s_a71ca3b06ed7b3::t_8650e07fed6535 1,4-5,8,13-19,27-103,109-112,114-130,143,153,155,163-173
+src/shared/agent-hook-listener/providers/droid-session-status.ts
+  s_a71ca3b06ed7b3::t_a65c75eaf64f5b 1-104
+src/shared/agent-hook-listener/providers/droid-sessions.ts
+  s_a71ca3b06ed7b3::t_e50fa33db89e2b 1-295
+src/shared/agent-hook-listener/providers/droid-tool-fields.ts
+  s_a71ca3b06ed7b3::t_b25804b5c086a1 63
+src/shared/agent-lease-expiry-timers.ts
+  s_a71ca3b06ed7b3::t_ec438758fd3aab 1-119
+src/shared/agent-process-exit-watch.test.ts
+  s_a71ca3b06ed7b3::t_ca022274ae9e6a 1-142
+src/shared/agent-process-exit-watch.ts
+  s_a71ca3b06ed7b3::t_90e046774d45f7 1-72
+src/shared/agent-process-presence.ts
+  s_a71ca3b06ed7b3::t_a2b26f46bda84b 56,61
+src/shared/agent-session-host-text.ts
+  s_a71ca3b06ed7b3::t_9af8a0004b4d51 1-44
+src/shared/agent-session-journal-identity.ts
+  s_a71ca3b06ed7b3::t_24390c9805c411 38
+src/shared/agent-session-journal-question-picker.ts
+  s_a71ca3b06ed7b3::t_0444f0f253d67f 1-9
+src/shared/agent-session-journal-spec-handoff.ts
+  s_a71ca3b06ed7b3::t_b87a2b42a6d79e 1-9
+src/shared/agent-session-mcp-sign-in-capability.ts
+  s_a71ca3b06ed7b3::t_355993119e2a4d 1-3
+src/shared/agent-session-refusal-notice.provider-text.test.ts
+  s_a71ca3b06ed7b3::t_57903d2ef7a7de 1-133
+src/shared/agent-session-thread-goal-wire.ts
+  s_a71ca3b06ed7b3::t_a05ffdb6135194 1-15
+src/shared/agent-session/agent-session-question-answer.ts
+  s_a71ca3b06ed7b3::t_8ede05e67c750f 25-31
+src/shared/agent-session/agent-session-wire.ts
+  s_a71ca3b06ed7b3::t_999123ccccbae2 156-157,370
+src/shared/agent-session/failures/agent-session-refusal-notice.ts
+  s_a71ca3b06ed7b3::t_1b6564c23f9b34 4-5,82-99,104-105,107-114,212-213,222
+src/shared/agent-session/failures/agent-session-refusal-reasons.ts
+  s_a71ca3b06ed7b3::t_43f0943df390cb 39
+src/shared/agent-session/failures/agent-session-write-failure.ts
+  s_a71ca3b06ed7b3::t_cb4e2c8e0b179a 1,107-108,135-140,142,153,158
+src/shared/agent-session/failures/agent-session-write-notice-copy.ts
+  s_a71ca3b06ed7b3::t_6663dc7d780b64 4,112
+src/shared/agent-session/journal/agent-session-journal-item-key.ts
+  s_a71ca3b06ed7b3::t_b69b870a178a35 113-115,163-165
+src/shared/agent-session/journal/agent-session-journal-schemas.test.ts
+  s_a71ca3b06ed7b3::t_06d9809865ea53 124-178
+src/shared/agent-session/journal/agent-session-journal-schemas.ts
+  s_a71ca3b06ed7b3::t_d1656ed2c5855c 135-137,232-233,250-253,267-275
+src/shared/agent-session/journal/agent-session-journal-submission-schema.ts
+  s_a71ca3b06ed7b3::t_16fccc1cb7e9c8 23
+src/shared/agent-session/journal/agent-session-journal-types.ts
+  s_a71ca3b06ed7b3::t_e0a282f69d6cd7 1-3,152,197-200,278,280-281,302-303,312-315,451-454
+src/shared/agent-session/options/agent-session-option-catalog-types.ts
+  s_a71ca3b06ed7b3::t_a207ded4a837dd 37-39,80-82
+src/shared/agent-session/options/agent-session-options-result.ts
+  s_a71ca3b06ed7b3::t_6ea7755b77cb52 52-56
+src/shared/agent-session/options/structured-agent-session-discovered-model.ts
+  s_a71ca3b06ed7b3::t_29e887184a684b 2-5,82-104
+src/shared/agent-session/options/structured-agent-session-option-codec.ts
+  s_a71ca3b06ed7b3::t_a9f49c375f65fa 3
+src/shared/agent-session/options/structured-agent-session-option-snapshot.ts
+  s_a71ca3b06ed7b3::t_e5e228fb9f4262 29,224-228,274-275
+src/shared/agent-session/options/structured-agent-session-option-state.ts
+  s_a71ca3b06ed7b3::t_42426bea16e73b 12
+src/shared/agent-session/options/structured-agent-session-options.ts
+  s_a71ca3b06ed7b3::t_c1a4ca50048966 1-3,5,46-50,54-56,87,108,143,179-180,185,195-203
+src/shared/agent-session/options/structured-agent-session-seed-catalog.ts
+  s_a71ca3b06ed7b3::t_2696d67eb1c97b 11-13
+src/shared/agent-session/requests/structured-agent-session-send-mutation.ts
+  s_a71ca3b06ed7b3::t_3e9bbdc3737682 17,33
+src/shared/agent-session/structured-agent-session-surface-capabilities.ts
+  s_a71ca3b06ed7b3::t_927dc50955133b 2-5,53-55
+src/shared/agent-session/view/structured-agent-session-composer.ts
+  s_a71ca3b06ed7b3::t_1666c024866b10 1-5,58-66,81-82,90-97,112-115,143-148,156,159,161,166-170,172,178,181,183,237,259-268,290-293
+src/shared/agent-session/view/structured-agent-session-status-block.ts
+  s_a71ca3b06ed7b3::t_cbce7d8b7a59a6 1,28-29
+src/shared/ai-vault-droid-session-holder.test.ts
+  s_a71ca3b06ed7b3::t_01287c055edd27 1-91
+src/shared/ai-vault-droid-session-holder.ts
+  s_a71ca3b06ed7b3::t_6cfd1bc52ff8a8 1-74
+src/shared/claude-owed-notification-resource-contract.test.ts
+  s_a71ca3b06ed7b3::t_68fe557eca026a 3,55,84
+src/shared/droid-autonomy-options.test.ts
+  s_a71ca3b06ed7b3::t_e9d97537ea37fa 1-49
+src/shared/droid-autonomy-options.ts
+  s_a71ca3b06ed7b3::t_1baba9d9063608 1-52
+src/shared/droid-autonomy-view.test.ts
+  s_a71ca3b06ed7b3::t_be4d32e6c121d6 1-246
+src/shared/droid-autonomy-view.ts
+  s_a71ca3b06ed7b3::t_685df2eeac12ea 1-74
+src/shared/droid-background-child-lease-resource-contract.test.ts
+  s_a71ca3b06ed7b3::t_35b74222eec5db 1-107
+src/shared/droid-chat-version-floor.ts
+  s_a71ca3b06ed7b3::t_bc920e5ec17f76 1-2
+src/shared/droid-command-registry.ts
+  s_a71ca3b06ed7b3::t_6158a6020da6bd 1-60
+src/shared/droid-composer-keys.test.ts
+  s_a71ca3b06ed7b3::t_a14e60da00b8b9 1-87
+src/shared/droid-composer-keys.ts
+  s_a71ca3b06ed7b3::t_59c4a5179630f5 1-51
+src/shared/droid-fresh-session-settings.test.ts
+  s_a71ca3b06ed7b3::t_36d2cc33e64e6c 1-159
+src/shared/droid-fresh-session-settings.ts
+  s_a71ca3b06ed7b3::t_a34f1c9b691c50 1-80
+src/shared/droid-host-command.ts
+  s_a71ca3b06ed7b3::t_afb3a14d646f4e 1-96
+src/shared/droid-host-copy.ts
+  s_a71ca3b06ed7b3::t_60325dacf9d1ba 1-68
+src/shared/droid-probe-log-replay.test-fixture.ts
+  s_a71ca3b06ed7b3::t_67115ad26c833d 1-278
+src/shared/droid-rewind-message-id.test.ts
+  s_a71ca3b06ed7b3::t_775cf383722b68 1-59
+src/shared/droid-rewind-message-id.ts
+  s_a71ca3b06ed7b3::t_ad787cc6d2b98d 1-37
+src/shared/droid-spec-pair-options.ts
+  s_a71ca3b06ed7b3::t_fb7b74a8f73d77 1-70
+src/shared/droid-spec-pair-view.test.ts
+  s_a71ca3b06ed7b3::t_98c3f831e4a601 1-229
+src/shared/droid-spec-pair-view.ts
+  s_a71ca3b06ed7b3::t_da6cb717bc6dc4 1-156
+src/shared/electron-remote-runtime-client-capabilities.ts
+  s_a71ca3b06ed7b3::t_ac97ce67785b0a 3,19
+src/shared/native-chat-interactive-prompt.ts
+  s_a71ca3b06ed7b3::t_27cc2d058996c7 12-13,24-25,30-31
+src/shared/native-chat/input/native-chat-ask-types.ts
+  s_a71ca3b06ed7b3::t_f48972fc1eb88f 5-7
+src/shared/native-chat/input/native-chat-session-option-defaults.test.ts
+  s_a71ca3b06ed7b3::t_07c31b0a95d5a5 5,139-163
+src/shared/native-chat/input/native-chat-session-option-defaults.ts
+  s_a71ca3b06ed7b3::t_03abfbdf405c33 54-55,61-63,75,120-124
+src/shared/native-chat/input/native-chat-session-option-state.ts
+  s_a71ca3b06ed7b3::t_12d261984f398a 17-18,38-45,68-70,119-128,164-167
+src/shared/native-chat/input/native-chat-session-options.ts
+  s_a71ca3b06ed7b3::t_75f8571f7687b6 1,108-127,129-131
+src/shared/native-chat/native-chat-notice.ts
+  s_a71ca3b06ed7b3::t_b3ceeaa194ed14 44-47
+src/shared/native-chat/native-chat-types.ts
+  s_a71ca3b06ed7b3::t_6e66a390f0d582 40-43
+src/shared/non-droid-composer-key-agents.test-fixture.ts
+  s_a71ca3b06ed7b3::t_c55277d50a9d42 1-9
+src/shared/rpc-contract/ai-vault-params.ts
+  s_a71ca3b06ed7b3::t_ca2c23d25b5231 82-85
+src/shared/rpc-contract/client-settings-params.ts
+  s_a71ca3b06ed7b3::t_6dda34b7bc090e 39
+src/shared/rpc-contract/structured-agent-session-droid-command-params.ts
+  s_a71ca3b06ed7b3::t_69e81fbedc6021 1-89
+src/shared/rpc-contract/structured-agent-session-goal-params.ts
+  s_a71ca3b06ed7b3::t_b61280bd269847 1-22
+src/shared/rpc-contract/structured-agent-session-mcp-sign-in-params.ts
+  s_a71ca3b06ed7b3::t_4d769297962ea2 1-10
+src/shared/rpc-contract/structured-agent-session-params.ts
+  s_a71ca3b06ed7b3::t_a3b5f0b1fa17a6 1-4,127,206-214,221-224,311
+src/shared/structured-adoption-agent.test.ts
+  s_a71ca3b06ed7b3::t_3630d532a2cdc2 1-20
+src/shared/structured-adoption-agent.ts
+  s_a71ca3b06ed7b3::t_cd1879edcaa9b9 1-10
+src/shared/structured-agent-cli-conversation-adoption.ts
+  s_a71ca3b06ed7b3::t_39283e020818f7 6
+src/shared/structured-agent-question-card.ts
+  s_a71ca3b06ed7b3::t_a0effbd76a66e1 25-35
+src/shared/structured-agent-session-composer-host-answer.test.ts
+  s_a71ca3b06ed7b3::t_e84737e75df619 1-91
+src/shared/structured-agent-session-droid-spec-at-rest.test.ts
+  s_a71ca3b06ed7b3::t_6e8e26599c5599 1-142
+src/shared/structured-agent-session-droid-spec-no-model.test.ts
+  s_a71ca3b06ed7b3::t_d14ed60b57e52f 1-152
+src/shared/structured-agent-session-options-write-owner.ts
+  s_a71ca3b06ed7b3::t_cd31b3ac76e51d 34,37-38,93-102,118-120,126-129
+src/shared/structured-agent-session-projection.host-text.test.ts
+  s_a71ca3b06ed7b3::t_4392b5ee899a29 1-72
+src/shared/structured-agent-session-selection-operations.ts
+  s_a71ca3b06ed7b3::t_23c6a212097405 11,170
+src/shared/structured-agent-session-spec-option.ts
+  s_a71ca3b06ed7b3::t_273ac84e7ae618 1-51
+src/wsl-guest/agent-hook-event-admission.ts
+  s_a71ca3b06ed7b3::t_99b69e5262f309 27,133-141
+src/wsl-guest/agent-hook-request.ts
+  s_a71ca3b06ed7b3::t_5c7ce602bff51a 127
+src/wsl-guest/agent-hook-result-retry-scheduler.ts
+  s_a71ca3b06ed7b3::t_12c3d93246713c 19,51,62,76,79-81
+src/wsl-guest/agent-hook-server-droid-background-child-lease.test.ts
+  s_a71ca3b06ed7b3::t_a09845d12f0b02 1-104
+src/wsl-guest/agent-hook-server.ts
+  s_a71ca3b06ed7b3::t_225bffae2ab32e 128-130,152-154,207,245,249,308-312
+src/wsl-guest/relay-agent-presence.ts
+  s_a71ca3b06ed7b3::t_243c78cec561a9 8-10,13-17,20-28,34,41,70
+src/wsl-guest/relay-droid-exit-watch.test.ts
+  s_a71ca3b06ed7b3::t_4d9c7b5a0e48f2 1-297
+tests/e2e/cross-version-wire/structured-agent-session-host-fixture.ts
+  s_a71ca3b06ed7b3::t_91bb6053ae09d5 126-127
+tests/e2e/cross-version-wire/structured-agent-session-surface-calls.ts
+  s_a71ca3b06ed7b3::t_fe54058bcd7ec7 108-120
+tests/e2e/cross-version-wire/structured-agent-session-surface-manifest.ts
+  s_a71ca3b06ed7b3::t_e08453911f09e2 184-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d7a698c255f587d578bd1eca16a78e0fd0ae436c",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
