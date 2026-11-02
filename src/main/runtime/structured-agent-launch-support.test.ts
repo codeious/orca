@@ -85,6 +85,39 @@ afterEach(async () => {
 })
 
 describe('structuredAgentSupportsLaunch', () => {
+  it.each(['pi', 'opencode', 'omp'] as const)(
+    'retains %s release facts from the actual launch check',
+    async (agent) => {
+      installedVersion('0.1.0')
+      const support = await resolveHostStructuredAgentCreateSupport({
+        agent,
+        worktreeSelector: 'workspace',
+        location: {
+          executionHostId: 'local',
+          wslDistro: null,
+          workspaceId: 'workspace',
+          workspaceKind: 'folder'
+        },
+        runtime: {
+          resolveRuntimeFileTarget: async () => ({ worktree: { path: '/repo/worktree' } }),
+          requireStore: () => ({
+            getSettings: () => ({
+              ...settings,
+              agentCmdOverrides: { [agent]: join(bin, 'opencode') }
+            })
+          })
+        }
+      })
+      expect(support).toMatchObject({
+        supported: false,
+        reason: 'agent',
+        agentInstallation: { agent, installedVersion: '0.1.0' }
+      })
+      expect(support.agentInstallation?.minimumVersion).toMatch(/^\d+\./)
+      expect(asked).toHaveLength(1)
+    }
+  )
+
   it('asks nothing for an agent whose location alone decides', async () => {
     expect(await structuredAgentSupportsLaunch('grok', workspace, runtime)).toBe(true)
     expect(readVersion).not.toHaveBeenCalled()

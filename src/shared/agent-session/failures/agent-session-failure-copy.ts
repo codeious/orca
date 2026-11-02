@@ -221,7 +221,10 @@ export function agentCliInstallationFailureWords(
   refusal: AgentSessionRefusalReference | undefined,
   say: AgentSessionFailureSay
 ): string | null {
-  if (refusal?.code !== 'agent_session_operation_invalid') {
+  if (
+    refusal?.code !== 'agent_session_operation_invalid' &&
+    refusal?.code !== 'structured_agent_session_unsupported'
+  ) {
     return null
   }
   const { agentInstallation, codexInstallation } = refusal.details ?? {}

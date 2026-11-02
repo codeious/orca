@@ -58,7 +58,14 @@ export function structuredChatUnavailableText(reason?: string): string {
 
 /** The host's refusal behind a failed launch; undefined when the failure carried none. */
 export function structuredLaunchFailure(error: unknown): StructuredLaunchFailure | undefined {
-  if (error instanceof StructuredAgentSessionCreateRefusalError && error.hostReason) {
+  if (
+    error instanceof StructuredAgentSessionCreateRefusalError &&
+    error.hostReason &&
+    !(
+      error.refusal?.code === 'structured_agent_session_unsupported' &&
+      error.refusal.details?.agentInstallation
+    )
+  ) {
     return {
       kind: 'refused',
       code: 'structured_agent_session_unsupported',

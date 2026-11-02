@@ -14,6 +14,9 @@ import {
 import type { TuiAgent } from '../../../src/shared/tui-agent'
 import type { RpcSendParams } from '../transport/rpc-params-contract'
 import type { WorkspaceCreateParams } from './workspace-create-params'
+import { readAgentCliInstallationProblem } from '../../../src/shared/agent-cli-installation-problem'
+import { agentCliTooOldWords } from '../../../src/shared/agent-session/failures/agent-session-failure-copy'
+import { sayMobileAgentSessionFailure } from '../session/agent-session-failure-copy'
 
 // False identifies older hosts without agent.launch.
 export type AgentLaunchSupport = {
@@ -91,8 +94,41 @@ export function readAgentLaunchCreateOutcome(result: unknown): AgentLaunchCreate
   if (typeof worktreeId !== 'string' || !worktreeId.trim()) {
     return null
   }
-  const warning = readTrimmedWarning(result)
+  const warning = readAgentLaunchWarning(result)
   return { worktreeId, ...(warning ? { warning } : {}) }
+}
+
+export function readAgentLaunchWarning(result: unknown): string {
+  return [readTrimmedWarning(result), readTerminalFallbackWarning(result)].filter(Boolean).join(' ')
+}
+
+function readTerminalFallbackWarning(result: unknown): string {
+  if (
+    !result ||
+    typeof result !== 'object' ||
+    !('receipt' in result) ||
+    !result.receipt ||
+    typeof result.receipt !== 'object'
+  ) {
+    return ''
+  }
+  const receipt = result.receipt
+  if (
+    !('mode' in receipt) ||
+    receipt.mode !== 'terminal' ||
+    !('preferred' in receipt) ||
+    receipt.preferred !== 'structured'
+  ) {
+    return ''
+  }
+  const installation = readAgentCliInstallationProblem(
+    'agentInstallation' in receipt ? receipt.agentInstallation : undefined
+  )
+  return installation
+    ? agentCliTooOldWords(installation, sayMobileAgentSessionFailure)
+    : 'detail' in receipt && typeof receipt.detail === 'string'
+      ? receipt.detail.trim()
+      : ''
 }
 
 function readTrimmedWarning(source: unknown): string {

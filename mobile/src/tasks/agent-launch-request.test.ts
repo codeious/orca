@@ -55,6 +55,39 @@ describe('agentLaunchExistingParams', () => {
 })
 
 describe('readAgentLaunchCreateOutcome', () => {
+  it('explains a version fallback without losing a completed launch warning', () => {
+    expect(
+      readAgentLaunchCreateOutcome({
+        worktreeId: 'wt-1',
+        warning: 'Setup did not finish.',
+        receipt: {
+          mode: 'terminal',
+          preferred: 'structured',
+          reason: 'structured_unsupported_on_host',
+          detail: 'Host wording.',
+          agentInstallation: { agent: 'pi', installedVersion: '0.1.0', minimumVersion: '1.0.0' }
+        }
+      })
+    ).toEqual({
+      worktreeId: 'wt-1',
+      warning: 'Setup did not finish. Pi 0.1.0 is too old for chats. Update to 1.0.0 or newer.'
+    })
+  })
+
+  it('uses the receipt detail from an older host and ignores malformed version facts', () => {
+    expect(
+      readAgentLaunchCreateOutcome({
+        worktreeId: 'wt-1',
+        receipt: {
+          mode: 'terminal',
+          preferred: 'structured',
+          detail: 'This host opened a terminal instead.',
+          agentInstallation: { agent: 'pi', installedVersion: false }
+        }
+      })
+    ).toEqual({ worktreeId: 'wt-1', warning: 'This host opened a terminal instead.' })
+  })
+
   it.each([
     {
       label: 'structured',

@@ -1,11 +1,8 @@
 import { terminalLaunchOpened } from '@/lib/launch-agent-in-new-tab-host-agents'
-import { toast } from 'sonner'
 import type { TuiAgent } from '../../../../../shared/tui-agent'
 import type { ExecutionHostId } from '../../../../../shared/execution-host'
 import { parseExecutionHostId } from '../../../../../shared/execution-host'
-import { translate } from '@/i18n/i18n'
 import { useAppStore } from '@/store/index'
-import { selectExecutionHostDisplayLabel } from '@/lib/execution-host-display-label'
 import {
   adoptAgentSessionLaunchVerdict,
   type AgentSessionLaunchPlan
@@ -16,7 +13,6 @@ import {
 } from '@/lib/agent-session/launch/structured-agent-session-host-admission'
 import { holdEmptyWorkspaceDefaultSurfaceForLaunch } from '@/lib/empty-workspace-default-surface-claims'
 import { StructuredAgentSessionCreateRefusalError } from '@/lib/agent-session/launch/structured-agent-session-launch-errors'
-import { structuredAgentLabel } from '@/lib/agent-session/launch/structured-agent-session-launch-label'
 import type {
   StructuredAgentLaunchHooks,
   StructuredAgentLaunchSettlement
@@ -28,8 +24,15 @@ import { toRuntimeWorktreeSelector } from '@/runtime/runtime-worktree-selector'
 import { readStructuredChatHostPermissionVerdict } from '@/runtime/structured-chat-host-permission'
 import { notifyHostPermissionRefused } from '@/lib/agent-session/launch/structured-agent-session-launch-permission-notice'
 import { readAgentInventoryForTarget } from '@/lib/agent-detection-target-inventory'
-import { structuredChatUnavailableText } from '@/lib/agent-session/launch/structured-agent-session-launch-failure'
 import type { WebRuntimeTerminalCreateOutcome } from '@/runtime/web-runtime-session-types'
+import type { AgentCliInstallationProblem } from '../../../../../shared/agent-cli-installation-problem'
+import {
+  notifyExplicitChatFailure,
+  notifyHostDeclined,
+  notifyHostUnreachable
+} from './structured-agent-session-launch-host-notice'
+
+export { notifyHostDeclined } from './structured-agent-session-launch-host-notice'
 
 export type AgentTerminalLaunchCompletion = {
   outcome: WebRuntimeTerminalCreateOutcome
@@ -65,57 +68,6 @@ const NOT_DELIVERED: StructuredPromptDeliveryResult = { delivered: false, failur
 const NOT_DELIVERED_NOTIFIED: StructuredPromptDeliveryResult = {
   delivered: false,
   failureNotified: true
-}
-
-function notifyExplicitChatFailure(agent: TuiAgent, reason?: string): void {
-  toast.error(
-    translate(
-      'auto.components.tab.bar.QuickLaunchButton.chatUnavailableAfterSelection',
-      "Couldn't start a {{value0}} chat.",
-      { value0: structuredAgentLabel(agent) }
-    ),
-    { description: structuredChatUnavailableText(reason) }
-  )
-}
-
-export function notifyHostDeclined(agent: TuiAgent, explain = true): void {
-  const agentLabel = structuredAgentLabel(agent)
-  toast.info(
-    translate(
-      'components.native-chat.structuredSessionHostDeclined',
-      'Opened {{value0}} in a terminal',
-      { value0: agentLabel }
-    ),
-    explain
-      ? {
-          description: translate(
-            'components.native-chat.structuredSessionHostDeclinedDescription',
-            "This workspace can't run a {{value0}} chat.",
-            { value0: agentLabel }
-          )
-        }
-      : undefined
-  )
-}
-
-function notifyHostUnreachable(agent: TuiAgent, executionHostId: ExecutionHostId): void {
-  const hostLabel = selectExecutionHostDisplayLabel(useAppStore.getState(), executionHostId)
-  toast.error(
-    translate(
-      'components.native-chat.structuredSessionHostUnreachable',
-      'Could not reach {{value0}}',
-      {
-        value0: hostLabel
-      }
-    ),
-    {
-      description: translate(
-        'components.native-chat.structuredSessionHostUnreachableDescription',
-        'Orca did not open a {{value0}} chat. Check the connection to the server and try again.',
-        { value0: structuredAgentLabel(agent) }
-      )
-    }
-  )
 }
 
 /** What the caller's own terminal launch would have carried beyond the plan's agent and prompt. */
@@ -223,10 +175,11 @@ export function beginHostAdmittedStructuredLaunch(args: {
   const failBeforeSurface = (
     error: unknown,
     reason?: string,
-    notify = plan.requestedSurface === 'chat'
+    notify = plan.requestedSurface === 'chat',
+    installation?: AgentCliInstallationProblem
   ): StructuredAgentLaunchSettlement => {
     if (notify && !admitted) {
-      notifyExplicitChatFailure(plan.agent, reason)
+      notifyExplicitChatFailure(plan.agent, reason, installation)
       resolveDelivery(NOT_DELIVERED_NOTIFIED)
       return { kind: 'failed', error, notified: true }
     }
@@ -273,13 +226,14 @@ export function beginHostAdmittedStructuredLaunch(args: {
           return failBeforeSurface(
             new StructuredAgentSessionCreateRefusalError('structured_agent_session_unsupported'),
             admission.reason,
-            plan.requestedSurface === 'chat' || noCli
+            plan.requestedSurface === 'chat' || noCli,
+            admission.agentInstallation
           )
         }
         const terminal = await args.onHostDeclined(args.target)
         const opened = await terminalLaunchOpened(terminal)
-        if (paired && opened) {
-          notifyHostDeclined(plan.agent)
+        if (opened && (paired || admission.agentInstallation)) {
+          notifyHostDeclined(plan.agent, true, admission.agentInstallation)
         }
         const delivery = terminal.promptDeliveryResult ?? (opened ? DELIVERED : NOT_DELIVERED)
         void Promise.resolve(delivery).then(resolveDelivery, () => resolveDelivery(NOT_DELIVERED))

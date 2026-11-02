@@ -148,6 +148,31 @@ afterEach(() => {
 describe('a structured chat launch on a paired server', () => {
   beforeEach(seedPairedServerWorkspace)
 
+  it.each(['local', 'runtime:server-1'] as const)(
+    'names the old release after a terminal fallback on %s',
+    async (executionHostId) => {
+      mocks.createSupport.mockResolvedValue({
+        supported: false,
+        reason: 'agent',
+        agentInstallation: {
+          agent: 'claude',
+          installedVersion: '0.1.0',
+          minimumVersion: '1.0.0'
+        }
+      })
+      const launch = beginStructuredAgentSessionProvisionalLaunch({
+        plan: executionHostId === 'local' ? localPlan() : pairedPlan(),
+        hooks: {},
+        onHostDeclined: () => ({ opened: true })
+      })
+      await expect(launch?.settlement).resolves.toEqual({ kind: 'terminal' })
+      expect(mocks.toastInfo).toHaveBeenCalledWith(expect.any(String), {
+        description: 'Claude 0.1.0 is too old for chats. Update to 1.0.0 or newer.'
+      })
+      expectNoChatCommitted()
+    }
+  )
+
   it('opens only the terminal when the server declines, keeping the workspace selected', async () => {
     mocks.createSupport.mockResolvedValue({ supported: false, reason: 'wsl' })
     const onHostDeclined = vi.fn(() => ({

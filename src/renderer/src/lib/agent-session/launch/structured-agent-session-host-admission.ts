@@ -4,6 +4,10 @@ import { parseStructuredLaunchSeedOptions } from '../../../../../shared/native-c
 import { hasRuntimeRpcErrorCode } from '../../../../../shared/runtime-rpc-error-code'
 import type { RuntimeClientTarget } from '../../../../../shared/runtime-client-target'
 import { callStructuredAgentSession } from '@/runtime/structured-agent-session-client'
+import {
+  readAgentCliInstallationProblem,
+  type AgentCliInstallationProblem
+} from '../../../../../shared/agent-cli-installation-problem'
 
 /** The host answers a worktree selector it cannot resolve yet with this rather than a verdict. */
 const SELECTOR_NOT_RESOLVABLE_CODE = 'selector_not_found'
@@ -30,7 +34,7 @@ function runtimeErrorCode(error: unknown): string {
  *  An admitting host also names the saved selection create will seed, when it is new enough to. */
 export type StructuredLaunchAdmission =
   | { kind: 'admitted'; seedOptions?: Readonly<Record<string, string>> }
-  | { kind: 'declined'; reason?: string }
+  | { kind: 'declined'; reason?: string; agentInstallation?: AgentCliInstallationProblem }
   | { kind: 'unreachable' }
   /** The host still could not resolve the workspace after the retries: not yet, rather than no. */
   | { kind: 'workspace-unresolved' }
@@ -56,10 +60,15 @@ export async function askHostCreateSupport(
         supported: boolean
         reason?: string
         seedOptions?: unknown
+        agentInstallation?: unknown
       }>(target, 'agentSession.createSupport', { worktree, agent })
       if (support.supported !== true) {
+        const installation = readAgentCliInstallationProblem(support.agentInstallation)
         return {
           kind: 'declined',
+          ...(support.reason === 'agent' && installation?.agent === agent
+            ? { agentInstallation: installation }
+            : {}),
           ...(typeof support.reason === 'string' && support.reason.trim()
             ? { reason: support.reason }
             : {})
