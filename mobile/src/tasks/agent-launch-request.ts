@@ -16,6 +16,9 @@ import {
 import type { TuiAgent } from '../../../src/shared/agent-launch/catalog/tui-agent'
 import type { RpcSendParams } from '../../../src/shared/rpc-contract/rpc-send-params'
 import type { WorkspaceCreateParams } from './workspace-create-params'
+import { readAgentCliInstallationProblem } from '../../../src/shared/agent-launch/catalog/agent-cli-installation-problem'
+import { agentCliTooOldWords } from '../../../src/shared/agent-session/failures/agent-session-failure-copy'
+import { sayMobileAgentSessionFailure } from '../session/native-chat/agent-session/agent-session-failure-copy'
 
 // False identifies older hosts without agent.launch.
 export type AgentLaunchSupport = {
@@ -106,7 +109,15 @@ export function readAgentLaunchNotice(source: unknown): string {
     'warning' in source && typeof source.warning === 'string' ? source.warning.trim() : ''
   const receipt =
     'receipt' in source && isAgentLaunchModeReceipt(source.receipt) ? source.receipt : null
-  const fallback = receipt && isAgentLaunchChatFallback(receipt) ? receipt.detail.trim() : ''
+  const installation =
+    receipt && isAgentLaunchChatFallback(receipt)
+      ? readAgentCliInstallationProblem(receipt.agentInstallation)
+      : undefined
+  const fallback = installation
+    ? agentCliTooOldWords(installation, sayMobileAgentSessionFailure)
+    : receipt && isAgentLaunchChatFallback(receipt)
+      ? receipt.detail.trim()
+      : ''
   return [warning, fallback].filter(Boolean).join(' ')
 }
 

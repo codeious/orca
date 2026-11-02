@@ -2,6 +2,7 @@
 
 import type { TuiAgent } from '../catalog/tui-agent'
 import type { AgentLaunchSurface } from './agent-launch-surface'
+import type { AgentCliInstallationProblem } from '../catalog/agent-cli-installation-problem'
 
 /** How a launch's initial text reaches the agent. */
 export type AgentLaunchPromptDelivery =
@@ -151,6 +152,7 @@ export type AgentLaunchModeReceipt = {
   reason: AgentLaunchModeReason
   /** One sentence, always present, so a fallback is never silent. */
   detail: string
+  agentInstallation?: AgentCliInstallationProblem
 }
 
 /** A chat the user preferred that could not run; an agent with no chat at all is not a fallback. */

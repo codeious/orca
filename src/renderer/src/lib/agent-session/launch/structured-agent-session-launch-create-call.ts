@@ -9,7 +9,11 @@ import {
   isAgentSessionForkSourceAdmissionRefusal,
   isDefinitiveAgentSessionCreateRefusal
 } from '../../../../../shared/agent-session/failures/agent-session-definitive-refusal'
-import { readAgentSessionRefusalReference } from '../../../../../shared/agent-session/failures/agent-session-wire-refusals'
+import {
+  readAgentSessionRefusalReference,
+  refuse
+} from '../../../../../shared/agent-session/failures/agent-session-wire-refusals'
+import { agentCliInstallationFacts } from '../../../../../shared/agent-launch/catalog/agent-cli-installation-problem'
 import { readAgentSessionErrorRefusal } from '../../../../../shared/agent-session/failures/agent-session-write-failure'
 import { callStructuredAgentSession } from '@/runtime/native-chat/requests/structured-agent-session-call'
 import {
@@ -84,7 +88,16 @@ async function requireHostCreateSupport(
     throw new StructuredAgentSessionCreateRefusalError(
       'structured_agent_session_unsupported',
       'structured_agent_session_unsupported',
-      undefined,
+      support.kind === 'declined' && support.agentInstallation
+        ? refuse(
+            'structured_agent_session_unsupported',
+            {
+              reason: 'hostUnsupported',
+              ...agentCliInstallationFacts(support.agentInstallation)
+            },
+            'structured_agent_session_unsupported'
+          )
+        : undefined,
       support.kind === 'declined' ? support.reason : undefined
     )
   }

@@ -1,10 +1,12 @@
 import type { AgentSessionExecutionLocation } from '../../shared/agent-session/lifecycle/agent-session-record'
 import type { StructuredAgentId } from '../../shared/agent-session/lifecycle/agent-session-provider-handle'
 import { LOCAL_EXECUTION_HOST_ID } from '../../shared/execution-host'
+import type { AgentCliInstallationProblem } from '../../shared/agent-launch/catalog/agent-cli-installation-problem'
 
 export type StructuredAgentSessionCreateSupport = {
   supported: boolean
   reason?: 'agent' | 'remote' | 'wsl' | 'windows'
+  agentInstallation?: AgentCliInstallationProblem
 }
 
 export function resolveStructuredAgentSessionCreateSupport(input: {
@@ -12,18 +14,23 @@ export function resolveStructuredAgentSessionCreateSupport(input: {
   adapterSupportsCreate: boolean
   /** The agent has no chat on this host's OS, so no install or update can help. */
   unavailableOnPlatform?: boolean
+  agentInstallation?: AgentCliInstallationProblem
 }): StructuredAgentSessionCreateSupport {
   if (!input.adapterSupportsCreate) {
+    const reason =
+      input.location.executionHostId !== LOCAL_EXECUTION_HOST_ID
+        ? 'remote'
+        : input.location.wslDistro
+          ? 'wsl'
+          : input.unavailableOnPlatform
+            ? 'windows'
+            : 'agent'
     return {
       supported: false,
-      reason:
-        input.location.executionHostId !== LOCAL_EXECUTION_HOST_ID
-          ? 'remote'
-          : input.location.wslDistro
-            ? 'wsl'
-            : input.unavailableOnPlatform
-              ? 'windows'
-              : 'agent'
+      reason,
+      ...(reason === 'agent' && input.agentInstallation
+        ? { agentInstallation: input.agentInstallation }
+        : {})
     }
   }
   return { supported: true }
