@@ -4,6 +4,7 @@ import {
   createProviderSpawnSpec,
   POSIX_PROVIDER_SUPERVISOR_SCRIPT,
   PROVIDER_SIGTERM_GRACE_MS,
+  PROVIDER_STDIN_END_GRACE_MAX_MS,
   PROVIDER_STDIN_END_GRACE_MS,
   supervisedPosixLaunch
 } from './provider-process-supervisor'
@@ -126,7 +127,8 @@ describe('structured provider supervision', () => {
       supervisedPosixLaunch(command, {}, { sigtermGraceMs })
 
     expect(stdinEnd(PROVIDER_STDIN_END_GRACE_MS)).not.toThrow()
-    expect(stdinEnd(PROVIDER_STDIN_END_GRACE_MS + 1)).toThrow(RangeError)
+    expect(stdinEnd(PROVIDER_STDIN_END_GRACE_MAX_MS)).not.toThrow()
+    expect(stdinEnd(PROVIDER_STDIN_END_GRACE_MAX_MS + 1)).toThrow(RangeError)
     expect(sigterm(PROVIDER_SIGTERM_GRACE_MS)).not.toThrow()
     expect(sigterm(PROVIDER_SIGTERM_GRACE_MS + 1)).toThrow(RangeError)
   })
@@ -139,8 +141,22 @@ describe('structured provider supervision', () => {
       cwd: '/work/repo',
       detached: false,
       supervised: false,
-      groupReportStdio: []
+      groupReportStdio: [],
+      stopBudgetMs: 0
     })
+  })
+
+  it('budgets only the spawn that requests a longer stdin grace', () => {
+    expect(createProviderSpawnSpec(launch, {}, 'linux').stopBudgetMs).toBe(5_500)
+    const extended = createProviderSpawnSpec(launch, {}, 'linux', {
+      stdinEndGraceMs: 3_000,
+      forwardOutputEnd: true
+    })
+    expect(extended.stopBudgetMs).toBe(7_500)
+    expect(
+      JSON.parse(Buffer.from(extended.env.ORCA_PROVIDER_SUPERVISOR_SPEC!, 'base64').toString())
+    ).toMatchObject({ stdinEndGraceMs: 3_000, forwardOutputEnd: true })
+    expect(createProviderSpawnSpec(launch, {}, 'darwin').stopBudgetMs).toBe(5_500)
   })
 
   it.each(['win32', 'darwin', 'linux'] as const)(

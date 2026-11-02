@@ -36,6 +36,7 @@ export type JsonlRpcSessionLifecycleOptions = {
   beforeClose?: () => void
   canCloseOnFailure?: () => boolean
   onExitObserved?: (at: number) => void
+  afterFinalDrain?: () => void
   failure?: (error: Error, cause: Error) => SubmissionRejectionFact
 }
 
@@ -55,6 +56,10 @@ export class JsonlRpcSessionLifecycle {
 
   get closeRequested(): boolean {
     return this.requestedClose
+  }
+
+  get exitPublished(): boolean {
+    return this.publishedExit
   }
 
   async close(requested = true): Promise<ProviderProcessCloseResult> {
@@ -163,6 +168,7 @@ export class JsonlRpcSessionLifecycle {
       ])
     } finally {
       clearTimeout(timer)
+      this.options.afterFinalDrain?.()
     }
     this.options.onLifecycle({
       type: 'ended',

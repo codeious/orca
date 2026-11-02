@@ -3,7 +3,6 @@ import { spawnProcess } from '@orca/process-host'
 import { RetryableProcessExitProof } from '@orca/process-host/retryable-process-exit-proof'
 import type { ProviderProcessLaunch } from './provider-process-launch'
 import {
-  PROVIDER_SUPERVISOR_MAX_STOP_MS,
   createProviderSpawnSpec,
   type ProviderSupervisorLifetime
 } from './provider-process-supervisor'
@@ -43,6 +42,8 @@ type ManagedProviderProcessOptions = {
   acceptClose?: (result: ProviderProcessCloseResult) => boolean
   /** Defaults to `session`; a one-shot's stdin end completes its request instead of stopping it. */
   lifetime?: ProviderSupervisorLifetime
+  stdinEndGraceMs?: number
+  forwardOutputEnd?: boolean
   onOutput?: () => void
   /** Each stderr line, `cut` past `stderrLineMaxChars`; true withholds it from the tail. */
   onStderrLine?: (line: string, cut: boolean) => boolean
@@ -86,12 +87,16 @@ export function spawnManagedProviderProcess(
   const spec = createProviderSpawnSpec(launch, options.inheritedEnv ?? process.env, platform, {
     // Owner death must request the same close as an explicit provider close.
     closeRequest: closePolicy(true).signalSupervisorOnClose ? 'stdin-end-and-sigterm' : 'stdin-end',
-    ...(options.lifetime ? { lifetime: options.lifetime } : {})
+    ...(options.lifetime ? { lifetime: options.lifetime } : {}),
+    ...(options.stdinEndGraceMs !== undefined ? { stdinEndGraceMs: options.stdinEndGraceMs } : {}),
+    ...(options.forwardOutputEnd ? { forwardOutputEnd: true } : {})
   })
-  const policy = closePolicy(spec.supervised)
-  if (spec.supervised && !(policy.gracefulExitMs >= PROVIDER_SUPERVISOR_MAX_STOP_MS)) {
+  const policy = options.policy
+    ? closePolicy(spec.supervised)
+    : rootOnlyProviderClosePolicy(spec.supervised, spec.stopBudgetMs)
+  if (spec.supervised && !(policy.gracefulExitMs >= spec.stopBudgetMs)) {
     throw new RangeError(
-      `Supervised provider graceful exit must wait at least ${PROVIDER_SUPERVISOR_MAX_STOP_MS} ms; received ${policy.gracefulExitMs} ms`
+      `Supervised provider graceful exit must wait at least ${spec.stopBudgetMs} ms; received ${policy.gracefulExitMs} ms`
     )
   }
   const child = (options.spawnImpl ?? spawnProcess)({

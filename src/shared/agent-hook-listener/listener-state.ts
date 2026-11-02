@@ -17,6 +17,7 @@ import type { CodexSubagentRoster } from '../codex-subagent-roster'
 import type { CodexSubagentTranscriptState } from '../codex-subagent-transcript'
 import type { MuseSessionLogState } from '../muse-session-log'
 import type { AgentHookEventPayload, ToolSnapshot } from './listener-event'
+import { ProviderHookStateSlots } from './provider-hook-state-slots'
 import {
   deletePaneScopedCacheEntry,
   deletePaneScopedSetEntry,
@@ -33,6 +34,7 @@ import {
 
 /** Per-listener-instance caches needing per-PTY teardown; Orca's main process and the relay each get their own, never shared. */
 export type HookListenerState = {
+  providerState: ProviderHookStateSlots
   warnedVersions: Set<string>
   warnedEnvs: Set<string>
   lastPromptByPaneKey: Map<string, string>
@@ -124,7 +126,9 @@ export function createHookListenerState(
   options: AgentStatusLegacyAdapterOptions = {}
 ): HookListenerState {
   const adapter = createAgentStatusLegacyAdapter(options)
+  const providerState = new ProviderHookStateSlots()
   const state: HookListenerState = {
+    providerState,
     warnedVersions: new Set(),
     warnedEnvs: new Set(),
     lastPromptByPaneKey: new Map(),
@@ -139,9 +143,9 @@ export function createHookListenerState(
     claudeUnconfirmedRestoredStatusPaneKeys: new Set(),
     claudeRunningNonAgentTaskPaneKeys: new Set(),
     claudeActiveSessionCronPaneKeys: new Set(),
-    claudeLaunchedBackgroundTasksByPaneKey: new Map(),
+    claudeLaunchedBackgroundTasksByPaneKey: providerState.createMap(true),
     claudeConsumedCompactPromptIdByPaneKey: new Map(),
-    claudeSessionOwnerByPaneKey: new Map(),
+    claudeSessionOwnerByPaneKey: providerState.createMap(true),
     hookRootAttempts: new Map(),
     codexSubagentRosterByPaneKey: new Map(),
     codexSubagentTranscriptByPaneKey: new Map(),
@@ -220,6 +224,7 @@ export function seedLegacyAgentStatusForTests(
 }
 
 export function clearPaneCacheState(state: HookListenerState, paneKey: string): void {
+  state.providerState.clearPane(paneKey)
   deletePaneScopedCacheEntry(state.lastPromptByPaneKey, paneKey)
   deletePaneScopedCacheEntry(state.lastToolByPaneKey, paneKey)
   deletePaneScopedCacheEntry(state.jcodeTurnPromptByPaneKey, paneKey)
@@ -238,8 +243,6 @@ export function clearPaneCacheState(state: HookListenerState, paneKey: string): 
   state.claudeUnconfirmedRestoredStatusPaneKeys.delete(paneKey)
   state.claudeRunningNonAgentTaskPaneKeys.delete(paneKey)
   state.claudeActiveSessionCronPaneKeys.delete(paneKey)
-  state.claudeLaunchedBackgroundTasksByPaneKey.delete(paneKey)
-  state.claudeSessionOwnerByPaneKey.delete(paneKey)
   state.codexSubagentRosterByPaneKey.delete(paneKey)
   state.codexSubagentTranscriptByPaneKey.delete(paneKey)
   state.codexLeadStateByPaneKey.delete(paneKey)
@@ -264,6 +267,7 @@ export function movePaneCacheState(
   if (fromPaneKey === toPaneKey) {
     return
   }
+  state.providerState.movePane(fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.lastPromptByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.lastToolByPaneKey, fromPaneKey, toPaneKey)
   moveLegacyAgentStatuses(state, fromPaneKey, toPaneKey)
@@ -277,8 +281,6 @@ export function movePaneCacheState(
   movePaneScopedSetEntries(state.claudeUnconfirmedRestoredStatusPaneKeys, fromPaneKey, toPaneKey)
   movePaneScopedSetEntries(state.claudeRunningNonAgentTaskPaneKeys, fromPaneKey, toPaneKey)
   movePaneScopedSetEntries(state.claudeActiveSessionCronPaneKeys, fromPaneKey, toPaneKey)
-  movePaneScopedMapEntries(state.claudeLaunchedBackgroundTasksByPaneKey, fromPaneKey, toPaneKey)
-  movePaneScopedMapEntries(state.claudeSessionOwnerByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.codexSubagentRosterByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.codexSubagentTranscriptByPaneKey, fromPaneKey, toPaneKey)
   movePaneScopedMapEntries(state.codexLeadStateByPaneKey, fromPaneKey, toPaneKey)
@@ -306,6 +308,7 @@ export function clearPaneTurnCacheState(state: HookListenerState, paneKey: strin
 }
 
 export function clearAllListenerCaches(state: HookListenerState): void {
+  state.providerState.clearAll()
   state.lastPromptByPaneKey.clear()
   state.lastToolByPaneKey.clear()
   clearLegacyAgentStatuses(state)
@@ -321,8 +324,6 @@ export function clearAllListenerCaches(state: HookListenerState): void {
   state.claudeUnconfirmedRestoredStatusPaneKeys.clear()
   state.claudeRunningNonAgentTaskPaneKeys.clear()
   state.claudeActiveSessionCronPaneKeys.clear()
-  state.claudeLaunchedBackgroundTasksByPaneKey.clear()
-  state.claudeSessionOwnerByPaneKey.clear()
   state.codexSubagentRosterByPaneKey.clear()
   state.codexSubagentTranscriptByPaneKey.clear()
   state.codexLeadStateByPaneKey.clear()

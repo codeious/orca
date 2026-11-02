@@ -44,9 +44,12 @@ export const ROOT_ONLY_GRACEFUL_EXIT_MS = 1_500
 const ROOT_ONLY_FORCED_EXIT_MS = 1_000
 
 /** Providers without their own reaper must allow the supervisor its full stop before fallback. */
-export function rootOnlyProviderClosePolicy(supervised: boolean): ProviderProcessClosePolicy {
+export function rootOnlyProviderClosePolicy(
+  supervised: boolean,
+  stopBudgetMs = PROVIDER_SUPERVISOR_MAX_STOP_MS
+): ProviderProcessClosePolicy {
   return {
-    gracefulExitMs: supervised ? PROVIDER_SUPERVISOR_MAX_STOP_MS : ROOT_ONLY_GRACEFUL_EXIT_MS,
+    gracefulExitMs: supervised ? stopBudgetMs : ROOT_ONLY_GRACEFUL_EXIT_MS,
     forcedExitMs: ROOT_ONLY_FORCED_EXIT_MS
   }
 }
