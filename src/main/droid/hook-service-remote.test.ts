@@ -24,6 +24,7 @@ describe('DroidHookService.installRemote', () => {
     const expectedCommand = getDroidManagedCommand(SCRIPT_PATH, 'posix')
     for (const eventName of [
       'SessionStart',
+      'SessionEnd',
       'UserPromptSubmit',
       'Stop',
       'SubagentStop',

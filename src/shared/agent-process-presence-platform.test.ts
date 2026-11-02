@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { readAgentProcess } from './agent-process-presence-probe'
+import { readAgentProcess, probeAgentProcessPresence } from './agent-process-presence-probe'
+import { normalizeHookPayload } from './agent-hook-listener'
+import { createHookListenerState } from './agent-hook-listener/listener-state'
+import { makePaneKey } from './stable-pane-id'
 
 const run = vi.hoisted(() => vi.fn())
 const read = vi.hoisted(() => vi.fn())
@@ -15,6 +18,32 @@ afterEach(() => {
 })
 
 describe('platform process evidence', () => {
+  it('verifies a WSL Droid capture inside Linux, never on the Windows client', async () => {
+    const event = normalizeHookPayload(
+      createHookListenerState(),
+      'droid',
+      {
+        paneKey: makePaneKey('tab-1', '11111111-1111-4111-8111-111111111111'),
+        env: 'production',
+        version: '1',
+        agentProcess: { pid: 4242, platform: 'linux', startTime: 'boot-id:100' },
+        payload: { hook_event_name: 'UserPromptSubmit', session_id: 'lead', prompt: 'hello' }
+      },
+      'production'
+    )
+    expect(event?.agentPresence?.process).toBeDefined()
+    platform('linux')
+    const fields = ['S', ...Array(18).fill('0'), '100']
+    read
+      .mockResolvedValueOnce(`4242 (droid) ${fields.join(' ')}`)
+      .mockResolvedValueOnce('boot-id\n')
+    expect(await probeAgentProcessPresence(event?.agentPresence?.process)).toBe('live')
+    read.mockClear()
+    platform('win32')
+    expect(await probeAgentProcessPresence(event?.agentPresence?.process)).toBe('unverifiable')
+    expect(read).not.toHaveBeenCalled()
+    expect(run).not.toHaveBeenCalled()
+  })
   it('requires Linux process-file absence rather than an unreadable boot identity', async () => {
     platform('linux')
     read.mockRejectedValueOnce(Object.assign(new Error('gone'), { code: 'ENOENT' }))
