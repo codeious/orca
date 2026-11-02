@@ -11,6 +11,7 @@ import { supportsCodexStructuredLocation } from '../codex/codex-structured-locat
 import { supportsClaudeStructuredLocation } from '../claude/structured/launch/claude-structured-location-support'
 import { supportsAcpStructuredLocation } from '../acp/acp-structured-location-support'
 import { PI_RPC_RUNTIME_METADATA } from '../pi/rpc-runtime-metadata'
+import { DROID_RUNTIME_METADATA } from '../droid/droid-runtime-metadata'
 import { getClaudeProfileRouter } from '../claude-accounts/claude-profile-installed-router'
 import {
   resolveStructuredClaudeAccountHomePath,
@@ -31,7 +32,7 @@ import type {
 } from './structured-agent-runtime-registration-types'
 
 export type StructuredAgentRuntimeCatalogEntry =
-  | { kind: 'pi' | 'codex' | 'claude'; metadata: StructuredAgentRuntimeMetadata }
+  | { kind: 'pi' | 'droid' | 'codex' | 'claude'; metadata: StructuredAgentRuntimeMetadata }
   | { kind: 'acp'; metadata: StructuredAgentRuntimeMetadata; spec: AcpLaunchSpec }
 
 // Why the host's data folder: a start runs Orca's installed release before PATH.
@@ -111,6 +112,7 @@ async function resolveCodexAccountHomePath(
 // One roster supplies both metadata readers and the host's synchronous adapter factories.
 export const STRUCTURED_AGENT_RUNTIME_CATALOG: readonly StructuredAgentRuntimeCatalogEntry[] = [
   { kind: 'pi', metadata: PI_RPC_RUNTIME_METADATA },
+  { kind: 'droid', metadata: DROID_RUNTIME_METADATA },
   {
     kind: 'codex',
     metadata: {

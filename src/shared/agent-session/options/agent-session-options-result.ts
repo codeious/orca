@@ -49,6 +49,8 @@ export type AgentSessionOptionsResult = {
     reportedEffort?: string
     /** Canonical preference for the next turn. Explicit false is meaningful. */
     fastMode?: boolean
+    /** Provider-reported planning mode; absent when the host does not support it. */
+    planMode?: boolean
     /** Next-turn service tier id where the model lists `serviceTiers`; `default` is standard. */
     serviceTier?: string
     /** The permission mode a start runs now; absent from a host or agent with no picker. */
