@@ -1,0 +1,77 @@
+mobile/src/session/mobile-structured-composer-command.test.ts
+  s_767cf5531d83f7::t_eefa6308f4daea 245-257
+mobile/src/session/mobile-structured-composer-command.ts
+  s_767cf5531d83f7::t_1c89dcca229dab 71-102
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_767cf5531d83f7::t_a2eaf2b343ae1c 135-137
+src/main/droid/droid-compaction-summary.ts
+  s_767cf5531d83f7::t_01bae471cf7bae 1-64
+src/main/droid/droid-compaction.ts
+  s_767cf5531d83f7::t_34489fa8911edb 1-76
+src/main/droid/droid-configured-default.test.ts
+  s_767cf5531d83f7::t_01d881214780df 205,211-219
+src/main/droid/droid-rewind-target.ts
+  s_767cf5531d83f7::t_1d5631edef977a 1-15
+src/main/droid/droid-session-adapter.test.ts
+  s_767cf5531d83f7::t_4ad5995147ef1b 421-426
+src/main/droid/droid-session-adapter.ts
+  s_767cf5531d83f7::t_2463a96d2cd160 19-23,87-135
+src/main/droid/droid-session-commands.test.ts
+  s_767cf5531d83f7::t_b0ac1b09fe2a0b 1-122
+src/main/droid/droid-session-continuation.ts
+  s_767cf5531d83f7::t_81b62f364ab52d 1-50
+src/main/droid/droid-session-file.ts
+  s_767cf5531d83f7::t_afcbaeeab88939 5,12,55-93
+src/main/droid/droid-text-command.ts
+  s_767cf5531d83f7::t_a746351ce89b82 1-48
+src/main/native-chat/agent-session-wire/structured-agent-definition.ts
+  s_767cf5531d83f7::t_15baf41b712032 9-12
+src/main/native-chat/agent-session-wire/structured-agent-session-host-command.test.ts
+  s_767cf5531d83f7::t_91fc21d43c7833 1-67
+src/main/native-chat/agent-session-wire/structured-agent-session-host-command.ts
+  s_767cf5531d83f7::t_5004d18e353ba4 1-94
+src/main/native-chat/agent-session-wire/structured-agent-session-rewind.ts
+  s_767cf5531d83f7::t_c6e7f89250a028 46-48,58,115-117,226
+src/main/native-chat/agent-session-wire/structured-rewind-cut.ts
+  s_767cf5531d83f7::t_165de4973ab681 16,34-39,49-57,70
+src/main/runtime/rpc/methods/structured-agent-session-host-command.test.ts
+  s_767cf5531d83f7::t_09d52b17761ed6 1-57
+src/main/runtime/rpc/methods/structured-agent-session-options-read.ts
+  s_767cf5531d83f7::t_ff1dea0ef3591e 25,47-51
+src/main/runtime/rpc/methods/structured-agent-session.ts
+  s_767cf5531d83f7::t_914bf9843ee6ab 2-5,80,125-133,139-140,212-221,225-226,228,255-261
+src/renderer/src/components/native-chat/native-chat-structured-alternate-send.test.tsx
+  s_767cf5531d83f7::t_14f15aea0c20cb 100-105
+src/renderer/src/components/native-chat/structured-session-provider-command-write.ts
+  s_767cf5531d83f7::t_7862b5f9aece1b 1-42
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.ts
+  s_767cf5531d83f7::t_f4fc2bcf5f5101 14,32,94-105,143
+src/renderer/src/lib/open-structured-chat-fork.ts
+  s_767cf5531d83f7::t_adbff598cd1fe6 1-47
+src/shared/agent-session/agent-session-host-command.ts
+  s_767cf5531d83f7::t_8c048923afbbf8 1-9
+src/shared/agent-session/view/structured-agent-session-composer.ts
+  s_767cf5531d83f7::t_bc3ab08c2a5ab7 1-4,54-61,117-118,121-127,129,134,148-149,153-157,162-167,169,175-176,178,201-202,233-250
+src/shared/agent-session/view/structured-provider-commands.test.ts
+  s_767cf5531d83f7::t_0a2f7b68f5e179 1-61
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_767cf5531d83f7::t_731561a3842320 597-600,785,793
+src/shared/rpc-contract/structured-agent-session-host-command-params.ts
+  s_767cf5531d83f7::t_66691729a33262 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "eb0f2966089b381c1d0882eb5126649e43d6b5ab",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
