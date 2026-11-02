@@ -27,6 +27,8 @@ import type { StructuredAgentSessionConversations } from './structured-agent-ses
 import type * as conversation from './structured-agent-session-host-delivery'
 import type { StructuredAgentSessionHostRuntimeState } from './structured-agent-session-host-runtime-state'
 import type { wireStructuredAgentSessionQueuedMessages } from './structured-agent-session-queued-wiring'
+import { bindMcpSignInHostCommand } from './structured-agent-session-mcp-sign-in'
+import type { AgentSessionMcpSignInForwarding } from './agent-session-mcp-sign-in-forwarding'
 
 type Inputs = {
   deps: StructuredAgentSessionHostDeps
@@ -87,17 +89,19 @@ export function createStructuredAgentSessionHostMutationContext(
 /** Resolve context per call so moved maps/fences cannot become stale closures. */
 export function structuredAgentSessionMutationDelegates(
   context: () => StructuredAgentSessionMutationContext,
-  attachContext: () => StructuredAgentSessionAttachContext
+  attachContext: () => StructuredAgentSessionAttachContext,
+  forwarding: AgentSessionMcpSignInForwarding
 ) {
   return {
     copyConversation: (
       caller: StructuredAgentSessionCaller,
       params: { envelope: Parameters<typeof copyStructuredAgentSessionConversation>[2] }
     ) => copyStructuredAgentSessionConversation(context(), caller, params.envelope),
-    hostCommand: (
-      caller: StructuredAgentSessionCaller,
-      params: Parameters<typeof runStructuredAgentSessionHostCommand>[2]
-    ) => runStructuredAgentSessionHostCommand(context(), caller, params),
+    hostCommand: bindMcpSignInHostCommand(
+      forwarding,
+      (caller, params) => runStructuredAgentSessionHostCommand(context(), caller, params),
+      (url) => context().deps.openMcpSignIn?.(url) ?? false
+    ),
     cancel: (
       caller: StructuredAgentSessionCaller,
       params: Parameters<typeof cancelStructuredAgentSessionTurn>[2]

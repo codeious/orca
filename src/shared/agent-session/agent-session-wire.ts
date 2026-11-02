@@ -153,6 +153,8 @@ export type AgentSessionSubscribeEvent =
   | ({
       type: 'batch'
       sessionId: string
+      /** Caller-only browser request, consumed in main before recording or rendering. */
+      mcpSignInOpen?: { requestId: string; url: string }
       batch: AgentSessionJournalBatch
       /** Optional so mixed-version cursors retain the ownership fence. */
       fence?: number

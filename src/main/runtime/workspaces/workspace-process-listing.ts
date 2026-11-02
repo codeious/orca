@@ -230,6 +230,7 @@ export abstract class OrcaRuntimeWithGetWorktreePs extends OrcaRuntimeWithWorktr
       )
     )
     await installStructuredAgentSessionHost({
+      openMcpSignIn: this.openMcpSignInFn ?? undefined,
       stateDirectory: getProfileUserDataPath(),
       legacySessionTabIds: this.legacyStructuredSessionTabIds,
       hostId: LOCAL_EXECUTION_HOST_ID,

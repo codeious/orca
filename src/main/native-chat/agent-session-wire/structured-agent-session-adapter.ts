@@ -273,6 +273,7 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
   /** Undefined preserves the client catalog when the provider reports none. */
   readCommands?(sessionId: string): AgentSessionSlashCommand[] | undefined
   hostCommand?(input: {
+    openMcpSignIn?: (url: string) => boolean | Promise<boolean>
     sessionId: string
     fence: number
     name: string

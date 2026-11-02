@@ -153,7 +153,7 @@ export function registerRuntimeEnvironmentHandlers(store: Store): void {
     getUserDataPath,
     invalidateTransport: invalidateRuntimeEnvironmentTransport
   })
-  registerRuntimeEnvironmentPassiveHandlers(getUserDataPath)
+  registerRuntimeEnvironmentPassiveHandlers(getUserDataPath, remoteRuntimeSubscriptions)
   setManagedOrcadPairingRepairedListener(invalidateRuntimeEnvironmentTransport)
   setRefusedPairingHandlers({
     recover: (environmentId) => recoverRefusedManagedPairing(getUserDataPath(), environmentId),

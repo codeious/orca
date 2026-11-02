@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { DroidMcpSignIn } from './droid-mcp-sign-in'
 import { waitForPromiseWithSignal } from '../../shared/abort-signal-reason'
 import { JsonlRpcSessionLifecycle } from '../jsonl-rpc/session-lifecycle'
 import { JsonlRpcTimelineLane } from '../jsonl-rpc/timeline-lane'
@@ -49,6 +50,7 @@ const START_TIMEOUT_MS = 120_000
 
 /** One child owns its transport, turns and timeline, including shutdown retries. */
 export class DroidSession {
+  readonly mcpSignIn = new DroidMcpSignIn()
   readonly connection: DroidConnection
   readonly lane: JsonlRpcTimelineLane
   readonly turns: DroidTurns
@@ -116,6 +118,7 @@ export class DroidSession {
       onLifecycle: deps.onLifecycle,
       onSettled: deps.onSettled,
       endWork: () => {
+        this.mcpSignIn.close()
         this.prompts.clear()
         this.turns.end()
       }
@@ -287,6 +290,7 @@ export class DroidSession {
       return
     }
     try {
+      this.mcpSignIn.receive(params)
       this.context.receive(params)
       this.turns.receive(params)
     } catch (error) {

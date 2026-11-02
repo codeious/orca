@@ -8,6 +8,48 @@ import {
 } from './structured-agent-session-host-test-harness'
 
 describe('provider host commands', () => {
+  it('forwards sign-in ephemerally to its initiating reader without journaling or replaying the URL', async () => {
+    const { host } = hostTestState()
+    const link = 'https://auth.example.invalid/?state=not-in-journal'
+    const identity = { callerKey: CALLER.callerKey, connectionId: 'connection' }
+    const fields = { name: 'mcp', argument: 'sign-in sample' }
+    const params = { ...fields, envelope: envelope('agentSession.hostCommand', fields) }
+    host.deps.adapter.readCommands = () => [{ name: 'mcp', kind: 'command', hostCommand: true }]
+    const run = vi.fn<NonNullable<typeof host.deps.adapter.hostCommand>>(async (input) => {
+      expect(await input.openMcpSignIn?.(link)).toBe(true)
+      return { text: 'sample: signed-in' }
+    })
+    host.deps.adapter.hostCommand = run
+    await attach()
+    const transient = vi.fn()
+    const dispose = await host.subscribe({
+      id: 'reader',
+      sessionId: params.envelope.sessionId,
+      mcpSignInCaller: identity,
+      emit: (event) => {
+        if (event.type === 'batch' && event.mcpSignInOpen) {
+          transient(event.mcpSignInOpen.url)
+          host.mcpSignIn.acknowledge(
+            event.sessionId,
+            event.mcpSignInOpen.requestId,
+            identity.connectionId,
+            identity.callerKey,
+            true
+          )
+        }
+      }
+    })
+    const caller = { ...CALLER, mcpSignInCaller: identity }
+    expect(await host.hostCommand(caller, params)).toMatchObject({ ok: true })
+    expect(await host.hostCommand(caller, params)).toMatchObject({ ok: true, replayed: true })
+    expect(run).toHaveBeenCalledOnce()
+    expect(transient).toHaveBeenCalledExactlyOnceWith(link)
+    expect(JSON.stringify(await host.journalSnapshot(params.envelope.sessionId))).not.toContain(
+      link
+    )
+    dispose()
+  })
+
   it('executes once, replays the same reply, and never submits a model message', async () => {
     const { host, dispatch } = hostTestState()
     const run = vi.fn(async () => ({ text: 'Context report' }))

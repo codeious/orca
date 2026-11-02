@@ -3,6 +3,8 @@ import {
   runtimeEnvironmentCallFailure
 } from './runtime-environment-call-failure'
 import { desktopChatCreationHistory } from '../../runtime/desktop-chat-creation-history'
+import { forwardMcpSignInRequest } from './runtime-environment-mcp-sign-in-routing'
+import type { RetainedRemoteRuntimeSubscription } from './runtime-environment-subscription-handlers'
 import { ipcMain } from 'electron'
 import {
   addEnvironmentFromPairingCode,
@@ -178,9 +180,12 @@ export function registerRuntimeEnvironmentConnectivityHandlers({
   )
 }
 
-export function registerRuntimeEnvironmentPassiveHandlers(getUserDataPath: () => string): void {
+export function registerRuntimeEnvironmentPassiveHandlers(
+  getUserDataPath: () => string,
+  remoteRuntimeSubscriptions: ReadonlyMap<string, RetainedRemoteRuntimeSubscription> = new Map()
+): void {
   registerPassiveStatusHandler(getUserDataPath)
-  registerPassiveCallHandler(getUserDataPath)
+  registerPassiveCallHandler(getUserDataPath, remoteRuntimeSubscriptions)
 }
 
 function closeLegacySelectorTransport(selector: string, environmentId: string): void {
@@ -215,11 +220,14 @@ function registerPassiveStatusHandler(getUserDataPath: () => string): void {
   )
 }
 
-function registerPassiveCallHandler(getUserDataPath: () => string): void {
+function registerPassiveCallHandler(
+  getUserDataPath: () => string,
+  subscriptions: ReadonlyMap<string, RetainedRemoteRuntimeSubscription> = new Map()
+): void {
   ipcMain.handle(
     'runtimeEnvironments:call',
     async (
-      _event,
+      event,
       args: {
         selector: string
         method: string
@@ -235,6 +243,10 @@ function registerPassiveCallHandler(getUserDataPath: () => string): void {
       }
       if (isHostSpawnFencedForWslMoveUndo(environment.id, args.method)) {
         return wslMoveUndoSpawnFencedResponse(environment, args.method)
+      }
+      const forwarded = forwardMcpSignInRequest(environment, subscriptions, event.sender.id, args)
+      if (forwarded) {
+        return forwarded
       }
       void desktopChatCreationHistory(getUserDataPath()).recordCreate(
         environment.id,

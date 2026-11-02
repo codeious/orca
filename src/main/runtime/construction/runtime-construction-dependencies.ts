@@ -23,6 +23,7 @@ import type { WorkspaceSleepPlatform } from '../workspaces/workspace-sleep-platf
 import type { SessionSearchSettingsApply } from '../runtime-session-search-settings'
 
 export type RuntimeConstructionDependencies = {
+  openMcpSignIn?: (url: string) => boolean | Promise<boolean>
   getSetupTerminalTitle?: () => string
   getLocalProvider?: () => IPtyProvider
   prepareClaudeAuth?: PrepareClaudeAuth
