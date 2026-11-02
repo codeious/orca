@@ -1,6 +1,12 @@
 import { readHookAgentProcess } from './agent-process-presence'
 import { isInheritedHookStatus } from './agent-hook-presence-transition'
-import { normalizeAgentStatusPayload, type AgentMainAgentStatus } from './agent-status-types'
+import { normalizeAgentStatusPayload } from './agent-status-types'
+import {
+  CLAUDE_EXIT_SESSION_END_REASONS,
+  normalizedHookHasExplicitPrompt,
+  type HookNormalizationOptions
+} from './agent-hook-listener/hook-normalization-policy'
+import { prepareProviderHookSession } from './agent-hook-listener/provider-hook-session'
 import type { AgentHookSource } from './agent-hook-relay'
 import {
   canAcceptClaudeCompactCompletion,
@@ -18,7 +24,6 @@ import type { HookListenerState } from './agent-hook-listener/listener-state'
 import { extractPromptText } from './agent-hook-listener/prompt-fields'
 import { normalizeProviderEvent } from './agent-hook-listener/provider-dispatch'
 import { hasExplicitUserPrompt } from './agent-hook-listener/provider-event-routing'
-import { hasExplicitAmpPrompt } from './agent-hook-listener/providers/amp-events'
 import {
   isOpenCodeSharedServerPost,
   resolveOpenCodeSharedServerEnvelope,
@@ -32,29 +37,12 @@ import {
   readPaneSessionContext
 } from './agent-hook-listener/pane-provider-session'
 /** Canonical transport-agnostic normalization entry shared by main and relay listeners. */
-const CLAUDE_EXIT_SESSION_END_REASONS = new Set([
-  'prompt_input_exit',
-  'logout',
-  'other',
-  'bypass_permissions_disabled'
-])
-
 export function normalizeHookPayload(
   state: HookListenerState,
   source: AgentHookSource,
   body: unknown,
   expectedEnv: string,
-  options: {
-    deferCompactOwnershipToClient?: boolean
-    previousOpenCodeMainAgent?: AgentMainAgentStatus
-    bindingStatusByPaneKey?: ReadonlyMap<string, AgentHookEventPayload>
-    admitOpenCodeTui?: (
-      identity: Pick<
-        AgentHookEventPayload,
-        'paneKey' | 'launchToken' | 'hookEventName' | 'hasExplicitPrompt'
-      >
-    ) => boolean | 'preserve-poster'
-  } = {}
+  options: HookNormalizationOptions = {}
 ): AgentHookEventPayload | null {
   const envelope = parseHookEnvelope(state, source, body, expectedEnv)
   if (!envelope) {
@@ -200,6 +188,7 @@ export function normalizeHookPayload(
     : undefined
   const sessionEndReason = readString(hookPayloadRecord, 'reason')
   if (
+    source === 'claude' &&
     eventName === 'SessionEnd' &&
     agentPresence &&
     !readString(hookPayloadRecord, 'agent_id') &&
@@ -228,7 +217,27 @@ export function normalizeHookPayload(
   }
 
   const promptText = extractedPrompt.text
-  const dispatched = normalizeProviderEvent({
+  const sessionAdmission = prepareProviderHookSession(source, {
+    state,
+    paneKey,
+    eventName,
+    hookPayload: hookPayloadRecord,
+    promptText,
+    sender: agentProcess,
+    previous: (options.bindingStatusByPaneKey ?? state.lastStatusByPaneKey).get(paneKey),
+    base: {
+      launchToken,
+      tabId,
+      worktreeId,
+      agentPresence,
+      providerSession: providerSession ?? undefined
+    }
+  })
+  if (sessionAdmission?.kind === 'handled') {
+    return sessionAdmission.event
+  }
+  const sessionNormalization = sessionAdmission?.normalization
+  const dispatchInput = {
     state,
     source,
     eventName,
@@ -237,8 +246,13 @@ export function normalizeHookPayload(
     hookPayload: hookPayloadRecord,
     envelope: record,
     extractedPrompt,
-    previousOpenCodeMainAgent: options.previousOpenCodeMainAgent
-  })
+    previousOpenCodeMainAgent: options.previousOpenCodeMainAgent,
+    sessionNormalization
+  }
+  const dispatched = normalizeProviderEvent(dispatchInput)
+  const rowProviderSession = sessionNormalization
+    ? sessionNormalization.providerSession
+    : providerSession
   const providerSessionOnly =
     (source === 'pi' || source === 'prime-agent' || source === 'jcode') &&
     eventName === 'session_start' &&
@@ -266,18 +280,7 @@ export function normalizeHookPayload(
     // Normalization is transport-agnostic; only ingestRemote knows the mux identity to stamp.
     connectionId: null,
     ...(restoredUnconfirmed ? { restoredUnconfirmed: true } : {}),
-    hasExplicitPrompt:
-      source === 'amp'
-        ? hasExplicitAmpPrompt(eventName, promptText, hookPayloadRecord)
-          ? true
-          : undefined
-        : hasExplicitUserPrompt(
-            source,
-            dispatched.eventName,
-            extractedPrompt,
-            dispatched.resolvedPromptText,
-            dispatched.hasTranscriptPromptEvidence
-          ),
+    hasExplicitPrompt: normalizedHookHasExplicitPrompt(dispatchInput, dispatched),
     promptInteractionKey: dispatched.promptInteractionKey,
     hookEventName: typeof dispatched.eventName === 'string' ? dispatched.eventName : undefined,
     providerPromptId:
@@ -296,7 +299,7 @@ export function normalizeHookPayload(
           claudeRunningNonAgentTask: claudeRowHasUnlistedLiveWork(state, paneKey)
         }
       : {}),
-    ...(providerSession ? { providerSession } : {}),
+    ...(rowProviderSession ? { providerSession: rowProviderSession } : {}),
     ...(statusAdmissionSession ? { statusAdmissionSession } : {}),
     ...(providerSessionOnly ? { providerSessionOnly: true } : {}),
     ...dispatched.hostTurnSignals,

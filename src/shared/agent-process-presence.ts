@@ -1,6 +1,7 @@
 import { AGENT_TYPE_MAX_LENGTH } from './agent-status-field-normalization'
 import type { AgentType } from './agent-status-types'
 import { extractAgentProviderSession } from './agent-session/lifecycle/agent-session-resume'
+import { PROVIDER_HOOK_CAPABILITIES } from './agent-hook-listener/provider-hook-capabilities'
 
 export type AgentProcessIdentity = {
   pid: number
@@ -53,12 +54,14 @@ export function readAgentProcessIdentity(value: unknown): AgentProcessIdentity |
   return { pid, platform, startTime }
 }
 
-// Why: only Claude's hook command captures its agent's process; other hooks cannot speak for liveness.
+// Only providers with command-shell capture can identify their process.
 export function readHookAgentProcess(
   source: string,
   value: unknown
 ): AgentProcessIdentity | undefined {
-  return source === 'claude' ? readAgentProcessIdentity(value) : undefined
+  return PROVIDER_HOOK_CAPABILITIES[source]?.capturesProcessIdentity
+    ? readAgentProcessIdentity(value)
+    : undefined
 }
 
 export function readAgentProcessPresence(value: unknown): AgentProcessPresence | undefined {

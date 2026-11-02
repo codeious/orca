@@ -13,6 +13,8 @@ import {
   type AgentProcessVerdict
 } from '../../../shared/agent-process-presence'
 import { probeAgentProcessPresence } from '../../../shared/agent-process-presence-probe'
+import { AgentProcessExitWatch } from '../../../shared/agent-process-exit-watch'
+import { watchProviderHookExit } from '../../../shared/agent-hook-listener/provider-hook-session'
 import { AgentHookServerLifecycle } from './server-lifecycle'
 
 export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecycle {
@@ -25,6 +27,7 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
     }
   >()
   private readonly claudeContinuations = new ClaudeSessionContinuationTracker()
+  private readonly exitWatch = new AgentProcessExitWatch()
 
   /** A hook proves its sender alive; only another process can challenge the owner. */
   checkAgentPresenceAfterHook(event: AgentHookEventPayload, row: AgentHookEventPayload): void {
@@ -43,6 +46,14 @@ export abstract class AgentHookServerAgentPresence extends AgentHookServerLifecy
         }
       })
     }
+    watchProviderHookExit(this.state, this.exitWatch, event, () =>
+      this.checkAgentPresence(row.paneKey)
+    )
+  }
+
+  override stop(options?: { keepStatus?: boolean }): void {
+    this.exitWatch.stopAll()
+    super.stop(options)
   }
 
   // A live sender means the owner's exit cannot establish pane exit.

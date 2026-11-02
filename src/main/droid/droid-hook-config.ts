@@ -11,6 +11,7 @@ import {
 // SessionStart clears prompt/tool caches on resume before the next user prompt.
 export const DROID_EVENTS = [
   { eventName: 'SessionStart', definition: { hooks: [{ type: 'command', command: '' }] } },
+  { eventName: 'SessionEnd', definition: { hooks: [{ type: 'command', command: '' }] } },
   { eventName: 'UserPromptSubmit', definition: { hooks: [{ type: 'command', command: '' }] } },
   { eventName: 'Stop', definition: { hooks: [{ type: 'command', command: '' }] } },
   // SubagentStop must not count as parent completion.
