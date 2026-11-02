@@ -359,6 +359,8 @@ export type AgentSessionModelOption = {
   label: string
   description?: string
   isDefault: boolean
+  /** Account-defined model; absent on hosts that do not classify catalog rows. */
+  isCustom?: boolean
   defaultEffort?: string
   /** Transient display declaration; null is observed unknown, absence supplies no evidence. */
   declaredDefaultEffort?: string | null

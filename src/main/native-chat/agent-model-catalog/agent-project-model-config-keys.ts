@@ -57,6 +57,27 @@ export function claudeSettingsMayPickModel(text: string): boolean {
 
 const CODEX_MODEL_KEYS = ['model', 'model_reasoning_effort', 'model_provider'] as const
 
+export function droidSettingsMayPickModel(text: string): boolean {
+  try {
+    const settings = record(JSON.parse(text))
+    if (!settings) {
+      return true
+    }
+    const keys = ['model', 'reasoningEffort']
+    if (setsAny(settings, keys)) {
+      return true
+    }
+    const defaults = settings.sessionDefaultSettings
+    if (defaults === undefined) {
+      return false
+    }
+    const nested = record(defaults)
+    return nested === null || setsAny(nested, keys)
+  } catch {
+    return true
+  }
+}
+
 /** Treat malformed TOML and profile-based picks as possible model overrides. */
 export function codexConfigMayPickModel(text: string): boolean {
   let config: Record<string, unknown>

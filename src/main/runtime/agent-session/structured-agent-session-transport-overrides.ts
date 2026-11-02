@@ -7,10 +7,13 @@ import type { AgentCliVersionReader } from '../../agent-cli-version-probe'
 import type { StructuredAgentSessionStartupLimits } from '../../native-chat/agent-session-wire/structured-agent-session-startup-attempt-contract'
 import type { PiRpcSessionDeps } from '../../pi/rpc-session'
 import type { PiRpcSessionAdapterDeps } from '../../pi/rpc-session-adapter'
+import type { DroidSessionDeps } from '../../droid/droid-session'
 
 /** Provider transports are overridden only to drive the runtime against scripted children. */
 export type StructuredAgentSessionTransportOverrides = {
   openPiConnection?: PiRpcSessionDeps['openConnection']
+  openDroidConnection?: DroidSessionDeps['openConnection']
+  readDroidInstallation?: AgentCliVersionReader
   /** Scripted Pi children resolve their launch here, so no test reaches a real Pi binary. */
   resolvePiLaunch?: PiRpcSessionAdapterDeps['resolveLaunch']
   openCodexConnection?: CodexStructuredSessionAdapterDeps['openConnection']

@@ -45,6 +45,7 @@ export function callAcpSession<T>(
 export type AcpResponse = { value: unknown } | { error: Error }
 export type AcpRequestOptions<T = unknown> = {
   timeoutMs?: number | null
+  onId?: (id: string | number) => void
   settle: (response: AcpResponse) => T
 }
 export type AcpPendingResponse = {
