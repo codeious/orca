@@ -26,25 +26,31 @@ export async function readHooksJsonRemote(
   return parseHooksJsonText(body)
 }
 
-/** Atomically replace the remote config without rotating local-style backups. */
+/** Atomically replace the remote config, optionally preserving its previous content. */
 export async function writeHooksJsonRemote(
   sftp: SFTPWrapper,
   remotePath: string,
   config: Record<string, unknown>,
   // JSONC callers can supply text edited in place.
-  options?: { serialized?: string }
+  options?: { serialized?: string; backup?: boolean }
 ): Promise<void> {
   const dir = dirnamePosix(remotePath)
   await mkdirpRemote(sftp, dir)
   const serialized = options?.serialized ?? `${JSON.stringify(config, null, 2)}\n`
-  // Preserve mtime and inode on repeated installs.
-  try {
-    const existing = await readFile(sftp, remotePath)
-    if (existing === serialized) {
-      return
+  const existing = await readFile(sftp, remotePath).catch((err: unknown) => {
+    // Do not replace an unreadable file when its backup is required.
+    if (options?.backup && !isNoEntryError(err)) {
+      throw err
     }
-  } catch {
-    // Retry through the write path after a failed read.
+    return undefined
+  })
+  // Preserve mtime, inode, and the backup on repeated installs.
+  if (existing === serialized) {
+    return
+  }
+  if (options?.backup && existing !== undefined) {
+    // Atomic rename replaces a symlinked backup instead of writing through it.
+    await writeTextFileRemoteAtomic(sftp, `${remotePath}.bak`, existing)
   }
   // Atomic replacement prevents interrupted writes from truncating live settings.
   const tmp = `${dir}/.${Date.now()}-${randomUUID()}.tmp`

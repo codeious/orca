@@ -267,7 +267,10 @@ const PROVIDERS: Provider[] = [
     script: 'droid-hook.cmd',
     stdout: '',
     install: () => new DroidHookService().install(),
-    commands: (home) => readEvent(join(home, '.factory', 'settings.json'), 'UserPromptSubmit'),
+    commands: (home) =>
+      commandsOf(
+        JSON.parse(readFileSync(join(home, '.factory', 'hooks.json'), 'utf8')).UserPromptSubmit
+      ),
     seedStale: (home, stale) =>
       writeHooks(join(home, '.factory', 'settings.json'), {
         UserPromptSubmit: [{ hooks: [{ command: stale }] }]

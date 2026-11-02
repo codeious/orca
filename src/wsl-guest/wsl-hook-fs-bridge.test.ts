@@ -1,8 +1,8 @@
 // POSIX guest paths cannot resolve Windows temp roots; run this Linux-only bridge suite off Windows.
-import { mkdtempSync, rmSync, statSync } from 'node:fs'
+import { mkdtempSync, promises as fs, rmSync, statSync } from 'node:fs'
 import { posix } from 'node:path'
 import { tmpdir } from 'node:os'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { registerWslHookFsHandlers } from './wsl-hook-fs-bridge'
 import type { MethodHandler, RelayDispatcher, RequestContext } from './dispatcher'
@@ -37,6 +37,7 @@ describe.skipIf(process.platform === 'win32')('registerWslHookFsHandlers (WSL fs
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     rmSync(home, { recursive: true, force: true })
   })
 
@@ -54,6 +55,26 @@ describe.skipIf(process.platform === 'win32')('registerWslHookFsHandlers (WSL fs
       content: 'x'
     })
     expect(result).toMatchObject({ ok: false, errno: 'EACCES' })
+  })
+
+  it('allows only reading the organization hook policy outside home', async () => {
+    const path = '/etc/factory/settings.json'
+    const read = vi.spyOn(fs, 'readFile').mockResolvedValueOnce('{"allowManagedHooksOnly":true}')
+    expect(await call(WSL_HOOK_FS_METHODS.readFile, { path })).toEqual({
+      ok: true,
+      content: '{"allowManagedHooksOnly":true}'
+    })
+    expect(read).toHaveBeenCalledWith(path, 'utf8')
+    expect(await call(WSL_HOOK_FS_METHODS.writeFile, { path, content: '{}' })).toMatchObject({
+      ok: false,
+      errno: 'EACCES'
+    })
+    expect(
+      await call(WSL_HOOK_FS_METHODS.readFile, { path: '/etc/factory/other.json' })
+    ).toMatchObject({
+      ok: false,
+      errno: 'EACCES'
+    })
   })
 
   it('refuses a sibling dir that shares home as a string prefix', async () => {
