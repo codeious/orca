@@ -1,0 +1,31 @@
+src/main/acp/acp-dialects/antigravity-dialect.ts
+  s_767cf5531d83f7::t_b80e2fa96d79b3 3,41-44
+src/main/acp/acp-dialects/grok-requests.ts
+  s_767cf5531d83f7::t_26066326f90708 6,32,68-71,111
+src/main/acp/acp-incoming-requests.ts
+  s_767cf5531d83f7::t_f99281961f74a6 1-6,41,52-55,78,99,102-105
+src/main/acp/acp-response-settlement.ts
+  s_767cf5531d83f7::t_0986845b643a12 2-7,23
+src/main/acp/acp-session-setup.ts
+  s_767cf5531d83f7::t_44150cff00af23 2-7,67
+src/main/acp/acp-structured-prompts.ts
+  s_767cf5531d83f7::t_d735997485b419 9,43-46,62
+src/main/acp/acp-timeline-requests.ts
+  s_767cf5531d83f7::t_72acc1dbc4c3ca 5,22,45-48,78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4a3030f32c1acd5f42f71c59b3c5a93184f962ce",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
