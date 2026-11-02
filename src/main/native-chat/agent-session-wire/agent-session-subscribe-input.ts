@@ -3,6 +3,7 @@ import type { AgentSessionSubscribeEvent } from '../../../shared/agent-session/a
 import type { SubscriberFieldState } from './agent-session-subscriber-frame-fields'
 
 export type AgentSessionSubscribeInput = {
+  mcpSignInCaller?: { callerKey: string; connectionId: string }
   commandsOnRequest?: boolean
   id: string
   sessionId: string

@@ -1,5 +1,6 @@
 import { STRUCTURED_AGENT_SESSION_RENDERER_CLIENT_CAPABILITIES } from './agent-session/structured-agent-session-renderer-client-capabilities'
 import { TERMINAL_IMAGE_VIEWER_CAPABILITY } from './terminal-image-viewer-capability'
+import { AGENT_SESSION_MCP_SIGN_IN_OPEN_CLIENT_CAPABILITY } from './agent-session-mcp-sign-in-capability'
 import {
   AGENT_STATUS_RESTORED_UNCONFIRMED_RUNTIME_CAPABILITY,
   BROWSER_CLIENT_HOST_RUNTIME_CAPABILITY,
@@ -13,6 +14,7 @@ import {
 // Electron clients can decode client-hosted page placement; becoming a page
 // host still requires the separate authenticated browser-client lease.
 export const ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES = [
+  AGENT_SESSION_MCP_SIGN_IN_OPEN_CLIENT_CAPABILITY,
   ...NATIVE_REMOTE_RUNTIME_CLIENT_CAPABILITIES,
   TERMINAL_IMAGE_VIEWER_CAPABILITY,
   // The renderer that reads a paired host's structured chats is the one that reads its own.

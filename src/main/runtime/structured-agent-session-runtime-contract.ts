@@ -16,6 +16,7 @@ import type { AgentSessionStatusSummary } from '../../shared/agent-session/agent
 import type { AgentSessionTurnCompletionEvent } from '../../shared/agent-session/view/agent-session-turn-completion-wire'
 
 export type StructuredAgentSessionRuntimeDeps = StructuredAgentSessionTransportOverrides & {
+  openMcpSignIn?: StructuredAgentSessionHostDeps['openMcpSignIn']
   /** Host state root. The record store and the journal database both hang off it. */
   stateDirectory: string
   legacySessionTabIds?: readonly string[]

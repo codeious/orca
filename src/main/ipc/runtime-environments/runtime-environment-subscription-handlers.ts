@@ -235,6 +235,13 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
             : { subscriptionId, requestId: subscription.requestId }
         }
         remoteRuntimeSubscriptions.set(subscriptionId, {
+          ...(args.method === 'agentSession.subscribe' &&
+          typeof args.params === 'object' &&
+          args.params !== null &&
+          'sessionId' in args.params &&
+          typeof args.params.sessionId === 'string'
+            ? { mcpSignInSessionId: args.params.sessionId }
+            : {}),
           setupController,
           requestId: subscription.requestId,
           environmentId: environment.id,
@@ -242,6 +249,14 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
           disposeRendererLifetime,
           notifyClosed,
           sendBinary: (bytes) => subscription?.sendBinary(bytes) ?? false,
+          sendRequest: subscription.sendRequest
+            ? (method, params, timeoutMs) => {
+                if (!transportIsCurrent() || setupController.signal.aborted) {
+                  throw new Error('This chat connection is no longer current.')
+                }
+                return subscription.sendRequest!(method, params, timeoutMs)
+              }
+            : undefined,
           close: () => {
             disposeRendererLifetime()
             subscription?.close()

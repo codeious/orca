@@ -54,6 +54,7 @@ export class StructuredAgentSessionHost {
     (sessionId) => this.usageLimitContinue?.readState(sessionId)
   )
   private readonly subscribers = this.clientDelivery.subscribers
+  readonly mcpSignIn = this.subscribers.mcpSignIn
   private readonly tasks = new StructuredAgentSessionTaskQueue()
   private readonly runtimeState: StructuredAgentSessionHostRuntimeState
   private readonly startup: ReturnType<typeof createStartupRecovery>
@@ -280,7 +281,8 @@ export class StructuredAgentSessionHost {
 
   private mutations = mutationWiring.structuredAgentSessionMutationDelegates(
     () => this.mutationContext(),
-    () => this.attachContext()
+    () => this.attachContext(),
+    this.mcpSignIn
   )
   cancel = this.mutations.cancel
   hostCommand = this.mutations.hostCommand

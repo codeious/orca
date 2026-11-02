@@ -51,6 +51,7 @@ import { DESKTOP_TERMINAL_SCROLLBACK_ROWS_DEFAULT } from '../../../shared/termin
 // oxlint-disable-next-line typescript/no-unsafe-declaration-merging -- SAFETY: The constructor installs every checked canonical surface.
 export abstract class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCommands {
   declare protected readonly getLocalProviderFn: HostServices['getLocalProviderFn']
+  declare protected readonly openMcpSignInFn: HostServices['openMcpSignInFn']
   declare readonly onPtyStopped: HostServices['onPtyStopped']
   declare protected readonly onTerminalAgentStatus: HostServices['onTerminalAgentStatus']
   declare protected readonly onTerminalProgramStatusFacet: HostServices['onTerminalProgramStatusFacet']
@@ -268,6 +269,7 @@ export abstract class OrcaRuntimeWithStateFields extends OrcaRuntimeWithLinearCo
     this.prepareCodexStructuredLaunchFn = deps?.prepareCodexStructuredLaunch ?? null
     this.resolveCodexStructuredLaunchHomeFn = deps?.resolveCodexStructuredLaunchHome ?? null
     this.prepareCodexCatalogProbeHomeFn = deps?.prepareCodexCatalogProbeHome ?? null
+    this.openMcpSignInFn = deps?.openMcpSignIn ?? null
     this.agentSessionClaimSigner =
       deps?.agentSessionClaimSigner ?? createEphemeralAgentSessionClaimSigner(this.runtimeId)
     this.onTerminalSideEffects = deps?.onTerminalSideEffects ?? null

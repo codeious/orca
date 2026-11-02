@@ -1,4 +1,9 @@
 import { AGENT_SESSION_HOST_COMMAND_CAPABILITY } from '../../../../shared/agent-session/agent-session-host-command'
+import {
+  mcpSignInCallerFor,
+  STRUCTURED_AGENT_SESSION_MCP_SIGN_IN_METHODS
+} from './structured-agent-session-mcp-sign-in'
+export { mcpSignInCallerFor } from './structured-agent-session-mcp-sign-in'
 import { agentSessionRefusalError } from '../../../../shared/agent-session/failures/agent-session-wire-refusals'
 import {
   CopyConversationParams,
@@ -42,6 +47,7 @@ export function projectHostCommandCatalog<T>(value: T, ctx: CommandClient): T {
 }
 
 export const STRUCTURED_AGENT_SESSION_HOST_COMMAND_METHODS = [
+  ...STRUCTURED_AGENT_SESSION_MCP_SIGN_IN_METHODS,
   defineMethod({
     name: 'agentSession.copyConversation',
     permission: 'workspace',
@@ -68,7 +74,11 @@ export const STRUCTURED_AGENT_SESSION_HOST_COMMAND_METHODS = [
         })
       }
       return (await requireInstalledStructuredHost(ctx, params.envelope.sessionId)).hostCommand(
-        structuredCallerFor(ctx),
+        {
+          ...structuredCallerFor(ctx),
+          mcpSignInCaller: mcpSignInCallerFor(ctx),
+          localMcpSignIn: ctx.connectionId === undefined && ctx.caller?.kind !== 'paired-device'
+        },
         params
       )
     }

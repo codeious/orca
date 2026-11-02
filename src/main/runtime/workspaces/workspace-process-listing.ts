@@ -228,6 +228,7 @@ export abstract class OrcaRuntimeWithGetWorktreePs extends OrcaRuntimeWithWorktr
     )
     const { stateDirectory, ...catalogDeps } = this.structuredAgentCatalogDependencies()
     await installStructuredAgentSessionHost({
+      openMcpSignIn: this.openMcpSignInFn ?? undefined,
       stateDirectory,
       legacySessionTabIds: this.legacyStructuredSessionTabIds,
       hostId: LOCAL_EXECUTION_HOST_ID,

@@ -1,5 +1,5 @@
 import type * as Calls from './runtime-host-service-calls'
-import type { RuntimeConstructionBindings as HostBindings } from './runtime-construction-dependencies'
+import type { RuntimeConstructionBindings as Bindings } from './runtime-construction-dependencies'
 
 import type { RuntimeRepositoryCommandSurface } from '../runtime-repository-command-surface'
 
@@ -91,36 +91,35 @@ export abstract class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeW
     this.store ? this.requireStore() : null
   )
 
-  protected readonly getLocalProviderFn!: HostBindings['getLocalProvider'] | null
+  protected readonly getLocalProviderFn!: Bindings['getLocalProvider'] | null
+  protected readonly openMcpSignInFn!: Bindings['openMcpSignIn'] | null
 
-  readonly onPtyStopped!: HostBindings['onPtyStopped'] | null
+  readonly onPtyStopped!: Bindings['onPtyStopped'] | null
 
-  protected readonly onTerminalAgentStatus!: HostBindings['onTerminalAgentStatus'] | null
+  protected readonly onTerminalAgentStatus!: Bindings['onTerminalAgentStatus'] | null
 
-  protected readonly onTerminalProgramStatusFacet!:
-    | HostBindings['onTerminalProgramStatusFacet']
-    | null
+  protected readonly onTerminalProgramStatusFacet!: Bindings['onTerminalProgramStatusFacet'] | null
 
-  protected readonly onTerminalSideEffects!: HostBindings['onTerminalSideEffects'] | null
+  protected readonly onTerminalSideEffects!: Bindings['onTerminalSideEffects'] | null
 
-  protected readonly onClaudeTerminalEvidence!: HostBindings['onClaudeTerminalEvidence'] | null
+  protected readonly onClaudeTerminalEvidence!: Bindings['onClaudeTerminalEvidence'] | null
 
   protected terminalSideEffectLocalConsumerAvailable = false
 
   protected terminalSideEffectConsumerAvailable = false
 
-  readonly getAgentStatusSnapshotFn!: HostBindings['getAgentStatusSnapshot'] | null
+  readonly getAgentStatusSnapshotFn!: Bindings['getAgentStatusSnapshot'] | null
 
-  protected readonly structuredAgentStatusSinkFn!: HostBindings['structuredAgentStatusSink'] | null
+  protected readonly structuredAgentStatusSinkFn!: Bindings['structuredAgentStatusSink'] | null
 
-  readonly readObservedAgentStatusPaneIdentityFn!: HostBindings['readObservedAgentStatusPaneIdentity']
+  readonly readObservedAgentStatusPaneIdentityFn!: Bindings['readObservedAgentStatusPaneIdentity']
 
   protected readonly getAgentProviderSessionSnapshotFn!:
-    | HostBindings['getAgentProviderSessionSnapshot']
+    | Bindings['getAgentProviderSessionSnapshot']
     | null
 
   protected readonly getAgentProviderSessionRowsForPaneFn!:
-    | HostBindings['getAgentProviderSessionRowsForPane']
+    | Bindings['getAgentProviderSessionRowsForPane']
     | null
 
   readTerminalClientUse(ptyId: string): 'used' | 'unused' | 'unknown' {
@@ -145,50 +144,48 @@ export abstract class OrcaRuntimeWithPreservedBranchCleanup extends OrcaRuntimeW
   }
 
   protected readonly attestAgentHookCompatibilityAuthorityFn!:
-    | HostBindings['attestAgentHookCompatibilityAuthority']
+    | Bindings['attestAgentHookCompatibilityAuthority']
     | null
 
   protected readonly retireAgentHookCompatibilityAuthorityFn!:
-    | HostBindings['retireAgentHookCompatibilityAuthority']
+    | Bindings['retireAgentHookCompatibilityAuthority']
     | null
 
-  protected readonly checkHookAgentPresenceFn!: HostBindings['checkHookAgentPresence'] | null
+  protected readonly checkHookAgentPresenceFn!: Bindings['checkHookAgentPresence'] | null
 
   protected readonly reconcileAgentStatusForEndedProcessFn!:
-    | HostBindings['reconcileAgentStatusForEndedProcess']
+    | Bindings['reconcileAgentStatusForEndedProcess']
     | null
 
-  protected readonly forgetHookAgentExitFn!: HostBindings['forgetHookAgentExit'] | null
+  protected readonly forgetHookAgentExitFn!: Bindings['forgetHookAgentExit'] | null
 
   protected readonly dropAgentStatusForRemovedWorktreeFn!:
-    | HostBindings['dropAgentStatusForRemovedWorktree']
+    | Bindings['dropAgentStatusForRemovedWorktree']
     | null
 
-  protected readonly canRecoverPersistentLocalPtysFn!: HostBindings['canRecoverPersistentLocalPtys']
+  protected readonly canRecoverPersistentLocalPtysFn!: Bindings['canRecoverPersistentLocalPtys']
 
-  protected readonly getPairedDeviceNameFn!: HostBindings['getPairedDeviceName']
+  protected readonly getPairedDeviceNameFn!: Bindings['getPairedDeviceName']
 
-  protected readonly buildAgentHookPtyEnv!: HostBindings['buildAgentHookPtyEnv'] | null
+  protected readonly buildAgentHookPtyEnv!: Bindings['buildAgentHookPtyEnv'] | null
 
-  protected readonly getDesktopWindowStatusFn!: HostBindings['getDesktopWindowStatus']
+  protected readonly getDesktopWindowStatusFn!: Bindings['getDesktopWindowStatus']
 
-  protected readonly prepareAiVaultSessionResumeFn!:
-    | HostBindings['prepareAiVaultSessionResume']
-    | null
+  protected readonly prepareAiVaultSessionResumeFn!: Bindings['prepareAiVaultSessionResume'] | null
 
   protected readonly prepareCodexStructuredLaunchFn!:
-    | HostBindings['prepareCodexStructuredLaunch']
+    | Bindings['prepareCodexStructuredLaunch']
     | null
 
   protected readonly resolveCodexStructuredLaunchHomeFn!:
-    | HostBindings['resolveCodexStructuredLaunchHome']
+    | Bindings['resolveCodexStructuredLaunchHome']
     | null
 
   protected readonly prepareCodexCatalogProbeHomeFn!:
-    | HostBindings['prepareCodexCatalogProbeHome']
+    | Bindings['prepareCodexCatalogProbeHome']
     | null
 
-  protected readonly agentSessionClaimSigner!: HostBindings['agentSessionClaimSigner']
+  protected readonly agentSessionClaimSigner!: Bindings['agentSessionClaimSigner']
 
   protected readonly agentSessionCreateOperations = new Map<string, SessionCreateOperation>()
 
