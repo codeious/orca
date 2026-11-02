@@ -3,6 +3,7 @@ import type { StructuredAgentId } from '../../../../shared/agent-session/lifecyc
 import type { GlobalSettings } from '../../../../shared/settings/global-settings-types'
 import { overlayEnvironmentVariables } from '../../../../shared/shell/launch/environment-overlay'
 import { isTuiAgent } from '../../../../shared/agent-launch/catalog/tui-agent-config'
+import type { AgentCliInstallationProblem } from '../../../../shared/agent-launch/catalog/agent-cli-installation-problem'
 import {
   resolveTuiAgentLaunchEnv,
   type AgentLaunchProfileSettings
@@ -94,21 +95,32 @@ export async function structuredAgentHostAlternativeReady(
 
 /** Admission's answer in the workspace `cwd` names: only a too-old or unstartable binary keeps the
  *  terminal, or, where Orca installs no release, a host program that cannot serve the chat. */
-export async function structuredAgentSupportsLaunch(
+async function structuredAgentLaunchSupport(
   agent: string,
   cwd: () => Promise<string>,
   runtime: LaunchSettingsRuntime
-): Promise<boolean> {
+): Promise<{ supported: boolean; agentInstallation?: AgentCliInstallationProblem }> {
   if (structuredAgentRuntimeMetadata(agent)?.chatProgram?.onlyHostAlternative?.()) {
-    return structuredAgentHostAlternativeReady(agent, runtime)
+    return { supported: await structuredAgentHostAlternativeReady(agent, runtime) }
   }
   try {
     const release = await observeStructuredAgentLaunch(agent, cwd, runtime, true)
-    return release === null || launchableRelease(release)
+    return {
+      supported: release === null || launchableRelease(release),
+      ...(release?.status === 'tooOld' && isTuiAgent(agent)
+        ? {
+            agentInstallation: {
+              agent,
+              installedVersion: release.version,
+              minimumVersion: release.minimumVersion
+            }
+          }
+        : {})
+    }
   } catch (error) {
     // An unrunnable Command setting is the launch's refusal to state, not a terminal.
     if (isAgentSessionPreSpawnError(error)) {
-      return true
+      return { supported: true }
     }
     throw error
   }
@@ -172,17 +184,18 @@ export async function resolveHostStructuredAgentCreateSupport(input: {
   const { agent, location, runtime } = input
   const supportsLocation =
     structuredAgentRuntimeMetadata(agent)?.supportsLocation(location) ?? false
-  const supportsLaunch =
-    supportsLocation &&
-    (await structuredAgentSupportsLaunch(
-      agent,
-      async () => (await runtime.resolveRuntimeFileTarget(input.worktreeSelector)).worktree.path,
-      runtime
-    ))
+  const supportsLaunch = supportsLocation
+    ? await structuredAgentLaunchSupport(
+        agent,
+        async () => (await runtime.resolveRuntimeFileTarget(input.worktreeSelector)).worktree.path,
+        runtime
+      )
+    : { supported: false }
   const support = resolveStructuredAgentSessionCreateSupport({
     location,
-    adapterSupportsCreate: supportsLaunch,
-    unavailableOnPlatform: structuredChatUnavailableOnPlatform(agent, process.platform)
+    adapterSupportsCreate: supportsLaunch.supported,
+    unavailableOnPlatform: structuredChatUnavailableOnPlatform(agent, process.platform),
+    agentInstallation: supportsLaunch.agentInstallation
   })
   warnStructuredAgentSessionCreateUnsupported(
     agent,
