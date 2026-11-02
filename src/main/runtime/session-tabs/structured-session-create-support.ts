@@ -27,6 +27,8 @@ import { getProfileUserDataPath } from '../../orca-profiles/profile-storage-path
 import { isFloatingWorkspaceSelector } from '../../../shared/floating-workspace-worktree'
 import type { AgentSessionAccountHome } from '../../../shared/agent-session/lifecycle/agent-session-account-home'
 import type { StructuredAgentId } from '../../../shared/agent-session/lifecycle/agent-session-provider-handle'
+import type { AgentCliInstallationProblem } from '../../../shared/agent-cli-installation-problem'
+import { agentCliInstallationFacts } from '../../../shared/agent-cli-installation-problem'
 
 export abstract class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends StructuredSessionWorkspaceScope {
   protected abstract restoreStructuredAgentSessionTabsOnce(
@@ -42,7 +44,11 @@ export abstract class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport exte
     worktreeSelector: string,
     agent: StructuredAgentId,
     options?: { requireInstalledChatProgram?: boolean }
-  ): Promise<{ supported: boolean; reason?: 'agent' | 'remote' | 'wsl' | 'chat-program' }> {
+  ): Promise<{
+    supported: boolean
+    reason?: 'agent' | 'remote' | 'wsl' | 'chat-program'
+    agentInstallation?: AgentCliInstallationProblem
+  }> {
     const support = await resolveHostStructuredAgentCreateSupport({
       agent,
       worktreeSelector,
@@ -154,6 +160,13 @@ export abstract class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport exte
     }) => AgentSessionAccountHome | Promise<AgentSessionAccountHome>
   ): Promise<AgentSessionAttachParams> {
     const support = await this.getStructuredAgentSessionCreateSupport(input.worktree, input.agent)
+    if (!support.supported && support.agentInstallation) {
+      throw agentSessionRefusalError('structured_agent_session_unsupported', {
+        reason: 'hostUnsupported',
+        ownerVerdict: 'exited',
+        ...agentCliInstallationFacts(support.agentInstallation)
+      })
+    }
     // Adopting a conversation reads the agent's own transcript, so only an agent registered with an
     // importer adopts.
     const transcriptImport = structuredAgentRuntimeMetadata(input.agent)?.transcriptImport

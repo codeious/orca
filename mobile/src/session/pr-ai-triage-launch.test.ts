@@ -93,6 +93,27 @@ function run(client: RpcClient, hostCapabilities: readonly string[] = LAUNCH_CAP
   })
 }
 
+it('shows version facts from a completed prompted terminal fallback', async () => {
+  const { client } = hostClient({
+    launch: ok({
+      outcome: { kind: 'terminal', handle: 'term-1' },
+      worktreeId: 'repo-1::/w',
+      receipt: {
+        mode: 'terminal',
+        preferred: 'structured',
+        reason: 'structured_unsupported_on_host',
+        detail: 'Host wording.',
+        agentInstallation: { agent: 'codex', installedVersion: '0.1.0', minimumVersion: '1.0.0' }
+      },
+      prompt: { delivery: 'submit', outcome: 'handed-to-terminal' }
+    })
+  })
+  expect(await run(client)).toEqual({
+    kind: 'sent',
+    warning: 'Codex 0.1.0 is too old for chats. Update to 1.0.0 or newer.'
+  })
+})
+
 function launchParams(sendRequest: ReturnType<typeof hostClient>['sendRequest']) {
   return sendRequest.mock.calls.find(([method]) => method === 'agent.launchReplay')?.[1]
 }

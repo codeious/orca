@@ -20,8 +20,17 @@ import type { OrcaRuntimeService } from '../runtime/orca-runtime'
 import type { AgentLaunchSurface } from '../../shared/agent-launch-surface'
 import { formatAgentTypeLabel } from '../../shared/agent-type-label'
 import { AgentLaunchSurfaceUnavailableError } from './agent-launch-surface-refusal'
+import {
+  readAgentCliInstallationProblem,
+  type AgentCliInstallationProblem
+} from '../../shared/agent-cli-installation-problem'
+import {
+  agentCliTooOldWords,
+  sayAgentSessionFailureEnglish
+} from '../../shared/agent-session/failures/agent-session-failure-copy'
 
 export type { AgentLaunchMode, AgentLaunchModeReason, AgentLaunchModeReceipt }
+export { readAgentLaunchModeSettings } from './agent-launch-mode-settings'
 
 type AgentLaunchDowngradeReason = Exclude<AgentLaunchModeReason, 'user_default' | 'requested'>
 
@@ -85,7 +94,11 @@ const BLOCKER_REASON: Record<StructuredNativeChatBlocker, AgentLaunchDowngradeRe
 }
 
 type HostSupportReason = 'agent' | 'remote' | 'wsl' | 'chat-program'
-type HostLaunchSupport = { supported: boolean; reason?: HostSupportReason }
+type HostLaunchSupport = {
+  supported: boolean
+  reason?: HostSupportReason
+  agentInstallation?: AgentCliInstallationProblem
+}
 
 const HOST_SUPPORT_REASON: Record<HostSupportReason, AgentLaunchDowngradeReason> = {
   agent: 'structured_unsupported_on_host',
@@ -228,6 +241,18 @@ export function downgradeAgentLaunchModeForHost(
   if (support === null) {
     return downgraded(BLOCKER_REASON['runtime-capability-unknown'], vocabulary, requested)
   }
+  const installation = readAgentCliInstallationProblem(support.agentInstallation)
+  if (support.reason === 'agent' && installation) {
+    const detail = agentCliTooOldWords(installation, sayAgentSessionFailureEnglish)
+    if (requested && context?.phase === 'before-effects') {
+      throw new AgentLaunchSurfaceUnavailableError(detail)
+    }
+    return {
+      ...downgraded('structured_unsupported_on_host', vocabulary, requested),
+      detail: `${detail} Started ${vocabulary.terminal} instead.`,
+      agentInstallation: installation
+    }
+  }
   return unavailableLaunchMode(
     support.reason ? HOST_SUPPORT_REASON[support.reason] : 'structured_unsupported_on_host',
     vocabulary,
@@ -306,23 +331,5 @@ export function warnStructuredLaunchDowngrade(
 ): void {
   if (receipt.mode === 'terminal' && receipt.preferred === 'structured') {
     console.warn(`[agent-launch] ${agent} opened a terminal: ${receipt.reason}`)
-  }
-}
-
-/** A desktop stamp supplies its resolved preference for the launched agent; other callers read the host’s settings. */
-export function readAgentLaunchModeSettings(
-  runtime: { requireStore(): { getSettings(): AgentLaunchModeSettings | null } },
-  caller?: { agent?: string; nativeChatDefault?: boolean }
-): AgentLaunchModeSettings | null {
-  if (caller?.nativeChatDefault !== undefined) {
-    return caller.agent === undefined
-      ? {}
-      : { nativeChatProviders: { [caller.agent]: caller.nativeChatDefault } }
-  }
-  try {
-    return runtime.requireStore().getSettings()
-  } catch (error) {
-    console.warn('[agent-launch] could not resolve chat preference', error)
-    return null
   }
 }

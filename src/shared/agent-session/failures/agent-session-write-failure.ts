@@ -84,6 +84,10 @@ type DurableRefusalFacts = {
     codexInstallation?: CodexInstallationProblem
   }
   agent_session_operation_unknown: { rewindReason?: AgentSessionRewindReason }
+  structured_agent_session_unsupported: {
+    agentInstallation?: AgentCliInstallationProblem
+    codexInstallation?: CodexInstallationProblem
+  }
   /** A snapshot from when it was refused; see `agentSessionOwnerVerdictAllowsFreshOperationId`. */
   agent_session_ownership_unknown: { ownerVerdict?: AgentSessionOwnerVerdict }
 }
@@ -98,6 +102,7 @@ const DURABLE_FACT_KEYS: Partial<Record<AgentSessionWireRefusalCode, readonly st
     'codexInstallation'
   ],
   agent_session_operation_unknown: ['rewindReason'],
+  structured_agent_session_unsupported: ['agentInstallation', 'codexInstallation'],
   agent_session_ownership_unknown: ['ownerVerdict']
 } satisfies { [C in keyof DurableRefusalFacts]: readonly (keyof DurableRefusalFacts[C])[] }
 

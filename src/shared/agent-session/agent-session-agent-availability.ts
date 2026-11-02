@@ -8,6 +8,10 @@
 import { z } from 'zod'
 import { isStructuredAgentId } from './lifecycle/agent-session-provider-handle-encoding'
 import { openEnum } from '../zod-salvage'
+import {
+  readAgentCliInstallationProblem,
+  type AgentCliInstallationProblem
+} from '../agent-cli-installation-problem'
 
 export const AGENT_SESSION_AVAILABILITY_METHOD = 'agentSession.subscribeAvailability'
 
@@ -19,7 +23,12 @@ export type AgentSessionChatProgram = 'available' | 'installable' | 'missing' | 
  *  could not answer, which is never a refusal. */
 export type AgentSessionAgentAvailability = (
   | { agent: string; state: 'available' }
-  | { agent: string; state: 'refused'; reason?: string }
+  | {
+      agent: string
+      state: 'refused'
+      reason?: string
+      agentInstallation?: AgentCliInstallationProblem
+    }
   | { agent: string; state: 'unknown' }
 ) & { chatProgram?: AgentSessionChatProgram }
 
@@ -35,6 +44,7 @@ const rowSchema = z.object({
   // A state this build does not know claims nothing.
   state: openEnum(['available', 'refused', 'unknown'] as const, 'unknown'),
   reason: z.string().max(64).optional(),
+  agentInstallation: z.unknown().optional(),
   chatProgram: openEnum(['available', 'installable', 'missing', 'unknown'] as const, 'unknown')
     .optional()
     .catch(undefined)
@@ -58,10 +68,19 @@ export function decodeAgentSessionAvailabilityFrame(
     }
     const { agent, state, reason, chatProgram } = parsed.data
     const program = chatProgram ? { chatProgram } : {}
+    const installation = readAgentCliInstallationProblem(parsed.data.agentInstallation)
     byAgent.set(
       agent,
       state === 'refused'
-        ? { agent, state, ...(reason ? { reason } : {}), ...program }
+        ? {
+            agent,
+            state,
+            ...(reason ? { reason } : {}),
+            ...(reason === 'agent' && installation?.agent === agent
+              ? { agentInstallation: installation }
+              : {}),
+            ...program
+          }
         : { agent, state, ...program }
     )
   }
