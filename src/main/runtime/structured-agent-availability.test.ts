@@ -107,7 +107,17 @@ it('shares a host-home snapshot even if shell recapture fails, retaining it with
     { agent: 'grok', state: 'refused', reason: 'agent', chatProgram: 'unknown' },
     // A check that could not answer is no verdict.
     { agent: 'pi', state: 'unknown', chatProgram: 'unknown' },
-    { agent: 'opencode', state: 'refused', reason: 'agent', chatProgram: 'installable' }
+    {
+      agent: 'opencode',
+      state: 'refused',
+      reason: 'agent',
+      agentInstallation: {
+        agent: 'opencode',
+        installedVersion: '2.0.13',
+        minimumVersion: '2.0.14'
+      },
+      chatProgram: 'installable'
+    }
   ])
   expect(cwds).toEqual([homedir(), homedir(), homedir()])
   // Kept with no readers: a later one reads it at once, without probing again.

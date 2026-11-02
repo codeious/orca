@@ -2,6 +2,7 @@ import type { AgentSessionExecutionLocation } from '../../shared/agent-session/l
 import type { StructuredAgentId } from '../../shared/agent-session/lifecycle/agent-session-provider-handle'
 import type { GlobalSettings } from '../../shared/global-settings-types'
 import { isTuiAgent } from '../../shared/tui-agent-config'
+import type { AgentCliInstallationProblem } from '../../shared/agent-cli-installation-problem'
 import {
   resolveTuiAgentLaunchEnv,
   type AgentLaunchProfileSettings
@@ -82,13 +83,32 @@ export async function structuredAgentSupportsLaunch(
   cwd: () => Promise<string>,
   runtime: LaunchSettingsRuntime
 ): Promise<boolean> {
+  return (await structuredAgentLaunchSupport(agent, cwd, runtime)).supported
+}
+
+async function structuredAgentLaunchSupport(
+  agent: string,
+  cwd: () => Promise<string>,
+  runtime: LaunchSettingsRuntime
+): Promise<{ supported: boolean; agentInstallation?: AgentCliInstallationProblem }> {
   try {
     const release = await observeStructuredAgentLaunch(agent, cwd, runtime, true)
-    return release === null || launchableRelease(release)
+    return {
+      supported: release === null || launchableRelease(release),
+      ...(release?.status === 'tooOld' && isTuiAgent(agent)
+        ? {
+            agentInstallation: {
+              agent,
+              installedVersion: release.version,
+              minimumVersion: release.minimumVersion
+            }
+          }
+        : {})
+    }
   } catch (error) {
     // An unrunnable Command setting is the launch's refusal to state, not a terminal.
     if (isAgentSessionPreSpawnError(error)) {
-      return true
+      return { supported: true }
     }
     throw error
   }
@@ -151,16 +171,17 @@ export async function resolveHostStructuredAgentCreateSupport(input: {
   const { agent, location, runtime } = input
   const supportsLocation =
     structuredAgentRuntimeMetadata(agent)?.supportsLocation(location) ?? false
-  const supportsLaunch =
-    supportsLocation &&
-    (await structuredAgentSupportsLaunch(
-      agent,
-      async () => (await runtime.resolveRuntimeFileTarget(input.worktreeSelector)).worktree.path,
-      runtime
-    ))
+  const supportsLaunch = supportsLocation
+    ? await structuredAgentLaunchSupport(
+        agent,
+        async () => (await runtime.resolveRuntimeFileTarget(input.worktreeSelector)).worktree.path,
+        runtime
+      )
+    : { supported: false }
   const support = resolveStructuredAgentSessionCreateSupport({
     location,
-    adapterSupportsCreate: supportsLaunch
+    adapterSupportsCreate: supportsLaunch.supported,
+    agentInstallation: supportsLaunch.agentInstallation
   })
   warnStructuredAgentSessionCreateUnsupported(
     agent,

@@ -186,19 +186,22 @@ export type AgentSessionConversationOwner = { sessionId: string; workspaceId: st
 
 type ConversationOwnerFacts = { owner?: AgentSessionConversationOwner }
 
+type InstallationFacts = {
+  agentInstallation?: AgentCliInstallationProblem
+  codexInstallation?: CodexInstallationProblem
+}
+
 /** The facts a code carries beside its reason. */
 type AgentSessionRefusalFactsByCode = {
-  agent_session_operation_invalid: RewindFacts & {
-    account?: AgentSessionAccountKind
-    argumentProblem?: AgentSessionArgumentProblem
-    /** The chat's agent a `stopFailed` Stop could not stop. */
-    agent?: TuiAgent
-    agentInstallation?: AgentCliInstallationProblem
-    /** Codex's binary problem as builds before `agentInstallation` send and read it. */
-    codexInstallation?: CodexInstallationProblem
-    /** On `attachmentExpired`: which uploads, so a client can name them and mark their chips. */
-    expiredAttachments?: readonly AgentSessionExpiredAttachment[]
-  }
+  agent_session_operation_invalid: RewindFacts &
+    InstallationFacts & {
+      account?: AgentSessionAccountKind
+      argumentProblem?: AgentSessionArgumentProblem
+      /** The chat's agent a `stopFailed` Stop could not stop. */
+      agent?: TuiAgent
+      /** On `attachmentExpired`: which uploads, so a client can name them and mark their chips. */
+      expiredAttachments?: readonly AgentSessionExpiredAttachment[]
+    }
   agent_session_operation_unknown: RewindFacts
   agent_session_checkpoint_stale: {
     /** So the client can retry without another round trip. */
@@ -214,7 +217,7 @@ type AgentSessionRefusalFactsByCode = {
   agent_session_operation_expired: NoFacts
   agent_session_operation_capacity: NoFacts
   agent_session_journal_unreadable: NoFacts
-  structured_agent_session_unsupported: NoFacts
+  structured_agent_session_unsupported: InstallationFacts
   agent_session_owner_restart_failed: NoFacts
 }
 
@@ -270,11 +273,11 @@ export function readAgentSessionRefusalDetails<C extends AgentSessionWireRefusal
       ? readAgentSessionArgumentProblem(value.argumentProblem)
       : undefined
   const agentInstallation =
-    code === 'agent_session_operation_invalid'
+    code === 'agent_session_operation_invalid' || code === 'structured_agent_session_unsupported'
       ? readAgentCliInstallationProblem(value.agentInstallation)
       : undefined
   const codexInstallation =
-    code === 'agent_session_operation_invalid'
+    code === 'agent_session_operation_invalid' || code === 'structured_agent_session_unsupported'
       ? readCodexInstallationProblem(value.codexInstallation)
       : undefined
   const expiredAttachments =

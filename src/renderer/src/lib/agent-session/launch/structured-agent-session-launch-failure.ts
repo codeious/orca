@@ -69,7 +69,14 @@ export function structuredLaunchFailure(error: unknown): StructuredLaunchFailure
       causeText: error.causeText
     }
   }
-  if (error instanceof StructuredAgentSessionCreateRefusalError && error.hostReason) {
+  if (
+    error instanceof StructuredAgentSessionCreateRefusalError &&
+    error.hostReason &&
+    !(
+      error.refusal?.code === 'structured_agent_session_unsupported' &&
+      error.refusal.details?.agentInstallation
+    )
+  ) {
     return {
       kind: 'refused',
       code: 'structured_agent_session_unsupported',
