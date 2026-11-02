@@ -125,7 +125,9 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
     await drainRelayHookSpool(this.endpointDir, (record) =>
       ingestRelayHookSpoolRecord(record, this.state, this.env, {
         providerNormalization: this.providerNormalization,
-        checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey),
+        checkAgentPresence: async (paneKey) => {
+          await this.checkAgentPresence(paneKey)
+        },
         isCurrent,
         apply: (...args) => this.applyEvent(...args),
         onAccepted: (row) => this.retryScheduler.observeClaudeHook(row, record.receivedAt),
@@ -147,7 +149,9 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
           env: this.env,
           state: this.state,
           providerNormalization: this.providerNormalization,
-          checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey),
+          checkAgentPresence: async (paneKey) => {
+            await this.checkAgentPresence(paneKey)
+          },
           isPaneSurfaceRetired: this.isPaneSurfaceRetired,
           getAgentLaunchToken: this.getAgentLaunchToken,
           applyEvent: (...args) => this.applyEvent(...args),
@@ -200,6 +204,7 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
     this.endpointFileWritten = false
     this.stopCanonicalHooks()
     this.retryScheduler.clearAll()
+    this.presenceChecks.stop()
     clearAllListenerCaches(this.state)
     this.providerNormalization.clear()
     this.claudeTerminalInterrupts.clear()
@@ -237,16 +242,11 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
       apply: (event, meta) =>
         this.applyEvent(event, meta.source, meta.env, meta.version, { checkPresence: false }),
       armExpiry: (paneKey, meta) =>
-        this.retryScheduler.armClaudeOwedNotificationExpiry(
-          meta.source,
-          paneKey,
-          meta.env,
-          meta.version
-        )
+        this.retryScheduler.armLeaseExpiry(meta.source, paneKey, meta.env, meta.version)
     }
   }
 
-  checkAgentPresence(paneKey: string): Promise<void> {
+  checkAgentPresence(paneKey: string) {
     const row = this.state.lastStatusByPaneKey.get(paneKey)
     const meta = this.lastEnvelopeMetaByPaneKey.get(paneKey)
     return this.presenceChecks.check(
@@ -305,7 +305,11 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
         clearAssistantMessageRetry: (paneKey) =>
           this.retryScheduler.clearAssistantMessageRetry(paneKey),
         forward: this.forward,
-        checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey)
+        checkAgentPresence: async (paneKey) => {
+          await this.checkAgentPresence(paneKey)
+        },
+        watchAgentExit: (event) =>
+          this.presenceChecks.watchExit(event, () => this.checkAgentPresence(event.paneKey))
       },
       incoming,
       source,

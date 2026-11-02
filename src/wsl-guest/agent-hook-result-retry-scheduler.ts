@@ -16,7 +16,7 @@ import {
   transcriptPollUpdate
 } from '../shared/agent-hook-listener/transcript-poll-policy'
 import { AgentTranscriptPollScheduler } from '../shared/agent-transcript-poll-scheduler'
-import { ClaudeOwedNotificationExpiryTimers } from '../shared/claude-owed-notification-expiry-timers'
+import { HookLeaseExpiryTimers } from '../shared/agent-hook-lease-expiry-timers'
 
 const ASSISTANT_MESSAGE_RETRY_ATTEMPTS = 5
 const ASSISTANT_MESSAGE_RETRY_MS = 50
@@ -48,7 +48,7 @@ export class AgentHookResultRetryScheduler {
   private transcriptPollScheduler: AgentTranscriptPollScheduler<TranscriptPoll>
   private host: AgentHookResultRetryHost
   private readonly claudeHelperKills: ClaudeHelperKillPoller
-  private claudeOwedNotificationExpiry: ClaudeOwedNotificationExpiryTimers
+  private readonly leaseExpiry: HookLeaseExpiryTimers
 
   constructor(host: AgentHookResultRetryHost) {
     this.host = host
@@ -59,7 +59,7 @@ export class AgentHookResultRetryScheduler {
       },
       listening: host.isListening
     })
-    this.claudeOwedNotificationExpiry = new ClaudeOwedNotificationExpiryTimers(host.state)
+    this.leaseExpiry = new HookLeaseExpiryTimers(host.state)
     this.transcriptPollScheduler = new AgentTranscriptPollScheduler(
       CODEX_SUBAGENT_POLL_MS,
       (paneKey, poll) => this.runTranscriptPoll(paneKey, poll)
@@ -73,17 +73,12 @@ export class AgentHookResultRetryScheduler {
     this.assistantMessageRetryTimers.clear()
     this.transcriptPollScheduler.clearAll()
     this.claudeHelperKills.clearAll()
-    this.claudeOwedNotificationExpiry.clearAll()
+    this.leaseExpiry.clearAll()
   }
 
-  /** No hook fires when Claude never sends an owed task notification; restate the row ourselves. */
-  armClaudeOwedNotificationExpiry(
-    source: AgentHookSource,
-    paneKey: string,
-    env?: string,
-    version?: string
-  ): void {
-    this.claudeOwedNotificationExpiry.arm(paneKey, (row) => {
+  /** No hook fires when a lease runs out (an owed Claude notification, a Droid background child); restate the row ourselves. */
+  armLeaseExpiry(source: AgentHookSource, paneKey: string, env?: string, version?: string): void {
+    this.leaseExpiry.arm(paneKey, (row) => {
       if (this.host.isListening()) {
         this.host.applyEvent(row, source, env, version)
       }

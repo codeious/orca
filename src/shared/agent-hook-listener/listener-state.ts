@@ -18,6 +18,7 @@ import type { CodexSubagentTranscriptState } from '../codex-subagent-transcript'
 import type { MuseSessionLogState } from '../muse-session-log'
 import type { AgentHookEventPayload, ToolSnapshot } from './listener-event'
 import { ProviderHookStateSlots } from './provider-hook-state-slots'
+import type { DroidPaneSessions } from './providers/droid-sessions'
 import {
   deletePaneScopedCacheEntry,
   deletePaneScopedSetEntry,
@@ -34,6 +35,7 @@ import {
 /** Per-listener-instance caches needing per-PTY teardown; Orca's main process and the relay each get their own, never shared. */
 export type HookListenerState = {
   providerState: ProviderHookStateSlots
+  droidSessionsByPaneKey: Map<string, DroidPaneSessions>
   warnedVersions: Set<string>
   warnedEnvs: Set<string>
   lastPromptByPaneKey: Map<string, string>
@@ -126,6 +128,7 @@ export function createHookListenerState(
   const providerState = new ProviderHookStateSlots()
   const state: HookListenerState = {
     providerState,
+    droidSessionsByPaneKey: providerState.createMap(true),
     warnedVersions: new Set(),
     warnedEnvs: new Set(),
     lastPromptByPaneKey: new Map(),
