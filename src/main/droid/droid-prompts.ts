@@ -94,7 +94,8 @@ export class DroidPrompts {
     itemId: string,
     response: AgentSessionPromptResponse | null,
     commit: () => Promise<void>,
-    answer = true
+    answer = true,
+    operationId?: string
   ): Promise<void> {
     const entry = this.find(itemId)
     if (!entry) {
@@ -106,7 +107,7 @@ export class DroidPrompts {
       if (response && entry.presentation.advance) {
         nextCard = entry.presentation.advance(response)
       } else {
-        reply = entry.presentation.reply(response)
+        reply = entry.presentation.reply(response, operationId)
       }
     } catch (error) {
       throw new AgentSessionPromptAnswerRejectedError(

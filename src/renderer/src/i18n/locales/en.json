@@ -14759,7 +14759,8 @@
             "resumeInNewCliHostTooOld": "Update Orca on the host that runs this chat to resume it in a new CLI.",
             "folderWorkspaceUnavailable": "Folder workspace is no longer available.",
             "transcriptsSkippedCount_one": "{{count}} transcript skipped",
-            "transcriptsSkippedCount_other": "{{count}} transcripts skipped"
+            "transcriptsSkippedCount_other": "{{count}} transcripts skipped",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Scanning sessions",
@@ -15085,6 +15086,11 @@
             "createInProgress": "Create PR in progress...",
             "workspaceHostUnresolved": "The workspace host is unresolved. Refresh the workspace and retry.",
             "branchDiscoveryFailed": "Branch discovery failed."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -20288,6 +20294,9 @@
         "switchAccount": "Switch Account",
         "addAccount": "Add Account…",
         "accountUnavailable": "This chat cannot move to another account. Hand it off to another agent instead."
+      },
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
       }
     },
     "tab": {

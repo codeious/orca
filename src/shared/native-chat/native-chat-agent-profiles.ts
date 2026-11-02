@@ -8,6 +8,7 @@ import {
 
 export type NativeChatAgentProfile = {
   questionCancelOnEscape?: true
+  confirmUnverifiableResume?: true
   skillPrefix: '$' | '/'
   /** OpenClaude reads Claude-owned roots, so this can differ from the agent. */
   skillSourceOwner: AgentType
@@ -38,7 +39,8 @@ const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfi
   droid: {
     skillPrefix: '/',
     skillSourceOwner: 'droid',
-    questionCancelOnEscape: true
+    questionCancelOnEscape: true,
+    confirmUnverifiableResume: true
   },
   codex: {
     skillPrefix: '$',

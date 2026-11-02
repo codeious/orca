@@ -9,6 +9,12 @@ import { samePiDirectory } from '../../pi/rpc-launch-resolution'
 import { admitTranscriptPath } from '../transcript-path-admission'
 import { adoptedDirectoryProbes } from './adopted-directory-probe'
 
+const SESSION_HEADER_TYPES: Partial<Record<AgentType, string>> = {
+  omp: 'session',
+  pi: 'session',
+  droid: 'session_start'
+}
+
 export type AdoptedTranscriptSource = {
   providerSessionId: string
   workspaceCwd: string
@@ -74,7 +80,10 @@ export function adoptedTranscriptSourceObserver(input: {
         sawCodexMetadata = true
         const payload = asRecord(record.payload)
         sessionId = extractString(payload?.id) ?? sessionId
-      } else if ((input.agent === 'omp' || input.agent === 'pi') && record.type === 'session') {
+      } else if (
+        SESSION_HEADER_TYPES[input.agent] !== undefined &&
+        record.type === SESSION_HEADER_TYPES[input.agent]
+      ) {
         sessionId = extractString(record.id)
         cwd = extractString(record.cwd)
       }

@@ -7,6 +7,7 @@ import { createDroidModelCatalogProbe } from './droid-model-catalog-probe'
 import { resolveDroidCommand } from './droid-launch-resolution'
 import { droidKeyringEnvironment } from './droid-environment'
 import { DROID_CHAT_VERSION_FLOOR } from './droid-version-support'
+import { DROID_CLI_CONVERSATIONS } from './droid-cli-conversations'
 
 function resolveLaunch(env: Record<string, string>, settings: StructuredAgentCommandSettings) {
   return {
@@ -17,12 +18,7 @@ function resolveLaunch(env: Record<string, string>, settings: StructuredAgentCom
 
 export const DROID_RUNTIME_METADATA: StructuredAgentRuntimeMetadata = {
   definition: DROID_AGENT,
-  transcriptImport: null,
-  sessionHistory: {
-    rowAgents: ['droid'],
-    rowSessionId: (link) => link.handle.nativeId,
-    parseResumeArgs: () => null
-  },
+  ...DROID_CLI_CONVERSATIONS,
   supportsLocation: supportsSupervisedProviderChildLocation,
   chatProgram: { resolve: resolveLaunch },
   launchCheck: { resolveLaunch, minimumVersions: [DROID_CHAT_VERSION_FLOOR] },
