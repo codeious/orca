@@ -1,0 +1,19 @@
+docs/specs/droid-first-class.md
+  s_767cf5531d83f7::t_93f6488535934e 9-10,17,26,29,34,62,73-74,76,129,138,140,281,379,381-389,391,415-416,418-424,461-484
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ae5f6f9a735427f11f523cb32a2274a5f7a4fbf6",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
