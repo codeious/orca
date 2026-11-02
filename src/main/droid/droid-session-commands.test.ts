@@ -31,6 +31,31 @@ async function commandIn(
 }
 
 describe('Droid session commands', () => {
+  it('journals help for each client platform without sending a model message', async () => {
+    const h = await setupDroidAdapter()
+    const { connection } = await h.start()
+    const result = await h.adapter.hostCommand({
+      sessionId: DROID_RIG_SESSION,
+      fence: 7,
+      name: 'help',
+      argument: '',
+      operationId: 'read-help'
+    })
+    expect(result.text).toContain('macOS:')
+    expect(result.text).toContain('Ctrl+L: cycle autonomy.')
+    expect(result.text).toContain('Ctrl+N: cycle through models.')
+    const otherPlatforms = result.text?.split('Windows/Linux:')[1]
+    expect(otherPlatforms).toContain('Ctrl+L and Ctrl+N remain Orca shortcuts.')
+    expect(otherPlatforms).not.toContain('Ctrl+L: cycle')
+    expect(otherPlatforms).not.toContain('Ctrl+N: cycle')
+    expect(connection.requests.some(({ method }) => method === 'droid.add_user_message')).toBe(
+      false
+    )
+    expect(
+      (await h.rig.rows()).some(({ body }) => body.kind === 'status' && body.text === result.text)
+    ).toBe(true)
+  })
+
   it('journals host text without sending a model message', async () => {
     const h = await setupDroidAdapter()
     const { connection } = await h.start()

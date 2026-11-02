@@ -27,12 +27,14 @@ import { registerRendererDocumentNavigation } from './renderer-document-navigati
 import { createRendererRecoveryReloadWatchdog } from './renderer-recovery-reload-watchdog'
 import { createRendererLaunchFailureBackoff } from './renderer-launch-failure-backoff'
 import { trackRendererLivenessAtDeath } from './renderer-liveness-at-death'
+import { installDroidComposerFocusMirror } from './droid-composer-focus-mirror'
 
 export type MainWindowFocusLifecycle = {
   dispose: () => void
   isFloatingPanelFocused: () => boolean
   isFloatingTerminalInputFocused: () => boolean
   isMarkdownEditorFocused: () => boolean
+  isDroidComposerFocused: () => boolean
   isRendererProcessGone: () => boolean
   isShortcutRecorderFocused: () => boolean
   isTerminalInputFocused: () => boolean
@@ -50,6 +52,7 @@ export function installMainWindowFocusLifecycle(args: {
   const { isWindowClosing, mainWindow, opts, reloadMainWindow, rendererWebContentsId } = args
   // Capture once: the BrowserWindow getter throws after close, but late IPC and webContents events can still arrive.
   const rendererWebContents = mainWindow.webContents
+  const composerFocus = installDroidComposerFocusMirror(mainWindow)
   // Mirror TipTap focus before main shortcut resolution so bare Cmd/Ctrl+B remains bold (docs/markdown-cmd-b-bold-design.md).
   let markdownEditorFocused = false
   let terminalInputFocused = false
@@ -138,6 +141,7 @@ export function installMainWindowFocusLifecycle(args: {
 
   // Dead renderers cannot clear focus mirrors; reset carve-outs so later lifecycles retain app shortcuts.
   const resetMarkdownEditorFocus = (): void => {
+    composerFocus.reset()
     editableContextMenuPopup.close()
     markdownEditorFocused = false
     pendingRichMarkdownContextMenuTableTarget = null
@@ -295,6 +299,7 @@ export function installMainWindowFocusLifecycle(args: {
   })
 
   const dispose = (): void => {
+    composerFocus.dispose()
     resetMarkdownEditorFocus()
     resetTerminalInputFocus()
     resetFloatingTerminalInputFocus()
@@ -313,6 +318,7 @@ export function installMainWindowFocusLifecycle(args: {
     isFloatingPanelFocused: () => floatingPanelFocused,
     isFloatingTerminalInputFocused: () => floatingTerminalInputFocused,
     isMarkdownEditorFocused: () => markdownEditorFocused,
+    isDroidComposerFocused: composerFocus.isFocused,
     isRendererProcessGone: () => rendererProcessGone,
     isShortcutRecorderFocused: () => shortcutRecorderFocused,
     isTerminalInputFocused: () => terminalInputFocused,

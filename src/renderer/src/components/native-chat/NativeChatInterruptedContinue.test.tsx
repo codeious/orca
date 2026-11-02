@@ -38,7 +38,8 @@ vi.mock('@/runtime/structured-agent-session-client', () => ({
   callStructuredAgentSession: mocks.call
 }))
 vi.mock('@/runtime/structured-agent-session-host-capability', () => ({
-  useStructuredAgentSessionHostCapabilityState: () => mocks.capability
+  useStructuredAgentSessionHostCapabilityState: () => mocks.capability,
+  useStructuredAgentSessionHostWaitsForReply: () => false
 }))
 vi.mock('../native-chat-restart-runtimes', () => ({
   useNativeChatTargetRestartResuming: () => mocks.resuming
