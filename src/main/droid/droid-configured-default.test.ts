@@ -202,13 +202,21 @@ async function droidHost(opts: { listing?: Promise<void> } = {}) {
     params: { provider: 'droid' },
     journal
   }
-  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the registry reads only the optional methods a declaration needs, and Droid declares none.
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: this double covers resting options, not provider mutations.
   const adapter = {} as StructuredAgentSessionAdapter
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the resting read touches only these members.
   const context = {
     deps: {
       adapter,
-      agents: new StructuredAgentRegistry([{ definition: DROID_AGENT, adapter }]),
+      agents: new StructuredAgentRegistry([
+        {
+          definition: {
+            ...DROID_AGENT,
+            capabilities: { ...DROID_AGENT.capabilities, compact: false, rewind: false }
+          },
+          adapter
+        }
+      ]),
       store: {
         getRecord: (sessionId: string) => records.get(sessionId),
         getConversation: conversation

@@ -56,7 +56,7 @@ export function mobileComposerCatalog({
   }
   const reported = structured?.reported
   const commands = structured
-    ? structuredSessionSlashCommands(agent, structured.conversationCommands, reported)
+    ? structuredSessionSlashCommands(agent, structured.conversationCommands, reported, false)
     : getMobileNativeChatCommands(agent)
   return {
     profile: getNativeChatAgentProfile(agent),

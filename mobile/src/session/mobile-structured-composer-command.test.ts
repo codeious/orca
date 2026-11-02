@@ -242,4 +242,17 @@ describe('mobile structured conversation commands', () => {
     expect(await dispatchMobileStructuredCommand({ ...input, text: 'hello' })).toBeNull()
     expect(sendRequest).not.toHaveBeenCalled()
   })
+  it('runs marked provider commands through the host, never the model', async () => {
+    const { input, sendRequest } = setup()
+    input.controller.agent = 'droid'
+    input.controller.sessionCommands = [{ name: 'context', kind: 'command', hostCommand: true }]
+    input.text = '/context'
+    expect(await dispatchMobileStructuredCommand(input)).toBe('accepted')
+    expect(sendRequest).toHaveBeenCalledWith(
+      'agentSession.hostCommand',
+      expect.objectContaining({ name: 'context', argument: '' }),
+      expect.anything()
+    )
+    expect(sendRequest).toHaveBeenCalledOnce()
+  })
 })

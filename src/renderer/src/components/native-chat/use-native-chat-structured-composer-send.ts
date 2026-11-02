@@ -72,7 +72,9 @@ export function useNativeChatStructuredComposerSend({
       text = resolveNativeChatPastedText(draftScopeKey, text)
       const hostCommand = isStructuredAgentSessionHostCommand(
         text,
-        structuredTransport.threadGoal !== undefined
+        structuredTransport.threadGoal !== undefined,
+        agent,
+        structuredTransport.sessionCommands
       )
       // Blocked hosts cannot take turns/conversation commands; option commands only configure later turns.
       if (

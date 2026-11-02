@@ -96,6 +96,7 @@ const FORK_ARGV: Partial<
 > = {
   claude: ({ id }) => ['claude', '--resume', id, '--fork-session'],
   codex: ({ id }) => ['codex', 'fork', id],
+  droid: ({ id }) => ['droid', '--fork', id],
   grok: ({ id }) => ['grok', '--resume', id, '--fork-session'],
   pi: ({ transcriptPath }) => (transcriptPath ? ['pi', '--fork', transcriptPath] : null)
 }

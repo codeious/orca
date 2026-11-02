@@ -1,4 +1,5 @@
 import type { DirectoryAccountAgentDefinition } from '../native-chat/agent-session-wire/structured-agent-definition'
+import { droidRewindMessageTarget } from './droid-rewind-target'
 
 export const DROID_HANDLE_TRANSPORT = 'droid-stream-jsonrpc'
 
@@ -10,9 +11,10 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
   agent: 'droid',
   handleTransport: DROID_HANDLE_TRANSPORT,
   accountHomeVariable: DROID_ACCOUNT_HOME_VARIABLE,
+  rewindMessageTarget: droidRewindMessageTarget,
   capabilities: {
-    rewind: false,
-    compact: false,
+    rewind: true,
+    compact: true,
     threadGoal: false,
     // The ring reads Droid's own context breakdown after each turn.
     contextUsage: true,
