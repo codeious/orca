@@ -1,0 +1,59 @@
+src/main/agent-hooks/posix-hook-command.ts
+  s_767cf5531d83f7::t_3cb15b8f7d38e5 9,16-17
+src/main/agent-hooks/server-droid-exit-watch-replay.test.ts
+  s_767cf5531d83f7::t_2c59bfa82c7a6c 1-227
+src/main/agent-hooks/server/server-agent-presence.ts
+  s_767cf5531d83f7::t_b468800972aace 16-17,30,49-56
+src/main/droid/droid-hook-process-capture.test.ts
+  s_767cf5531d83f7::t_9681b20ef7b090 1-93
+src/main/droid/droid-hook-script.ts
+  s_767cf5531d83f7::t_97e5879d210223 13-16,33,53,72
+src/shared/__fixtures__/droid-new-clear-hooks.jsonl
+  s_767cf5531d83f7::t_8fa0bef06abe2c 1-81
+src/shared/__fixtures__/droid-parent-process-hooks.jsonl
+  s_767cf5531d83f7::t_e2f84d6305b50e 1-140
+src/shared/__fixtures__/droid-slow-start-hooks.jsonl
+  s_767cf5531d83f7::t_71eb71a62336cf 1-270
+src/shared/__fixtures__/droid-subagent-hooks.jsonl
+  s_767cf5531d83f7::t_b13823e7872125 1-71
+src/shared/__fixtures__/droid-tree-resume-hooks.jsonl
+  s_767cf5531d83f7::t_8f18b0295cacbd 1-126
+src/shared/__fixtures__/droid-two-command-hooks.jsonl
+  s_767cf5531d83f7::t_6c52910b1d6a3f 1-39
+src/shared/agent-hook-listener-droid-driver.ts
+  s_767cf5531d83f7::t_338d34a5073745 1-106
+src/shared/agent-hook-listener-droid-ended-row.test.ts
+  s_767cf5531d83f7::t_b0522987343b27 1-100
+src/shared/agent-hook-listener-droid-sessions.test.ts
+  s_767cf5531d83f7::t_014fd9aeaaa416 1-168
+src/shared/agent-hook-listener.ts
+  s_767cf5531d83f7::t_5533ceb10e5f41 3-9,45,191,220-240,249-255,283,302
+src/shared/agent-hook-listener/providers/droid-hook-session.ts
+  s_767cf5531d83f7::t_962aaf96be2b10 1-30
+src/shared/agent-hook-listener/providers/droid-lease-expiry.ts
+  s_767cf5531d83f7::t_0d1ab8549f1890 1-30
+src/shared/agent-process-exit-watch.ts
+  s_767cf5531d83f7::t_bda5b64fc8b320 1-79
+src/shared/agent-process-presence-platform.test.ts
+  s_767cf5531d83f7::t_af6d06d1d227b8 2-5,21-46
+src/shared/droid-probe-log-replay.test-fixture.ts
+  s_767cf5531d83f7::t_bb6a135b32183f 1-278
+src/wsl-guest/agent-hook-request.ts
+  s_767cf5531d83f7::t_8e824d78a67943 127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1f2900fc3db8667c89bee18cfd88493787bc5a79",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
