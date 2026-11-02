@@ -70,6 +70,7 @@ function parseModel(value: unknown): AgentSessionModelOption | null {
     ...(row.effortsKnown === false ? { effortsKnown: false as const } : {}),
     ...(description ? { description } : {}),
     isDefault: row.isDefault === true,
+    ...(typeof row.isCustom === 'boolean' ? { isCustom: row.isCustom } : {}),
     ...(defaultEffort ? { defaultEffort } : {}),
     efforts: efforts.filter((effort): effort is AgentSessionOptionChoice => effort !== null),
     ...(typeof row.supportsFastMode === 'boolean'

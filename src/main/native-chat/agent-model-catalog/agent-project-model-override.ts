@@ -4,6 +4,7 @@ import { dirname, join, resolve } from 'node:path'
 import {
   claudeSettingsMayPickModel,
   codexConfigMayPickModel,
+  droidSettingsMayPickModel,
   ompSettingsMayPickModel,
   openCodeAgentFileMayPickModel,
   openCodeConfigMayPickModel,
@@ -78,6 +79,12 @@ const OPENCODE_PROJECT_MODEL_LAYERS: ProjectModelLayers = {
 }
 
 const PROJECT_MODEL_LAYERS: Readonly<Record<string, ProjectModelLayers>> = {
+  droid: {
+    files: files(
+      ['.factory/settings.json', '.factory/settings.local.json'],
+      droidSettingsMayPickModel
+    )
+  },
   codex: { files: files(['.codex/config.toml'], codexConfigMayPickModel) },
   claude: {
     files: files(

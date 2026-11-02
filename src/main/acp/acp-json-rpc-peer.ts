@@ -1,39 +1,25 @@
 import type { Readable, Writable } from 'node:stream'
-import { z } from 'zod'
 import { readAcpResponse } from './acp-response-settlement'
 import type { AcpResponse, AcpRequestOptions, AcpPendingResponse } from './acp-response-settlement'
 import {
   createIncrementalNdjsonFramer,
   encodeNdjson
 } from '../../shared/main-process-ndjson-framer'
-import { AcpConnectionClosedError, AcpRequestTimeoutError } from './acp-errors'
 import { AcpIncomingRequests } from './acp-incoming-requests'
 import { requestTimeout, resolveAcpPeerOptions, type AcpPeerOptions } from './acp-peer-limits'
 export type { AcpPeerOptions } from './acp-peer-limits'
-import { settleOversizedAcpLine } from './acp-oversized-lines'
-import { AcpWriteQueue } from './acp-write-queue'
+import { acpPeerDialect, type AcpPeerDialect } from './acp-peer-dialect'
+export type { AcpPeerDialect } from './acp-peer-dialect'
+import { ProviderStdioWriteQueue } from '../provider-process/provider-stdio-write-queue'
 import { detachAcpStreamErrorHandler } from './acp-stdio-error-boundary'
-import {
-  acpRpcEnvelopeSchema,
-  invalidAcpResponseEnvelope,
-  settleAcpResponse,
-  type AcpJsonRpcMessage
-} from './acp-rpc-envelope'
+import { settleAcpResponse, acpInvalidResponseId, type AcpJsonRpcMessage } from './acp-rpc-envelope'
 export type { AcpJsonRpcMessage } from './acp-rpc-envelope'
-export type AcpRequestContext = { id: string | number | null; signal: AbortSignal }
-export type AcpPeerHandlers = {
-  // Void is handled; unsupported methods throw -32601. Aborted handlers still reply or throw -32800.
-  onRequest?: (method: string, params: unknown, context: AcpRequestContext) => unknown
-  onNotification?: (method: string, params: unknown) => void
-  onDiagnostic?: (message: string) => void
-  onClose?: (error: Error) => void
-  /** Includes non-protocol output and unterminated final lines. */
-  onOtherLine?: (line: string, cut?: boolean) => void
-}
+import type { AcpPeerHandlers } from './acp-peer-handlers'
+export type { AcpPeerHandlers, AcpRequestContext } from './acp-peer-handlers'
 export class AcpJsonRpcPeer {
-  private readonly pending = new Map<number, AcpPendingResponse>()
+  private readonly pending = new Map<string | number, AcpPendingResponse>()
   private readonly incoming: AcpIncomingRequests
-  private readonly writer: AcpWriteQueue
+  private readonly writer: ProviderStdioWriteQueue
   private readonly framer: ReturnType<typeof createIncrementalNdjsonFramer>
   private nextId = 1
   private terminalError?: Error
@@ -44,26 +30,34 @@ export class AcpJsonRpcPeer {
     private readonly input: Readable,
     private readonly output: Writable,
     private readonly handlers: AcpPeerHandlers = {},
-    options: AcpPeerOptions = {}
+    options: AcpPeerOptions = {},
+    private readonly dialect: AcpPeerDialect = acpPeerDialect
   ) {
     const limits = resolveAcpPeerOptions(options)
     this.limits = limits
-    this.writer = new AcpWriteQueue(output, limits.maxQueuedWriteBytes, (error) =>
-      this.close(error)
+    this.writer = new ProviderStdioWriteQueue(
+      output,
+      limits.maxQueuedWriteBytes,
+      (error) => this.close(error),
+      {
+        capacity: () => new Error(`${dialect.label} write queue capacity exceeded`),
+        closed: () => dialect.errors.closed(`${dialect.label} output is not writable`)
+      }
     )
     this.incoming = new AcpIncomingRequests(
       handlers.onRequest,
       (message) => this.send(message),
       (error) => this.close(error),
       this.limits.maxIncomingRequests,
-      (message) => this.diagnose(message)
+      (message) => this.diagnose(message),
+      dialect
     )
     this.framer = createIncrementalNdjsonFramer(
       (record) => this.dispatch(record),
       (rejected) => {
         if (rejected.kind === 'line-too-long') {
           this.handlers.onOtherLine?.(rejected.prefix, true)
-          settleOversizedAcpLine(rejected, {
+          dialect.onOversizedLine(rejected, {
             rejectPending: (id, error) => this.rejectPending(id, error),
             refuse: (id, error) => this.incoming.refuse(id, error),
             close: (error) => this.close(error),
@@ -100,7 +94,7 @@ export class AcpJsonRpcPeer {
   request(
     method: string,
     params: unknown,
-    options?: { timeoutMs?: number | null }
+    options?: { timeoutMs?: number | null; onId?: (id: string | number) => void }
   ): Promise<unknown>
   request(
     method: string,
@@ -111,7 +105,7 @@ export class AcpJsonRpcPeer {
       return Promise.reject(this.terminalError)
     }
     if (this.pending.size >= this.limits.maxPendingRequests) {
-      return Promise.reject(new Error('ACP pending request capacity exceeded'))
+      return Promise.reject(new Error(`${this.dialect.label} pending request capacity exceeded`))
     }
     let timeoutMs: number | null
     try {
@@ -121,8 +115,10 @@ export class AcpJsonRpcPeer {
     } catch (error) {
       return Promise.reject(error)
     }
-    const id = this.nextId++
+    const id = this.dialect.requestId(this.nextId++)
     const controller = new AbortController()
+    // An echo of the id can reach the caller before the reply does.
+    options.onId?.(id)
     return new Promise((resolve, reject) => {
       const settle = (response: AcpResponse): void => {
         try {
@@ -136,7 +132,7 @@ export class AcpJsonRpcPeer {
           ? undefined
           : setTimeout(() => {
               this.pending.delete(id)
-              const error = new AcpRequestTimeoutError(method, timeoutMs)
+              const error = this.dialect.errors.timeout(method, timeoutMs)
               controller.abort(error)
               reject(error)
             }, timeoutMs)
@@ -167,12 +163,12 @@ export class AcpJsonRpcPeer {
     this.incoming.cancel()
   }
 
-  close(error: Error = new AcpConnectionClosedError()): void {
+  close(error: Error = this.dialect.errors.closed()): void {
     this.shutdown(error, false)
   }
 
   /** Reject calls immediately; the process owner bounds how long final notifications can arrive. */
-  drainNotifications(error: Error = new AcpConnectionClosedError()): void {
+  drainNotifications(error: Error = this.dialect.errors.closed()): void {
     this.shutdown(error, true)
   }
 
@@ -229,7 +225,7 @@ export class AcpJsonRpcPeer {
   private readonly onError = (error: Error): void => this.close(error)
   private otherLine(line: string): void {
     this.handlers.onOtherLine?.(line)
-    this.diagnose('Ignored ACP line: invalid-json')
+    this.diagnose(`Ignored ${this.dialect.label} line: invalid-json`)
   }
   private diagnose(message: string): void {
     try {
@@ -244,13 +240,16 @@ export class AcpJsonRpcPeer {
       return Promise.reject(this.terminalError)
     }
     try {
-      return this.writer.write(encodeNdjson(message, this.limits.maxLineBytes), signal)
+      return this.writer.write(
+        encodeNdjson(this.dialect.stamp(message), this.limits.maxLineBytes),
+        signal
+      )
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  private rejectPending(id: number, error: (method: string) => Error): void {
+  private rejectPending(id: string | number, error: (method: string) => Error): void {
     const pending = this.pending.get(id)
     if (pending) {
       this.pending.delete(id)
@@ -263,24 +262,24 @@ export class AcpJsonRpcPeer {
     if (this.closed && !this.drainingNotifications) {
       return
     }
-    const parsed = acpRpcEnvelopeSchema.safeParse(record)
-    if (!parsed.success) {
-      this.diagnose('Ignored invalid ACP JSON-RPC envelope')
-      const response = z
-        .object({ id: z.number(), method: z.undefined().optional() })
-        .safeParse(record)
-      if (response.success) {
-        this.rejectPending(response.data.id, invalidAcpResponseEnvelope(record))
+    const { label, errors } = this.dialect
+    const invalidEnvelope = () =>
+      errors.invalidResponse(`Invalid ${label} response envelope`, record)
+    const frame = this.dialect.read(record)
+    if (!frame) {
+      this.diagnose(`Ignored invalid ${label} JSON-RPC envelope`)
+      const responseId = acpInvalidResponseId(record)
+      if (responseId !== undefined) {
+        this.rejectPending(responseId, invalidEnvelope)
       }
       return
     }
-    const frame = parsed.data
     if (this.drainingNotifications && (frame.id !== undefined || frame.method === undefined)) {
       return
     }
     if (frame.method !== undefined) {
       if ('result' in frame || 'error' in frame) {
-        this.diagnose('Ignored invalid ACP request')
+        this.diagnose(`Ignored invalid ${label} request`)
         return
       }
       if (frame.id !== undefined) {
@@ -290,18 +289,18 @@ export class AcpJsonRpcPeer {
       try {
         this.handlers.onNotification?.(frame.method, frame.params)
       } catch (error) {
-        this.diagnose(`ACP notification handler failed: ${String(error)}`)
+        this.diagnose(`${label} notification handler failed: ${String(error)}`)
       }
       return
     }
     if ('result' in frame === 'error' in frame) {
-      this.diagnose('Ignored invalid ACP response')
-      if (typeof frame.id === 'number') {
-        this.rejectPending(frame.id, invalidAcpResponseEnvelope(record))
+      this.diagnose(`Ignored invalid ${label} response`)
+      if (frame.id != null) {
+        this.rejectPending(frame.id, invalidEnvelope)
       }
       return
     }
-    if (typeof frame.id !== 'number') {
+    if (frame.id == null) {
       return
     }
     const pending = this.pending.get(frame.id)
@@ -310,6 +309,6 @@ export class AcpJsonRpcPeer {
     }
     this.pending.delete(frame.id)
     clearTimeout(pending.timer)
-    settleAcpResponse(frame, pending, (message) => this.diagnose(message))
+    settleAcpResponse(frame, pending, (message) => this.diagnose(message), this.dialect)
   }
 }

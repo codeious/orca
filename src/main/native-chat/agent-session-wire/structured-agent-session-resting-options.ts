@@ -121,6 +121,11 @@ export async function readStructuredAgentSessionOptionsAtRest(
         ? false
         : null
       : decodeStructuredAgentSessionOptionValue('fastMode', saved.fastMode)
+  const planMode = rules?.acceptsKey('planMode')
+    ? saved.planMode === undefined
+      ? false
+      : decodeStructuredAgentSessionOptionValue('planMode', saved.planMode)
+    : null
   // An unknown model is one the client already treats as unconfirmed. Only a real listing names the
   // account's default; a built-in list's default is a guess, so with none the client keeps its own.
   const model =
@@ -150,6 +155,7 @@ export async function readStructuredAgentSessionOptionsAtRest(
       ...(model ? { model } : {}),
       ...(effort ? { effort } : {}),
       ...(typeof fastMode === 'boolean' ? { fastMode } : {}),
+      ...(typeof planMode === 'boolean' ? { planMode } : {}),
       ...(serviceTier ? { serviceTier } : {}),
       defaulted
     }
