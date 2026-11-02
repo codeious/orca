@@ -21,6 +21,7 @@ import type { CreateMainWindowOptions } from './main-window-contracts'
 import type { MainWindowFocusLifecycle } from './main-window-focus-lifecycle'
 import { sendResolvedWindowShortcutAction } from './main-window-shortcut-actions'
 import { isMacAppPasteInput } from './mac-app-paste-input'
+import { isDroidComposerMainWindowChord } from '../../shared/droid-composer-keys'
 
 export function installMainWindowShortcutRouting(args: {
   focus: MainWindowFocusLifecycle
@@ -112,6 +113,9 @@ export function installMainWindowShortcutRouting(args: {
 
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (focus.isShortcutRecorderFocused()) {
+      return
+    }
+    if (focus.isDroidComposerFocused() && isDroidComposerMainWindowChord(input, process.platform)) {
       return
     }
 

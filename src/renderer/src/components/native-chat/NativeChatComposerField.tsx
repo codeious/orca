@@ -326,6 +326,7 @@ export function NativeChatComposerField({
             ) : null}
             <NativeChatPromptEditor
               key={draftScopeKey}
+              {...(agent && !editSession ? { agent } : {})}
               scopeKey={draftScopeKey}
               positionTarget={positionTarget}
               imageRow={imageRow}

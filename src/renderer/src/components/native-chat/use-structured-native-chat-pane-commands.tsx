@@ -15,6 +15,8 @@ import {
 } from './use-native-chat-context-menu'
 import { matchNativeChatSplitShortcut } from './native-chat-split-shortcut'
 import { runNativeChatSplitTarget } from './native-chat-layout-actions'
+import { getNativeChatComposerKeyClaims } from '../../../../shared/native-chat/native-chat-agent-profiles'
+import { copyNativeChatTranscriptSelection } from './native-chat-selected-text'
 
 export function useStructuredNativeChatPaneCommands({
   pane,
@@ -73,6 +75,14 @@ export function useStructuredNativeChatPaneCommands({
   })
   const onKeyDownCapture = useCallback<KeyboardEventHandler<HTMLDivElement>>(
     (event) => {
+      if (
+        !event.defaultPrevented &&
+        getNativeChatComposerKeyClaims(pane.agent, getShortcutPlatform()).includes('ctrlC') &&
+        copyNativeChatTranscriptSelection(event, rootRef.current)
+      ) {
+        event.stopPropagation()
+        return
+      }
       if (event.repeat) {
         return
       }
@@ -100,7 +110,7 @@ export function useStructuredNativeChatPaneCommands({
       event.preventDefault()
       event.stopPropagation()
     },
-    [groupId, keybindings, tabId, terminalPaneActions]
+    [groupId, keybindings, tabId, terminalPaneActions, pane.agent, rootRef]
   )
 
   return {
