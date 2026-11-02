@@ -1,6 +1,6 @@
 import { classifyJsonRpcPrefix } from '../../shared/json-rpc-record-prefix'
 import type { NdjsonRejectedRecord } from '../../shared/main-process-ndjson-framer'
-import { AcpFrameTooLargeError, AcpRpcError } from './acp-errors'
+import { AcpFrameTooLargeError, AcpRpcError, JSON_RPC_INVALID_REQUEST } from './acp-errors'
 
 export type AcpOversizedLineTarget = {
   rejectPending: (id: number, error: (method: string) => Error) => void
@@ -20,7 +20,7 @@ export function settleOversizedAcpLine(
   if (record.kind === 'server-request') {
     target.refuse(
       record.id,
-      new AcpRpcError(-32600, `ACP request exceeds ${maxLineBytes} byte limit`, {
+      new AcpRpcError(JSON_RPC_INVALID_REQUEST, `ACP request exceeds ${maxLineBytes} byte limit`, {
         method: record.method,
         observedBytes
       })

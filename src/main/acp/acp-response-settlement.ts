@@ -1,5 +1,10 @@
 import type { z } from 'zod'
-import { AcpAgentError, AcpInvalidResponseError, acpAuthRequiredError } from './acp-errors'
+import {
+  AcpAgentError,
+  AcpInvalidResponseError,
+  acpAuthRequiredError,
+  ACP_AUTH_REQUIRED
+} from './acp-errors'
 import type { AcpJsonRpcPeer } from './acp-json-rpc-peer'
 import { acpStepBound } from './acp-peer-limits'
 
@@ -15,7 +20,7 @@ export function callAcpSession<T>(
     settle: (response) => {
       if ('error' in response) {
         const error = response.error
-        if (error instanceof AcpAgentError && error.code === -32000) {
+        if (error instanceof AcpAgentError && error.code === ACP_AUTH_REQUIRED) {
           answered?.(false)
           throw acpAuthRequiredError(error)
         }

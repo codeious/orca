@@ -2,7 +2,7 @@ import { z } from 'zod'
 import type { ProviderTimelineEvent } from '../native-chat/agent-session-timeline/provider-timeline-event'
 import type { AcpDialect, AcpRequestPresentation } from './acp-dialects/acp-dialect'
 import type { AcpToolTimeline } from './acp-tool-timeline'
-import { AcpRpcError } from './acp-errors'
+import { AcpRpcError, JSON_RPC_INVALID_PARAMS } from './acp-errors'
 import { readAcpPermissionRequest } from './acp-permission-requests'
 
 export const pendingAcpResolution = {
@@ -19,7 +19,7 @@ export function acpPermissionPresentation(
   // Runtime parsing already reported dropped fields.
   const request = readAcpPermissionRequest(params, () => {})
   if (!request) {
-    throw new AcpRpcError(-32602, 'Invalid ACP permission request')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid ACP permission request')
   }
   const { toolCall, options } = request
   return {
@@ -42,7 +42,10 @@ export function acpPermissionPresentation(
         response.kind !== 'option' ||
         !options.some((option) => option.optionId === response.optionId)
       ) {
-        throw new AcpRpcError(-32602, 'Permission answer must select an offered option')
+        throw new AcpRpcError(
+          JSON_RPC_INVALID_PARAMS,
+          'Permission answer must select an offered option'
+        )
       }
       return { outcome: { outcome: 'selected', optionId: response.optionId } }
     }
@@ -72,7 +75,7 @@ export function translateAcpRequest(
 } {
   const session = requestSessionSchema.safeParse(params)
   if (!session.success || session.data.sessionId !== options.sessionId) {
-    throw new AcpRpcError(-32602, 'ACP request belongs to an unknown session')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'ACP request belongs to an unknown session')
   }
   const tool = requestToolSchema.safeParse(params)
   const callId = tool.success ? (tool.data.toolCall?.toolCallId ?? tool.data.toolCallId) : undefined

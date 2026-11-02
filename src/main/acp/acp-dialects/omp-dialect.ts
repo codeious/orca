@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import type { ToolCallContent, ToolCallUpdate } from '../generated/acp-protocol.generated'
-import type { AcpAgentError } from '../acp-errors'
+import { type AcpAgentError, JSON_RPC_INTERNAL_ERROR } from '../acp-errors'
 import type { AcpCompactionReply, AcpDialect } from './acp-dialect'
 
 // Read raw result text instead of the repeated command echo in content.
@@ -107,7 +107,7 @@ function compactionReply(text: string): AcpCompactionReply | undefined {
 }
 
 function errorDetails(error: AcpAgentError): string | undefined {
-  return error.code === -32603
+  return error.code === JSON_RPC_INTERNAL_ERROR
     ? promptErrorDataSchema.safeParse(error.data).data?.details
     : undefined
 }

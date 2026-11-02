@@ -12,7 +12,7 @@ import { STRUCTURED_CHILD_ENV_TO_DELETE } from '../runtime/structured-session-ch
 import { resolveAcpLaunchInvocation } from './acp-structured-launch-resolution'
 import { prepareAcpLaunch } from './acp-structured-launch-preparation'
 import { acpPrivateTempConnect } from './acp-private-temp'
-import { AcpRpcError } from './acp-errors'
+import { AcpRpcError, JSON_RPC_METHOD_NOT_FOUND } from './acp-errors'
 import type { AcpStructuredConnection } from './acp-structured-connection'
 import type { AcpStructuredSessionAdapterDeps } from './acp-structured-session-adapter-deps'
 
@@ -129,7 +129,7 @@ export class AcpTextTasks {
       const taskSignal = AbortSignal.any([signal, failed.signal])
       const reject = (): never => {
         const error = new AcpRpcError(
-          -32601,
+          JSON_RPC_METHOD_NOT_FOUND,
           'Tools and user input are unavailable during chat naming'
         )
         failed.abort(error)
