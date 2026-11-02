@@ -1,5 +1,10 @@
 import type { z } from 'zod'
-import { AcpAuthRequiredError, AcpRpcError, acpAuthRequiredError } from './acp-errors'
+import {
+  AcpAuthRequiredError,
+  AcpRpcError,
+  acpAuthRequiredError,
+  JSON_RPC_METHOD_NOT_FOUND
+} from './acp-errors'
 import {
   NewSessionResponseSchema,
   LoadSessionResponseSchema,
@@ -59,7 +64,7 @@ export async function setupAcpSession(
         response: await request('session/resume', { ...params, sessionId }, resumeSessionSchema)
       }
     }
-    throw new AcpRpcError(-32601, 'ACP agent cannot load or resume this session')
+    throw new AcpRpcError(JSON_RPC_METHOD_NOT_FOUND, 'ACP agent cannot load or resume this session')
   }
   try {
     return await setup()

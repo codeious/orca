@@ -1,6 +1,6 @@
 import type { Readable, Writable } from 'node:stream'
 import { z } from 'zod'
-import { AcpRpcError } from './acp-errors'
+import { AcpRpcError, JSON_RPC_INVALID_PARAMS, JSON_RPC_METHOD_NOT_FOUND } from './acp-errors'
 import { callAcpSession } from './acp-response-settlement'
 import { AcpJsonRpcPeer, type AcpPeerOptions, type AcpRequestContext } from './acp-json-rpc-peer'
 import {
@@ -109,7 +109,7 @@ export class AcpSessionRuntime {
       .then((response) => {
         if (response.protocolVersion !== ACP_PROTOCOL_VERSION) {
           const error = new AcpRpcError(
-            -32602,
+            JSON_RPC_INVALID_PARAMS,
             `Unsupported ACP protocol version: ${response.protocolVersion}`
           )
           this.peer.close(error)
@@ -263,14 +263,14 @@ export class AcpSessionRuntime {
   private handleRequest(method: string, params: unknown, context: AcpRequestContext): unknown {
     if (method !== 'session/request_permission') {
       if (!this.options.onRequest) {
-        throw new AcpRpcError(-32601, `Unknown ACP client method: ${method}`)
+        throw new AcpRpcError(JSON_RPC_METHOD_NOT_FOUND, `Unknown ACP client method: ${method}`)
       }
       return this.options.onRequest(method, params, context)
     }
     const diagnose = (message: string): void => this.diagnose(message)
     const request = readAcpPermissionRequest(params, diagnose)
     if (!request) {
-      throw new AcpRpcError(-32602, 'Invalid ACP permission request')
+      throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid ACP permission request')
     }
     // The caller decides whether agent-initiated turns may request permission.
     if (request.sessionId !== this.started?.sessionId) {

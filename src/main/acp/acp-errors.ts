@@ -1,6 +1,15 @@
 import type { AuthMethod } from './generated/acp-protocol.generated'
 import { withProviderRequestTimeout } from '../provider-process/provider-request-timeout'
 
+export const JSON_RPC_INVALID_REQUEST = -32600
+export const JSON_RPC_METHOD_NOT_FOUND = -32601
+export const JSON_RPC_INVALID_PARAMS = -32602
+export const JSON_RPC_INTERNAL_ERROR = -32603
+/** The code ACP agents answer with when the user has not signed in. */
+export const ACP_AUTH_REQUIRED = -32000
+export const ACP_RESOURCE_NOT_FOUND = -32002
+export const ACP_REQUEST_CANCELLED = -32800
+
 export class AcpRpcError extends Error {
   constructor(
     readonly code: number,
@@ -26,7 +35,7 @@ export class AcpAuthRequiredError extends AcpAgentError {
     data?: unknown,
     readonly authMethods: AuthMethod[] = []
   ) {
-    super(-32000, message, data)
+    super(ACP_AUTH_REQUIRED, message, data)
     this.name = 'AcpAuthRequiredError'
   }
 }
@@ -51,7 +60,7 @@ export class AcpInvalidResponseError extends AcpRpcError {
     raw: unknown,
     readonly issues?: unknown
   ) {
-    super(-32603, message, raw)
+    super(JSON_RPC_INTERNAL_ERROR, message, raw)
     this.name = 'AcpInvalidResponseError'
   }
 }
