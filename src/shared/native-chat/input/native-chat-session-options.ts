@@ -25,6 +25,8 @@ export type SessionOptionDescriptor = {
   label: string
   description?: string
   category?: 'model' | 'thought_level' | 'model_config' | 'mode'
+  /** Session-only values must never become model defaults for the next launch. */
+  scope?: 'session'
   kind:
     | {
         type: 'select'
