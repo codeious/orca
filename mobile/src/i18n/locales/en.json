@@ -2809,7 +2809,8 @@
       "dispatchUnconfirmed": "Sent to the agent — not confirmed",
       "permissions": "Permissions",
       "applying": "Applying…",
-      "optionsSection": "Options"
+      "optionsSection": "Options",
+      "modelDroidPermissionsLabel": "Model, {{value}}, permissions {{level}}"
     },
     "sessionOptionRows": {
       "defaultMarker": "Default",
@@ -2865,7 +2866,15 @@
       "chooseInAgentPicker": "Choose in agent picker…",
       "setWhenSessionStarts": "Set when the session starts.",
       "availableAfterSessionStarts": "Available after the session starts.",
-      "sessionOptions": "Session options"
+      "sessionOptions": "Session options",
+      "droidPermissionOff": "Off",
+      "droidPermissionOffDescription": "Asks before edits and commands",
+      "droidPermissionLow": "Low",
+      "droidPermissionLowDescription": "Edits files and runs read-only commands; asks for the rest",
+      "droidPermissionMedium": "Medium",
+      "droidPermissionMediumDescription": "Also runs reversible commands like installs, builds and local commits; asks for the rest",
+      "droidPermissionHigh": "High",
+      "droidPermissionHighDescription": "Runs commands without asking, except ones Droid blocks"
     },
     "streamFrame": {
       "streamFailed": "Transcript stream failed",

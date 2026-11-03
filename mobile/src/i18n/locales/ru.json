@@ -366,7 +366,15 @@
       "toggleOption": "Переключить {{value0}}",
       "ultra": "Предельный",
       "xhigh": "Очень высокий",
-      "xhighShort": "Очень выс."
+      "xhighShort": "Очень выс.",
+      "droidPermissionOff": "Выкл.",
+      "droidPermissionOffDescription": "Спрашивает перед правками и командами",
+      "droidPermissionLow": "Низкий",
+      "droidPermissionLowDescription": "Редактирует файлы и выполняет команды только для чтения; для остального спрашивает",
+      "droidPermissionMedium": "Средний",
+      "droidPermissionMediumDescription": "Также выполняет обратимые команды, например установку, сборку и локальные коммиты; для остального спрашивает",
+      "droidPermissionHigh": "Высокий",
+      "droidPermissionHighDescription": "Выполняет команды без подтверждения, кроме тех, которые блокирует Droid"
     },
     "sessionOptionPickers": {
       "agentWorking": "Агент работает",
@@ -377,7 +385,8 @@
       "permissions": "Разрешения",
       "permissionsLabel": "Разрешения: {{value}}",
       "settingsLocked": "Настройки модели станут доступны после завершения текущего ответа.",
-      "workingAnnouncement": "Агент работает. Настройки модели станут доступны после завершения текущего ответа."
+      "workingAnnouncement": "Агент работает. Настройки модели станут доступны после завершения текущего ответа.",
+      "modelDroidPermissionsLabel": "Модель: {{value}}, разрешения: {{level}}"
     },
     "sessionOptionRows": {
       "defaultMarker": "По умолчанию",

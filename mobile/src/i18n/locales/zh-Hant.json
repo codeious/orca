@@ -358,7 +358,15 @@
       "toggleOption": "切換{{value0}}",
       "ultra": "極致",
       "xhigh": "極高",
-      "xhighShort": "極高"
+      "xhighShort": "極高",
+      "droidPermissionOff": "關閉",
+      "droidPermissionOffDescription": "編輯和執行命令前會詢問",
+      "droidPermissionLow": "低",
+      "droidPermissionLowDescription": "編輯檔案並執行唯讀命令；其餘操作會詢問",
+      "droidPermissionMedium": "中",
+      "droidPermissionMediumDescription": "也會執行安裝、建置和本機提交等可復原的命令；其餘操作會詢問",
+      "droidPermissionHigh": "高",
+      "droidPermissionHighDescription": "不經詢問便執行命令，但 Droid 封鎖的命令除外"
     },
     "sessionOptionPickers": {
       "agentWorking": "代理程式正在執行",
@@ -369,7 +377,8 @@
       "permissions": "權限",
       "permissionsLabel": "權限，{{value}}",
       "settingsLocked": "本回合結束後即可變更模型設定。",
-      "workingAnnouncement": "代理程式正在執行。本回合結束後即可變更模型設定。"
+      "workingAnnouncement": "代理程式正在執行。本回合結束後即可變更模型設定。",
+      "modelDroidPermissionsLabel": "模型，{{value}}，權限 {{level}}"
     },
     "sessionOptionRows": {
       "defaultMarker": "預設",

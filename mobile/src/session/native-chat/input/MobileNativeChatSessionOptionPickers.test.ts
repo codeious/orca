@@ -15,6 +15,7 @@ import { act, create, type ReactTestRenderer } from 'react-test-renderer'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AccessibilityInfo, Platform } from 'react-native'
 import { colors } from '../../../theme/mobile-theme'
+import { activateMobileUiLocale } from '../../../i18n/mobile-i18n'
 import { structuredAgentSessionPermissionDescriptor } from '../../../../../src/shared/agent-session/options/structured-agent-session-permission-option'
 import { createStructuredAgentSessionOptionState } from '../../../../../src/shared/agent-session/options/structured-agent-session-options'
 import type {
@@ -180,11 +181,12 @@ describe('MobileNativeChatSessionOptionPickers', () => {
     invokeAction.mockReset()
     invokeAction.mockResolvedValue(true)
   })
-  afterEach(() => {
+  afterEach(async () => {
     act(() => {
       renderer?.unmount()
     })
     renderer = null
+    await activateMobileUiLocale('en')
   })
 
   it('consumes a refused page without replay, then permits a fresh open and permission pick', async () => {
@@ -324,6 +326,95 @@ describe('MobileNativeChatSessionOptionPickers', () => {
     } finally {
       await view.unmount()
     }
+  })
+
+  it.each([
+    ['off', 'Off', 'Hand'],
+    ['low', 'Low', 'FilePenLine'],
+    ['medium', 'Medium', 'ShieldCheck'],
+    ['high', 'High', 'ShieldAlert']
+  ])(
+    'shows Droid %s once as Permissions and applies an autonomy pick during a reply',
+    async (value, label, icon) => {
+      mount(
+        [
+          { ...MODEL_DESCRIPTOR, transport: 'agent-session' },
+          {
+            ...PERMISSION_DESCRIPTOR,
+            id: 'autonomyLevel',
+            kind: { type: 'select', currentValue: value, choices: DROID_CHOICES }
+          }
+        ],
+        true
+      )
+      await act(async () => pill('Model').props.onPress())
+      const permission = rowByText('Permissions')
+      expect(permission.props.accessibilityLabel).toBe(`Permissions, ${label}`)
+      expect(
+        findAllByHostType(renderer!.root, 'Text').filter(
+          (node) => node.props.children === 'Permissions'
+        )
+      ).toHaveLength(1)
+      expect(findByHostType(permission, icon).props.color).toBe(
+        value === 'high' ? colors.statusAmber : colors.textSecondary
+      )
+      if (value === 'high') {
+        const high = findAllByHostType(permission, 'Text').find(
+          (node) => node.props.children === 'High'
+        )
+        expect(high?.props.style).toContainEqual({ color: colors.statusAmber })
+        expect(pill('Model').props.accessibilityLabel).toBe('Model, Sonnet 5, permissions High')
+      }
+      await act(async () => permission.props.onPress())
+      for (const choice of DROID_CHOICES) {
+        const row = rowByText(choice.label)
+        expect(row.props.accessibilityRole).toBe('radio')
+        expect(row.props.accessibilityState).toMatchObject({
+          checked: choice.value === value,
+          disabled: false
+        })
+        expect(
+          findAllByHostType(row, 'Text').some((node) => node.props.children === choice.description)
+        ).toBe(true)
+      }
+      expect(findByHostType(rowByText('High'), 'ShieldAlert').props.color).toBe(colors.statusAmber)
+      await act(async () => rowByText('Low').props.onPress())
+      expect(setOption).toHaveBeenCalledExactlyOnceWith('autonomyLevel', 'low')
+      expect(rowByText('Sonnet 5').props.accessibilityRole).toBe('radio')
+    }
+  )
+
+  it('translates Droid permissions on a language switch and keeps only the offered levels', async () => {
+    const descriptor: SessionOptionDescriptor = {
+      ...PERMISSION_DESCRIPTOR,
+      id: 'autonomyLevel',
+      kind: {
+        type: 'select',
+        currentValue: 'off',
+        choices: DROID_CHOICES.filter(
+          (choice) => choice.value === 'off' || choice.value === 'medium'
+        )
+      }
+    }
+    const update = mount([MODEL_DESCRIPTOR, descriptor], false, 'model')
+    expect(rowByText('Permissions').props.accessibilityLabel).toBe('Permissions, Off')
+    await act(async () => activateMobileUiLocale('fr'))
+    expect(rowByText('Autorisations').props.accessibilityLabel).toBe('Autorisations, Désactivé')
+    await act(async () => rowByText('Autorisations').props.onPress())
+    expect(
+      findAllByHostType(renderer!.root, 'Text').some(
+        (node) => node.props.children === 'Demande avant les modifications et les commandes'
+      )
+    ).toBe(true)
+    expect(
+      findAllByHostType(renderer!.root, 'Pressable')
+        .filter((node) => node.props.accessibilityRole === 'radio')
+        .map((node) => node.props.accessibilityLabel)
+    ).toEqual(['Désactivé', 'Moyen'])
+    update(false, [MODEL_DESCRIPTOR, { ...descriptor, settable: false }])
+    expect(rowByText('Désactivé').props.accessibilityState.disabled).toBe(true)
+    expect(rowByText('Moyen').props.accessibilityState.disabled).toBe(true)
+    expect(setOption).not.toHaveBeenCalled()
   })
 
   it('renders nothing without a model descriptor', () => {
@@ -654,6 +745,26 @@ describe('MobileNativeChatSessionOptionPickers', () => {
 const PERMISSION_CHOICES: SessionOptionSelectChoice[] = [
   { value: 'ask', label: 'Ask for approval' },
   { value: 'full-access', label: 'Full access' }
+]
+
+const DROID_CHOICES: SessionOptionSelectChoice[] = [
+  { value: 'off', label: 'Off', description: 'Asks before edits and commands' },
+  {
+    value: 'low',
+    label: 'Low',
+    description: 'Edits files and runs read-only commands; asks for the rest'
+  },
+  {
+    value: 'medium',
+    label: 'Medium',
+    description:
+      'Also runs reversible commands like installs, builds and local commits; asks for the rest'
+  },
+  {
+    value: 'high',
+    label: 'High',
+    description: 'Runs commands without asking, except ones Droid blocks'
+  }
 ]
 
 const PERMISSION_DESCRIPTOR: SessionOptionDescriptor = {

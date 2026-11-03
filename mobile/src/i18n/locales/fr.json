@@ -362,7 +362,15 @@
       "toggleOption": "Basculer {{value0}}",
       "ultra": "Ultra",
       "xhigh": "Extra élevé",
-      "xhighShort": "Extra"
+      "xhighShort": "Extra",
+      "droidPermissionOff": "Désactivé",
+      "droidPermissionOffDescription": "Demande avant les modifications et les commandes",
+      "droidPermissionLow": "Faible",
+      "droidPermissionLowDescription": "Modifie les fichiers et exécute les commandes en lecture seule ; demande pour le reste",
+      "droidPermissionMedium": "Moyen",
+      "droidPermissionMediumDescription": "Exécute aussi les commandes réversibles comme les installations, les compilations et les commits locaux ; demande pour le reste",
+      "droidPermissionHigh": "Élevé",
+      "droidPermissionHighDescription": "Exécute les commandes sans demander, sauf celles que Droid bloque"
     },
     "sessionOptionPickers": {
       "agentWorking": "L'agent travaille",
@@ -373,7 +381,8 @@
       "permissions": "Autorisations",
       "permissionsLabel": "Autorisations, {{value}}",
       "settingsLocked": "Les paramètres du modèle seront déverrouillés à la fin de ce tour.",
-      "workingAnnouncement": "L'agent travaille. Les paramètres du modèle seront déverrouillés à la fin de ce tour."
+      "workingAnnouncement": "L'agent travaille. Les paramètres du modèle seront déverrouillés à la fin de ce tour.",
+      "modelDroidPermissionsLabel": "Modèle, {{value}}, autorisations {{level}}"
     },
     "sessionOptionRows": {
       "defaultMarker": "Par défaut",

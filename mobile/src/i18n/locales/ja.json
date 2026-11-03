@@ -358,7 +358,15 @@
       "toggleOption": "{{value0}}を切り替える",
       "ultra": "ウルトラ",
       "xhigh": "最高",
-      "xhighShort": "最高"
+      "xhighShort": "最高",
+      "droidPermissionOff": "オフ",
+      "droidPermissionOffDescription": "編集やコマンドの実行前に確認します",
+      "droidPermissionLow": "低",
+      "droidPermissionLowDescription": "ファイルを編集し、読み取り専用コマンドを実行します。それ以外は確認します",
+      "droidPermissionMedium": "中",
+      "droidPermissionMediumDescription": "インストール、ビルド、ローカルコミットなど元に戻せるコマンドも実行します。それ以外は確認します",
+      "droidPermissionHigh": "高",
+      "droidPermissionHighDescription": "Droid がブロックするものを除き、確認せずにコマンドを実行します"
     },
     "sessionOptionPickers": {
       "agentWorking": "Agent が作業中",
@@ -369,7 +377,8 @@
       "permissions": "権限",
       "permissionsLabel": "権限、{{value}}",
       "settingsLocked": "このターンが完了すると、モデル設定を変更できます。",
-      "workingAnnouncement": "Agent が作業中です。このターンが完了すると、モデル設定を変更できます。"
+      "workingAnnouncement": "Agent が作業中です。このターンが完了すると、モデル設定を変更できます。",
+      "modelDroidPermissionsLabel": "モデル、{{value}}、権限 {{level}}"
     },
     "sessionOptionRows": {
       "defaultMarker": "既定",

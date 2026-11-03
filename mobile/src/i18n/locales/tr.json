@@ -358,7 +358,15 @@
       "toggleOption": "{{value0}} aç/kapat",
       "ultra": "Ultra",
       "xhigh": "Ekstra yüksek",
-      "xhighShort": "Çok yüksek"
+      "xhighShort": "Çok yüksek",
+      "droidPermissionOff": "Kapalı",
+      "droidPermissionOffDescription": "Düzenleme ve komutlardan önce sorar",
+      "droidPermissionLow": "Düşük",
+      "droidPermissionLowDescription": "Dosyaları düzenler ve salt okunur komutları çalıştırır; diğer işlemler için sorar",
+      "droidPermissionMedium": "Orta",
+      "droidPermissionMediumDescription": "Kurulum, derleme ve yerel commit gibi geri alınabilir komutları da çalıştırır; diğer işlemler için sorar",
+      "droidPermissionHigh": "Yüksek",
+      "droidPermissionHighDescription": "Droid'un engelledikleri dışında komutları sormadan çalıştırır"
     },
     "sessionOptionPickers": {
       "agentWorking": "Ajan çalışıyor",
@@ -369,7 +377,8 @@
       "permissions": "İzinler",
       "permissionsLabel": "İzinler, {{value}}",
       "settingsLocked": "Bu tur tamamlandığında model ayarlarının kilidi açılır.",
-      "workingAnnouncement": "Ajan çalışıyor. Bu tur tamamlandığında model ayarlarının kilidi açılır."
+      "workingAnnouncement": "Ajan çalışıyor. Bu tur tamamlandığında model ayarlarının kilidi açılır.",
+      "modelDroidPermissionsLabel": "Model, {{value}}, izinler {{level}}"
     },
     "sessionOptionRows": {
       "defaultMarker": "Varsayılan",

@@ -19,6 +19,14 @@ import {
 } from '../../../../../src/shared/native-chat/input/native-chat-session-option-labels'
 import { sayMobileNativeChatSessionOption as say } from './native-chat-session-option-copy'
 import { MobileSwitch } from '../../../components/MobileSwitch'
+import {
+  DROID_AUTONOMY_OPTION_ID,
+  isDroidAutonomyLevel
+} from '../../../../../src/shared/droid-autonomy-options'
+import {
+  mobileDroidPermissionDescription,
+  mobileDroidPermissionLabel
+} from './mobile-native-chat-session-option-labels'
 
 export function SessionOptionCaption({ children }: { children: string }): React.JSX.Element {
   useMobileColorScheme()
@@ -85,12 +93,14 @@ export function SessionOptionSummaryRow({
   label,
   value,
   valueColor,
+  leading,
   disabled,
   onPress
 }: {
   label: string
   value: string
   valueColor?: string
+  leading?: ReactNode
   disabled: boolean
   onPress?: () => void
 }): React.JSX.Element {
@@ -98,6 +108,7 @@ export function SessionOptionSummaryRow({
   const row = (
     <ListRow
       title={label}
+      leading={leading}
       value={tinted ? undefined : value}
       accessory={tinted}
       navigates={onPress !== undefined}
@@ -172,8 +183,16 @@ export function descriptorRowElements(
   return choices.map((choice) => (
     <ListRow
       key={choice.value}
-      title={nativeChatSessionChoiceLabel(choice, say, descriptor.id)}
-      subtitle={choice.description}
+      title={
+        descriptor.id === DROID_AUTONOMY_OPTION_ID && isDroidAutonomyLevel(choice.value)
+          ? mobileDroidPermissionLabel(choice.value)
+          : nativeChatSessionChoiceLabel(choice, say, descriptor.id)
+      }
+      subtitle={
+        descriptor.id === DROID_AUTONOMY_OPTION_ID && isDroidAutonomyLevel(choice.value)
+          ? mobileDroidPermissionDescription(choice.value)
+          : choice.description
+      }
       leading={choiceLeading ? (choiceLeading(choice.value) ?? null) : undefined}
       selected={choice.value === currentValue}
       disabled={locked}

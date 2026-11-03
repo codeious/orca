@@ -26,8 +26,10 @@ import { AGENT_SESSION_OPTIONAL_MODEL_CLIENT_CAPABILITY } from '../../../src/sha
 import { remoteRuntimeClientCapabilities } from '../../../src/shared/remote-runtime/remote-runtime-client-capabilities'
 import { AGENT_SESSION_CREATE_MESSAGE_RUNTIME_CAPABILITY } from '../../../src/shared/agent-session/agent-session-create-capabilities'
 import { COMPRESSED_FRAMES_CLIENT_CAPABILITY } from '../../../src/shared/paired-e2ee-compressed-frame'
+import { AGENT_SESSION_SESSION_OPTIONS_CAPABILITY } from '../../../src/shared/agent-session/options/agent-session-session-options'
 
 export const MOBILE_RUNTIME_CLIENT_CAPABILITIES = remoteRuntimeClientCapabilities([
+  AGENT_SESSION_SESSION_OPTIONS_CAPABILITY,
   AGENT_SESSION_COMMANDS_ON_REQUEST_CAPABILITY,
   AGENT_SESSION_COHERENT_MODEL_CATALOG_CAPABILITY,
   STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
