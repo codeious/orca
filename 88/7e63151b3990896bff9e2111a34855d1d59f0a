@@ -1,0 +1,37 @@
+src/main/agent-hooks/installer-utils-remote.test.ts
+  s_767cf5531d83f7::t_3e57f70f70ccdb 24,47-50,233-269
+src/main/agent-hooks/installer-utils-remote.ts
+  s_767cf5531d83f7::t_af4a5ec39bcaa4 29,35,40-43,45-53
+src/main/droid/droid-hook-status.ts
+  s_767cf5531d83f7::t_fcec4054ae0833 1-85
+src/main/droid/droid-hooks-file.test-fixture.ts
+  s_767cf5531d83f7::t_7f37c285565b65 1-32
+src/main/droid/droid-real-cli-session-test-support.ts
+  s_767cf5531d83f7::t_8e0867596c5e8b 1-94
+src/main/droid/droid-real-cli-test-gate.test.ts
+  s_767cf5531d83f7::t_3175518b5c69f9 1-48
+src/main/droid/droid-real-cli-test-gate.ts
+  s_767cf5531d83f7::t_3471f55ea34866 1-25
+src/main/droid/hook-service-migration.test.ts
+  s_767cf5531d83f7::t_b68f8173fb0128 1-164
+src/main/droid/hook-service-real-cli.test.ts
+  s_767cf5531d83f7::t_16fee7738c49fd 1-170
+src/wsl-guest/wsl-hook-fs-bridge.test.ts
+  s_767cf5531d83f7::t_798ca107e2a811 2,5,40,60-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "887e63151b3990896bff9e2111a34855d1d59f0a",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
