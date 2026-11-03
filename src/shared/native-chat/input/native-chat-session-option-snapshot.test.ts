@@ -17,6 +17,7 @@ import {
 } from './native-chat-session-option-state'
 import {
   buildNativeChatSessionOptionSnapshot,
+  composerPermissionDescriptor,
   sortNativeChatSessionOptions,
   withTrackedNativeChatModel
 } from './native-chat-session-option-snapshot'
@@ -24,6 +25,31 @@ import {
 function claudeRecord(): NativeChatSessionOptionRecord {
   return createNativeChatSessionOptionRecord('claude')
 }
+
+describe('composerPermissionDescriptor', () => {
+  it('gives Droid autonomy its own permission slot instead of a popover row', () => {
+    const autonomy: SessionOptionDescriptor = {
+      id: 'autonomyLevel',
+      label: 'Permissions',
+      category: 'mode',
+      kind: {
+        type: 'select',
+        currentValue: 'low',
+        choices: [{ value: 'low', label: 'Low' }]
+      },
+      valueSource: 'applied',
+      transport: 'agent-session',
+      settable: true
+    }
+
+    expect(composerPermissionDescriptor([autonomy])).toBe(autonomy)
+    expect(sortNativeChatSessionOptions([autonomy])).toEqual([])
+    const permission: SessionOptionDescriptor = { ...autonomy, id: 'permissionMode' }
+    expect(composerPermissionDescriptor([autonomy, permission])).toBe(permission)
+    expect(sortNativeChatSessionOptions([autonomy, permission])).toEqual([autonomy])
+    expect(composerPermissionDescriptor([])).toBeUndefined()
+  })
+})
 
 describe('buildNativeChatSessionOptionSnapshot', () => {
   // Both lanes emit dispatched; only an explicit transport distinguishes their descriptors.

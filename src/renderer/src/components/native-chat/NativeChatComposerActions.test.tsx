@@ -1,8 +1,9 @@
 // @vitest-environment happy-dom
 
-import { act, cleanup, fireEvent, render, renderHook, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, renderHook, screen, within } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { SessionOptionDescriptor } from '../../../../shared/native-chat/input/native-chat-session-options'
 
 const voice = vi.hoisted(() => ({
   dictationState: 'idle',
@@ -14,7 +15,11 @@ vi.mock('../../store', () => ({
 vi.mock('../dictation/dictation-control-events', () => ({ dispatchDictationControl: vi.fn() }))
 
 vi.mock('@/i18n/i18n', () => ({
-  translate: (_key: string, fallback: string) => fallback
+  translate: (_key: string, fallback: string, values?: Record<string, string | number>) =>
+    Object.entries(values ?? {}).reduce(
+      (text, [name, value]) => text.replaceAll(`{{${name}}}`, String(value)),
+      fallback
+    )
 }))
 
 vi.mock('@/components/ui/button', () => ({
@@ -36,10 +41,6 @@ vi.mock('@/components/ui/tooltip', () => ({
   TooltipContent: ({ children }: { children: ReactNode }) => <div>{children}</div>
 }))
 
-vi.mock('./NativeChatSessionOptionPickers', () => ({
-  NativeChatSessionOptionPickers: () => <div data-testid="session-option-pickers" />
-}))
-
 import { NativeChatComposerActions } from './NativeChatComposerActions'
 import { useNativeChatDictation } from './use-native-chat-dictation'
 import { dispatchDictationControl } from '../dictation/dictation-control-events'
@@ -51,6 +52,86 @@ afterEach(() => {
 })
 
 describe('NativeChatComposerActions', () => {
+  it('puts Droid permissions beside Attach, offering only reported levels and no duplicate model row', async () => {
+    const snapshot: SessionOptionDescriptor[] = [
+      {
+        id: 'model',
+        label: 'Model',
+        category: 'model',
+        kind: {
+          type: 'select',
+          currentValue: 'droid-model',
+          choices: [{ value: 'droid-model', label: 'Droid Model' }]
+        },
+        action: { type: 'agent-picker' },
+        valueSource: 'applied',
+        transport: 'agent-session',
+        settable: true
+      },
+      {
+        id: 'autonomyLevel',
+        label: 'Autonomy',
+        category: 'mode',
+        kind: {
+          type: 'select',
+          currentValue: 'high',
+          choices: [
+            { value: 'off', label: 'Off' },
+            { value: 'high', label: 'High' }
+          ]
+        },
+        valueSource: 'applied',
+        transport: 'agent-session',
+        settable: true
+      }
+    ]
+    const surface = {
+      getSnapshot: () => snapshot,
+      setOption: vi.fn(async () => ({ snapshot })),
+      invokeAction: vi.fn(async () => ({ snapshot })),
+      subscribe: () => () => {}
+    }
+    render(
+      <NativeChatComposerActions
+        attachDisabled={false}
+        dictationDisabled={false}
+        sendDisabled={false}
+        isWorking
+        isDictating={false}
+        isDictationHoldMode={false}
+        onAttach={vi.fn()}
+        onDictationToggle={vi.fn()}
+        onDictationHoldStart={vi.fn()}
+        onDictationHoldEnd={vi.fn()}
+        onSend={vi.fn()}
+        sessionOptionsSurface={surface}
+        sessionOptionsSnapshot={snapshot}
+        agent="droid"
+      />
+    )
+
+    const permissions = screen.getByRole('button', { name: 'Permissions High' })
+    expect(
+      within(screen.getByRole('button', { name: 'Attach file' }).parentElement!).getByRole(
+        'button',
+        { name: 'Permissions High' }
+      )
+    ).toBe(permissions)
+    fireEvent.keyDown(permissions, { key: 'Enter' })
+    expect(screen.getAllByRole('menuitemradio').map((row) => row.textContent)).toEqual([
+      'OffAsks before edits and commands',
+      'HighRuns commands without asking, except ones Droid blocks'
+    ])
+    fireEvent.click(screen.getByRole('menuitemradio', { name: /Off/ }))
+    expect(surface.setOption).toHaveBeenCalledExactlyOnceWith('autonomyLevel', 'off')
+    await act(async () => {})
+
+    fireEvent.click(screen.getByRole('button', { name: 'Model Droid Model' }))
+    expect(screen.getByRole('button', { name: /Choose in agent picker/ })).toBeTruthy()
+    expect(screen.queryByText('Autonomy')).toBeNull()
+    expect(screen.queryByText('Runs commands without asking, except ones Droid blocks')).toBeNull()
+  })
+
   it.each(['starting', 'listening'])('blocks new dictation but preserves %s Stop', (state) => {
     const input = document.createElement('textarea')
     const focus = vi.spyOn(input, 'focus')

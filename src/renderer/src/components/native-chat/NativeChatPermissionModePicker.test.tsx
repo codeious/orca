@@ -207,6 +207,70 @@ describe('NativeChatComposerPermissionPicker', () => {
   })
 
   it.each([
+    ['off', 'Off', 'hand', true],
+    ['low', 'Low', 'file-pen-line', true],
+    ['medium', 'Medium', 'shield-check', true],
+    ['high', 'High', 'shield-alert', true],
+    ['high', 'High', 'shield-alert', false]
+  ] as const)('offers Droid %s (%s, %s, settable: %s)', (current, label, icon, settable) => {
+    const options = surface()
+    render(
+      <NativeChatComposerPermissionPicker
+        surface={options}
+        snapshot={[
+          descriptor({
+            id: 'autonomyLevel',
+            settable,
+            kind: {
+              type: 'select',
+              currentValue: current,
+              choices: [
+                { value: 'off', label: 'Off' },
+                { value: 'low', label: 'Low' },
+                { value: 'medium', label: 'Medium' },
+                { value: 'high', label: 'High' }
+              ]
+            }
+          })
+        ]}
+        agent="droid"
+      />
+    )
+
+    const trigger = screen.getByRole('button', { name: `Permissions ${label}` })
+    expect(trigger.textContent).toBe(label)
+    expect(trigger.querySelector(`.lucide-${icon}`)).not.toBeNull()
+    expect(screen.getByTestId('permission-trigger').getAttribute('data-disabled')).toBe(
+      settable ? null : 'true'
+    )
+    const rows = within(screen.getByRole('radiogroup', { name: 'Permissions' })).getAllByRole(
+      'radio'
+    )
+    expect(rows.map((row) => row.textContent)).toEqual([
+      'OffAsks before edits and commands',
+      'LowEdits files and runs read-only commands; asks for the rest',
+      'MediumAlso runs reversible commands like installs, builds and local commits; asks for the rest',
+      'HighRuns commands without asking, except ones Droid blocks'
+    ])
+    expect(
+      rows
+        .filter((row) => row.getAttribute('aria-checked') === 'true')
+        .map((row) => row.getAttribute('data-value'))
+    ).toEqual([current])
+    expect(rows[3]?.querySelector('.text-status-warning')).not.toBeNull()
+    if (current === 'high') {
+      expect(trigger.querySelector('.text-status-warning')).not.toBeNull()
+    }
+    expect(rows[1]).toHaveProperty('disabled', !settable)
+    fireEvent.click(rows[1]!)
+    if (settable) {
+      expect(options.setOption).toHaveBeenCalledExactlyOnceWith('autonomyLevel', 'low')
+    } else {
+      expect(options.setOption).not.toHaveBeenCalled()
+    }
+  })
+
+  it.each([
     ['claude', 'accept-edits', 'Accept edits'],
     ['codex', 'full-access', 'Full access'],
     ['claude', 'plan', 'Plan mode'],
@@ -265,23 +329,26 @@ describe('NativeChatComposerPermissionPicker', () => {
     expect(container.innerHTML).toBe('')
   })
 
-  it('writes explicit picks through the option surface even when the report matches', () => {
-    const options = surface()
-    render(
-      <NativeChatComposerPermissionPicker
-        surface={options}
-        snapshot={[descriptor()]}
-        agent="codex"
-      />
-    )
-    fireEvent.click(option('ask'))
-    expect(options.setOption).toHaveBeenCalledWith('permissionMode', 'ask')
-    // A write that waits behind a starting agent leaves the pill usable.
-    options.setOption.mockImplementation(() => new Promise(() => {}))
-    fireEvent.click(option('full-access'))
-    expect(options.setOption).toHaveBeenCalledWith('permissionMode', 'full-access')
-    expect(screen.getByTestId('permission-trigger').getAttribute('data-disabled')).toBeNull()
-  })
+  it.each(['claude', 'codex', 'acp:test'])(
+    'writes explicit %s picks through the option surface even when the report matches',
+    (agent) => {
+      const options = surface()
+      render(
+        <NativeChatComposerPermissionPicker
+          surface={options}
+          snapshot={[descriptor()]}
+          agent={agent}
+        />
+      )
+      fireEvent.click(option('ask'))
+      expect(options.setOption).toHaveBeenCalledWith('permissionMode', 'ask')
+      // A write that waits behind a starting agent leaves the pill usable.
+      options.setOption.mockImplementation(() => new Promise(() => {}))
+      fireEvent.click(option('full-access'))
+      expect(options.setOption).toHaveBeenCalledWith('permissionMode', 'full-access')
+      expect(screen.getByTestId('permission-trigger').getAttribute('data-disabled')).toBeNull()
+    }
+  )
 
   it('locks only while the descriptor cannot take a pick', () => {
     render(
