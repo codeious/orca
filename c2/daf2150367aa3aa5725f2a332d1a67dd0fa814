@@ -1,0 +1,16 @@
+src/main/runtime/agent-session/structured-agent-session-droid-resting-options.test.ts
+  h_476903bd8a47d9 1-77
+src/main/runtime/structured-agent-session-host-assembly.ts
+  h_476903bd8a47d9 83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c2daf2150367aa3aa5725f2a332d1a67dd0fa814",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
