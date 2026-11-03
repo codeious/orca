@@ -1,0 +1,19 @@
+src/renderer/src/components/native-chat/structured-composer-session-action.ts
+  s_ed79b846e95547::t_7f236e586e3cb5 1-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bf4929cb901ac0d4838d08ae3fb3d7773462725e",
+  "prompts": {},
+  "sessions": {
+    "s_ed79b846e95547": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a380474f-90f8-4792-9f3a-88671b8c97bd",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
