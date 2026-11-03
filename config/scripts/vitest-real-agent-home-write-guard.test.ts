@@ -70,6 +70,32 @@ describe('vitest real-agent-home write guard', () => {
     )
   })
 
+  it('refuses writes to agent configuration under the real home', () => {
+    const target = join(missingRealFolder('.factory'), 'hooks.json')
+    expect(() => writeFileSync(target, '{}')).toThrow(/real-agent-home guard/)
+    expect(existsSync(target)).toBe(false)
+  })
+
+  it('clears inherited config overrides before tests choose their own homes', () => {
+    const inherited = {
+      GROK_HOME: '/tmp/live-grok',
+      PI_CODING_AGENT_DIR: '/tmp/live-pi',
+      PI_CONFIG_DIR: '/tmp/live-pi-config',
+      OMP_CODING_AGENT_DIR: '/tmp/live-omp',
+      ORCA_PI_SOURCE_AGENT_DIR: '/tmp/live-pi-source',
+      ORCA_PI_CODING_AGENT_DIR: '/tmp/live-pi-overlay',
+      ORCA_OMP_CODING_AGENT_DIR: '/tmp/live-omp-overlay',
+      HERMES_HOME: '/tmp/live-hermes'
+    }
+    for (const [name, value] of Object.entries(inherited)) {
+      vi.stubEnv(name, value)
+    }
+
+    clearInheritedAgentStateEnv()
+
+    expect(Object.keys(inherited).filter((name) => process.env[name] !== undefined)).toEqual([])
+  })
+
   it('refuses a promise write under a ~/.claude.json sibling', async () => {
     const target = join(missingRealFolder('.claude.json'), 'x.tmp')
     await expect(writeFile(target, '{}')).rejects.toThrow(/real-agent-home guard/)
