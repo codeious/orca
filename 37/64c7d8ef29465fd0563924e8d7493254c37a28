@@ -1,0 +1,259 @@
+src/main/droid/droid-agent-definition.ts
+  s_ed79b846e95547::t_3e14fdb62e1667 14-15
+  s_ed79b846e95547::t_56933fdd25dcd8 11-13
+  s_ed79b846e95547::t_d738a2e2ac7ff3 16-18
+  h_476903bd8a47d9 1-10,19-28
+src/main/droid/droid-turns.ts
+  s_767cf5531d83f7::t_d95b6804ddd5a9 1-68,70-99,101-307
+  s_767cf5531d83f7::t_2faebf9496e83b 69,100
+  s_767cf5531d83f7::t_148fa390d799c3 308-310
+  h_476903bd8a47d9 311-312
+src/main/droid/droid-session-adapter.test.ts
+  s_767cf5531d83f7::t_4ad5995147ef1b 421-426
+  s_767cf5531d83f7::t_cf41badee04cce 418-420
+  s_767cf5531d83f7::t_5a74227e2659f9 427-429
+  h_476903bd8a47d9 1-417,430-648
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_767cf5531d83f7::t_a2eaf2b343ae1c 135-137
+  s_767cf5531d83f7::t_86cc84440292bf 132-134
+  s_767cf5531d83f7::t_2a139913ca78e4 138-140
+  h_476903bd8a47d9 1-131,141-222
+src/shared/droid-spec-pair-options.ts
+  s_767cf5531d83f7::t_7afffb91664b85 2-6
+  s_ed79b846e95547::t_9670842d6649a1 1,7-70
+src/main/droid/droid-session.ts
+  s_767cf5531d83f7::t_ff4862e5816104 112-113
+  s_767cf5531d83f7::t_008636b92a38d7 1-111,114-267,271,275,283-285,291-292,296
+  s_767cf5531d83f7::t_f22a5732e52f79 268-270
+  s_767cf5531d83f7::t_319af62ec95f02 272-274
+  s_767cf5531d83f7::t_6c8fb7707881fa 276-278,280-282
+  s_767cf5531d83f7::t_b9f66c1721b613 286-290
+  s_767cf5531d83f7::t_2a101ba0fae166 293-295
+  s_767cf5531d83f7::t_786d94e4826678 297
+  h_476903bd8a47d9 279
+src/main/droid/droid-session-adapter.ts
+  s_767cf5531d83f7::t_c3a567074c623d 1-130
+  s_767cf5531d83f7::t_a2a9b93a44488b 131
+src/main/droid/droid-session-options.ts
+  s_767cf5531d83f7::t_a2eaa2336c24fa 1-259
+src/main/droid/droid-permission-requests.ts
+  s_767cf5531d83f7::t_ae83444d9bcb68 59-60,96
+  s_ed79b846e95547::t_28758b620954c7 67,87-95,102
+  s_767cf5531d83f7::t_3c21e5f0affdec 56-58
+  s_ed79b846e95547::t_1b2ceb358948a0 68-70,84-86
+  s_ed79b846e95547::t_ada6cd1032a2c4 103-104
+  h_476903bd8a47d9 1-55,61-66,71-83,97-101
+src/main/droid/droid-configured-default.test.ts
+  s_767cf5531d83f7::t_19c309b4e1faa7 2-204,206-210,220-530
+  s_767cf5531d83f7::t_01d881214780df 205,211-219
+  h_476903bd8a47d9 1
+src/main/droid/droid-prompts.ts
+  s_767cf5531d83f7::t_c4e71f34407cb9 1-178
+src/shared/droid-autonomy-options.ts
+  s_767cf5531d83f7::t_b4cfb15c8b21f0 2-17
+  s_767cf5531d83f7::t_b9af0f15af4a11 1
+  s_ed79b846e95547::t_2a8bd29ccbc08c 18-32
+src/main/acp/acp-incoming-requests.ts
+  s_ed79b846e95547::t_1efce89370a205 3,8,25-29,53,57,72-84,87-90
+src/main/acp/acp-json-rpc-peer.ts
+  s_ed79b846e95547::t_0979e8dd01ea7b 11-13,15,17-18,20,22,33-34,38-45,52-53,60,97,108,118,120-121,135,166,171,228,243-246,252,265-273,282,292,297-299,303,312
+src/main/acp/acp-peer-dialect.ts
+  s_ed79b846e95547::t_3acb3ececb2329 1-63
+src/main/acp/acp-peer-handlers.ts
+  s_ed79b846e95547::t_3d84a3755483e9 1-11
+src/main/acp/acp-response-settlement.ts
+  s_ed79b846e95547::t_fa6d2688e08862 48
+src/main/acp/acp-rpc-envelope.ts
+  s_ed79b846e95547::t_dbc4617e75e941 2,19-31,33-34,38,40-41,46-47,50
+src/main/droid/__fixtures__/end-of-turn-interrupt.jsonl
+  s_ed79b846e95547::t_b475b04fcc1c3c 1-36
+src/main/droid/__fixtures__/queue-end-of-turn.jsonl
+  s_ed79b846e95547::t_6420102c91abd2 1-48
+src/main/droid/droid-account-home.ts
+  s_ed79b846e95547::t_69b8fe3593c896 1-17
+src/main/droid/droid-agent-connection-supervisor.integration.test.ts
+  s_ed79b846e95547::t_39779ed7d93442 1-84
+src/main/droid/droid-agent-connection.test.ts
+  s_ed79b846e95547::t_ecea5868267205 1-293
+src/main/droid/droid-agent-connection.ts
+  s_ed79b846e95547::t_51330a3a1f5b56 1-239
+src/main/droid/droid-approvals.test.ts
+  s_ed79b846e95547::t_7d916b027549fe 1-254
+src/main/droid/droid-autonomy-cap-notice.ts
+  s_ed79b846e95547::t_e2b4fe4314b490 1-32
+src/main/droid/droid-autonomy-cap.test.ts
+  s_ed79b846e95547::t_bf4d8a5c9f0263 1-77
+src/main/droid/droid-autonomy-level.test.ts
+  s_ed79b846e95547::t_572f2e7531c132 1-69
+src/main/droid/droid-autonomy-level.ts
+  s_ed79b846e95547::t_6526513a1f5c10 1-38
+src/main/droid/droid-context-usage.test-support.ts
+  s_ed79b846e95547::t_ab6d6f458a88db 1-54
+src/main/droid/droid-context-usage.test.ts
+  s_ed79b846e95547::t_eabc6db44de222 1-75
+src/main/droid/droid-context-usage.ts
+  s_ed79b846e95547::t_437fbe55bebc32 1-99
+src/main/droid/droid-environment.test.ts
+  s_ed79b846e95547::t_8c6640d04dfc2c 1-51
+src/main/droid/droid-environment.ts
+  s_ed79b846e95547::t_b482e025017301 1-27
+src/main/droid/droid-exec-launch.test.ts
+  s_ed79b846e95547::t_98c3d0ee0e1687 1-76
+src/main/droid/droid-exec-launch.ts
+  s_ed79b846e95547::t_3f884985708ade 1-52
+src/main/droid/droid-fixture-privacy.test.ts
+  s_ed79b846e95547::t_442e9aa3f7a622 1-74
+src/main/droid/droid-json-rpc-peer-wire.test.ts
+  s_ed79b846e95547::t_00f97a22bc7475 1-107
+src/main/droid/droid-json-rpc-peer.test.ts
+  s_ed79b846e95547::t_cd3ec7fa619ca1 1-341
+src/main/droid/droid-json-rpc-peer.ts
+  s_ed79b846e95547::t_cb0b97d2849ea3 1-117
+src/main/droid/droid-launch-resolution.test.ts
+  s_ed79b846e95547::t_950fbb5111e77d 1-62
+src/main/droid/droid-launch-resolution.ts
+  s_ed79b846e95547::t_e55ebb05ef7cf5 1-67
+src/main/droid/droid-message-visibility.ts
+  s_ed79b846e95547::t_9a409de5ef650f 1-5
+src/main/droid/droid-messages.ts
+  s_ed79b846e95547::t_6aff6bfae18f97 1-139
+src/main/droid/droid-missing-method.ts
+  s_ed79b846e95547::t_f6017b033773d9 1-6
+src/main/droid/droid-model-catalog-probe.test.ts
+  s_ed79b846e95547::t_f8915134d25602 1-211
+src/main/droid/droid-model-catalog-probe.ts
+  s_ed79b846e95547::t_bb829bf72f5b07 1-111
+src/main/droid/droid-model-options.ts
+  s_ed79b846e95547::t_4bd0f590627ab3 1-192
+src/main/droid/droid-peer-limits.test.ts
+  s_ed79b846e95547::t_ca6855d6c905be 1-21
+src/main/droid/droid-peer-limits.ts
+  s_ed79b846e95547::t_19dc323d864c00 1-9
+src/main/droid/droid-pick-options-requests.ts
+  s_ed79b846e95547::t_957b80c59721f3 1-86
+src/main/droid/droid-pick-options.test.ts
+  s_ed79b846e95547::t_f1ae1270440700 1-284
+src/main/droid/droid-project-model-overrides.test.ts
+  s_ed79b846e95547::t_644b4309b6449f 1-54
+src/main/droid/droid-prompt.test.ts
+  s_ed79b846e95547::t_76225f77ec7014 1-57
+src/main/droid/droid-prompt.ts
+  s_ed79b846e95547::t_19b15b5b2fed12 1-42
+src/main/droid/droid-question-requests.ts
+  s_ed79b846e95547::t_72b315df449b1b 1-108
+src/main/droid/droid-questions.test.ts
+  s_ed79b846e95547::t_0652f7ef2424d1 1-466
+src/main/droid/droid-recording.test-support.ts
+  s_ed79b846e95547::t_eed84be1e2d2aa 1-151
+src/main/droid/droid-refused-model.test.ts
+  s_ed79b846e95547::t_28a152981d578e 1-151
+src/main/droid/droid-rpc-envelope.ts
+  s_ed79b846e95547::t_60542bfa4c65a4 1-27
+src/main/droid/droid-rpc-errors.ts
+  s_ed79b846e95547::t_477f1907893f3f 1-18,20-23
+src/main/droid/droid-runtime-registration.test.ts
+  s_ed79b846e95547::t_f1fac0cb56f5fe 1-21
+src/main/droid/droid-session-id.test.ts
+  s_ed79b846e95547::t_4bbf850ed38c04 1-18
+src/main/droid/droid-session-id.ts
+  s_ed79b846e95547::t_0b853e79870f52 1-6
+src/main/droid/droid-session-model.ts
+  s_ed79b846e95547::t_0aa42b89123026 1-100
+src/main/droid/droid-session-notifications.ts
+  s_ed79b846e95547::t_d9d86bed94deb6 1-103
+src/main/droid/droid-session-settings.test.ts
+  s_ed79b846e95547::t_bbfb3034c9d2ac 1-124
+src/main/droid/droid-session-settings.ts
+  s_ed79b846e95547::t_2c664d6767082e 1-128
+src/main/droid/droid-started-session.ts
+  s_ed79b846e95547::t_f99a11e4f7daac 1-57
+src/main/droid/droid-structured-launch-resolution.test.ts
+  s_ed79b846e95547::t_b4262b5989c4df 1-233
+src/main/droid/droid-structured-launch-resolution.ts
+  s_ed79b846e95547::t_45613d8aeba968 1-133
+src/main/droid/droid-turns.test.ts
+  s_ed79b846e95547::t_711a4b8aa959ee 1-401
+src/main/droid/droid-version-support.test.ts
+  s_ed79b846e95547::t_b802f40deacdf5 1-64
+src/main/droid/droid-version-support.ts
+  s_ed79b846e95547::t_41c0bfea5bafbf 1-44
+src/main/droid/fixtures/ask-user-multiselect.jsonl
+  s_ed79b846e95547::t_e1e2c04c5e5a80 1-39
+src/main/droid/fixtures/autonomy-cap-clamp.jsonl
+  s_ed79b846e95547::t_d4e720c83a8d99 1-35
+src/main/droid/fixtures/autonomy-high-rules.jsonl
+  s_ed79b846e95547::t_ea248b397cc39b 1-95
+src/main/droid/fixtures/autonomy-off-exec-and-patch.jsonl
+  s_ed79b846e95547::t_448dd5529ec124 1-96
+src/main/droid/fixtures/legacy-blocklist-and-denylist.jsonl
+  s_ed79b846e95547::t_f3b1b4317716ea 1-53
+src/main/droid/fixtures/model-blocked-by-org.jsonl
+  s_ed79b846e95547::t_88ec6f97b9b095 1-11
+src/main/droid/fixtures/spec-plan-approval-off.jsonl
+  s_ed79b846e95547::t_fea8847f1752c9 1-35
+src/main/droid/fixtures/update-settings-acks.jsonl
+  s_ed79b846e95547::t_2a1d18e6f3067c 1-51
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.ts
+  s_ed79b846e95547::t_a1dacb7889931b 73
+src/main/native-chat/agent-model-catalog/agent-project-model-config-keys.ts
+  s_ed79b846e95547::t_05b3defd56ffe1 60-80
+src/main/native-chat/agent-model-catalog/agent-project-model-override.ts
+  s_ed79b846e95547::t_68d933c7ba3e08 7,82-87
+src/main/native-chat/agent-session-wire/structured-agent-session-resting-options.ts
+  s_ed79b846e95547::t_74b724947ef21f 124-128,158
+src/main/native-chat/provider-recording-privacy.test-support.ts
+  s_ed79b846e95547::t_10fb3429847468 1-63
+src/main/runtime/agent-session/structured-agent-session-transport-overrides.ts
+  s_ed79b846e95547::t_9e103941a8caf7 10,15-16
+src/main/runtime/structured-agent-runtime-metadata.ts
+  s_ed79b846e95547::t_62aacda7e048c0 14,35,115
+src/main/runtime/structured-agent-runtime-registrations-acp.test.ts
+  s_ed79b846e95547::t_8713f181fa6989 13-23
+src/main/runtime/structured-agent-runtime-registrations.ts
+  s_ed79b846e95547::t_beaa353d284ccd 23,218-219
+src/main/runtime/structured-chat-naming-runtime.test.ts
+  s_ed79b846e95547::t_722f7c354c6e6f 218,268-278
+src/shared/agent-session/options/agent-session-options-result.ts
+  s_ed79b846e95547::t_eaf04215e00e37 50-51
+src/shared/agent-session/options/structured-agent-session-option-codec.ts
+  s_ed79b846e95547::t_315d90d694d334 3
+src/shared/droid-chat-version-floor.ts
+  s_ed79b846e95547::t_331b455bf59e8a 1-2
+src/main/droid/droid-prompt-presentation.ts
+  h_476903bd8a47d9 1-30
+src/main/droid/droid-runtime-metadata.ts
+  h_476903bd8a47d9 1-40
+src/main/droid/droid-runtime-registration.ts
+  h_476903bd8a47d9 1-57
+src/shared/agent-session/agent-session-wire.ts
+  h_476903bd8a47d9 368-369
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3764c7d8ef29465fd0563924e8d7493254c37a28",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ed79b846e95547": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a380474f-90f8-4792-9f3a-88671b8c97bd",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
