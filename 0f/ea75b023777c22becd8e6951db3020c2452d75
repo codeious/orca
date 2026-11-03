@@ -1,0 +1,45 @@
+mobile/src/i18n/locales/de.json
+  s_41cc02f507be91::t_da62ff12985881 361-369,380-381
+mobile/src/i18n/locales/en.json
+  s_41cc02f507be91::t_6f69f43c20025d 2812-2813,2869-2877
+mobile/src/i18n/locales/es.json
+  s_41cc02f507be91::t_9599d0a1cfbddd 365-373,384-385
+mobile/src/i18n/locales/fr.json
+  s_41cc02f507be91::t_5de88d809b4600 365-373,384-385
+mobile/src/i18n/locales/ja.json
+  s_41cc02f507be91::t_4b144d6d7a2cef 361-369,380-381
+mobile/src/i18n/locales/ko.json
+  s_41cc02f507be91::t_6fb99951c394cf 361-369,380-381
+mobile/src/i18n/locales/pt.json
+  s_41cc02f507be91::t_3a662bfa558d67 365-373,384-385
+mobile/src/i18n/locales/ru.json
+  s_41cc02f507be91::t_bf12a3d216cc69 369-377,388-389
+mobile/src/i18n/locales/tr.json
+  s_41cc02f507be91::t_a5270e41d2afc7 361-369,380-381
+mobile/src/i18n/locales/zh-Hant.json
+  s_41cc02f507be91::t_ff41a66a8dd1d9 361-369,380-381
+mobile/src/i18n/locales/zh.json
+  s_41cc02f507be91::t_19593146035d46 361-369,380-381
+mobile/src/session/native-chat/input/MobileNativeChatSessionOptionPickers.test.ts
+  s_41cc02f507be91::t_dadd07801f4ac9 18,184,189,331-419,750-769
+mobile/src/session/native-chat/input/MobileNativeChatSessionOptionRows.tsx
+  s_41cc02f507be91::t_1af1ba89372df9 22-29,96,103,111,186-195
+mobile/src/session/native-chat/input/mobile-native-chat-permission-icons.tsx
+  s_41cc02f507be91::t_d3096d6951198b 1-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0fea75b023777c22becd8e6951db3020c2452d75",
+  "prompts": {},
+  "sessions": {
+    "s_41cc02f507be91": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "27e6a91b-84f2-42dd-86db-a1bb27ab66f9",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
