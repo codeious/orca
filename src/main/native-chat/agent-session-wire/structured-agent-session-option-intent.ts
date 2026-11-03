@@ -17,6 +17,10 @@ import {
 } from './structured-agent-session-pick-reply'
 import type { StructuredAgentSessionAdapter } from './structured-agent-session-adapter'
 import { pickAgentSessionOption } from '../../runtime/agent-session/records/agent-session-record-options'
+import {
+  DROID_AUTONOMY_OPTION_ID,
+  isDroidAutonomyLevel
+} from '../../../shared/droid-autonomy-options'
 
 function acceptsOptionPick(
   agents: Pick<StructuredAgentRegistry, 'definition'>,
@@ -30,7 +34,8 @@ function acceptsOptionPick(
         agentChatPermissionModes(provider) !== null &&
         (value === 'own' ||
           agentChatPermissionModes(provider)?.modes.some((mode) => mode === value) === true)
-    : definition?.restingOptions.acceptsKey(key) === true
+    : definition?.restingOptions.acceptsKey(key) === true &&
+        (key !== DROID_AUTONOMY_OPTION_ID || isDroidAutonomyLevel(value))
 }
 
 export function structuredAgentSessionOptionOverridesRefusal(

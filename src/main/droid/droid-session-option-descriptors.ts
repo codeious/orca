@@ -3,7 +3,10 @@ import type {
   SessionOptionDescriptor,
   SessionOptionSelectChoice
 } from '../../shared/native-chat/input/native-chat-session-options'
-import { DROID_AUTONOMY_OPTION_ID } from '../../shared/droid-autonomy-options'
+import {
+  DROID_AUTONOMY_OPTION_ID,
+  type DroidAutonomyLevel
+} from '../../shared/droid-autonomy-options'
 import {
   DROID_SPEC_MODEL_OPTION_ID,
   DROID_SPEC_EFFORT_OPTION_ID,
@@ -30,6 +33,39 @@ function select(
   }
 }
 
+const autonomyChoices: Record<DroidAutonomyLevel, SessionOptionSelectChoice> = {
+  off: { value: 'off', label: 'Off', description: 'Asks before edits and commands' },
+  low: {
+    value: 'low',
+    label: 'Low',
+    description: 'Edits files and runs read-only commands; asks for the rest'
+  },
+  medium: {
+    value: 'medium',
+    label: 'Medium',
+    description:
+      'Also runs reversible commands like installs, builds and local commits; asks for the rest'
+  },
+  high: {
+    value: 'high',
+    label: 'High',
+    description: 'Runs commands without asking, except ones Droid blocks'
+  }
+}
+
+export function droidAutonomyOptionDescriptor(
+  currentValue: DroidAutonomyLevel | undefined,
+  levels: readonly DroidAutonomyLevel[]
+): SessionOptionDescriptor {
+  return select(
+    DROID_AUTONOMY_OPTION_ID,
+    'Permissions',
+    currentValue,
+    levels.map((value) => autonomyChoices[value]),
+    levels.length > 0
+  )
+}
+
 /** Only the provider's offered levels and models become writable choices. */
 export function droidSessionOptionDescriptors(
   settings: DroidSettings,
@@ -38,15 +74,7 @@ export function droidSessionOptionDescriptors(
   const levels = settings.availableAutonomyLevels ?? []
   const rows: SessionOptionDescriptor[] =
     settings.autonomyLevel || levels.length
-      ? [
-          select(
-            DROID_AUTONOMY_OPTION_ID,
-            'Autonomy',
-            settings.autonomyLevel,
-            levels.map((value) => ({ value, label: value })),
-            levels.length > 0
-          )
-        ]
+      ? [droidAutonomyOptionDescriptor(settings.autonomyLevel, levels)]
       : []
   const same = { value: DROID_SPEC_SAME_AS_MAIN, label: 'Same as main' }
   const model = settings.specModeModelId

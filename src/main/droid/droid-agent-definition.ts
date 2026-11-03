@@ -1,5 +1,12 @@
 import type { DirectoryAccountAgentDefinition } from '../native-chat/agent-session-wire/structured-agent-definition'
 import { droidRewindMessageTarget } from './droid-rewind-target'
+import {
+  DROID_AUTONOMY_LEVELS,
+  DROID_AUTONOMY_OPTION_ID,
+  droidAutonomyLevelFromSavedOptions
+} from '../../shared/droid-autonomy-options'
+import { droidAutonomyOptionDescriptor } from './droid-session-option-descriptors'
+import { droidAutonomyLevelFromLaunchArgs } from './droid-autonomy-level'
 
 export const DROID_HANDLE_TRANSPORT = 'droid-stream-jsonrpc'
 
@@ -23,8 +30,21 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
     approvalEnforcement: 'provider'
   },
   restingOptions: {
-    acceptsKey: (key) => key === 'model' || key === 'effort' || key === 'planMode',
+    acceptsKey: (key) =>
+      key === 'model' || key === 'effort' || key === 'planMode' || key === DROID_AUTONOMY_OPTION_ID,
     fallbackModels: () => null,
-    effortDefaultsToModel: false
+    effortDefaultsToModel: false,
+    sessionOptions: ({ saved, launchArgs }) => {
+      const picked = droidAutonomyLevelFromSavedOptions(saved)
+      return [
+        {
+          ...droidAutonomyOptionDescriptor(
+            picked ?? droidAutonomyLevelFromLaunchArgs(launchArgs),
+            DROID_AUTONOMY_LEVELS
+          ),
+          valueSource: picked === undefined ? 'default' : 'applied'
+        }
+      ]
+    }
   }
 }

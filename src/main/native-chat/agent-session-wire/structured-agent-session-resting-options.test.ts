@@ -11,7 +11,7 @@ import {
 } from '../../../shared/agent-session/options/structured-agent-session-options'
 import { structuredAgentSessionSendSelection } from '../../../shared/agent-session/options/structured-agent-session-option-view'
 
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createAgentModelCatalogService } from '../agent-model-catalog/agent-model-catalog-service'
 import {
   AgentModelCatalogStore,
@@ -25,21 +25,90 @@ import { SessionConfigOptionSchema } from '../../acp/generated/acp-protocol.gene
 import { withLiveCatalogListing } from '../agent-model-catalog/agent-model-catalog-entry'
 import { CLAUDE_SESSION_OPTION_CATALOG } from '../../../shared/agent-session/options/agent-session-option-catalog-claude-codex'
 import { createRestTestRig } from './structured-agent-session-rest-test-rig'
-import { agentSessionRecordFixture as durableAgentSessionRecordFixture } from '../../../shared/agent-session/lifecycle/agent-session-record.test-fixture'
+import {
+  agentSessionRecordFixture as durableAgentSessionRecordFixture,
+  agentSessionLeaseFixture
+} from '../../../shared/agent-session/lifecycle/agent-session-record.test-fixture'
 import { seedTestAgentSessionRecordStore } from '../../runtime/agent-session/records/agent-session-record-store-test-harness'
 import { NO_STRUCTURED_AGENTS } from './structured-agent-session-adapter-router-test-support'
+import { DROID_AGENT, DROID_ACCOUNT_HOME_VARIABLE } from '../../droid/droid-agent-definition'
+import { runDroidRigCleanups, setupDroidAdapter } from '../../droid/droid-adapter-rig.test-support'
+import { StructuredAgentRegistry } from './structured-agent-registry'
 
 const SESSION = 'session-1'
 
+afterEach(runDroidRigCleanups)
+
 describe('options at rest', () => {
+  it.each([
+    { options: { autonomyLevel: 'low' }, value: 'low', source: 'applied' },
+    { options: undefined, value: 'medium', source: 'default' }
+  ])(
+    'reports Droid permissions as $source without starting a child',
+    async ({ options, value, source }) => {
+      const droid = await setupDroidAdapter()
+      const agents = new StructuredAgentRegistry([
+        { definition: DROID_AGENT, adapter: droid.adapter }
+      ])
+      const rig = await createRestTestRig({
+        agents,
+        resolveLaunchArgs: () => ['--auto', 'medium']
+      })
+      try {
+        const fixture = {
+          ...durableAgentSessionRecordFixture(
+            agentSessionLeaseFixture({
+              claimStatus: 'released',
+              ownerProcess: null,
+              provenHandleLinkId: null,
+              reservedSpawnToken: null
+            })
+          ),
+          provider: 'droid',
+          providerHandleChain: [],
+          accountHome: { variable: DROID_ACCOUNT_HOME_VARIABLE, path: '/home/user' },
+          options
+        }
+        await seedTestAgentSessionRecordStore(rig.root, { records: [fixture] })
+        await rig.restart()
+        const result = await rig.host.readOptions(fixture.sessionId)
+        const permissions = result.sessionOptions?.find((row) => row.id === 'autonomyLevel')
+        expect(permissions).toMatchObject({
+          label: 'Permissions',
+          scope: 'session',
+          transport: 'agent-session',
+          valueSource: source,
+          settable: true,
+          kind: {
+            type: 'select',
+            currentValue: value,
+            choices: [
+              { value: 'off', label: 'Off' },
+              { value: 'low', label: 'Low' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'high', label: 'High' }
+            ]
+          }
+        })
+        expect(rig.adapter.acquire).not.toHaveBeenCalled()
+        expect(droid.openConnection).not.toHaveBeenCalled()
+      } finally {
+        await rig.dispose()
+      }
+    }
+  )
+
   it('keeps an unknown Claude observation out of cold sends while retaining warm aliases', async () => {
-    const rig = await createRestTestRig()
+    const resolveLaunchArgs = vi.fn(() => ['--auto', 'high'])
+    const rig = await createRestTestRig({ resolveLaunchArgs })
     try {
       const fixture = durableAgentSessionRecordFixture()
       await seedTestAgentSessionRecordStore(rig.root, { records: [fixture] })
       await rig.restart()
       const seed = CLAUDE_SESSION_OPTION_CATALOG
       const result = await rig.host.readOptions(fixture.sessionId)
+      expect(result.sessionOptions).toBeUndefined()
+      expect(resolveLaunchArgs).not.toHaveBeenCalled()
       expect(result.current.model).toBeUndefined()
       expect(result.models.length).toBeGreaterThan(0)
       expect(result.models.every((model) => !model.isDefault)).toBe(true)
