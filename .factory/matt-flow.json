@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "issue_tracker": "local",
+  "max_repair_rounds": 2,
+  "parallel_tickets": false,
+  "diff_check": true,
+  "review_capture": "required",
+  "checks": [
+    {
+      "cmd": "pnpm test",
+      "env": { "ORCA_BACKGROUND_LAUNCH": "1" },
+      "timeout": 3600
+    },
+    {
+      "cmd": "pnpm tc",
+      "env": { "ORCA_BACKGROUND_LAUNCH": "1" },
+      "timeout": 1200
+    },
+    {
+      "cmd": "pnpm run check:code-quality:changed",
+      "env": { "ORCA_BACKGROUND_LAUNCH": "1" },
+      "timeout": 600
+    }
+  ],
+  "routing": {
+    "implement": {
+      "subagent_type": "worker",
+      "complexity": "medium"
+    },
+    "repair": {
+      "subagent_type": "worker",
+      "complexity": "medium"
+    },
+    "review-standards": {
+      "subagent_type": "explorer",
+      "complexity": "heavy"
+    },
+    "review-spec": {
+      "subagent_type": "explorer",
+      "complexity": "heavy"
+    }
+  },
+  "notes": "checks run without a shell: use a string or {\"cmd\", \"env\", \"timeout\", \"cwd\"}. checks, diff_check and review_capture are sealed when a spec is approved. routing sets the complexity level per step, or an exact model via config.py pin."
+}
