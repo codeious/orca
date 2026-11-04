@@ -1,0 +1,19 @@
+src/main/droid/droid-plan-approval.ts
+  s_37528dfe290bbc::t_91d122b658fad6 1-160
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c337da17e48f89f9db376aa274d333adf94d3be6",
+  "prompts": {},
+  "sessions": {
+    "s_37528dfe290bbc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "45710ea3-9a72-47fa-82b8-24f76158f799",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
