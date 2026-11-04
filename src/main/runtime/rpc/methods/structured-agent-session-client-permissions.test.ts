@@ -2,11 +2,14 @@ import '../unused-default-rpc-methods.test-fixture'
 import { afterEach, expect, it } from 'vitest'
 import { mobileRuntimeClientCapabilityUpdateRequest } from '../../../../../mobile/src/transport/mobile-runtime-client-capabilities'
 import { AGENT_SESSION_SESSION_OPTIONS_CAPABILITY } from '../../../../shared/agent-session/options/agent-session-session-options'
+import { ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES } from '../../../../shared/electron-remote-runtime-client-capabilities'
+import { WEB_RUNTIME_CLIENT_CAPABILITIES } from '../../../../shared/web-runtime-client-capabilities'
 import {
   agentSessionLeaseFixture,
   agentSessionRecordFixture
 } from '../../../../shared/agent-session/lifecycle/agent-session-record.test-fixture'
 import { DROID_AGENT, DROID_ACCOUNT_HOME_VARIABLE } from '../../../droid/droid-agent-definition'
+import { DESKTOP_RENDERER_RUNTIME_CLIENT_CAPABILITIES } from '../../../ipc/desktop-renderer-runtime-capabilities'
 import {
   runDroidRigCleanups,
   setupDroidAdapter
@@ -19,7 +22,33 @@ import { call, fixture } from './structured-agent-session-rest-contract-test-fix
 
 afterEach(runDroidRigCleanups)
 
-it('delivers at-rest Droid permissions to a phone advertising its mobile capabilities', async () => {
+const readers = [
+  {
+    name: 'mobile',
+    clientKind: 'mobile',
+    advertised: mobileRuntimeClientCapabilityUpdateRequest({
+      id: 'capabilities',
+      deviceToken: 'phone'
+    }).params.clientCapabilities
+  },
+  {
+    name: 'local desktop',
+    clientKind: 'runtime',
+    advertised: DESKTOP_RENDERER_RUNTIME_CLIENT_CAPABILITIES
+  },
+  {
+    name: 'remote desktop',
+    clientKind: 'runtime',
+    advertised: ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES
+  },
+  {
+    name: 'browser',
+    clientKind: 'runtime',
+    advertised: WEB_RUNTIME_CLIENT_CAPABILITIES
+  }
+] as const
+
+it.each(readers)('delivers Droid permissions through the $name handshake', async (reader) => {
   const droid = await setupDroidAdapter()
   const record = {
     ...agentSessionRecordFixture(
@@ -41,13 +70,9 @@ it('delivers at-rest Droid permissions to a phone advertising its mobile capabil
       agents: new StructuredAgentRegistry([{ definition: DROID_AGENT, adapter: droid.adapter }])
     })
   )
-  const request = mobileRuntimeClientCapabilityUpdateRequest({
-    id: 'capabilities',
-    deviceToken: 'phone'
-  })
   const client = {
-    clientKind: 'mobile' as const,
-    clientCapabilities: parseRuntimeClientCapabilities(request.params.clientCapabilities)
+    clientKind: reader.clientKind,
+    clientCapabilities: parseRuntimeClientCapabilities([...reader.advertised])
   }
   const [options] = await call('agentSession.options', { sessionId: record.sessionId }, client)
   expect(options).toMatchObject({
