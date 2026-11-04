@@ -17,6 +17,8 @@ const saved = {
   serviceTier: 'fast',
   planMode: 'true',
   autonomyLevel: 'high',
+  specModel: 'planner',
+  specEffort: 'max',
   unaccepted: 'value'
 }
 
@@ -50,13 +52,20 @@ it.each([
 })
 
 it('does not restore saved execution settings when a Droid message carries no picks', () => {
-  expect(mint(DROID_AGENT, {})).toEqual({ planMode: 'true', autonomyLevel: 'high' })
+  expect(mint(DROID_AGENT, {})).toEqual({
+    planMode: 'true',
+    autonomyLevel: 'high',
+    specModel: 'planner',
+    specEffort: 'max'
+  })
 })
 
 it('lets explicit startup settings win over saved session settings', () => {
   expect(mint(DROID_AGENT, { planMode: 'false', autonomyLevel: 'low' })).toEqual({
     planMode: 'false',
-    autonomyLevel: 'low'
+    autonomyLevel: 'low',
+    specModel: 'planner',
+    specEffort: 'max'
   })
 })
 

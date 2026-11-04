@@ -7,6 +7,10 @@ import {
 } from '../../shared/droid-autonomy-options'
 import { droidAutonomyOptionDescriptor } from './droid-session-option-descriptors'
 import { droidAutonomyLevelFromLaunchArgs } from './droid-autonomy-level'
+import {
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_EFFORT_OPTION_ID
+} from '../../shared/droid-spec-pair-options'
 
 export const DROID_HANDLE_TRANSPORT = 'droid-stream-jsonrpc'
 
@@ -31,7 +35,12 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
   },
   restingOptions: {
     acceptsKey: (key) =>
-      key === 'model' || key === 'effort' || key === 'planMode' || key === DROID_AUTONOMY_OPTION_ID,
+      key === 'model' ||
+      key === 'effort' ||
+      key === 'planMode' ||
+      key === DROID_AUTONOMY_OPTION_ID ||
+      key === DROID_SPEC_MODEL_OPTION_ID ||
+      key === DROID_SPEC_EFFORT_OPTION_ID,
     fallbackModels: () => null,
     effortDefaultsToModel: false,
     sessionOptions: ({ saved, launchArgs }) => {

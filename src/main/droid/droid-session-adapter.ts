@@ -167,6 +167,12 @@ export class DroidSessionAdapter
     )
   readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = (input) =>
     this.session(input.sessionId, input.fence).options.read()
+  canSetOptionWhileIdle: NonNullable<StructuredAgentSessionAdapter['canSetOptionWhileIdle']> = (
+    input
+  ) => {
+    const session = this.sessions.get(input.sessionId)
+    return session?.input.fence === input.fence && !session.connection.closed
+  }
   setOption: StructuredAgentSessionAdapter['setOption'] = async (input) => {
     const { options } = this.session(input.sessionId, input.fence)
     if (input.key === 'planMode') {

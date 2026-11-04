@@ -51,6 +51,10 @@ export type { StructuredAgentSessionMutationContext } from './structured-agent-s
 import type { StructuredAgentSessionCaller } from './structured-agent-session-host-types'
 import { recordStructuredAgentSessionOptionIntent } from './structured-agent-session-options-read'
 import { confirmIdleStructuredAgentSessionOption } from './structured-agent-session-idle-option'
+import {
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_EFFORT_OPTION_ID
+} from '../../../shared/droid-spec-pair-options'
 
 export function sendStructuredAgentSessionTurn(
   context: StructuredAgentSessionMutationContext,
@@ -232,11 +236,32 @@ export async function setStructuredAgentSessionOption(
       ...plan,
       conversationWrite: true,
       run: async (ctx) => {
-        const picked = await recordStructuredAgentSessionOptionIntent(context.deps, ctx, params, {
+        const child = context.sessions.get(ctx.sessionId)?.child
+        const specPair =
+          !noChoice &&
+          (params.key === 'model' || params.key === 'effort') &&
+          child?.phase === 'ready' &&
+          !child.close &&
+          context.deps.store.getRecord(ctx.sessionId)?.provider === 'droid' &&
+          (
+            await context.deps.adapter.readOptions?.({
+              sessionId: ctx.sessionId,
+              fence: ctx.fence
+            })
+          )?.current.planMode === true
+        const input = specPair
+          ? {
+              key:
+                params.key === 'model' ? DROID_SPEC_MODEL_OPTION_ID : DROID_SPEC_EFFORT_OPTION_ID,
+              value: params.value
+            }
+          : params
+        const picked = await recordStructuredAgentSessionOptionIntent(context.deps, ctx, input, {
           readsWithoutModel: caller.readsOptionsWithoutModel !== false
         })
         if (picked.ok) {
-          confirmIdleStructuredAgentSessionOption(context, ctx, params)
+          confirmIdleStructuredAgentSessionOption(context, ctx, input)
+          return { ...picked, value: { ...picked.value, key: params.key } }
         }
         return picked
       },

@@ -42,12 +42,8 @@ function specIsOn(settings: DroidSettings, requested: DroidInteractionMode): boo
   return (settings.interactionMode ?? requested) === 'spec'
 }
 
-/**
- * The main model and effort are what the picks already held say, else as Droid reports them, in
- * either mode. The Spec pair is reported apart, so naming one never moves the main pair a person
- * sees. `requested` is the mode the start pinned, which stands until Droid reports one.
- */
-function droidCurrentOptions(
+/** Saved picks keep the main pair, even while Spec runs a different one. */
+function droidMainOptions(
   settings: DroidSettings,
   requested: DroidInteractionMode,
   held: AgentSessionOptionsResult['current'] = {}
@@ -71,6 +67,31 @@ function droidCurrentOptions(
     ...(effort ? { effort } : {}),
     confirmed: [...confirmed]
   }
+}
+
+function droidCurrentOptions(
+  settings: DroidSettings,
+  requested: DroidInteractionMode,
+  held: AgentSessionOptionsResult['current']
+): DroidCurrentOptions {
+  const current = droidMainOptions(settings, requested, held)
+  if (!current.planMode) {
+    return current
+  }
+  const model = settings.specModeModelId ?? current.model
+  const effort =
+    settings.specModeReasoningEffort ?? (settings.specModeModelId ? undefined : current.effort)
+  const confirmed = new Set(current.confirmed)
+  if (settings.specModeModelId) {
+    confirmed.add('model')
+  }
+  if (settings.specModeReasoningEffort) {
+    confirmed.add('effort')
+  }
+  if (!effort) {
+    confirmed.delete('effort')
+  }
+  return { ...current, model, effort, confirmed: [...confirmed] }
 }
 
 /** What one Droid child holds and can be asked to change: its model, effort, mode and level. */
@@ -108,6 +129,15 @@ export class DroidSessionOptions {
    * Where Droid reported nothing for the pick, the picked value stands.
    */
   async set(key: string, value: string): Promise<Record<string, string>> {
+    if (
+      (key === 'model' || key === 'effort') &&
+      specIsOn(this.deps.settings.current, this.deps.requested)
+    ) {
+      return this.setSpecPair(
+        key === 'model' ? DROID_SPEC_MODEL_OPTION_ID : DROID_SPEC_EFFORT_OPTION_ID,
+        value
+      )
+    }
     if (key === DROID_SPEC_MODEL_OPTION_ID || key === DROID_SPEC_EFFORT_OPTION_ID) {
       return this.setSpecPair(key, value)
     }
@@ -230,7 +260,7 @@ export class DroidSessionOptions {
   /** The Spec, model, effort, Spec pair and chosen level the host stores for a chat Droid holds as `reported`. */
   private picks(reported: DroidSettings): Record<string, string> {
     const { model, requested } = this.deps
-    const current = droidCurrentOptions(reported, requested, model.current)
+    const current = droidMainOptions(reported, requested, model.current)
     const planMode = encodeStructuredAgentSessionOptionValue('planMode', current.planMode)
     return {
       ...(planMode === null ? {} : { planMode }),
