@@ -1,0 +1,25 @@
+mobile/src/session/native-chat/input/mobile-native-chat-session-option-persistence.test.ts
+  s_210dc32b3c8f30::t_f9f1f847d24678 25-44
+src/main/droid/droid-saved-spec-defaults.test.ts
+  s_210dc32b3c8f30::t_a0f207101dfd6a 1-105
+src/shared/agent-session/options/structured-agent-session-selection-operations.ts
+  s_210dc32b3c8f30::t_763c07f9d39c38 8-12,89-139
+src/shared/native-chat/input/native-chat-session-option-defaults.test.ts
+  s_210dc32b3c8f30::t_31466d251f6f15 5,7-9,11,14-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5afade5ca4cb7fc0d43b191c2e2478c7768f5205",
+  "prompts": {},
+  "sessions": {
+    "s_210dc32b3c8f30": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "b8659aac-dc94-483c-88c3-6026e9b04dcb",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
