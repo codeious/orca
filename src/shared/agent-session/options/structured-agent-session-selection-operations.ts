@@ -5,6 +5,11 @@ import {
 import { decodeStructuredAgentSessionOptionValue } from './structured-agent-session-option-codec'
 import type { NativeChatSessionOptionSettingsMutation } from '../../native-chat/input/native-chat-session-options'
 import type { AgentSessionWriteFailure } from '../failures/agent-session-write-failure'
+import {
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_SAME_AS_MAIN
+} from '../../droid-spec-pair-options'
 
 export type SelectionOutcome =
   | { kind: 'accepted'; options: Readonly<Record<string, string>> }
@@ -81,33 +86,57 @@ export function createStructuredSessionSelectionController(
       terminalRevision = revision + 1
     }
     if (outcome.kind === 'accepted') {
-      const model =
-        operation.key === 'model' ? (outcome.options.model ?? operation.model) : operation.model
-      const value = decodeStructuredAgentSessionOptionValue(
-        operation.key,
-        outcome.options[operation.key] ?? operation.value
-      )
-      const key = operation.key === 'model' ? 'model' : JSON.stringify([model, operation.key])
-      if (
-        model &&
-        value !== null &&
-        STRUCTURED_LAUNCH_SEED_OPTION_IDS.some((id) => id === operation.key) &&
-        (remembered.get(key) ?? 0) < operation.identity
-      ) {
-        remembered.set(key, operation.identity)
-        const adopt = adopted <= operation.identity
-        adopted = Math.max(adopted, operation.identity)
-        try {
-          remember([
-            {
-              modelId: model,
-              optionId: operation.key,
-              value,
-              ...(!adopt ? { adoptModelAsLaunchDefault: false } : {})
-            }
-          ])
-        } catch {
-          /* Remembering never gates selection. */
+      const specIds = [DROID_SPEC_MODEL_OPTION_ID, DROID_SPEC_EFFORT_OPTION_ID]
+      const specPick =
+        specIds.includes(operation.key) ||
+        ((operation.key === 'model' || operation.key === 'effort') &&
+          outcome.options.planMode === 'true' &&
+          specIds.some((id) => outcome.options[id] !== undefined))
+      if (specPick) {
+        if ((remembered.get('spec') ?? 0) < operation.identity) {
+          remembered.set('spec', operation.identity)
+          const modelId = outcome.options.model ?? operation.model ?? DROID_SPEC_SAME_AS_MAIN
+          try {
+            remember(
+              specIds.map((optionId) => ({
+                modelId,
+                optionId,
+                value: outcome.options[optionId] ?? DROID_SPEC_SAME_AS_MAIN
+              }))
+            )
+          } catch {
+            /* Remembering never gates selection. */
+          }
+        }
+      } else {
+        const model =
+          operation.key === 'model' ? (outcome.options.model ?? operation.model) : operation.model
+        const value = decodeStructuredAgentSessionOptionValue(
+          operation.key,
+          outcome.options[operation.key] ?? operation.value
+        )
+        const key = operation.key === 'model' ? 'model' : JSON.stringify([model, operation.key])
+        if (
+          model &&
+          value !== null &&
+          STRUCTURED_LAUNCH_SEED_OPTION_IDS.some((id) => id === operation.key) &&
+          (remembered.get(key) ?? 0) < operation.identity
+        ) {
+          remembered.set(key, operation.identity)
+          const adopt = adopted <= operation.identity
+          adopted = Math.max(adopted, operation.identity)
+          try {
+            remember([
+              {
+                modelId: model,
+                optionId: operation.key,
+                value,
+                ...(!adopt ? { adoptModelAsLaunchDefault: false } : {})
+              }
+            ])
+          } catch {
+            /* Remembering never gates selection. */
+          }
         }
       }
     } else if (outcome.kind !== 'unknown') {

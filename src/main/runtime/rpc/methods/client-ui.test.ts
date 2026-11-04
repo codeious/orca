@@ -15,6 +15,28 @@ import type { RpcRequest } from '../core'
 import { RpcDispatcher } from '../dispatcher'
 import { CLIENT_UI_METHODS } from './client-ui'
 
+it('accepts the saved Droid Spec pair from paired clients', async () => {
+  const mutation = {
+    type: 'apply-picks',
+    agent: 'droid',
+    picks: [
+      { modelId: 'sol', optionId: 'specModel', value: 'opus' },
+      { modelId: 'sol', optionId: 'specEffort', value: 'xhigh' }
+    ]
+  }
+  const updateClientNativeChatSessionOptions = vi.fn()
+  // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: This request only reads runtime identity and calls the mocked mutation.
+  const runtime = {
+    getRuntimeId: () => 'test-runtime',
+    updateClientNativeChatSessionOptions
+  } as unknown as OrcaRuntimeService
+  const dispatcher = new RpcDispatcher({ runtime, methods: CLIENT_UI_METHODS })
+  expect(
+    await dispatcher.dispatch(makeRequest('settings.mutateNativeChatSessionOptions', mutation))
+  ).toMatchObject({ ok: true })
+  expect(updateClientNativeChatSessionOptions).toHaveBeenCalledWith(mutation)
+})
+
 function makeRequest(method: string, params?: unknown): RpcRequest {
   return { id: 'req-1', authToken: 'tok', method, params }
 }

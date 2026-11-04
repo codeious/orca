@@ -22,6 +22,26 @@ function hostClient(initial?: PersistedNativeChatSessionOptions) {
 }
 
 describe('persistMobileStructuredOptionPicks', () => {
+  it('saves a mobile Spec choice on the host without replacing its Normal default', async () => {
+    const host = hostClient({
+      droid: { model: 'sol', valuesByModel: { sol: { effort: 'high' } } }
+    })
+    await persistMobileStructuredOptionPicks({
+      client: host.client,
+      agent: 'droid',
+      picks: [
+        { modelId: 'sol', optionId: 'specModel', value: 'opus' },
+        { modelId: 'sol', optionId: 'specEffort', value: 'xhigh' }
+      ]
+    })
+    expect(resolveStructuredLaunchSeedOptions(host.read(), 'droid')).toEqual({
+      model: 'sol',
+      effort: 'high',
+      specModel: 'opus',
+      specEffort: 'xhigh'
+    })
+  })
+
   it('writes the pick to the host record a later launch seeds from', async () => {
     const host = hostClient()
     await persistMobileStructuredOptionPicks({

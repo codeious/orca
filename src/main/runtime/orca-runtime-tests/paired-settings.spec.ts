@@ -141,6 +141,15 @@ describe('OrcaRuntimeService', () => {
       agent: 'claude',
       picks: [{ modelId: 'sonnet', optionId: 'model', value: 'sonnet' }]
     })
+    runtime.updateClientNativeChatSessionOptions({
+      type: 'apply-picks',
+      agent: 'droid',
+      picks: [
+        { modelId: 'sol', optionId: 'model', value: 'sol' },
+        { modelId: 'sol', optionId: 'specModel', value: 'opus' },
+        { modelId: 'sol', optionId: 'specEffort', value: 'xhigh' }
+      ]
+    })
 
     expect(settings.nativeChatSessionOptions).toEqual({
       claude: {
@@ -150,9 +159,14 @@ describe('OrcaRuntimeService', () => {
       codex: {
         model: 'gpt-fast',
         valuesByModel: { 'gpt-fast': { effort: 'low' } }
+      },
+      droid: {
+        model: 'sol',
+        valuesByModel: {},
+        spec: { model: 'opus', effort: 'xhigh' }
       }
     })
-    expect(updateSettings).toHaveBeenCalledTimes(2)
+    expect(updateSettings).toHaveBeenCalledTimes(3)
   })
 
   it('keeps a future-launch default when an older client asks to prune from inventory', () => {

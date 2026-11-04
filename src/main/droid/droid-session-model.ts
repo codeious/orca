@@ -77,10 +77,10 @@ export class DroidSessionModel {
     request: Ask,
     saved: DroidSavedPicks,
     warn: (error: unknown) => void
-  ): Promise<void> {
+  ): Promise<boolean> {
     const params = { ...droidOptionParams(saved), ...droidSpecPairParams(saved) }
     if (Object.keys(params).length === 0) {
-      return
+      return true
     }
     try {
       await request('droid.update_session_settings', params, {
@@ -88,7 +88,7 @@ export class DroidSessionModel {
       })
     } catch (error) {
       warn(error)
-      return
+      return false
     }
     if (saved.model) {
       this.reported = droidOptionsAfterPick(this.reported, 'model', saved.model)
@@ -96,5 +96,6 @@ export class DroidSessionModel {
     if (saved.effort) {
       this.reported = droidOptionsAfterPick(this.reported, 'effort', saved.effort)
     }
+    return true
   }
 }

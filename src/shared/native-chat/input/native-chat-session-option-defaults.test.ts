@@ -2,10 +2,115 @@ import { describe, expect, it } from 'vitest'
 import {
   applyNativeChatSessionOptionSettingsMutation,
   narrowStructuredLaunchSeedOptions,
+  parseStructuredLaunchSeedOptions,
   resolveNativeChatSessionOptionDefaults,
-  resolveStructuredLaunchSeedOptions
+  resolveStructuredLaunchSeedOptions,
+  structuredLaunchRequestedOptions,
+  structuredLaunchSeedOptions
 } from './native-chat-session-option-defaults'
+import { agentPickerChoiceSeeds } from '../../agent-launch-picker-defaults'
 import type { PersistedNativeChatSessionOptions } from './native-chat-session-options'
+
+it('saves a Spec pair without changing the Normal default and seeds both into a new chat', () => {
+  const saved = applyNativeChatSessionOptionSettingsMutation(
+    { droid: { model: 'sol', valuesByModel: { sol: { effort: 'high' } } } },
+    {
+      type: 'apply-picks',
+      agent: 'droid',
+      picks: [
+        { modelId: 'sol', optionId: 'specModel', value: 'opus' },
+        { modelId: 'sol', optionId: 'specEffort', value: 'xhigh' }
+      ]
+    }
+  )
+  expect(saved).toEqual({
+    droid: {
+      model: 'sol',
+      valuesByModel: { sol: { effort: 'high' } },
+      spec: { model: 'opus', effort: 'xhigh' }
+    }
+  })
+  expect(resolveStructuredLaunchSeedOptions(saved, 'droid')).toEqual({
+    model: 'sol',
+    effort: 'high',
+    specModel: 'opus',
+    specEffort: 'xhigh'
+  })
+})
+
+it('seeds a Spec-only default through storage parsing and the new-chat picker without inventing a Normal model', () => {
+  const persisted = { droid: { spec: { model: 'opus', effort: 'xhigh' } } }
+  const seed = resolveStructuredLaunchSeedOptions(persisted, 'droid')
+  expect(seed).toEqual({ specModel: 'opus', specEffort: 'xhigh' })
+  expect(parseStructuredLaunchSeedOptions(seed)).toEqual(seed)
+  expect(
+    agentPickerChoiceSeeds('droid', { nativeChatSessionOptions: persisted }).structured
+  ).toMatchObject({
+    options: { specModel: 'opus', specEffort: 'xhigh' }
+  })
+  expect(
+    agentPickerChoiceSeeds('droid', { nativeChatSessionOptions: persisted }).structured
+  ).not.toHaveProperty('model')
+})
+
+it('keeps the saved Spec pair when agent launch settings supply a different Normal model', () => {
+  expect(
+    structuredLaunchSeedOptions(
+      {
+        nativeChatSessionOptions: {
+          droid: { model: 'old', spec: { model: 'opus', effort: 'xhigh' } }
+        },
+        agentLaunchChoices: { droid: { model: 'sol' } }
+      },
+      'droid'
+    )
+  ).toMatchObject({ model: 'sol', specModel: 'opus', specEffort: 'xhigh' })
+})
+
+it('keeps the Spec pair when the Normal default changes and replaces its model-specific effort', () => {
+  const persisted = {
+    droid: {
+      model: 'old',
+      valuesByModel: { old: { effort: 'low' }, sol: { effort: 'high' } },
+      spec: { model: 'opus', effort: 'xhigh' }
+    }
+  }
+  const saved = applyNativeChatSessionOptionSettingsMutation(persisted, {
+    type: 'apply-picks',
+    agent: 'droid',
+    picks: [{ modelId: 'sol', optionId: 'model', value: 'sol' }]
+  })
+  expect(resolveStructuredLaunchSeedOptions(saved, 'droid')).toEqual({
+    model: 'sol',
+    effort: 'high',
+    specModel: 'opus',
+    specEffort: 'xhigh'
+  })
+  expect(
+    structuredLaunchRequestedOptions({
+      explicit: { model: 'old', effort: 'low', specModel: 'opus', specEffort: 'xhigh' },
+      held: { model: 'sol' }
+    })
+  ).toEqual({ model: 'sol', specModel: 'opus', specEffort: 'xhigh' })
+})
+
+it('replaces the Spec effort with the reported effort when choosing a new Spec model', () => {
+  const saved = applyNativeChatSessionOptionSettingsMutation(
+    { droid: { spec: { model: 'opus', effort: 'xhigh' } } },
+    {
+      type: 'apply-picks',
+      agent: 'droid',
+      picks: [
+        { modelId: 'sol', optionId: 'specModel', value: 'sonnet' },
+        { modelId: 'sol', optionId: 'specEffort', value: 'high' }
+      ]
+    }
+  )
+  expect(resolveStructuredLaunchSeedOptions(saved, 'droid')).toEqual({
+    specModel: 'sonnet',
+    specEffort: 'high'
+  })
+})
 
 const persistedGrok = (
   model: string | undefined,

@@ -1,4 +1,9 @@
 import { randomUUID } from 'node:crypto'
+import {
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_EFFORT_OPTION_ID,
+  DROID_SPEC_SAME_AS_MAIN
+} from '../../shared/droid-spec-pair-options'
 import { DroidMcpSignIn } from './droid-mcp-sign-in'
 import { waitForPromiseWithSignal } from '../../shared/abort-signal-reason'
 import { JsonlRpcSessionLifecycle } from '../jsonl-rpc/session-lifecycle'
@@ -212,7 +217,7 @@ export class DroidSession {
               interactionMode,
               autonomyLevel,
               ...droidOptionParams(saved),
-              ...droidSpecPairParams(saved)
+              ...droidSpecPairParams(saved, false)
             },
             { timeoutMs: START_TIMEOUT_MS }
           ))
@@ -238,6 +243,10 @@ export class DroidSession {
             error
           })
       )
+    } else if (saved.specModel === null) {
+      await this.options.set(DROID_SPEC_MODEL_OPTION_ID, DROID_SPEC_SAME_AS_MAIN)
+    } else if (saved.specEffort === null) {
+      await this.options.set(DROID_SPEC_EFFORT_OPTION_ID, DROID_SPEC_SAME_AS_MAIN)
     }
     // The row names Agent Permissions, so it is not said of a level the person picked in the chat.
     if (!this.begin.autonomyPicked) {

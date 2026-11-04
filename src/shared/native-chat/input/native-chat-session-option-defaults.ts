@@ -1,5 +1,9 @@
 import { resolveAgentChoiceLayers } from '../../agent-choice-layers'
 import { isTuiAgent } from '../../tui-agent-config'
+import {
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_EFFORT_OPTION_ID
+} from '../../droid-spec-pair-options'
 import type { AgentType } from '../../agent-status-types'
 import {
   AGENT_CHAT_PERMISSION_MODE_OPTION_ID,
@@ -30,11 +34,8 @@ export function resolveNativeChatSessionOptionDefaults(
   const entry = persisted?.[agent]
   // Preserve CLI-configured defaults until the user explicitly selects a model that authorizes launch flags.
   const modelId = typeof entry?.model === 'string' && entry.model.trim() ? entry.model : undefined
-  if (!modelId) {
-    return undefined
-  }
-  const values: Record<string, SessionOptionValue> = { model: modelId }
-  const storedValues = entry?.valuesByModel?.[modelId]
+  const values: Record<string, SessionOptionValue> = modelId ? { model: modelId } : {}
+  const storedValues = modelId ? entry?.valuesByModel?.[modelId] : undefined
   if (storedValues && typeof storedValues === 'object') {
     for (const [id, value] of Object.entries(storedValues)) {
       if (sessionOptionValueIsValid(value)) {
@@ -42,7 +43,13 @@ export function resolveNativeChatSessionOptionDefaults(
       }
     }
   }
-  return values
+  if (entry?.spec?.model) {
+    values[DROID_SPEC_MODEL_OPTION_ID] = entry.spec.model
+  }
+  if (entry?.spec?.effort) {
+    values[DROID_SPEC_EFFORT_OPTION_ID] = entry.spec.effort
+  }
+  return Object.keys(values).length > 0 ? values : undefined
 }
 
 /** Canonical values seed through the existing durable string record; the codec
@@ -51,7 +58,9 @@ export const STRUCTURED_LAUNCH_SEED_OPTION_IDS = [
   'model',
   'effort',
   'fastMode',
-  'serviceTier'
+  'serviceTier',
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_EFFORT_OPTION_ID
 ] as const
 
 /** What a launch may hold and a create may seed; the permission mode never rewrites the selection. */
@@ -143,7 +152,11 @@ export function structuredLaunchSeedOptions(
       })
     : undefined
   const selection = choices
-    ? parseStructuredLaunchSeedOptions({ ...choices.options, model: choices.model })
+    ? parseStructuredLaunchSeedOptions({
+        ...seededSpecPair(remembered),
+        ...choices.options,
+        model: choices.model
+      })
     : remembered
   const permissionMode = newChatPermissionModeForSettings(agent, settings)
   return permissionMode
@@ -191,6 +204,21 @@ export function updateNativeChatSessionOptionDefaults(args: {
   adoptModelAsLaunchDefault?: boolean
 }): PersistedNativeChatSessionOptions {
   const currentAgent = args.persisted?.[args.agent]
+  if (
+    args.optionId === DROID_SPEC_MODEL_OPTION_ID ||
+    args.optionId === DROID_SPEC_EFFORT_OPTION_ID
+  ) {
+    return {
+      ...args.persisted,
+      [args.agent]: {
+        ...currentAgent,
+        spec: {
+          ...currentAgent?.spec,
+          [args.optionId === DROID_SPEC_MODEL_OPTION_ID ? 'model' : 'effort']: String(args.value)
+        }
+      }
+    }
+  }
   const currentModelValues = currentAgent?.valuesByModel?.[args.modelId] ?? {}
   const valuesByModel = {
     ...currentAgent?.valuesByModel,
@@ -212,7 +240,7 @@ export function updateNativeChatSessionOptionDefaults(args: {
   }
 }
 
-/** A different model drops the prior model’s options, keeping the chat’s permission choice. Without
+/** A different model drops the prior model’s options, keeping permissions and the Spec pair. Without
  *  a requested `model` the result only overlays the shown selection. */
 export function structuredLaunchRequestedOptions(selection: {
   explicit?: Readonly<Record<string, string>>
@@ -228,6 +256,7 @@ export function structuredLaunchRequestedOptions(selection: {
     explicit[AGENT_CHAT_PERMISSION_MODE_OPTION_ID] ?? seed?.[AGENT_CHAT_PERMISSION_MODE_OPTION_ID]
   return {
     ...(permissionMode ? { [AGENT_CHAT_PERMISSION_MODE_OPTION_ID]: permissionMode } : {}),
+    ...seededSpecPair({ ...seed, ...explicit }),
     ...(changed ? {} : explicit),
     ...held
   }
@@ -260,4 +289,15 @@ export function seededPermissionMode(
 ): Record<string, string> {
   const mode = options?.[AGENT_CHAT_PERMISSION_MODE_OPTION_ID]
   return mode ? { [AGENT_CHAT_PERMISSION_MODE_OPTION_ID]: mode } : {}
+}
+
+function seededSpecPair(
+  options: Readonly<Record<string, string>> | undefined
+): Record<string, string> {
+  return Object.fromEntries(
+    [DROID_SPEC_MODEL_OPTION_ID, DROID_SPEC_EFFORT_OPTION_ID].flatMap((id) => {
+      const value = options?.[id]
+      return value ? [[id, value]] : []
+    })
+  )
 }

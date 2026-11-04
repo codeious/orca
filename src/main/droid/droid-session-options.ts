@@ -16,7 +16,7 @@ import {
   providerDiagnostic
 } from '../../shared/agent-session/failures/agent-session-failure'
 import { isDroidMethodNotFound } from './droid-missing-method'
-import type { DroidSavedPicks } from './droid-model-options'
+import { droidSpecPairParams, type DroidSavedPicks } from './droid-model-options'
 import { DroidRpcError } from './droid-rpc-errors'
 import { droidSessionOptionDescriptors } from './droid-session-option-descriptors'
 import type { DroidSessionModel } from './droid-session-model'
@@ -253,7 +253,9 @@ export class DroidSessionOptions {
     warn: (error: unknown) => void
   ): Promise<DroidSettings['autonomyLevel']> {
     const reported = await this.update(wanted)
-    await this.deps.model.applySaved(this.deps.request, saved, warn)
+    if (await this.deps.model.applySaved(this.deps.request, saved, warn)) {
+      this.deps.settings.adopt(droidSpecPairParams(saved))
+    }
     return reported?.autonomyLevel
   }
 

@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import {
   DROID_SPEC_EFFORT_OPTION_ID,
-  DROID_SPEC_MODEL_OPTION_ID
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_SAME_AS_MAIN
 } from '../../shared/droid-spec-pair-options'
 import type { AgentSessionModelOption } from '../../shared/agent-session/agent-session-wire'
 import type { AgentSessionOptionsResult } from '../../shared/agent-session/options/agent-session-options-result'
@@ -97,8 +98,8 @@ export type DroidSavedPicks = {
   model?: string
   effort?: string
   /** The model and effort Spec runs on in place of the main pair. */
-  specModel?: string
-  specEffort?: string
+  specModel?: string | null
+  specEffort?: string | null
   picked: ReadonlySet<string>
 }
 
@@ -108,8 +109,11 @@ export function droidSavedOptionPicks(
 ): DroidSavedPicks {
   const model = options?.model
   const effort = options?.effort
-  const specModel = options?.[DROID_SPEC_MODEL_OPTION_ID]
-  const specEffort = options?.[DROID_SPEC_EFFORT_OPTION_ID]
+  const storedModel = options?.[DROID_SPEC_MODEL_OPTION_ID]
+  const storedEffort = options?.[DROID_SPEC_EFFORT_OPTION_ID]
+  const specModel = storedModel === DROID_SPEC_SAME_AS_MAIN ? null : storedModel
+  const specEffort =
+    specModel === null || storedEffort === DROID_SPEC_SAME_AS_MAIN ? null : storedEffort
   const picked = new Set<string>()
   if (model) {
     picked.add('model')
@@ -120,8 +124,8 @@ export function droidSavedOptionPicks(
   return {
     ...(model ? { model } : {}),
     ...(effort ? { effort } : {}),
-    ...(specModel ? { specModel } : {}),
-    ...(specEffort ? { specEffort } : {}),
+    ...(specModel !== undefined ? { specModel } : {}),
+    ...(specEffort !== undefined ? { specEffort } : {}),
     picked
   }
 }
@@ -143,17 +147,19 @@ export function droidOptionParams(
   }
 }
 
-/** The saved Spec pair as Droid's own keys; empty when none was set. */
+/** Null clears a saved Spec value; initialize accepts only the non-null pair. */
 export function droidSpecPairParams(
-  saved: Pick<DroidSavedPicks, 'specModel' | 'specEffort'>
-): DroidOptionParams {
-  return droidOptionParams(
-    {
-      ...(saved.specModel ? { model: saved.specModel } : {}),
-      ...(saved.specEffort ? { effort: saved.specEffort } : {})
-    },
-    true
-  )
+  saved: Pick<DroidSavedPicks, 'specModel' | 'specEffort'>,
+  includeClears = true
+): Partial<Record<'specModeModelId' | 'specModeReasoningEffort', string | null>> {
+  return {
+    ...(saved.specModel !== undefined && (includeClears || saved.specModel !== null)
+      ? { specModeModelId: saved.specModel }
+      : {}),
+    ...(saved.specEffort !== undefined && (includeClears || saved.specEffort !== null)
+      ? { specModeReasoningEffort: saved.specEffort }
+      : {})
+  }
 }
 
 /** A new session with no model pick teaches what it resolved. A resume or a restored pick does not. */

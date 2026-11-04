@@ -1,5 +1,84 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createStructuredSessionSelectionController } from './structured-agent-session-selection-operations'
+import { applyNativeChatSessionOptionPicks } from '../../native-chat/input/native-chat-session-option-defaults'
+import type { PersistedNativeChatSessionOptions } from '../../native-chat/input/native-chat-session-options'
+
+it.each<{ key: string; value: string; options: Record<string, string> }>([
+  { key: 'specModel', value: 'sonnet', options: { specModel: 'sonnet', specEffort: 'high' } },
+  { key: 'specEffort', value: 'high', options: { specModel: 'sonnet', specEffort: 'high' } },
+  { key: 'specModel', value: 'sonnet', options: { specModel: 'sonnet' } },
+  {
+    key: 'model',
+    value: 'sonnet',
+    options: {
+      planMode: 'true',
+      model: 'sol',
+      effort: 'low',
+      specModel: 'sonnet',
+      specEffort: 'high'
+    }
+  },
+  {
+    key: 'effort',
+    value: 'high',
+    options: {
+      planMode: 'true',
+      model: 'sol',
+      effort: 'low',
+      specModel: 'sonnet',
+      specEffort: 'high'
+    }
+  },
+  { key: 'specModel', value: 'same-as-main', options: { model: 'sol', effort: 'low' } },
+  { key: 'specEffort', value: 'same-as-main', options: { model: 'sol', specModel: 'sonnet' } }
+])(
+  'remembers the accepted Spec pair for $key=$value without adopting the Normal model',
+  ({ key, value, options }) => {
+    let persisted: PersistedNativeChatSessionOptions = {
+      droid: {
+        model: 'normal-default',
+        valuesByModel: { 'normal-default': { effort: 'high' } },
+        spec: { model: 'opus', effort: 'xhigh' }
+      }
+    }
+    const controller = createStructuredSessionSelectionController((picks) => {
+      persisted = applyNativeChatSessionOptionPicks({ persisted, agent: 'droid', picks })
+    })
+    const operation = controller.issue(key, value, key.startsWith('spec') ? null : 'sol')
+    controller.settle(operation, { kind: 'accepted', options })
+    expect(persisted).toEqual({
+      droid: {
+        model: 'normal-default',
+        valuesByModel: { 'normal-default': { effort: 'high' } },
+        spec: {
+          model: options.specModel ?? 'same-as-main',
+          effort: options.specEffort ?? 'same-as-main'
+        }
+      }
+    })
+  }
+)
+
+it('does not let an older Spec reply replace the newer accepted pair', () => {
+  const remember = vi.fn()
+  const controller = createStructuredSessionSelectionController(remember)
+  const older = controller.issue('specModel', 'opus', 'sol')
+  older.transmitted = true
+  const newer = controller.issue('effort', 'high', 'sol')
+  controller.settle(newer, {
+    kind: 'accepted',
+    options: { planMode: 'true', model: 'sol', specModel: 'sonnet', specEffort: 'high' }
+  })
+  controller.settle(older, {
+    kind: 'accepted',
+    options: { model: 'sol', specModel: 'opus', specEffort: 'xhigh' }
+  })
+  expect(remember).toHaveBeenCalledTimes(1)
+  expect(remember).toHaveBeenCalledWith([
+    { modelId: 'sol', optionId: 'specModel', value: 'sonnet' },
+    { modelId: 'sol', optionId: 'specEffort', value: 'high' }
+  ])
+})
 
 // Creation, attachment and revalidation share identities even when two picks have equal values.
 describe('chat selection operation handoff', () => {

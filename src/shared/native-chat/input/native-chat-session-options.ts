@@ -88,6 +88,7 @@ export type PersistedNativeChatSessionOptions = Partial<
     string,
     {
       model?: string
+      spec?: { model?: string; effort?: string }
       valuesByModel?: Record<string, Record<string, SessionOptionValue>>
     }
   >
