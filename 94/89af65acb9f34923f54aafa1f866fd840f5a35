@@ -1,0 +1,22 @@
+src/main/droid/droid-spec-continuation.test.ts
+  h_476903bd8a47d9 9,36-51,123-127
+src/main/native-chat/agent-session-wire/structured-agent-session-acquisition.ts
+  h_476903bd8a47d9 63
+src/main/native-chat/agent-session-wire/structured-agent-session-startup-attempt.ts
+  h_476903bd8a47d9 2-3,22-23,32,35-45
+src/main/native-chat/agent-session-wire/structured-agent-session-startup-choices.test.ts
+  h_476903bd8a47d9 1-113
+src/main/native-chat/agent-session-wire/structured-agent-session-startup-options.test.ts
+  h_476903bd8a47d9 1-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9489af65acb9f34923f54aafa1f866fd840f5a35",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
