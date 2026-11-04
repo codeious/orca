@@ -1,0 +1,19 @@
+src/renderer/src/components/native-chat/NativeChatSessionOptionPickers.tsx
+  s_210dc32b3c8f30::t_f7d0dcae1f9b3a 8-11,325-328
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cd7853e222535349ed4fda5bfeae4387e0871678",
+  "prompts": {},
+  "sessions": {
+    "s_210dc32b3c8f30": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "b8659aac-dc94-483c-88c3-6026e9b04dcb",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
