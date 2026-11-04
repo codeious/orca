@@ -102,11 +102,12 @@ export class DroidPrompts {
       throw new AgentSessionPromptUnavailableError(itemId)
     }
     let reply: unknown
-    let nextCard: DroidPromptPresentation | undefined
+    let nextCard: DroidPromptPresentation | null | undefined
     try {
       if (response && entry.presentation.advance) {
         nextCard = entry.presentation.advance(response)
-      } else {
+      }
+      if (!nextCard) {
         reply = entry.presentation.reply(response, operationId)
       }
     } catch (error) {

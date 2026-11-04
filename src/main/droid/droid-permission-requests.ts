@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { isPlanApprovalSubject } from '../../shared/agent-session/agent-session-approval-subject'
 import {
   formatToolInput,
   truncateToolDetail
@@ -12,7 +11,7 @@ import {
   type DroidPromptPresentation
 } from './droid-prompt-presentation'
 import { DroidRpcError } from './droid-rpc-errors'
-import { droidPlanOptionLevel, startsDroidSpecHandoff } from './droid-spec-handoff'
+import { droidPlanApprovalPresentation } from './droid-plan-approval'
 
 const detailsSchema = z.looseObject({
   fullCommand: z.string().optional(),
@@ -38,8 +37,6 @@ const requestSchema = z.looseObject({
 const PLAN_CONFIRMATION = 'exit_spec_mode'
 const REFUSAL = 'cancel'
 
-/** A plan's ending Orca cannot follow: `proceed_edit` needs an editor of Droid's, and a new session is
- *  the client's to start only when the request says so. */
 /** Throws a `DroidRpcError` for a request Orca cannot show, so Droid is told rather than left waiting. */
 export function droidPermissionPresentation(
   params: unknown,
@@ -51,23 +48,8 @@ export function droidPermissionPresentation(
   }
   const { toolUses, options } = parsed.data
   const plan = toolUses.find((use) => use.confirmationType === PLAN_CONFIRMATION)
-  const takesNotes = plan?.details?.supportsClientStartedHandoff === true
-  const handsOff = takesNotes && environment.beginSpecHandoff !== undefined
-  const reported = environment.autonomyLevels()
-  const offered = options.filter(({ value }) => {
-    if (!plan) {
-      return true
-    }
-    const level = droidPlanOptionLevel(value)
-    return (
-      value !== 'proceed_edit' &&
-      (handsOff || !startsDroidSpecHandoff(value)) &&
-      (level === null || reported === undefined || reported.includes(level))
-    )
-  })
   const first = toolUses[0]
   const details = toolUses.map((use) => use.details)
-  const text = plan?.details?.plan
   const reason = details.find((detail) => detail?.riskLevelReason)?.riskLevelReason
   const shown = details
     .map(
@@ -77,50 +59,31 @@ export function droidPermissionPresentation(
         formatToolInput(toolUses[index]?.toolUse.input)
     )
     .join('\n\n')
+  if (plan) {
+    return droidPlanApprovalPresentation(
+      { ...plan.details, detail: shown, ...(reason ? { decisionReason: reason } : {}) },
+      options,
+      environment
+    )
+  }
   const bounded = boundJournalPromptBody({
     kind: 'approval',
-    title: plan ? 'Review proposed plan' : `Allow ${first?.toolUse.name ?? 'tool'}?`,
-    ...(plan?.details?.title ? { description: plan.details.title } : {}),
+    title: `Allow ${first?.toolUse.name ?? 'tool'}?`,
     ...(reason ? { decisionReason: reason } : {}),
-    ...(text ? { subject: { kind: 'plan', text } } : {}),
-    detail: truncateToolDetail(text ?? shown) || null,
-    options: offered.map(({ label, value }) => ({ id: value, label })),
+    detail: truncateToolDetail(shown) || null,
+    options: options.map(({ label, value }) => ({ id: value, label })),
     resolution: pendingDroidResolution
   })
   return {
-    body: takesNotes
-      ? {
-          ...bounded,
-          acceptsComment: true,
-          ...(isPlanApprovalSubject(bounded.subject) && bounded.subject.text === text
-            ? { acceptsPlanEdit: true }
-            : {})
-        }
-      : bounded,
-    reply: (response, operationId) => {
+    body: bounded,
+    reply: (response) => {
       if (response === null) {
         return { selectedOption: REFUSAL }
       }
-      if (response.kind !== 'option' || !offered.some(({ value }) => value === response.optionId)) {
+      if (response.kind !== 'option' || !options.some(({ value }) => value === response.optionId)) {
         throw new Error('Choose one of the options Droid offered')
       }
-      const handoff = handsOff && startsDroidSpecHandoff(response.optionId)
-      if (handoff && !operationId) {
-        throw new Error('A plan handoff requires a host operation ID')
-      }
-      return {
-        selectedOption: response.optionId,
-        ...(handoff && operationId
-          ? {
-              clientStartsHandoffSession: true,
-              specHandoffId: environment.beginSpecHandoff?.(response.optionId, operationId)
-            }
-          : {}),
-        ...(takesNotes && response.comment?.trim() ? { comment: response.comment } : {}),
-        ...(takesNotes && response.editedSpecContent?.trim()
-          ? { editedSpecContent: response.editedSpecContent }
-          : {})
-      }
+      return { selectedOption: response.optionId }
     }
   }
 }

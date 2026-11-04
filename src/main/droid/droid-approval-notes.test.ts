@@ -14,7 +14,7 @@ const request = (supportsClientStartedHandoff?: boolean, plan = '1. Add a test.'
     { value: 'cancel', label: 'Keep planning' }
   ]
 })
-const environment = { autonomyLevels: () => undefined }
+const environment = { autonomyLevels: () => undefined, autonomyLevel: () => undefined }
 const response = {
   kind: 'option',
   optionId: 'proceed_once',

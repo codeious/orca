@@ -44,6 +44,10 @@ describe('host-owned Droid Spec handoff', () => {
     const open = vi.fn(async () => {})
     const h = await setupDroidAdapter({}, undefined, { onSpecHandoff: open })
     const { connection } = await h.start()
+    connection.notify({
+      type: 'settings_updated',
+      settings: { autonomyLevel: 'off', availableAutonomyLevels: ['off', 'low'] }
+    })
     const answer = connection.handlers.onRequest?.(
       'droid.request_permission',
       {
@@ -55,6 +59,7 @@ describe('host-owned Droid Spec handoff', () => {
           }
         ],
         options: [
+          { label: 'New chat', value: 'proceed_new_session' },
           { label: 'New chat', value: 'proceed_new_session_low' },
           { label: 'Cancel', value: 'cancel' }
         ]
@@ -77,7 +82,30 @@ describe('host-owned Droid Spec handoff', () => {
       itemId: card,
       fence: 7,
       kind: 'approval',
-      response: { kind: 'option', optionId: 'proceed_new_session_low' },
+      response: {
+        kind: 'option',
+        optionId: 'proceed_new_session',
+        comment: ' Keep the change small. ',
+        editedSpecContent: 'A smaller plan'
+      },
+      operationId: 'plan-operation',
+      commit
+    })
+    let permissions: string | undefined
+    await vi.waitFor(async () => {
+      permissions = (await h.rig.rows()).find(({ body }) => body.kind === 'question')?.itemId
+      expect(permissions).toBeDefined()
+    })
+    if (!permissions) {
+      throw new Error('Permissions missing')
+    }
+    expect(open).not.toHaveBeenCalled()
+    await h.adapter.answerPrompt({
+      sessionId: DROID_RIG_SESSION,
+      itemId: permissions,
+      fence: 7,
+      kind: 'question',
+      response: { kind: 'answers', answers: [{ questionId: 'q1', optionIds: ['low'] }] },
       operationId: 'host-operation',
       commit
     })
@@ -88,7 +116,9 @@ describe('host-owned Droid Spec handoff', () => {
     await expect(answer).resolves.toEqual({
       selectedOption: 'proceed_new_session_low',
       clientStartsHandoffSession: true,
-      specHandoffId: id
+      specHandoffId: id,
+      comment: ' Keep the change small. ',
+      editedSpecContent: 'A smaller plan'
     })
     connection.notify({
       type: 'spec_handoff_session_created',
@@ -97,6 +127,15 @@ describe('host-owned Droid Spec handoff', () => {
       initialPrompt: 'Go'
     })
     await vi.waitFor(() => expect(open).toHaveBeenCalledTimes(1))
-    expect(commit).toHaveBeenCalledTimes(1)
+    expect(open).toHaveBeenCalledExactlyOnceWith(
+      DROID_RIG_SESSION,
+      expect.objectContaining({
+        operationId: 'host-operation',
+        autonomyLevel: 'low',
+        newSessionId: 'next',
+        initialPrompt: 'Go'
+      })
+    )
+    expect(commit).toHaveBeenCalledTimes(2)
   })
 })

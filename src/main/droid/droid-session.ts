@@ -133,6 +133,7 @@ export class DroidSession {
     )
     this.prompts = new DroidPrompts(this.lane, {
       autonomyLevels: () => this.settings.current.availableAutonomyLevels,
+      autonomyLevel: () => this.settings.current.autonomyLevel,
       ...handoffs.environment
     })
     this.options = new DroidSessionOptions({

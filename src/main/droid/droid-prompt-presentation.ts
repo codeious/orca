@@ -16,6 +16,7 @@ export const pendingDroidResolution: AgentJournalResolution = {
 export type DroidPromptEnvironment = {
   /** The autonomy levels Droid has reported the session may run at; undefined until it has. */
   autonomyLevels: () => readonly string[] | undefined
+  autonomyLevel: () => string | undefined
   beginSpecHandoff?: (option: string, operationId: string) => string
 }
 
@@ -25,7 +26,6 @@ export type DroidPromptPresentation = {
   /** What Droid is answered with. Null is a dismissal, which Droid hears as its own refusal.
    *  Throws for a response the card did not offer. */
   reply: (response: AgentSessionPromptResponse | null, operationId?: string) => unknown
-  /** Set on a card that is one part of a longer request. Answering it opens the next card and Droid
-   *  keeps waiting; only a dismissal still goes to `reply`. Throws for a response the card did not offer. */
-  advance?: (response: AgentSessionPromptResponse) => DroidPromptPresentation
+  /** Opens the next card, or returns null to answer now through `reply`. */
+  advance?: (response: AgentSessionPromptResponse) => DroidPromptPresentation | null
 }

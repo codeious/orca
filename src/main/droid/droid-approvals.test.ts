@@ -6,7 +6,13 @@ import {
   setupDroidAdapter,
   type DroidAdapterRig
 } from './droid-adapter-rig.test-support'
-import { playSteps, playUntilAsk, readDroidTurn } from './droid-recording.test-support'
+import {
+  playSteps,
+  playUntilAsk,
+  readDroidExchanges,
+  readDroidTurn,
+  replayExchange
+} from './droid-recording.test-support'
 
 afterEach(runDroidRigCleanups)
 
@@ -31,6 +37,26 @@ function openApproval(h: DroidAdapterRig) {
       }
     }
     throw new Error('No approval card yet')
+  })
+}
+
+async function planApproval() {
+  const exchanges = await readDroidExchanges('spec-plan-approval-off')
+  const h = await setupDroidAdapter({ autonomyLevel: 'off' }, (connection) => {
+    connection.replies.set('droid.initialize_session', replayExchange(connection, exchanges, 'r1'))
+  })
+  const { connection } = await h.start()
+  const turn = await readDroidTurn('spec-plan-approval-off', 'spec-plan')
+  return { h, connection, turn }
+}
+
+function openPermissions(h: DroidAdapterRig) {
+  return vi.waitFor(async () => {
+    const row = (await h.rig.rows()).find(({ body }) => body.kind === 'question')
+    if (!row) {
+      throw new Error('No permissions card yet')
+    }
+    return row
   })
 }
 
@@ -138,11 +164,9 @@ describe('Droid approval cards', () => {
     }
   )
 
-  it('draws a Spec plan as the plan to review, without the endings Orca cannot follow', async () => {
-    const turn = await readDroidTurn('spec-plan-approval-off', 'spec-plan')
-    const h = await setupDroidAdapter({ autonomyLevel: 'off' })
-    const { connection } = await h.start()
-    playUntilAsk(connection, turn)
+  it('reviews the plan first, then asks permissions and answers Droid once with Medium', async () => {
+    const { h, connection, turn } = await planApproval()
+    const { answer } = playUntilAsk(connection, turn)
     const card = await openApproval(h)
 
     expect(card.body).toMatchObject({
@@ -155,19 +179,71 @@ describe('Droid approval cards', () => {
       },
       options: [
         { id: 'proceed_once', label: 'Proceed with implementation' },
-        {
-          id: 'proceed_auto_run_low',
-          label: 'Proceed, and allow file edits and read-only commands (Low)'
-        },
-        { id: 'proceed_auto_run_medium', label: 'Proceed, and allow reversible commands (Medium)' },
-        { id: 'proceed_auto_run_high', label: 'Proceed, and allow all commands (High)' },
         { id: 'cancel', label: 'No, keep iterating on spec' }
       ]
     })
     await expect(choose(h, card.itemId, 'proceed_new_session_high')).rejects.toThrow(
       /one of the options Droid offered/
     )
+    let heard = false
+    void answer.then(() => (heard = true))
+    await choose(h, card.itemId, 'proceed_once')
+    const permissions = await openPermissions(h)
+    expect(permissions.body).toMatchObject({
+      kind: 'question',
+      question: 'Permissions',
+      options: [
+        { id: 'off', label: 'Off (current)' },
+        { id: 'low', label: 'Low' },
+        { id: 'medium', label: 'Medium' },
+        { id: 'high', label: 'High' }
+      ]
+    })
+    expect(heard).toBe(false)
+    await h.adapter.answerPrompt({
+      sessionId: DROID_RIG_SESSION,
+      itemId: permissions.itemId,
+      kind: 'question',
+      response: { kind: 'answers', answers: [{ questionId: 'q1', optionIds: ['medium'] }] },
+      fence: FENCE,
+      commit: async () => {}
+    })
+    await expect(answer).resolves.toEqual({ selectedOption: 'proceed_auto_run_medium' })
   })
+
+  it('keeps iterating without asking permissions', async () => {
+    const { h, connection, turn } = await planApproval()
+    const { answer } = playUntilAsk(connection, turn)
+    await choose(h, (await openApproval(h)).itemId, 'cancel')
+    await expect(answer).resolves.toEqual({ selectedOption: 'cancel' })
+    expect((await h.rig.rows()).some(({ body }) => body.kind === 'question')).toBe(false)
+  })
+
+  it.each(['dismiss', 'stop'] as const)(
+    'sends cancel when permissions are abandoned by %s',
+    async (action) => {
+      const { h, connection, turn } = await planApproval()
+      await h.adapter.dispatch({
+        sessionId: DROID_RIG_SESSION,
+        clientMessageId: 'send-plan',
+        body: { kind: 'message', role: 'user', blocks: [{ type: 'text', text: 'make the plan' }] },
+        fence: FENCE
+      })
+      const { answer } = playUntilAsk(connection, turn)
+      await choose(h, (await openApproval(h)).itemId, 'proceed_once')
+      const permissions = await openPermissions(h)
+      await (action === 'stop'
+        ? h.adapter.cancelTurn({ sessionId: DROID_RIG_SESSION, fence: FENCE })
+        : h.adapter.dismissPrompt?.({
+            sessionId: DROID_RIG_SESSION,
+            itemId: permissions.itemId,
+            fence: FENCE,
+            answer: true,
+            commit: async () => {}
+          }))
+      await expect(answer).resolves.toEqual({ selectedOption: 'cancel' })
+    }
+  )
 
   it('sends Droid its refusal when the person dismisses the plan, and the turn goes on without it', async () => {
     const turn = await readDroidTurn('spec-plan-approval-off', 'spec-plan')

@@ -33,7 +33,7 @@ function select(
   }
 }
 
-const autonomyChoices: Record<DroidAutonomyLevel, SessionOptionSelectChoice> = {
+export const droidAutonomyChoices: Record<DroidAutonomyLevel, SessionOptionSelectChoice> = {
   off: { value: 'off', label: 'Off', description: 'Asks before edits and commands' },
   low: {
     value: 'low',
@@ -61,7 +61,7 @@ export function droidAutonomyOptionDescriptor(
     DROID_AUTONOMY_OPTION_ID,
     'Permissions',
     currentValue,
-    levels.map((value) => autonomyChoices[value]),
+    levels.map((value) => droidAutonomyChoices[value]),
     levels.length > 0
   )
 }
