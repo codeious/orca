@@ -6,7 +6,7 @@ import {
   type RestTestRig
 } from '../native-chat/agent-session-wire/structured-agent-session-rest-test-rig'
 import { createTestParams } from '../native-chat/agent-session-wire/structured-agent-session-create-test-fixture'
-import { structuredAgentsDeclaringNothing } from '../native-chat/agent-session-wire/structured-agent-session-adapter-router-test-support'
+import { StructuredAgentRegistry } from '../native-chat/agent-session-wire/structured-agent-registry'
 import {
   DROID_ACCOUNT_HOME_VARIABLE,
   DROID_AGENT,
@@ -31,8 +31,23 @@ const publish = vi.fn(async () => {})
 beforeEach(async () => {
   publish.mockClear()
   rig = await createRestTestRig({
-    agents: structuredAgentsDeclaringNothing([DROID_AGENT]),
     idleSweep: { intervalMs: 60_000 }
+  })
+  await rig.restart({
+    agents: new StructuredAgentRegistry([
+      {
+        definition: {
+          ...DROID_AGENT,
+          capabilities: { ...DROID_AGENT.capabilities, rewind: false, compact: false }
+        },
+        adapter: {
+          ...rig.adapter,
+          cancelTurn: async () => ({ cancelled: true }),
+          setOption: async () => undefined,
+          answerPrompt: async () => undefined
+        }
+      }
+    ])
   })
   rig.adapter.acquire.mockImplementation(async ({ identity, fence, spawnToken }) => {
     if (!identity.providerHandle) {
@@ -105,6 +120,11 @@ describe('Droid execution-host plan continuation', () => {
         { origin: 'adopted', handle: { transport: DROID_HANDLE_TRANSPORT, nativeId: next } }
       ]
     })
+    await vi.waitFor(() =>
+      expect(rig.adapter.acquire).toHaveBeenCalledWith(
+        expect.objectContaining({ options: { planMode: 'false', autonomyLevel: 'low' } })
+      )
+    )
     const snapshot = await rig.host.journalSnapshot(continuation.sessionId)
     expect(
       snapshot.items.filter(({ body }) => body.kind === 'message').map(({ body }) => body)

@@ -60,6 +60,7 @@ export async function acquireOwner(
     }
     const attempt = mintStructuredAgentSessionStartupAttempt({
       record,
+      restingOptions: input.agents.definition(record.provider)?.restingOptions,
       identity: journalIdentityFor(record, input.params),
       // Retry the existing reservation instead of spawning a second child.
       spawnToken,

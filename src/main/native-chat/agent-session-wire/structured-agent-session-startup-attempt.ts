@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto'
+import { AgentSessionExecutionOptionsSchema } from '../../../shared/agent-session/options/agent-session-execution-options'
+import type { StructuredAgentDefinition } from './structured-agent-definition'
 import type { SubmissionRejectionFact } from '../../../shared/agent-session/failures/agent-session-failure'
 import {
   waitForStructuredAgentSessionStart,
@@ -17,6 +19,8 @@ import {
   type StructuredAgentSessionStartupLimits
 } from './structured-agent-session-startup-attempt-contract'
 
+const executionOptionKeys = new Set(Object.keys(AgentSessionExecutionOptionsSchema.shape))
+
 export function mintStructuredAgentSessionStartupAttempt(input: {
   record: AgentSessionRecord
   identity: AgentSessionJournalIdentity
@@ -25,10 +29,20 @@ export function mintStructuredAgentSessionStartupAttempt(input: {
   events?: StructuredAgentSessionEventSink
   signal?: AbortSignal
   startupOptions?: Readonly<Record<string, string>>
+  restingOptions: StructuredAgentDefinition['restingOptions'] | undefined
   attemptId?: string
 }): StructuredAgentSessionStartupAttempt {
-  const { record } = input
-  const selected = input.startupOptions ?? record.options
+  const { record, restingOptions } = input
+  const selected = input.startupOptions
+    ? {
+        ...Object.fromEntries(
+          Object.entries(record.options ?? {}).filter(
+            ([key]) => restingOptions?.acceptsKey(key) && !executionOptionKeys.has(key)
+          )
+        ),
+        ...input.startupOptions
+      }
+    : record.options
   const options = record.provider === 'claude' ? { fastMode: 'false', ...selected } : selected
   return {
     attemptId: input.attemptId ?? randomUUID(),
