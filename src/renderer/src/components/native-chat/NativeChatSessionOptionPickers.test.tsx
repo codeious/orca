@@ -161,6 +161,53 @@ const effortLevels = (): HTMLElement[] =>
 afterEach(() => cleanup())
 
 describe('NativeChatSessionOptionPickers', () => {
+  it.each([false, true])(
+    'uses one model list and effort row with Droid Spec %s, without repeating the saved Spec pair',
+    async (spec) => {
+      const setOption = vi.fn().mockResolvedValue({ snapshot: [] })
+      render(
+        <NativeChatSessionOptionPickers
+          surface={{ ...surface, setOption }}
+          snapshot={[
+            model({ transport: 'agent-session' }),
+            { ...effort, transport: 'agent-session' },
+            {
+              ...fast,
+              id: 'planMode',
+              label: 'Spec',
+              kind: { type: 'boolean', currentValue: spec },
+              transport: 'agent-session'
+            },
+            model({
+              id: 'specModel',
+              label: 'Spec model',
+              category: 'mode',
+              transport: 'agent-session'
+            }),
+            {
+              ...effort,
+              id: 'specEffort',
+              label: 'Spec reasoning effort',
+              category: 'mode',
+              transport: 'agent-session'
+            }
+          ]}
+          isWorking={false}
+        />
+      )
+
+      expect(screen.getAllByRole('radiogroup')).toHaveLength(1)
+      expect(pill(`Model Opus 4.8, Effort High${spec ? ' · Spec' : ''}`)).not.toBeNull()
+
+      fireEvent.click(screen.getByRole('option', { name: 'Sonnet 5' }))
+      await waitFor(() => expect(setOption).toHaveBeenCalledWith('model', 'sonnet'))
+      fireEvent.click(screen.getByRole('radio', { name: 'Low' }))
+      await waitFor(() => expect(setOption).toHaveBeenCalledWith('effort', 'low'))
+      fireEvent.click(screen.getByRole('switch', { name: 'Spec' }))
+      await waitFor(() => expect(setOption).toHaveBeenCalledWith('planMode', !spec))
+    }
+  )
+
   it.each(['model', 'effort'])(
     'opens the one picker when a slash command asks for the %s',
     async (id) => {

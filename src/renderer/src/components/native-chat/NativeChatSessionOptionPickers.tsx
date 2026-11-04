@@ -5,6 +5,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { translate } from '@/i18n/i18n'
 import { useUiLanguageRevision } from '@/i18n/use-ui-language-revision'
+import {
+  DROID_SPEC_MODEL_OPTION_ID,
+  DROID_SPEC_EFFORT_OPTION_ID
+} from '../../../../shared/droid-spec-pair-options'
 import { sortNativeChatSessionOptions } from '../../../../shared/native-chat/input/native-chat-session-option-snapshot'
 import {
   sessionOptionDispatchUnconfirmed,
@@ -318,9 +322,10 @@ function NativeChatSessionOptionPickersInner({
     return null
   }
   const model = withPendingValue(reportedModel, pending.get(reportedModel.id) ?? null)
-  const options = sortNativeChatSessionOptions(snapshot).map((descriptor) =>
-    withPendingValue(descriptor, pending.get(descriptor.id) ?? null)
-  )
+  const options = sortNativeChatSessionOptions(snapshot)
+    // Spec uses the main model and effort controls; its saved pair is not another picker.
+    .filter(({ id }) => id !== DROID_SPEC_MODEL_OPTION_ID && id !== DROID_SPEC_EFFORT_OPTION_ID)
+    .map((descriptor) => withPendingValue(descriptor, pending.get(descriptor.id) ?? null))
 
   const markPending = (id: string) => (pick: PendingPick | null) => {
     setPending((current) => {
