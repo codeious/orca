@@ -1,0 +1,25 @@
+src/main/ai-vault/droid-session-ownership.test.ts
+  s_8f38564f63f944::t_f78c4a94b18b79 3-7,29-61
+src/main/droid/droid-history-catch-up.test.ts
+  s_8f38564f63f944::t_de0f96ef0a332f 1-111
+src/main/droid/droid-history-catch-up.ts
+  s_8f38564f63f944::t_0cba47dfab1aab 1-208
+src/main/native-chat/agent-session-wire/structured-provider-session-ownership.test.ts
+  s_8f38564f63f944::t_1afee5be3e6755 1-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b9cbb78622a375feabf6cfa6df2df839e7a0036d",
+  "prompts": {},
+  "sessions": {
+    "s_8f38564f63f944": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "b5ddccf8-c036-4c31-a34a-1676c38c536e",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
