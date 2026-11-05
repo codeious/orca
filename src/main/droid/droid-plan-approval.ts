@@ -66,11 +66,23 @@ export function droidPlanApprovalPresentation(
     }
     return response
   }
-  const reply = (selectedOption: string, response?: PlanResponse, operationId?: string) => {
+  let approvedLevel: DroidAutonomyLevel | null | undefined
+  const replied = () => {
+    if (approvedLevel !== undefined) {
+      environment.planApproved?.(approvedLevel)
+    }
+  }
+  const reply = (
+    selectedOption: string,
+    response?: PlanResponse,
+    operationId?: string,
+    level?: DroidAutonomyLevel
+  ) => {
     const handoff = startsDroidSpecHandoff(selectedOption)
     if (handoff && !operationId) {
       throw new Error('A plan handoff requires a host operation ID')
     }
+    approvedLevel = selectedOption !== 'cancel' && !handoff ? (level ?? null) : undefined
     return {
       selectedOption,
       ...(handoff && operationId
@@ -86,6 +98,7 @@ export function droidPlanApprovalPresentation(
     }
   }
   return {
+    replied,
     body: takesNotes
       ? {
           ...bounded,
@@ -124,6 +137,7 @@ export function droidPlanApprovalPresentation(
       })
       return {
         body,
+        replied,
         reply: (answer, operationId) => {
           if (answer === null) {
             return reply('cancel')
@@ -139,7 +153,7 @@ export function droidPlanApprovalPresentation(
           if (!level) {
             throw new Error('Choose one of the permissions Droid offered')
           }
-          return reply(planOption(chosen.optionId, level), chosen, operationId)
+          return reply(planOption(chosen.optionId, level), chosen, operationId, level)
         }
       }
     },

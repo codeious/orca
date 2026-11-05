@@ -410,6 +410,7 @@ export type AgentSessionModelCatalogResult = {
       /** The listed default is the model a new chat here launches with: the agent's listing names
        *  its configured model and no workspace config can replace it. Absent from an older host. */
       listingNamesConfiguredModel?: boolean
+      configuredSpec?: { model: string; effort?: string }
       /** The named default holds in every workspace: the agent reads no project config for its
        *  model, so an answer naming no workspace serves any new chat. Absent from an older host. */
       defaultHoldsInEveryWorkspace?: true

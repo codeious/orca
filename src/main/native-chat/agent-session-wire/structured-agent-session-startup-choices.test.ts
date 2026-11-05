@@ -78,6 +78,33 @@ beforeEach(async () => {
 
 afterEach(() => rig.dispose())
 
+it('routes resting Droid model and effort picks to the saved Spec pair', async () => {
+  for (const [key, value] of [
+    ['model', 'planner'],
+    ['effort', 'high']
+  ]) {
+    const fields = { key, value }
+    expect(
+      await rig.host.setOption(CALLER, {
+        ...fields,
+        envelope: envelope('agentSession.setOption', fields)
+      })
+    ).toMatchObject({ ok: true, value: fields })
+  }
+  expect(rig.store.getRecord(SESSION)?.options).toEqual({
+    planMode: 'true',
+    autonomyLevel: 'high',
+    specModel: 'planner',
+    specEffort: 'high'
+  })
+  expect((await rig.host.readOptions(SESSION)).current).toMatchObject({
+    model: 'planner',
+    effort: 'high',
+    planMode: true
+  })
+  expect(rig.adapter.acquire).not.toHaveBeenCalled()
+})
+
 function envelope(method: string, fields: Record<string, unknown>) {
   return {
     sessionId: SESSION,
@@ -125,8 +152,10 @@ it('keeps Spec and Permissions when a message restarts the child after Stop', as
 
 it('shows and changes the live Spec pair without changing the main pair at rest', async () => {
   for (const [key, value] of [
+    ['planMode', 'false'],
     ['model', 'main'],
-    ['effort', 'low']
+    ['effort', 'low'],
+    ['planMode', 'true']
   ]) {
     const fields = { key, value }
     expect(

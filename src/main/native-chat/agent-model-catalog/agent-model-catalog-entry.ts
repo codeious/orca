@@ -19,6 +19,7 @@ export type AgentModelCatalogSuccess = {
   origin: 'live-session' | 'probe'
   complete?: boolean
   configured?: { model?: string; effort?: string }
+  configuredSpec?: { model: string; effort?: string }
   /** Launch-injected rows require independent account-catalog membership. */
   launchOnlyModelId?: string
   /** Successful model listings can still report that chats cannot start. */
@@ -55,6 +56,7 @@ export type AgentModelCatalogConfiguredDefault = {
   modelId: string
   sameModelIds?: string[]
   effort?: string
+  spec?: { model: string; effort?: string }
   at: number
 }
 
@@ -127,7 +129,10 @@ export function agentModelCatalogResultFromEntry(
     models: models.map((model) => (namesDefault ? { ...model } : { ...model, isDefault: false })),
     ...(entry.fastModeSupport ? { fastModeSupport: entry.fastModeSupport } : {}),
     fetchedAt: entry.fetchedAt,
-    listingNamesConfiguredModel: namesDefault && namesConfigured
+    listingNamesConfiguredModel: namesDefault && namesConfigured,
+    ...(namesDefault && namesConfigured && useConfigured && entry.configured?.spec
+      ? { configuredSpec: entry.configured.spec }
+      : {})
   }
 }
 
@@ -218,10 +223,11 @@ export function agentModelCatalogEntryWithSuccess(
     return null
   }
   const { agent, fingerprint } = identity
+  const probeDefaults = source === 'discovery' && (agent === 'pi' || agent === 'droid')
   const listing: AgentModelCatalogListing = {
     models: configuredDeclarationModels(
       models.map((model) => ({ ...model })),
-      agent === 'pi' && source === 'discovery' && success.configured?.model
+      probeDefaults && success.configured?.model
         ? { modelId: success.configured.model, effort: success.configured.effort }
         : undefined
     ),
@@ -230,11 +236,11 @@ export function agentModelCatalogEntryWithSuccess(
     at
   }
   let configured = previous?.configured ?? null
-  if (agent === 'pi' && source === 'discovery') {
+  if (probeDefaults) {
     const { model, effort } = success.configured ?? {}
     if (model) {
       const facts = configuredDefaultFacts({ modelId: model, effort }, configured)
-      configured = facts && { ...facts, at }
+      configured = facts && { ...facts, spec: success.configuredSpec, at }
     }
     return agentModelCatalogEntry(agent, fingerprint, listing, null, configured)
   }
@@ -245,7 +251,9 @@ export function agentModelCatalogEntryWithSuccess(
 
 /** Preserve effort for the same model when a session pick obscures its configured value. */
 function configuredDefaultFacts(
-  choice: AgentModelCatalogConfiguredChoice | null,
+  choice:
+    | (AgentModelCatalogConfiguredChoice & Pick<AgentModelCatalogConfiguredDefault, 'spec'>)
+    | null,
   previous: AgentModelCatalogConfiguredDefault | null = null
 ): Omit<AgentModelCatalogConfiguredDefault, 'at'> | null {
   if (!choice) {
@@ -260,7 +268,8 @@ function configuredDefaultFacts(
   return {
     modelId: choice.modelId,
     ...(choice.sameModelIds?.length ? { sameModelIds: [...choice.sameModelIds] } : {}),
-    ...(effort ? { effort } : {})
+    ...(effort ? { effort } : {}),
+    ...((choice.spec ?? previous?.spec) ? { spec: choice.spec ?? previous?.spec } : {})
   }
 }
 

@@ -70,6 +70,7 @@ export type StructuredAgentSessionOptionState = {
   reportedPermissionMode?: string | null
   permissionOwnSupported?: boolean | null
   reportedEffort?: string
+  configuredSpec?: { model: string; effort?: string }
   /** The host is still listing models; it only keeps a seed from settling to built-in, since controls follow their data. */
   listingInProgress?: boolean
   fastModeRestricted?: boolean
@@ -132,6 +133,9 @@ export function applyStructuredAgentSessionModelCatalog(
   const verifiedModelIds = listingVerifiedModelIds(state.verifiedModelIds, catalog, models)
   return {
     ...state,
+    ...(state.record.agent === 'droid'
+      ? { configuredSpec: namesDefault ? catalog.configuredSpec : undefined }
+      : {}),
     // Real-listing defaults are nameable but provisional, never confirmed picks.
     catalog: {
       ...(state.catalogSource === 'live' ? (state.catalog ?? seed) : seed),

@@ -63,7 +63,7 @@ export function droidSettingsMayPickModel(text: string): boolean {
     if (!settings) {
       return true
     }
-    const keys = ['model', 'reasoningEffort']
+    const keys = ['model', 'reasoningEffort', 'specModeModel', 'specModeReasoningEffort']
     if (setsAny(settings, keys)) {
       return true
     }

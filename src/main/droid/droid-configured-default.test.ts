@@ -1,8 +1,5 @@
 import { agentSessionConversationView } from '../../shared/agent-session/lifecycle/agent-session-conversation-view'
 import { agentSessionRecordFixture } from '../../shared/agent-session/lifecycle/agent-session-record.test-fixture'
-// Droid's list names no model a new chat runs, so the composer stays empty until a no-pick session
-// reports the model and effort it resolved. A workspace `.factory` that sets one hides that default.
-
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -13,6 +10,7 @@ import { structuredAgentSessionSeedCatalog } from '../../shared/agent-session/op
 import {
   applyStructuredAgentSessionModelCatalog,
   applyStructuredAgentSessionOptions,
+  commitStructuredAgentSessionOption,
   createStructuredAgentSessionOptionState,
   type StructuredAgentSessionOptionState
 } from '../../shared/agent-session/options/structured-agent-session-options'
@@ -137,7 +135,14 @@ type ChatOptions = {
   resumeId?: string
 }
 
-async function droidHost(opts: { listing?: Promise<void> } = {}) {
+async function droidHost(opts: { listing?: Promise<void>; settings?: object } = {}) {
+  const accountHome = opts.settings
+    ? { ...DROID_HOME, path: join(root, 'account', '.factory') }
+    : DROID_HOME
+  if (opts.settings) {
+    mkdirSync(accountHome.path, { recursive: true })
+    writeFileSync(join(accountHome.path, 'settings.json'), JSON.stringify(opts.settings))
+  }
   const records = new Map<string, AgentSessionRecord>()
   const store = new AgentModelCatalogStore({ now: () => 1_000 })
   const catalog = createAgentModelCatalogService({
@@ -145,7 +150,7 @@ async function droidHost(opts: { listing?: Promise<void> } = {}) {
     getRecord: (sessionId) => records.get(sessionId),
     getConversation: (sessionId) => conversation(sessionId),
     drivesRecord: () => true,
-    resolveAccountHome: async () => DROID_HOME,
+    resolveAccountHome: async () => accountHome,
     recordWorkspacePath: async (row) => row.launchDirectory ?? null,
     agentReadsProjectModelConfig,
     workspaceMayOverrideDefaultModel,
@@ -175,15 +180,16 @@ async function droidHost(opts: { listing?: Promise<void> } = {}) {
   }
 
   let chats = 0
-  function addRecord(workspacePath: string): string {
+  function addRecord(workspacePath: string, saved?: Readonly<Record<string, string>>): string {
     const sessionId = `droid-${++chats}`
     records.set(sessionId, {
       ...agentSessionRecordFixture(),
       sessionId,
       provider: 'droid',
-      accountHome: DROID_HOME,
+      accountHome,
       launchDirectory: workspacePath,
       providerHandleChain: [],
+      ...(saved ? { options: saved } : {}),
       location: {
         executionHostId: 'local',
         wslDistro: null,
@@ -228,8 +234,8 @@ async function droidHost(opts: { listing?: Promise<void> } = {}) {
     openConversation: async () => resting,
     conversation: async () => resting
   } as unknown as StructuredAgentSessionMutationContext
-  function restingChat(workspacePath: string) {
-    const sessionId = addRecord(workspacePath)
+  function restingChat(workspacePath: string, saved?: Readonly<Record<string, string>>) {
+    const sessionId = addRecord(workspacePath, saved)
     return {
       sessionId,
       readOptions: () =>
@@ -318,21 +324,163 @@ function frame(state: StructuredAgentSessionOptionState) {
   return { model: select('model'), effort: select('effort') }
 }
 
-function firstFrame(answer: AgentSessionModelCatalogResult) {
+function firstFrame(
+  answer: AgentSessionModelCatalogResult,
+  picks: Readonly<Record<string, string>> = {}
+) {
   const seed = structuredAgentSessionSeedCatalog('droid')
-  return frame(
-    applyStructuredAgentSessionModelCatalog(
-      createStructuredAgentSessionOptionState('droid', seed),
-      seed,
-      answer,
-      { newLaunch: true }
-    )
+  let state = applyStructuredAgentSessionModelCatalog(
+    createStructuredAgentSessionOptionState('droid', seed),
+    seed,
+    answer,
+    { newLaunch: true }
   )
+  for (const [key, value] of Object.entries(picks)) {
+    state = commitStructuredAgentSessionOption(state, key, value)
+  }
+  return frame(state)
 }
 
 const NOTHING = { model: null, effort: null }
 
 describe('Droid model and effort in the composer', () => {
+  it('switches to Spec after a model-less options reply lands before discovery', async () => {
+    const { catalog } = await droidHost({
+      settings: {
+        sessionDefaultSettings: {
+          model: 'gpt-6-sol',
+          reasoningEffort: 'high',
+          specModeModel: 'custom:Fake-Local-0',
+          specModeReasoningEffort: 'none'
+        }
+      }
+    })
+    const seed = structuredAgentSessionSeedCatalog('droid')
+    const unansweredModel = applyStructuredAgentSessionOptions(
+      createStructuredAgentSessionOptionState('droid', seed),
+      seed,
+      { models: [], modelsKnown: false, current: { planMode: false, defaulted: [] } },
+      { newLaunch: true, coherentCatalog: true }
+    )
+    let state = applyStructuredAgentSessionModelCatalog(
+      unansweredModel,
+      seed,
+      await catalog.read({ agent: 'droid', waitForListing: true }),
+      { newLaunch: true, coherentCatalog: true }
+    )
+    expect(frame(state)).toEqual({ model: 'gpt-6-sol', effort: 'high' })
+    state = commitStructuredAgentSessionOption(state, 'planMode', 'true')
+    expect(frame(state)).toEqual({ model: 'custom:Fake-Local-0', effort: 'none' })
+    state = commitStructuredAgentSessionOption(state, 'planMode', 'false')
+    expect(frame(state)).toEqual({ model: 'gpt-6-sol', effort: 'high' })
+  })
+
+  it.each(['specModeModel', 'specModeReasoningEffort'])(
+    'hides account defaults when the workspace sets %s',
+    async (key) => {
+      const { catalog } = await droidHost({
+        settings: {
+          sessionDefaultSettings: {
+            model: 'gpt-6-sol',
+            reasoningEffort: 'high',
+            specModeModel: 'custom:Fake-Local-0',
+            specModeReasoningEffort: 'none'
+          }
+        }
+      })
+      expect(
+        firstFrame(
+          await catalog.read({
+            agent: 'droid',
+            workspacePath: workspace('clean'),
+            waitForListing: true
+          })
+        )
+      ).toEqual({ model: 'gpt-6-sol', effort: 'high' })
+      for (const nested of [false, true]) {
+        const picks = { [key]: key === 'specModeModel' ? 'gpt-6-sol' : 'low' }
+        const path = workspace(`configured-${nested}`, {
+          '.factory/settings.local.json': JSON.stringify(
+            nested ? { sessionDefaultSettings: picks } : picks
+          )
+        })
+        const answer = await catalog.read({
+          agent: 'droid',
+          workspacePath: path,
+          waitForListing: true
+        })
+        expect(answer).not.toHaveProperty('configuredSpec')
+        expect(firstFrame(answer, { planMode: 'true' })).toEqual(NOTHING)
+      }
+    }
+  )
+
+  it('shows the Spec account pair before a prompt, with saved Spec picks winning', async () => {
+    const { catalog } = await droidHost({
+      settings: {
+        sessionDefaultSettings: {
+          model: 'gpt-6-sol',
+          reasoningEffort: 'high',
+          specModeModel: 'custom:Fake-Local-0',
+          specModeReasoningEffort: 'none'
+        }
+      }
+    })
+    const listed = await catalog.read({
+      agent: 'droid',
+      workspacePath: workspace('clean'),
+      waitForListing: true
+    })
+    expect(firstFrame(listed, { planMode: 'true' })).toEqual({
+      model: 'custom:Fake-Local-0',
+      effort: 'none'
+    })
+    expect(firstFrame(listed, { model: 'custom:Fake-Local-0', effort: 'none' })).toEqual({
+      model: 'custom:Fake-Local-0',
+      effort: 'none'
+    })
+    expect(
+      firstFrame(listed, {
+        planMode: 'true',
+        specModel: 'gpt-6-sol',
+        specEffort: 'low'
+      })
+    ).toEqual({ model: 'gpt-6-sol', effort: 'low' })
+    expect(
+      firstFrame(listed, {
+        planMode: 'true',
+        specModel: 'same-as-main',
+        specEffort: 'same-as-main'
+      })
+    ).toEqual({ model: 'custom:Fake-Local-0', effort: 'none' })
+    const withoutSpec = await droidHost({
+      settings: { sessionDefaultSettings: { model: 'gpt-6-sol', reasoningEffort: 'high' } }
+    })
+    expect(
+      firstFrame(
+        await withoutSpec.catalog.read({
+          agent: 'droid',
+          workspacePath: workspace('other'),
+          waitForListing: true
+        }),
+        { planMode: 'true' }
+      )
+    ).toEqual({ model: 'gpt-6-sol', effort: 'high' })
+  })
+
+  it('shows the account settings model and effort before any chat starts', async () => {
+    const { catalog } = await droidHost({
+      settings: { sessionDefaultSettings: { model: 'gpt-6-sol', reasoningEffort: 'high' } }
+    })
+    const listed = await catalog.read({
+      agent: 'droid',
+      workspacePath: workspace('clean'),
+      waitForListing: true
+    })
+    expect(listed).toMatchObject({ listingNamesConfiguredModel: true })
+    expect(firstFrame(listed)).toEqual({ model: 'gpt-6-sol', effort: 'high' })
+  })
+
   it('shows a quiet Model pill before the host answers', () => {
     const seed = structuredAgentSessionSeedCatalog('droid')
     const snapshot = structuredAgentSessionOptionSnapshot(
@@ -487,6 +635,44 @@ describe('Droid model and effort in the composer', () => {
 
 describe('Droid options at rest on a cold profile', () => {
   const MODEL_IDS = ['gpt-6-sol', 'custom:Fake-Local-0']
+
+  it('shows Spec options at rest instead of the saved Normal pair', async () => {
+    const { restingChat } = await droidHost({
+      settings: {
+        sessionDefaultSettings: {
+          model: 'gpt-6-sol',
+          reasoningEffort: 'high',
+          specModeModel: 'custom:Fake-Local-0',
+          specModeReasoningEffort: 'none'
+        }
+      }
+    })
+    const clean = workspace('clean')
+    const normal = { model: 'gpt-6-sol', effort: 'low', planMode: 'true' }
+    expect((await restingChat(clean, normal).readOptions()).current).toMatchObject({
+      model: 'custom:Fake-Local-0',
+      effort: 'none',
+      planMode: true
+    })
+    const picked = await restingChat(clean, {
+      ...normal,
+      specModel: 'gpt-6-sol',
+      specEffort: 'high'
+    }).readOptions()
+    expect(picked.current).toMatchObject({
+      model: 'gpt-6-sol',
+      effort: 'high',
+      planMode: true,
+      defaulted: []
+    })
+    expect(
+      (await restingChat(clean, { ...normal, planMode: 'false' }).readOptions()).current
+    ).toMatchObject({
+      model: 'gpt-6-sol',
+      effort: 'low',
+      planMode: false
+    })
+  })
 
   it("reads a cold chat's options at rest with the probe's list and names no model", async () => {
     const { restingChat } = await droidHost()

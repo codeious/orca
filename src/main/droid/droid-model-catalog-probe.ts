@@ -1,5 +1,7 @@
 import { homedir } from 'node:os'
-import { basename, dirname } from 'node:path'
+import { readFile } from 'node:fs/promises'
+import { basename, dirname, join } from 'node:path'
+import { isRecord } from '../../shared/agent-status-child-work-value-guards'
 import { requireLegacyAgentSessionAccountHome } from '../../shared/agent-session/lifecycle/agent-session-account-home'
 import type { resolveCliCommand } from '../../shared/node-cli-command-resolution'
 import type { AgentCliVersionReader } from '../agent-launch/preflight/agent-cli-version-probe'
@@ -50,6 +52,34 @@ function pinDroidAccountHome(env: Record<string, string>, accountPath: string): 
   env.USERPROFILE = home
 }
 
+async function configuredDroidDefaults(
+  accountPath: string
+): Promise<Pick<AgentModelCatalogSuccess, 'configured' | 'configuredSpec'>> {
+  try {
+    const settings: unknown = JSON.parse(await readFile(join(accountPath, 'settings.json'), 'utf8'))
+    if (!isRecord(settings)) {
+      return {}
+    }
+    const defaults = isRecord(settings.sessionDefaultSettings)
+      ? settings.sessionDefaultSettings
+      : {}
+    const text = (value: unknown): string | undefined =>
+      typeof value === 'string' && value.trim() ? value : undefined
+    const model = text(defaults.model) ?? text(settings.model)
+    const effort = text(defaults.reasoningEffort) ?? text(settings.reasoningEffort)
+    const specModel = text(defaults.specModeModel)
+    const specEffort = text(defaults.specModeReasoningEffort)
+    return {
+      ...(model ? { configured: { model, ...(effort ? { effort } : {}) } } : {}),
+      ...(specModel
+        ? { configuredSpec: { model: specModel, ...(specEffort ? { effort: specEffort } : {}) } }
+        : {})
+    }
+  } catch {
+    return {}
+  }
+}
+
 /** Lists models with `droid.list_models` and no session. `initialize_session` would store one. */
 export function createDroidModelCatalogProbe(
   deps: DroidModelCatalogProbeDeps
@@ -61,7 +91,8 @@ export function createDroidModelCatalogProbe(
         env[key] = value
       }
     }
-    pinDroidAccountHome(env, requireLegacyAgentSessionAccountHome(accountHome).path)
+    const accountPath = requireLegacyAgentSessionAccountHome(accountHome).path
+    pinDroidAccountHome(env, accountPath)
     const invocation = resolveDroidCommand(
       env,
       deps.resolveCommandSettings?.(),
@@ -97,7 +128,7 @@ export function createDroidModelCatalogProbe(
       if (models.length === 0) {
         throw new Error('droid listed no models')
       }
-      return { models, origin: 'probe' }
+      return { models, origin: 'probe', ...(await configuredDroidDefaults(accountPath)) }
     } catch (error) {
       if (options?.signal?.aborted) {
         throw new AgentModelCatalogListingStoppedError('Droid model listing stopped')

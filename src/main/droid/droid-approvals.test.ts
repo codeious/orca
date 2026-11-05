@@ -166,6 +166,8 @@ describe('Droid approval cards', () => {
 
   it('reviews the plan first, then asks permissions and answers Droid once with Medium', async () => {
     const { h, connection, turn } = await planApproval()
+    connection.notify({ type: 'settings_updated', settings: { interactionMode: 'spec' } })
+    h.lifecycle.mockClear()
     const { answer } = playUntilAsk(connection, turn)
     const card = await openApproval(h)
 
@@ -209,6 +211,29 @@ describe('Droid approval cards', () => {
       commit: async () => {}
     })
     await expect(answer).resolves.toEqual({ selectedOption: 'proceed_auto_run_medium' })
+    expect(h.lifecycle).not.toHaveBeenCalled()
+    connection.notify({
+      type: 'settings_updated',
+      settings: { interactionMode: 'auto', autonomyLevel: 'medium' }
+    })
+    expect(h.lifecycle).toHaveBeenCalledExactlyOnceWith({
+      type: 'options-reported',
+      sessionId: DROID_RIG_SESSION,
+      fence: FENCE,
+      acquisitionGeneration: expect.any(String),
+      reportedOptions: expect.objectContaining({ planMode: false }),
+      providerPicks: { planMode: 'false', autonomyLevel: 'medium' }
+    })
+    expect(
+      (await h.adapter.readOptions({ sessionId: DROID_RIG_SESSION, fence: FENCE })).current.planMode
+    ).toBe(false)
+    const picks = await h.adapter.setOption({
+      sessionId: DROID_RIG_SESSION,
+      fence: FENCE,
+      key: 'effort',
+      value: 'low'
+    })
+    expect(picks).toMatchObject({ planMode: 'false', autonomyLevel: 'medium' })
   })
 
   it('keeps iterating without asking permissions', async () => {
@@ -217,6 +242,55 @@ describe('Droid approval cards', () => {
     await choose(h, (await openApproval(h)).itemId, 'cancel')
     await expect(answer).resolves.toEqual({ selectedOption: 'cancel' })
     expect((await h.rig.rows()).some(({ body }) => body.kind === 'question')).toBe(false)
+  })
+
+  it('leaves Spec without pinning permissions when no Permissions card was asked', async () => {
+    const { h, connection, turn } = await planApproval()
+    connection.notify({
+      type: 'settings_updated',
+      settings: { interactionMode: 'spec', availableAutonomyLevels: ['off'] }
+    })
+    h.lifecycle.mockClear()
+    const { answer } = playUntilAsk(connection, turn)
+    await choose(h, (await openApproval(h)).itemId, 'proceed_once')
+    await expect(answer).resolves.toEqual({ selectedOption: 'proceed_once' })
+    expect((await h.rig.rows()).some(({ body }) => body.kind === 'question')).toBe(false)
+    connection.notify({
+      type: 'settings_updated',
+      settings: { interactionMode: 'auto', autonomyLevel: 'off' }
+    })
+    expect(h.lifecycle).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        reportedOptions: expect.objectContaining({ planMode: false }),
+        providerPicks: { planMode: 'false' }
+      })
+    )
+    connection.notify({ type: 'settings_updated', settings: { interactionMode: 'auto' } })
+    expect(h.lifecycle).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not remember permissions from an approval that failed to save', async () => {
+    const { h, connection, turn } = await planApproval()
+    connection.notify({ type: 'settings_updated', settings: { interactionMode: 'spec' } })
+    h.lifecycle.mockClear()
+    playUntilAsk(connection, turn)
+    await choose(h, (await openApproval(h)).itemId, 'proceed_once')
+    await expect(
+      h.adapter.answerPrompt({
+        sessionId: DROID_RIG_SESSION,
+        itemId: (await openPermissions(h)).itemId,
+        kind: 'question',
+        response: { kind: 'answers', answers: [{ questionId: 'q1', optionIds: ['medium'] }] },
+        fence: FENCE,
+        commit: async () => {
+          throw new Error('save failed')
+        }
+      })
+    ).rejects.toThrow('save failed')
+    connection.notify({ type: 'settings_updated', settings: { interactionMode: 'auto' } })
+    expect(h.lifecycle).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ providerPicks: { planMode: 'false' } })
+    )
   })
 
   it.each(['dismiss', 'stop'] as const)(

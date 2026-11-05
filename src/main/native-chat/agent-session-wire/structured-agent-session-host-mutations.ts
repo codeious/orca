@@ -2,6 +2,7 @@
 // provider-only effects start their child before admission, sends start through delivery.
 
 import { latestNativeChatUsageLimitCut } from '../../../shared/native-chat/native-chat-usage-limit-cut'
+import { decodeStructuredAgentSessionOptionValue } from '../../../shared/agent-session/options/structured-agent-session-option-codec'
 import { refuse } from '../../../shared/agent-session/failures/agent-session-wire-refusals'
 import type {
   AgentSessionCancelResult,
@@ -237,18 +238,22 @@ export async function setStructuredAgentSessionOption(
       conversationWrite: true,
       run: async (ctx) => {
         const child = context.sessions.get(ctx.sessionId)?.child
+        const record = context.deps.store.getRecord(ctx.sessionId)
         const specPair =
           !noChoice &&
           (params.key === 'model' || params.key === 'effort') &&
-          child?.phase === 'ready' &&
-          !child.close &&
-          context.deps.store.getRecord(ctx.sessionId)?.provider === 'droid' &&
-          (
-            await context.deps.adapter.readOptions?.({
-              sessionId: ctx.sessionId,
-              fence: ctx.fence
-            })
-          )?.current.planMode === true
+          record?.provider === 'droid' &&
+          (child?.phase === 'ready' && !child.close
+            ? (
+                await context.deps.adapter.readOptions?.({
+                  sessionId: ctx.sessionId,
+                  fence: ctx.fence
+                })
+              )?.current.planMode === true
+            : decodeStructuredAgentSessionOptionValue(
+                'planMode',
+                record.options?.planMode ?? ''
+              ) === true)
         const input = specPair
           ? {
               key:

@@ -2,18 +2,80 @@ import { mkdtempSync } from 'node:fs'
 import * as fsPromises from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, expect, it, onTestFinished, vi } from 'vitest'
+import { afterEach, beforeEach, expect, it, onTestFinished, vi } from 'vitest'
 import { createAgentModelCatalogFilePersistence } from './agent-model-catalog-persistence'
 import { AgentModelCatalogStore } from './agent-model-catalog-store'
-import { agentModelCatalogEntry } from './agent-model-catalog-entry'
+import {
+  agentModelCatalogEntry,
+  agentModelCatalogResultFromEntry
+} from './agent-model-catalog-entry'
 
 vi.mock('node:fs/promises', async (original) => {
   const actual = await original<typeof fsPromises>()
   return { ...actual, writeFile: vi.fn(actual.writeFile) }
 })
 const actual = await vi.importActual<typeof fsPromises>('node:fs/promises')
+beforeEach(() => {
+  vi.clearAllMocks()
+})
 afterEach(() => {
   vi.restoreAllMocks()
+})
+
+it('round trips Droid Spec defaults and only sends them where the configured default holds', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'orca-droid-spec-cache-'))
+  onTestFinished(() => actual.rm(directory, { recursive: true, force: true }))
+  const store = new AgentModelCatalogStore({ now: () => 10 })
+  await store.attachPersistence(createAgentModelCatalogFilePersistence(directory))
+  store.recordSuccess(
+    'droid',
+    'droid',
+    {
+      origin: 'probe',
+      models: [
+        { id: 'normal', label: 'Normal', efforts: [], isDefault: false },
+        { id: 'planner', label: 'Planner', efforts: [], isDefault: false }
+      ],
+      configured: { model: 'normal', effort: 'high' },
+      configuredSpec: { model: 'planner', effort: 'low' }
+    },
+    'discovery'
+  )
+  await store.flushPersistence()
+  const loaded = new AgentModelCatalogStore()
+  await loaded.attachPersistence(createAgentModelCatalogFilePersistence(directory))
+  const entry = loaded.get('droid')
+  expect(entry?.configured).toMatchObject({
+    modelId: 'normal',
+    spec: { model: 'planner', effort: 'low' }
+  })
+  if (!entry) {
+    throw new Error('missing Droid catalog')
+  }
+  expect(agentModelCatalogResultFromEntry(entry, true, false)).toMatchObject({
+    configuredSpec: { model: 'planner', effort: 'low' }
+  })
+  expect(agentModelCatalogResultFromEntry(entry, false, false)).not.toHaveProperty('configuredSpec')
+  expect(agentModelCatalogResultFromEntry(entry, true, false, false)).not.toHaveProperty(
+    'configuredSpec'
+  )
+  store.recordSuccess(
+    'droid',
+    'droid',
+    {
+      origin: 'probe',
+      models: [{ id: 'normal', label: 'Normal', efforts: [], isDefault: false }],
+      configured: { model: 'normal', effort: 'high' },
+      configuredSpec: { model: 'planner', effort: 'high' }
+    },
+    'discovery'
+  )
+  await store.flushPersistence()
+  expect(
+    (await createAgentModelCatalogFilePersistence(directory).load())[0]?.configured
+  ).toMatchObject({
+    spec: { model: 'planner', effort: 'high' }
+  })
 })
 
 it('materializes once per flush, freezes A before queued B, and returns the no-pending writing barrier', async () => {

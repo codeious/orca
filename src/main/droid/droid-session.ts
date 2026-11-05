@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { DroidSessionModeReports } from './droid-session-mode-reports'
 import { catchUpLoadedDroidSession } from './droid-history-catch-up'
 import {
   DROID_SPEC_MODEL_OPTION_ID,
@@ -62,6 +63,7 @@ export class DroidSession {
   readonly turns: DroidTurns
   readonly prompts: DroidPrompts
   private opening?: ReturnType<StructuredAgentSessionAdapter['open']>
+  private readonly modeReports: DroidSessionModeReports
   private readonly lifecycle: JsonlRpcSessionLifecycle
   /** What Droid last reported holding, merged from its partial `settings_updated` reports. */
   readonly settings = new DroidReportedSettings()
@@ -132,11 +134,6 @@ export class DroidSession {
     const handoffs = droidSpecHandoffHandlers(sessionId, deps.onSpecHandoff, (events) =>
       this.lane.apply(events)
     )
-    this.prompts = new DroidPrompts(this.lane, {
-      autonomyLevels: () => this.settings.current.availableAutonomyLevels,
-      autonomyLevel: () => this.settings.current.autonomyLevel,
-      ...handoffs.environment
-    })
     this.options = new DroidSessionOptions({
       request: this.request,
       settings: this.settings,
@@ -144,6 +141,13 @@ export class DroidSession {
       requested: begin.interactionMode,
       ...(begin.autonomyPicked ? { pickedAutonomy: begin.autonomyLevel } : {}),
       timeoutMs: START_TIMEOUT_MS
+    })
+    this.modeReports = new DroidSessionModeReports(this, begin.interactionMode, deps.onLifecycle)
+    this.prompts = new DroidPrompts(this.lane, {
+      autonomyLevels: () => this.settings.current.availableAutonomyLevels,
+      autonomyLevel: () => this.settings.current.autonomyLevel,
+      planApproved: this.modeReports.planApproved,
+      ...handoffs.environment
     })
     this.context = new DroidContextUsage({
       request: this.request,
@@ -161,7 +165,7 @@ export class DroidSession {
         this.context.refreshInBackground()
         deps.onIdle({ sessionId })
       },
-      settings: (report) => this.settings.receive(report),
+      settings: this.modeReports.receive,
       specHandoff: handoffs.receive,
       warn: (message, fields) =>
         deps.logger.warn(message, { scope: 'droid-steer', sessionId, ...fields })
@@ -188,6 +192,7 @@ export class DroidSession {
       throw new Error('Droid exited while opening')
     }
     const catalogListing = this.model.startListing
+    this.modeReports.opened()
     return {
       link: droidProviderLink(this.begin, id, this.input.fence, randomUUID(), Date.now()),
       reportedOptions: {

@@ -113,6 +113,10 @@ export class DroidSessionOptions {
     this.chosenAutonomy = deps.pickedAutonomy
   }
 
+  noteChosenAutonomy(level: DroidAutonomyLevel): void {
+    this.chosenAutonomy = level
+  }
+
   async read(): ReturnType<DroidSessionModel['read']> {
     const { request, settings, model, requested } = this.deps
     const listed = await model.read(request)

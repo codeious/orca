@@ -148,10 +148,18 @@ export async function readStructuredAgentSessionOptions(
         )?.id
       : undefined
   const saved = { ...record?.options }
-  // The saved main pair is not the pair a live Droid runs in Spec mode.
-  if (agent === 'droid' && live && options.current.planMode === true) {
+  // The saved main pair is not the pair Droid runs in Spec mode.
+  if (agent === 'droid' && options.current.planMode === true) {
     delete saved.model
     delete saved.effort
+    if (!live) {
+      for (const key of ['model', 'effort'] as const) {
+        const value = options.current[key]
+        if (value !== undefined && !options.current.defaulted?.includes(key)) {
+          saved[key] = value
+        }
+      }
+    }
   }
   const model = saved.model ?? (options.current.model || selected.current.model || displayDefault)
   const projected = live?.projectCurrent?.({ ...saved, ...(model ? { model } : {}) })

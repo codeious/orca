@@ -1,4 +1,5 @@
 import type { AgentModelCatalogReadParams } from '../agent-model-catalog/agent-model-catalog-service-contract'
+import { droidSpecDisplayPair } from '../../../shared/droid-spec-pair-options'
 import type { AgentSessionModelCatalogResult } from '../../../shared/agent-session/agent-session-wire'
 import { decodeStructuredAgentSessionOptionValue } from '../../../shared/agent-session/options/structured-agent-session-option-codec'
 import { finishedListingIds } from '../../../shared/agent-session/options/structured-agent-session-listing-verified-ids'
@@ -131,19 +132,29 @@ export async function readStructuredAgentSessionOptionsAtRest(
     : null
   // An unknown model is one the client already treats as unconfirmed. Only a real listing names the
   // account's default; a built-in list's default is a guess, so with none the client keeps its own.
-  const model =
+  let model: string | undefined =
     saved.model ??
     (catalog.origin === 'unknown' ? undefined : models.find((entry) => entry.isDefault)?.id)
   // The pick, else the model's default where a live child reports that, or where the chat's folder
   // names that model as what it runs, as its first frame showed.
-  const effort =
+  let effort: string | undefined =
     saved.effort ??
     (rules?.effortDefaultsToModel || (saved.model === undefined && folderDefault)
       ? defaultModels.find((entry) => entry.id === model)?.defaultEffort
       : undefined)
-  const defaulted = (['model', 'effort'] as const).filter(
+  let defaulted = (['model', 'effort'] as const).filter(
     (key) => saved[key] === undefined && Boolean(key === 'model' ? model : effort)
   )
+  if (record.provider === 'droid' && planMode === true) {
+    const configured = catalog.origin === 'unknown' ? undefined : catalog.configuredSpec
+    const own = droidSpecDisplayPair({}, saved)
+    const pair = droidSpecDisplayPair({ model, effort }, saved, configured)
+    defaulted = (['model', 'effort'] as const).filter(
+      (key) =>
+        own[key] === undefined && (configured?.[key] !== undefined || defaulted.includes(key))
+    )
+    ;({ model, effort } = pair)
+  }
   // The tier the chat's own model runs; the record keeps the saved one for a model that offers it.
   const serviceTier = savedEffectiveServiceTier(saved, models)
   const sessionOptions = rules?.sessionOptions?.({

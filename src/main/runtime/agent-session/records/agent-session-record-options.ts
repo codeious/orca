@@ -34,9 +34,21 @@ export function pickAgentSessionOption(
   record: AgentSessionRecord,
   { key, value, models: _models, ...at }: AgentSessionOptionPick
 ): AgentSessionRecord {
+  return pickAgentSessionOptions(record, { ...at, options: { [key]: value } })
+}
+
+export function pickAgentSessionOptions(
+  record: AgentSessionRecord,
+  {
+    options,
+    ...at
+  }: Pick<AgentSessionOptionPick, 'sessionId' | 'fence' | 'now'> & {
+    options: Readonly<Record<string, string>>
+  }
+): AgentSessionRecord {
   return replaceAgentSessionRecordOptions(record, {
     ...at,
-    options: { ...record.options, [key]: value }
+    options: { ...record.options, ...options }
   })
 }
 

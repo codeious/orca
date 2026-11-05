@@ -4,6 +4,7 @@ import type {
   AgentJournalResolution
 } from '../../shared/agent-session/journal/agent-session-journal-types'
 import type { AgentSessionPromptResponse } from '../../shared/agent-session/agent-session-question-answer'
+import type { DroidAutonomyLevel } from '../../shared/droid-autonomy-options'
 
 export const pendingDroidResolution: AgentJournalResolution = {
   state: 'pending',
@@ -18,6 +19,7 @@ export type DroidPromptEnvironment = {
   autonomyLevels: () => readonly string[] | undefined
   autonomyLevel: () => string | undefined
   beginSpecHandoff?: (option: string, operationId: string) => string
+  planApproved?: (level: DroidAutonomyLevel | null) => void
 }
 
 /** A request Droid made of the person: the card that shows it and the answer a choice makes. */
@@ -28,4 +30,5 @@ export type DroidPromptPresentation = {
   reply: (response: AgentSessionPromptResponse | null, operationId?: string) => unknown
   /** Opens the next card, or returns null to answer now through `reply`. */
   advance?: (response: AgentSessionPromptResponse) => DroidPromptPresentation | null
+  replied?: () => void
 }

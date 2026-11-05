@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
@@ -92,6 +92,66 @@ describe('droid.list_models rows', () => {
 })
 
 describe('the session-less Droid model probe', () => {
+  it.each([
+    {
+      settings: {
+        sessionDefaultSettings: {
+          model: 'gpt-6-sol',
+          reasoningEffort: 'high',
+          specModeModel: 'custom:Fake-Local-0',
+          specModeReasoningEffort: 'none'
+        }
+      },
+      configured: { model: 'gpt-6-sol', effort: 'high' },
+      configuredSpec: { model: 'custom:Fake-Local-0', effort: 'none' }
+    },
+    {
+      settings: { model: 'gpt-6-sol', reasoningEffort: 'low' },
+      configured: { model: 'gpt-6-sol', effort: 'low' },
+      configuredSpec: undefined
+    },
+    {
+      settings: {
+        model: 'custom:Fake-Local-0',
+        reasoningEffort: 'none',
+        sessionDefaultSettings: { model: 'gpt-6-sol', reasoningEffort: 'high' }
+      },
+      configured: { model: 'gpt-6-sol', effort: 'high' },
+      configuredSpec: undefined
+    },
+    { settings: null, configured: undefined, configuredSpec: undefined },
+    { settings: '{broken', configured: undefined, configuredSpec: undefined }
+  ])('reads account settings without creating a session: $settings', async (expected) => {
+    const directory = mkdtempSync(join(tmpdir(), 'orca-droid-defaults-'))
+    try {
+      if (expected.settings !== null) {
+        writeFileSync(
+          join(directory, 'settings.json'),
+          typeof expected.settings === 'string'
+            ? expected.settings
+            : JSON.stringify(expected.settings)
+        )
+      }
+      const probe = createDroidModelCatalogProbe({
+        resolveEnvironment: async () => ({ PATH: '/usr/bin' }),
+        resolveCommand: () => '/opt/droid/bin/droid',
+        probeVersion: async () => ({ version: '0.249.0' }),
+        openConnection: () => ({
+          request: async () => LISTING,
+          close: async () => {}
+        })
+      })
+      const result = await probe({ ...HOME, path: directory })
+      expect(result.configured).toEqual(expected.configured)
+      expect(result).toMatchObject({ models: expect.any(Array), origin: 'probe' })
+      expect('configuredSpec' in result ? result.configuredSpec : undefined).toEqual(
+        expected.configuredSpec
+      )
+    } finally {
+      rmSync(directory, { recursive: true, force: true })
+    }
+  })
+
   it('is a probe that does not treat the list as the configured model', () => {
     expect(DROID_RUNTIME_REGISTRATION.modelCatalog(context())).toMatchObject({
       kind: 'probe',

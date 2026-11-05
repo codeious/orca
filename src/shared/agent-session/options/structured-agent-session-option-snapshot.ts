@@ -3,6 +3,7 @@ import type {
   CatalogModel,
   CatalogOption
 } from './agent-session-option-catalog-types'
+import { droidSpecDisplayRecord } from './structured-agent-session-droid-spec-display'
 import {
   nativeChatSessionOptionDescriptors,
   withTrackedNativeChatModel,
@@ -135,7 +136,10 @@ export function structuredAgentSessionDrawnValues(
 }
 
 function drawnModelControls(state: StructuredAgentSessionOptionState) {
-  const { record } = state
+  const main = state.catalog
+    ? structuredAgentSessionShownModel(state.catalog, state.catalog.models, state.record)
+    : null
+  const record = droidSpecDisplayRecord(state, main?.shown.currentId, main?.isCliDefault ?? false)
   if (
     !state.catalog ||
     (state.catalogSource === 'seed' && structuredAgentSessionModelId(record, 'own') === null)

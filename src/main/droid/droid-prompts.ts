@@ -128,6 +128,7 @@ export class DroidPrompts {
     if (nextCard) {
       this.showNextCard(entry, nextCard)
     } else if (answer) {
+      entry.presentation.replied?.()
       entry.settle(reply)
     } else {
       this.open.delete(entry.key)

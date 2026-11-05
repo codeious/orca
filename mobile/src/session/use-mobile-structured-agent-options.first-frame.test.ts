@@ -9,6 +9,10 @@ import { useMobileStructuredAgentOptions } from './use-mobile-structured-agent-o
 import { EMPTY_STRUCTURED_AGENT_SESSION } from '../../../src/shared/agent-session/structured-agent-session-reducer'
 import { useMobileStructuredAgentMutate } from './use-mobile-structured-agent-mutation'
 import { deferred } from './use-mobile-structured-agent-options.test-fixture'
+import {
+  forgetMobileCreatedStructuredSession,
+  rememberMobileCreatedStructuredSession
+} from './mobile-created-structured-sessions'
 
 const HOST_LIST: AgentSessionModelCatalogResult = {
   origin: 'probe',
@@ -99,6 +103,48 @@ async function mount(initial: Props) {
 }
 
 describe('the phone picker’s first frame', () => {
+  it('shows Droid account defaults before a prompt and switches to its Spec pair', async () => {
+    const models = ['normal-model', 'spec-model'].map((id) => ({
+      id,
+      label: id,
+      isDefault: id === 'normal-model',
+      defaultEffort: 'high',
+      efforts: ['low', 'high'].map((value) => ({ value, label: value }))
+    }))
+    const resting = deferred<AgentSessionOptionsResult>()
+    const rpc = client(
+      async () => ({
+        origin: 'probe',
+        fetchedAt: 1,
+        models,
+        listingNamesConfiguredModel: true,
+        configuredSpec: { model: 'spec-model', effort: 'low' }
+      }),
+      () => resting.promise
+    )
+    rememberMobileCreatedStructuredSession('session-1', '/folder')
+    const harness = await mount({ rpc, fence: 1, agent: 'droid' })
+    const value = (id: string) => harness.snapshot().find((row) => row.id === id)?.kind.currentValue
+    try {
+      expect(value('model')).toBe('normal-model')
+      expect(value('effort')).toBe('high')
+      await act(async () => {
+        resting.resolve({
+          models,
+          current: { planMode: true, model: 'spec-model', effort: 'low' }
+        })
+      })
+      expect(value('model')).toBe('spec-model')
+      expect(value('effort')).toBe('low')
+      await act(async () => harness.options().optionSurface.demandModelCatalog?.())
+      expect(value('model')).toBe('spec-model')
+      expect(value('effort')).toBe('low')
+    } finally {
+      await harness.unmount()
+      forgetMobileCreatedStructuredSession('session-1')
+    }
+  })
+
   it('shows catalog choices but takes picks only after the runtime fence arrives', async () => {
     const models = (HOST_LIST.models ?? []).map((model) => ({
       ...model,
