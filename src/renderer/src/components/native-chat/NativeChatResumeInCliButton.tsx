@@ -97,7 +97,13 @@ export function NativeChatResumeInCliButton({
               nativeChat
             })
             if (subject?.kind === 'chat') {
-              void runNativeChatCliFork({ subject, tab, agent, commandOverrides })
+              void runNativeChatCliFork({
+                subject,
+                tab,
+                agent,
+                commandOverrides,
+                mode: agent === 'droid' ? 'handoff' : 'fork'
+              })
             }
           }}
         >

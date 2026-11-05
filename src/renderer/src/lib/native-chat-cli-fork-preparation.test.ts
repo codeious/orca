@@ -3,7 +3,10 @@ import {
   prepareNativeChatCliFork,
   type NativeChatCliForkSubject
 } from './native-chat-cli-fork-preparation'
-import { AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY } from '../../../shared/ai-vault-resume-preparation'
+import {
+  AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY,
+  AI_VAULT_CHAT_TERMINAL_HANDOFF_CAPABILITY
+} from '../../../shared/ai-vault-resume-preparation'
 
 const { call } = vi.hoisted(() => ({ call: vi.fn() }))
 vi.mock('@/runtime/runtime-rpc-client', () => ({ callRuntimeRpc: call }))
@@ -30,6 +33,46 @@ const source = {
 const options = { pairingRevision: 7, isCurrent: () => true, signal: new AbortController().signal }
 const delayed = <T>(value: T, ms: number) =>
   new Promise<T>((resolve) => setTimeout(() => resolve(value), ms))
+
+it('requests a same-session handoff only when the host advertises it', async () => {
+  call
+    .mockResolvedValueOnce({
+      capabilities: [
+        AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY,
+        AI_VAULT_CHAT_TERMINAL_HANDOFF_CAPABILITY
+      ]
+    })
+    .mockResolvedValueOnce({
+      useRealCodexHome: false,
+      cliForkSource: { ...source, agent: 'droid', sourceAgent: 'droid' }
+    })
+  await expect(
+    prepareNativeChatCliFork(subject, { ...options, mode: 'handoff' })
+  ).resolves.toMatchObject({ handoff: true, session: { sessionId: 'provider-1' } })
+  expect(call.mock.calls[1]?.[2]).toEqual({
+    sourceChat: { sessionId: 'chat-1', workspaceId: 'workspace-1' },
+    executionHostId: 'runtime:peer',
+    handoff: true
+  })
+})
+
+it('falls back to a fork on hosts without handoff support', async () => {
+  call
+    .mockResolvedValueOnce({
+      capabilities: [AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY]
+    })
+    .mockResolvedValueOnce({
+      useRealCodexHome: false,
+      cliForkSource: { ...source, agent: 'droid', sourceAgent: 'droid' }
+    })
+  const prepared = await prepareNativeChatCliFork(subject, { ...options, mode: 'handoff' })
+  expect(prepared.handoff).not.toBe(true)
+  expect(call.mock.calls[1]?.[2]).toEqual({
+    sourceChat: { sessionId: 'chat-1', workspaceId: 'workspace-1' },
+    executionHostId: 'runtime:peer',
+    fork: true
+  })
+})
 
 it.each([true, false])(
   'preserves delayed modern=%s preparation within its phase budgets',

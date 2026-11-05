@@ -10,6 +10,7 @@ export {
   CreateIntentParams,
   CreateParams,
   CreateSupportParams,
+  EnsureParams,
   HandoffStatusParams,
   HistoryParams,
   HoldParams,

@@ -28,10 +28,16 @@ import {
   type StructuredLaunchState
 } from '@/lib/agent-session/launch/structured-agent-session-launch-registry'
 import { openStructuredAgentSessionProvisionalTab } from '@/lib/agent-session/launch/structured-agent-session-launch-surface'
+import type { AgentSessionConversationOwner } from '../../../../shared/agent-session/failures/agent-session-refusal-details'
 
 /** keep: the agent quit, so the terminal stays; close: continuing stops the pane's agent;
  *  ask: the pane runs another job, so the terminal's own running-process prompt asks. */
 export type CliChatResumeClose = 'keep' | 'close' | 'ask'
+export type CliChatResumeReopen = {
+  kind: 'reopen'
+  owner: AgentSessionConversationOwner
+  close: CliChatResumeClose
+}
 
 /** Only the host's proof that the pane's shell runs nothing shows its agent quit; a CLI has no status row before its first hook. */
 async function paneClose(
@@ -105,7 +111,7 @@ export async function admitCliChatResumeClose(
   openOwner: boolean,
   isCurrent: () => boolean,
   signal: AbortSignal
-): Promise<CliChatResumeClose | null> {
+): Promise<CliChatResumeClose | CliChatResumeReopen | null> {
   const closeSupported = await waitForPromiseWithSignal(
     structuredAgentSessionHostSupports(
       target,
@@ -118,7 +124,7 @@ export async function admitCliChatResumeClose(
   if (!isCurrent()) {
     return null
   }
-  if (close === 'keep') {
+  if (close === 'keep' && source.agent !== 'droid') {
     return close
   }
   const state = useAppStore.getState()
@@ -133,7 +139,7 @@ export async function admitCliChatResumeClose(
   const ownerTab = ownerRow?.worktreeId
     ? state.unifiedTabsByWorktree[ownerRow.worktreeId]?.find((tab) => tab.id === ownerRow.tabId)
     : undefined
-  if (ownerRow?.worktreeId && ownerTab) {
+  if (ownerRow?.worktreeId && ownerTab && source.agent !== 'droid') {
     await reportCliChatResumeOwner(
       { sessionId: ownerTab.entityId, workspaceId: ownerRow.worktreeId },
       openOwner,
@@ -146,7 +152,7 @@ export async function admitCliChatResumeClose(
   const support = await waitForPromiseWithSignal(
     admitStructuredLaunchOnHost(target, toRuntimeWorktreeSelector(source.workspaceId), agent, {
       providerSessionId: source.providerSessionId,
-      closingPaneKeys: cliChatResumeClosingPaneKeys(state, source)
+      ...(close !== 'keep' ? { closingPaneKeys: cliChatResumeClosingPaneKeys(state, source) } : {})
     }),
     signal
   )
@@ -163,7 +169,7 @@ export async function admitCliChatResumeClose(
   }
   // Closing is irreversible: a host that could not say whether it checked the other writers has
   // not admitted it.
-  if (support.kind !== 'admitted' || support.writers === 'unknown') {
+  if (support.kind !== 'reopen' && (support.kind !== 'admitted' || support.writers === 'unknown')) {
     throw new Error('chat unavailable')
   }
   const permission = await readStructuredChatHostPermissionVerdict(target, agent)
@@ -171,5 +177,9 @@ export async function admitCliChatResumeClose(
     notifyHostPermissionRefused(agent, permission.kind)
     return null
   }
-  return isCurrent() ? close : null
+  return isCurrent()
+    ? support.kind === 'reopen'
+      ? { kind: 'reopen', owner: support.owner, close }
+      : close
+    : null
 }

@@ -3,6 +3,7 @@ import type { AiVaultAgent, AiVaultSession } from '../../../shared/ai-vault-type
 import type {
   AiVaultPrepareSessionResumeArgs,
   AiVaultPrepareChatForkArgs,
+  AiVaultPrepareChatTerminalHandoffArgs,
   AiVaultPrepareSessionResumeRequest,
   AiVaultPrepareSessionResumeResult
 } from '../../../shared/ai-vault-resume-preparation'
@@ -98,11 +99,11 @@ export function prepareAiVaultSessionForFork(
   request?: ForkPreparationRequest
 ): Promise<{ session: AiVaultSession; copied: boolean }>
 export function prepareAiVaultSessionForFork(
-  session: AiVaultPrepareChatForkArgs,
+  session: AiVaultPrepareChatForkArgs | AiVaultPrepareChatTerminalHandoffArgs,
   request?: ForkPreparationRequest
 ): Promise<{ session: AiVaultResumeCommandSession; copied: boolean; sourceAgent?: AiVaultAgent }>
 export async function prepareAiVaultSessionForFork(
-  session: AiVaultSession | AiVaultPrepareChatForkArgs,
+  session: AiVaultSession | AiVaultPrepareChatForkArgs | AiVaultPrepareChatTerminalHandoffArgs,
   request: ForkPreparationRequest = (args) => window.api.aiVault.prepareSessionResume(args)
 ): Promise<{ session: AiVaultResumeCommandSession; copied: boolean; sourceAgent?: AiVaultAgent }> {
   if ('sourceChat' in session) {

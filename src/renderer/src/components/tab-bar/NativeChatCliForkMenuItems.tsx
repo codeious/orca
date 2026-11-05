@@ -46,7 +46,14 @@ export function NativeChatCliForkMenuItems({
         cliPending={pending}
         onResumeInNewCli={(event) => {
           event.preventDefault()
-          void runNativeChatCliFork({ subject: chat, tab, agent, commandOverrides, onComplete })
+          void runNativeChatCliFork({
+            subject: chat,
+            tab,
+            agent,
+            commandOverrides,
+            onComplete,
+            mode: agent === 'droid' ? 'handoff' : 'fork'
+          })
         }}
       />
     </>

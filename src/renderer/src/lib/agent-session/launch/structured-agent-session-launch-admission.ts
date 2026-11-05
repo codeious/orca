@@ -213,6 +213,20 @@ export function beginHostAdmittedStructuredLaunch(args: {
           false
         )
       }
+      if (asked.kind === 'reopen') {
+        return failBeforeSurface(
+          new StructuredAgentSessionCreateRefusalError(
+            'agent_session_conflict',
+            'agent_session_conflict',
+            {
+              code: 'agent_session_conflict',
+              details: { reason: 'conversationHeldElsewhere', owner: asked.owner }
+            }
+          ),
+          undefined,
+          false
+        )
+      }
       // Unresolvable servers keep terminal fallback; local unable-to-answer can safely defer reporting to chat create.
       const admission: StructuredLaunchAdmission =
         asked.kind !== 'workspace-unresolved'

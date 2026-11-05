@@ -1,5 +1,6 @@
 import { AiVaultPrepareSessionResumeParams } from '../../shared/rpc-contract/ai-vault-params'
 import { prepareStructuredChatCliFork } from '../ai-vault/structured-chat-cli-fork'
+import { prepareStructuredChatTerminalHandoff } from '../ai-vault/structured-chat-terminal-handoff'
 import { ipcMain } from 'electron'
 import type {
   AiVaultPrepareSessionResumeRequest,
@@ -50,10 +51,10 @@ export async function prepareAiVaultSessionResume(
       throw new Error('This chat cannot be copied on this host.')
     }
     await options.ensureStructuredSessionOwnership?.()
-    return prepareStructuredChatCliFork(
-      parsed,
-      options.prepareSessionResume ?? (async () => ({ useRealCodexHome: false }))
-    )
+    const prepare = options.prepareSessionResume ?? (async () => ({ useRealCodexHome: false }))
+    return 'handoff' in parsed
+      ? prepareStructuredChatTerminalHandoff(parsed, prepare)
+      : prepareStructuredChatCliFork(parsed, prepare)
   }
   // Why: the desktop process must never materialize transcript paths owned by an SSH host.
   if (executionHost?.kind === 'ssh') {

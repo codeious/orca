@@ -94,7 +94,7 @@ async function requireHostCreateSupport(
     const { code } = support.refusal
     throw new StructuredAgentSessionCreateRefusalError(code, code, support.refusal)
   }
-  return support.seedOptions
+  return support.kind === 'admitted' ? support.seedOptions : undefined
 }
 
 /** Refuse paired hosts that would grant more access than requested; the chat permission gate owns the explanation. */

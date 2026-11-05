@@ -28,6 +28,8 @@ import {
   type NativeChatCliForkIdentity
 } from './tab-session-history-switch'
 import { translate } from '@/i18n/i18n'
+import { buildAiVaultResumeStartupForWorktree } from '@/lib/ai-vault-resume-command'
+import { closeStructuredAgentSession } from '@/runtime/structured-agent-session-close'
 
 const pending = new Map<string, AbortController>()
 const listeners = new Set<() => void>()
@@ -51,6 +53,7 @@ export async function runNativeChatCliFork(args: {
   subject: NativeChatCliForkSubject
   tab: { id: string; worktreeId: string }
   agent: AiVaultAgent
+  mode?: 'fork' | 'handoff'
   onComplete?: () => void
   commandOverrides?: Partial<Record<AiVaultAgent, string | null>>
 }): Promise<void> {
@@ -112,6 +115,7 @@ export async function runNativeChatCliFork(args: {
   try {
     const prepared = await prepareNativeChatCliFork(subject, {
       pairingRevision: owner?.pairingRevision,
+      mode: args.agent === 'droid' ? args.mode : 'fork',
       isCurrent,
       signal: controller.signal
     })
@@ -126,9 +130,14 @@ export async function runNativeChatCliFork(args: {
       commandOverride: args.commandOverrides?.[target.agent]
     }
     assertAiVaultCopiedSessionLaunchAllowed(startupArgs)
-    const startup = prepared.copied
-      ? buildAiVaultCopiedSessionStartupForWorktree(startupArgs, prepared.sourceAgent ?? args.agent)
-      : buildAiVaultForkStartupForWorktree(startupArgs)
+    const startup = prepared.handoff
+      ? buildAiVaultResumeStartupForWorktree(startupArgs)
+      : prepared.copied
+        ? buildAiVaultCopiedSessionStartupForWorktree(
+            startupArgs,
+            prepared.sourceAgent ?? args.agent
+          )
+        : buildAiVaultForkStartupForWorktree(startupArgs)
     if (!startup) {
       throw new Error(
         translate(
@@ -142,10 +151,23 @@ export async function runNativeChatCliFork(args: {
       return
     }
     stop()
-    await launchAiVaultSessionAndReveal(
-      { agent: target.agent, worktreeId: subject.workspaceId, ...startup },
+    const launched = await launchAiVaultSessionAndReveal(
+      {
+        agent: target.agent,
+        worktreeId: subject.workspaceId,
+        ...(prepared.handoff ? { afterTabId: tab.id } : {}),
+        ...startup
+      },
       describeAiVaultCliForkFailure
     )
+    if (launched && prepared.handoff && isCurrent()) {
+      await closeStructuredAgentSession(
+        host?.kind === 'runtime'
+          ? { kind: 'environment', environmentId: host.environmentId }
+          : { kind: 'local' },
+        subject.sessionId
+      )
+    }
   } catch (error) {
     if (pending.get(key) === controller) {
       notifyAiVaultSessionPreparationFailure(

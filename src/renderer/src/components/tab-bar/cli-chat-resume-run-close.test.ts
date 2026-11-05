@@ -126,6 +126,73 @@ describe('close terminal then continue on capable hosts', () => {
     showAgentInSource()
   })
 
+  it('closes Droid and reopens its original chat without creating another conversation', async () => {
+    const source = { ...SOURCE, agent: 'droid' as const }
+    mocks.source = source
+    mocks.createSupport.mockResolvedValue({
+      supported: true,
+      reopen: { sessionId: 'original-chat', workspaceId: 'wt-1' }
+    })
+    mocks.call.mockResolvedValue({ ok: true })
+    await runCliChatResume(source, true)
+    expect(mocks.closeTerminal).toHaveBeenCalledOnce()
+    expect(creates()).toEqual([])
+    expect(mocks.call.mock.calls.map(([, method]) => method)).toEqual([
+      'agentSession.reveal',
+      'agentSession.ensure'
+    ])
+    expect(mocks.call.mock.calls[0]?.[2]).toEqual({ sessionId: 'original-chat' })
+    expect(mocks.call.mock.calls[1]?.[2]).toEqual({ sessionId: 'original-chat' })
+    expect(mocks.activate).toHaveBeenCalledWith(
+      { structuredSession: { sessionId: 'original-chat', workspaceId: 'wt-1' } },
+      undefined,
+      { kind: 'local' }
+    )
+    expect(mocks.toast).not.toHaveBeenCalled()
+  })
+
+  it.each(['cancelled', 'unproven'] as const)(
+    'does not reopen or ensure Droid after a %s terminal close',
+    async (outcome) => {
+      const source = { ...SOURCE, agent: 'droid' as const }
+      mocks.source = source
+      mocks.createSupport.mockResolvedValue({
+        supported: true,
+        reopen: { sessionId: 'original-chat', workspaceId: 'wt-1' }
+      })
+      mocks.closeTerminal.mockImplementation(async (_source, _current, hooks) => {
+        hooks.prepared()
+        if (outcome === 'unproven') {
+          hooks.closing()
+          throw new Error('terminal exit unproven')
+        }
+        return false
+      })
+      await runCliChatResume(source, true)
+      expect(mocks.call).not.toHaveBeenCalled()
+      expect(mocks.activate).not.toHaveBeenCalled()
+      expect(creates()).toEqual([])
+    }
+  )
+
+  it('reopens Droid after it has already quit without closing the idle terminal', async () => {
+    const source = { ...SOURCE, agent: 'droid' as const }
+    mocks.source = source
+    mocks.probe.mockResolvedValue([{ verdict: 'exited' }])
+    mocks.createSupport.mockResolvedValue({
+      supported: true,
+      reopen: { sessionId: 'original-chat', workspaceId: 'wt-1' }
+    })
+    mocks.call.mockResolvedValue({ ok: true })
+    await runCliChatResume(source, true)
+    expect(mocks.closeTerminal).not.toHaveBeenCalled()
+    expect(creates()).toEqual([])
+    expect(mocks.call.mock.calls.map(([, method]) => method)).toEqual([
+      'agentSession.reveal',
+      'agentSession.ensure'
+    ])
+  })
+
   it('shows the chat before its only terminal closes and creates it after the exit', async () => {
     mocks.closeTerminal.mockImplementation(async (_source, _current, hooks) => {
       expect(tabs().map((tab) => tab.contentType)).toEqual(['agent-session'])

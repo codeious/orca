@@ -1,4 +1,8 @@
 import { STRUCTURED_AGENT_SESSION_SLEEP_WORKSPACE_METHOD } from './structured-agent-session-sleep-workspace'
+import {
+  ensureReopenedStructuredSession,
+  structuredChatResumeReopen
+} from './structured-agent-session-reopen'
 import { STRUCTURED_AGENT_SESSION_USAGE_LIMIT_CONTINUE_METHODS } from './structured-agent-session-usage-limit-continue'
 import { STRUCTURED_AGENT_SESSION_CLOSE_METHOD } from './structured-agent-session-close-method'
 import {
@@ -61,7 +65,7 @@ import { STRUCTURED_AGENT_SESSION_CONVERSATION_OUTLINE_METHODS } from './structu
 import { STRUCTURED_AGENT_SESSION_ITEM_METHODS } from './structured-agent-session-item'
 import { STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS } from './structured-agent-session-options-read'
 import {
-  AttachParams,
+  EnsureParams,
   CancelParams,
   ConversationCommandParams,
   CreateParams,
@@ -115,12 +119,19 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
         params.agent
       )
       if (support.supported && params.resumeFrom) {
+        if (params.agent === 'droid') {
+          await ensureHostInstalled(ctx)
+        }
         // Create refuses the same writer; asked here, the client refuses before it closes or opens anything.
         await ctx.runtime.assertStructuredAdoptionTerminalWritersExited(
           params.agent,
           params.resumeFrom.providerSessionId,
           params.resumeFrom.closingPaneKeys
         )
+        const reopen = structuredChatResumeReopen(params.agent, params.resumeFrom.providerSessionId)
+        if (reopen) {
+          return { ...support, reopen }
+        }
       }
       // Optional: older clients ignore it, and a client seeds its picker with what create will use.
       const seedOptions = support.supported
@@ -147,9 +158,14 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
   defineMethod({
     name: 'agentSession.ensure',
     permission: 'workspace',
-    params: AttachParams,
+    params: EnsureParams,
     handler: async (params, ctx) =>
-      projectHostCommandCatalog(await attachClientSuppliedLocation(params, ctx), ctx)
+      projectHostCommandCatalog(
+        await ('sessionId' in params
+          ? ensureReopenedStructuredSession(params.sessionId, ctx)
+          : attachClientSuppliedLocation(params, ctx)),
+        ctx
+      )
   }),
   defineMethod({
     name: 'agentSession.send',

@@ -81,7 +81,15 @@ export const AiVaultPrepareSessionResumeParams = z.union([
       executionHostId: z.string().optional(),
       fork: z.literal(true)
     })
-    .strict()
+    .strict(),
+  z.strictObject({
+    sourceChat: z.strictObject({
+      sessionId: z.string().min(1).max(512),
+      workspaceId: z.string().min(1).max(512)
+    }),
+    executionHostId: z.string().optional(),
+    handoff: z.literal(true)
+  })
 ])
 
 export const AiVaultSessionTitlesParams = z.object({

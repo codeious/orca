@@ -26,6 +26,7 @@ export function launchAiVaultSessionInNewTab(args: {
   launchConfig?: SleepingAgentLaunchConfig
   providerSession?: AgentProviderSessionMetadata
   targetGroupId?: string
+  afterTabId?: string
   splitDirection?: TabSplitDirection
 }): LaunchAiVaultSessionInNewTabResult {
   const store = useAppStore.getState()
@@ -46,6 +47,7 @@ export function launchAiVaultSessionInNewTab(args: {
         worktreeId: args.worktreeId,
         environmentId: runtimeEnvironmentId,
         ...(targetGroupId ? { targetGroupId } : {}),
+        ...(args.afterTabId ? { afterTabId: args.afterTabId } : {}),
         agentSessionKind: 'resume',
         launchAgent: args.agent,
         command: args.command,
@@ -72,6 +74,7 @@ export function launchAiVaultSessionInNewTab(args: {
   }
 
   const tab = store.createTab(args.worktreeId, args.targetGroupId, undefined, {
+    ...(args.afterTabId ? { afterTabId: args.afterTabId } : {}),
     ...(split ? { split } : {}),
     ...(args.cwd ? { startupCwd: args.cwd } : {}),
     pendingStartup: {

@@ -9,7 +9,7 @@ import { agentLabel } from '@/components/right-sidebar/ai-vault-session-filters'
 export async function launchAiVaultSessionAndReveal(
   args: Parameters<typeof launchAiVaultSessionInNewTab>[0],
   describeFailure: (message: string) => string = (message) => message
-): Promise<void> {
+): Promise<boolean> {
   const launch = launchAiVaultSessionInNewTab(args)
   if (launch.tabId === null) {
     const outcome = await launch.runtimeLaunch
@@ -22,11 +22,12 @@ export async function launchAiVaultSessionAndReveal(
             { value0: agentLabel(args.agent) }
           )
       )
-      return
+      return false
     }
   }
   if (useAppStore.getState().activeWorktreeId !== args.worktreeId) {
     activateAiVaultResumeWorkspace(args.worktreeId)
   }
   notifyAiVaultSessionQueued(args.agent)
+  return true
 }

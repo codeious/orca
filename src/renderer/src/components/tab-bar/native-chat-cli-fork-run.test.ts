@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   activate: vi.fn(),
   activeWorktreeId: 'workspace-1',
   error: vi.fn(),
+  hide: vi.fn(),
   open: true,
   host: 'runtime:peer',
   listeners: new Set<() => void>()
@@ -42,6 +43,12 @@ vi.mock('./tab-session-history-switch', () => ({
 }))
 vi.mock('@/lib/native-chat-cli-fork-preparation', () => ({
   prepareNativeChatCliFork: mocks.prepare
+}))
+vi.mock('@/runtime/structured-agent-session-close', () => ({
+  closeStructuredAgentSession: mocks.hide
+}))
+vi.mock('@/lib/ai-vault-resume-command', () => ({
+  buildAiVaultResumeStartupForWorktree: () => ({ command: 'droid --resume original' })
 }))
 vi.mock('@/lib/ai-vault-session-fork-startup', () => ({
   assertAiVaultCopiedSessionLaunchAllowed: () => {},
@@ -77,12 +84,39 @@ beforeEach(() => {
   mocks.launch.mockReset().mockReturnValue({ tabId: 'destination' })
   mocks.notify.mockReset()
   mocks.error.mockReset()
+  mocks.hide.mockReset()
   replaceRuntimeEnvironmentRevisions([{ id: 'peer', createdAt: 1, pairingRevision: 7 }])
 })
 function closeSource() {
   mocks.open = false
   mocks.listeners.forEach((listener) => listener())
 }
+
+it('hands off Droid without forking and hides the chat only after terminal creation succeeds', async () => {
+  mocks.prepare.mockResolvedValue({
+    session: { agent: 'droid', sessionId: 'original', cwd: '/host/repo', codexHome: null },
+    copied: false,
+    handoff: true
+  })
+  await runNativeChatCliFork({ ...args, agent: 'droid', mode: 'handoff' })
+  expect(mocks.launch).toHaveBeenCalledWith({
+    agent: 'droid',
+    worktreeId: 'workspace-1',
+    afterTabId: 'tab-1',
+    command: 'droid --resume original'
+  })
+  expect(mocks.hide).toHaveBeenCalledExactlyOnceWith(
+    { kind: 'environment', environmentId: 'peer' },
+    'chat-1'
+  )
+  mocks.hide.mockClear()
+  mocks.launch.mockReturnValue({
+    tabId: null,
+    runtimeLaunch: Promise.resolve({ status: 'failed', message: 'refused' })
+  })
+  await runNativeChatCliFork({ ...args, agent: 'droid', mode: 'handoff' })
+  expect(mocks.hide).not.toHaveBeenCalled()
+})
 
 it('shares pending across menu openings and suppresses dispatch after source retirement', async () => {
   let settle = (_value: NativeChatCliForkPreparation) => {}
