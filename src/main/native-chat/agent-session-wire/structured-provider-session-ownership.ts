@@ -62,8 +62,8 @@ export function agentSessionLeasePossiblyWriting(lease: AgentSessionOwnerObserva
 }
 
 /** Agents whose chats let a terminal resume the same conversation once the chat stopped writing. */
-export function sameIdTerminalResumeEnabled(_provider: StructuredAgentId): boolean {
-  return false
+export function sameIdTerminalResumeEnabled(provider: StructuredAgentId): boolean {
+  return provider === 'droid'
 }
 
 /** Whether a terminal resume of this link's conversation is refused. */

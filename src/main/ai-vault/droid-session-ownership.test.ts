@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { setStructuredAgentSessionHost } from '../native-chat/agent-session-wire/structured-agent-session-registry'
+import { agentSessionConversationView } from '../../shared/agent-session/lifecycle/agent-session-conversation-view'
+import {
+  agentSessionLeaseFixture,
+  agentSessionRecordFixture
+} from '../../shared/agent-session/lifecycle/agent-session-record.test-fixture'
 import {
   installOwnership,
   listResult,
@@ -21,6 +26,39 @@ beforeEach(() =>
 afterEach(() => setStructuredAgentSessionHost(null))
 
 describe('chat-owned Droid conversation', () => {
+  it('allows prepared and typed resumes after proven exit while history keeps the owner', async () => {
+    installOwnership({
+      handle: { transport: 'droid-stream-jsonrpc', agent: 'droid', nativeId: PROVIDER_SESSION },
+      ownerObservation: agentSessionConversationView(
+        agentSessionRecordFixture(
+          agentSessionLeaseFixture({
+            claimStatus: 'released',
+            ownerProcess: null,
+            reservedSpawnToken: null,
+            deathEvidence: { kind: 'exit-observed', detail: 'exited', observedAt: 3_000 }
+          })
+        )
+      ).ownerObservation
+    })
+    expect(() =>
+      assertLegacyAiVaultResumeAllowed({
+        agent: 'droid',
+        sessionId: PROVIDER_SESSION,
+        filePath: '',
+        codexHome: null,
+        executionHostId: 'local'
+      })
+    ).not.toThrow()
+    await expect(
+      assertLegacyAiVaultResumeCommandAllowed(`droid --resume ${PROVIDER_SESSION}`, async () => {})
+    ).resolves.toBeUndefined()
+    const listed = listResult()
+    listed.sessions[0]!.agent = 'droid'
+    expect(
+      projectStructuredAiVaultSessions(listed, OPENS_EVERY_STRUCTURED_CHAT).sessions[0]
+        ?.structuredSession?.sessionId
+    ).toBe('session-alpha')
+  })
   it('opens its owning chat and refuses legacy terminal resume, but permits a fork', () => {
     const listed = listResult()
     listed.sessions[0]!.agent = 'droid'
