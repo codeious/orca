@@ -84,7 +84,10 @@ async function configuredDroidDefaults(
 export function createDroidModelCatalogProbe(
   deps: DroidModelCatalogProbeDeps
 ): AgentModelCatalogProbe {
-  return async (accountHome, options): Promise<AgentModelCatalogSuccess> => {
+  const probe: AgentModelCatalogProbe = async (
+    accountHome,
+    options
+  ): Promise<AgentModelCatalogSuccess> => {
     const env: Record<string, string> = {}
     for (const [key, value] of Object.entries(await deps.resolveEnvironment())) {
       if (value !== undefined) {
@@ -139,4 +142,6 @@ export function createDroidModelCatalogProbe(
       await connection.close().catch(() => {})
     }
   }
+  probe.listsWithoutSession = true
+  return probe
 }

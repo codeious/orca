@@ -19,6 +19,8 @@ export type AgentModelCatalogProbe = ((
     operation?: StructuredAgentResolutionOperation
   }
 ) => Promise<AgentModelCatalogSuccess>) & {
+  /** Safe after an owner exits: discovery never initializes a chat. */
+  listsWithoutSession?: true
   resolveLegacy?: (
     home: AgentSessionAccountHome,
     operation?: StructuredAgentResolutionOperation
