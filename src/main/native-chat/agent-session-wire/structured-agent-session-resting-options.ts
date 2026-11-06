@@ -74,6 +74,14 @@ export async function readStructuredAgentSessionOptionsAtRest(
     })
   }
   const saved = record.options ?? {}
+  if (reader.readsWithoutModel && record.provider === 'droid' && saved.planMode === 'true') {
+    await deps.modelCatalog?.prepareSaved?.({
+      ...scope,
+      agent: record.provider,
+      sessionId,
+      inSessionWorkspace: true
+    })
+  }
   // The chat's own folder decides its default, as its first frame did.
   const scoped = await readCatalog(true)
   const folderDefault =
@@ -148,7 +156,11 @@ export async function readStructuredAgentSessionOptionsAtRest(
   if (record.provider === 'droid' && planMode === true) {
     const configured = catalog.origin === 'unknown' ? undefined : catalog.configuredSpec
     const own = droidSpecDisplayPair({}, saved)
-    const pair = droidSpecDisplayPair({ model, effort }, saved, configured)
+    const pair = droidSpecDisplayPair(
+      catalog.origin === 'unknown' && deps.modelCatalog ? {} : { model, effort },
+      saved,
+      configured
+    )
     defaulted = (['model', 'effort'] as const).filter(
       (key) =>
         own[key] === undefined && (configured?.[key] !== undefined || defaulted.includes(key))

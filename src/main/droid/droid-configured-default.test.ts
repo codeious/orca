@@ -135,7 +135,9 @@ type ChatOptions = {
   resumeId?: string
 }
 
-async function droidHost(opts: { listing?: Promise<void>; settings?: object } = {}) {
+async function droidHost(
+  opts: { listing?: Promise<void>; settings?: object; models?: readonly object[] } = {}
+) {
   const accountHome = opts.settings
     ? { ...DROID_HOME, path: join(root, 'account', '.factory') }
     : DROID_HOME
@@ -166,7 +168,7 @@ async function droidHost(opts: { listing?: Promise<void>; settings?: object } = 
               throw new Error(`probe sent ${method} ${JSON.stringify(params)}`)
             }
             await opts.listing
-            return { models: MODELS }
+            return { models: opts.models ?? MODELS }
           },
           close: async () => {}
         })
@@ -238,8 +240,8 @@ async function droidHost(opts: { listing?: Promise<void>; settings?: object } = 
     const sessionId = addRecord(workspacePath, saved)
     return {
       sessionId,
-      readOptions: () =>
-        readStructuredAgentSessionOptions(context, sessionId, { readsWithoutModel: false })
+      readOptions: (readsWithoutModel = false) =>
+        readStructuredAgentSessionOptions(context, sessionId, { readsWithoutModel })
     }
   }
 
@@ -344,6 +346,42 @@ function firstFrame(
 const NOTHING = { model: null, effort: null }
 
 describe('Droid model and effort in the composer', () => {
+  it('shows the configured Spec pair when a saved Normal reply precedes discovery', async () => {
+    const { catalog, restingChat } = await droidHost({
+      settings: {
+        sessionDefaultSettings: {
+          model: 'gpt-6-sol',
+          reasoningEffort: 'high',
+          specModeModel: 'custom:Fake-Local-0',
+          specModeReasoningEffort: 'none'
+        }
+      }
+    })
+    const clean = workspace('clean')
+    const seed = structuredAgentSessionSeedCatalog('droid')
+    const beforeListing = await restingChat(clean, {
+      model: 'gpt-6-sol',
+      effort: 'low',
+      planMode: 'true'
+    }).readOptions(true)
+    expect(beforeListing.modelsKnown).toBe(false)
+    expect(beforeListing.current.model).toBeUndefined()
+    expect(beforeListing.current.effort).toBeUndefined()
+    const atRest = applyStructuredAgentSessionOptions(
+      createStructuredAgentSessionOptionState('droid', seed),
+      seed,
+      beforeListing,
+      { newLaunch: true, coherentCatalog: true }
+    )
+    const state = applyStructuredAgentSessionModelCatalog(
+      atRest,
+      seed,
+      await catalog.read({ agent: 'droid', waitForListing: true }),
+      { newLaunch: true, coherentCatalog: true }
+    )
+    expect(frame(state)).toEqual({ model: 'custom:Fake-Local-0', effort: 'none' })
+  })
+
   it('switches to Spec after a model-less options reply lands before discovery', async () => {
     const { catalog } = await droidHost({
       settings: {
@@ -636,43 +674,79 @@ describe('Droid model and effort in the composer', () => {
 describe('Droid options at rest on a cold profile', () => {
   const MODEL_IDS = ['gpt-6-sol', 'custom:Fake-Local-0']
 
-  it('shows Spec options at rest instead of the saved Normal pair', async () => {
-    const { restingChat } = await droidHost({
-      settings: {
-        sessionDefaultSettings: {
-          model: 'gpt-6-sol',
-          reasoningEffort: 'high',
-          specModeModel: 'custom:Fake-Local-0',
-          specModeReasoningEffort: 'none'
+  it.each([false, true])(
+    'shows Spec options at rest instead of the saved Normal pair (readsWithoutModel=%s)',
+    async (readsWithoutModel) => {
+      const { catalog, restingChat } = await droidHost({
+        models: [
+          MODELS[0],
+          {
+            ...MODELS[1],
+            supportedReasoningEfforts: ['low', 'high', 'xhigh'],
+            defaultReasoningEffort: 'high'
+          }
+        ],
+        settings: {
+          sessionDefaultSettings: {
+            model: 'gpt-6-sol',
+            reasoningEffort: 'high',
+            specModeModel: 'custom:Fake-Local-0',
+            specModeReasoningEffort: 'xhigh'
+          }
         }
-      }
-    })
-    const clean = workspace('clean')
-    const normal = { model: 'gpt-6-sol', effort: 'low', planMode: 'true' }
-    expect((await restingChat(clean, normal).readOptions()).current).toMatchObject({
-      model: 'custom:Fake-Local-0',
-      effort: 'none',
-      planMode: true
-    })
-    const picked = await restingChat(clean, {
-      ...normal,
-      specModel: 'gpt-6-sol',
-      specEffort: 'high'
-    }).readOptions()
-    expect(picked.current).toMatchObject({
-      model: 'gpt-6-sol',
-      effort: 'high',
-      planMode: true,
-      defaulted: []
-    })
-    expect(
-      (await restingChat(clean, { ...normal, planMode: 'false' }).readOptions()).current
-    ).toMatchObject({
-      model: 'gpt-6-sol',
-      effort: 'low',
-      planMode: false
-    })
-  })
+      })
+      const listed = await catalog.read({ agent: 'droid', waitForListing: true })
+      const seed = structuredAgentSessionSeedCatalog('droid')
+      let state = applyStructuredAgentSessionModelCatalog(
+        createStructuredAgentSessionOptionState('droid', seed),
+        seed,
+        listed,
+        { newLaunch: true, coherentCatalog: true }
+      )
+      const clean = workspace('clean')
+      const normal = { model: 'gpt-6-sol', effort: 'low', planMode: 'true' }
+      const spec = await restingChat(clean, normal).readOptions(readsWithoutModel)
+      expect(spec.current).toMatchObject({
+        model: 'custom:Fake-Local-0',
+        effort: 'xhigh',
+        planMode: true
+      })
+      state = applyStructuredAgentSessionOptions(state, seed, spec, {
+        newLaunch: true,
+        coherentCatalog: true
+      })
+      expect(frame(state)).toEqual({ model: 'custom:Fake-Local-0', effort: 'xhigh' })
+      const picked = await restingChat(clean, {
+        ...normal,
+        specModel: 'gpt-6-sol',
+        specEffort: 'high'
+      }).readOptions(readsWithoutModel)
+      expect(picked.current).toMatchObject({
+        model: 'gpt-6-sol',
+        effort: 'high',
+        planMode: true,
+        defaulted: []
+      })
+      state = applyStructuredAgentSessionOptions(state, seed, picked, {
+        newLaunch: true,
+        coherentCatalog: true
+      })
+      expect(frame(state)).toEqual({ model: 'gpt-6-sol', effort: 'high' })
+      const normalReply = await restingChat(clean, { ...normal, planMode: 'false' }).readOptions(
+        readsWithoutModel
+      )
+      expect(normalReply.current).toMatchObject({
+        model: 'gpt-6-sol',
+        effort: 'low',
+        planMode: false
+      })
+      state = applyStructuredAgentSessionOptions(state, seed, normalReply, {
+        newLaunch: true,
+        coherentCatalog: true
+      })
+      expect(frame(state)).toEqual({ model: 'gpt-6-sol', effort: 'low' })
+    }
+  )
 
   it("reads a cold chat's options at rest with the probe's list and names no model", async () => {
     const { restingChat } = await droidHost()
