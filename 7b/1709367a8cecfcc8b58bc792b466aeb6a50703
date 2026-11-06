@@ -1,0 +1,20 @@
+src/main/droid/droid-model-catalog-probe.ts
+  h_476903bd8a47d9 87-90,145-146
+src/main/droid/droid-model-catalog-reopen.test.ts
+  h_476903bd8a47d9 1-91
+src/main/native-chat/agent-model-catalog/agent-model-catalog-discovery.ts
+  h_476903bd8a47d9 22-23
+src/main/native-chat/agent-model-catalog/agent-model-catalog-lookup.ts
+  h_476903bd8a47d9 197-198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7b1709367a8cecfcc8b58bc792b466aeb6a50703",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
