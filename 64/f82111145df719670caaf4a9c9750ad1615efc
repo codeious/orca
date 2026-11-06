@@ -1,0 +1,16 @@
+src/main/droid/droid-configured-default.test.ts
+  h_476903bd8a47d9 138-140,171,243-244,349-384,677-695,697-749
+src/main/native-chat/agent-session-wire/structured-agent-session-resting-options.ts
+  h_476903bd8a47d9 77-84,159-163
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "64f82111145df719670caaf4a9c9750ad1615efc",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
