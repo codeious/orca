@@ -31,6 +31,9 @@ import {
 
 type DroidCurrentOptions = AgentSessionOptionsResult['current'] & { planMode: boolean }
 
+type DroidSettingsUpdate = Partial<DroidStartSettings> &
+  Partial<Record<(typeof SPEC_PAIR_SETTINGS)[number], string | null>>
+
 type Request = (
   method: string,
   params?: unknown,
@@ -127,11 +130,7 @@ export class DroidSessionOptions {
     return { ...answer, sessionOptions: droidSessionOptionDescriptors(settings.current, answer) }
   }
 
-  /**
-   * Answers with the whole map of picks the host keeps: it stores what a pick returns as the
-   * chat's options, so a bare `{ [key]: value }` would drop Spec and the other half of the pair.
-   * Where Droid reported nothing for the pick, the picked value stands.
-   */
+  /** Return all saved picks: the host replaces its map, and unreported picks still stand. */
   async set(key: string, value: string): Promise<Record<string, string>> {
     if (
       (key === 'model' || key === 'effort') &&
@@ -283,7 +282,7 @@ export class DroidSessionOptions {
   }
 
   /** What Droid reported holding in answer to this update, if it reported at all. */
-  private async update(params: object): Promise<DroidSettings | undefined> {
+  private async update(params: DroidSettingsUpdate): Promise<DroidSettings | undefined> {
     const { request, settings, timeoutMs } = this.deps
     const sent: { id?: string } = {}
     await request('droid.update_session_settings', params, {
