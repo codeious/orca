@@ -1,0 +1,140 @@
+src/main/acp/acp-dialects/antigravity-dialect.ts
+  s_767cf5531d83f7::t_b80e2fa96d79b3 46-49
+src/main/acp/acp-dialects/grok-requests.ts
+  s_767cf5531d83f7::t_26066326f90708 35,71-74,114
+src/main/acp/transport/acp-incoming-requests.ts
+  s_767cf5531d83f7::t_f99281961f74a6 2-7,45,64-67,90,111,114-117
+src/main/acp/requests/acp-structured-prompts.ts
+  s_767cf5531d83f7::t_d735997485b419 46-49,65
+src/main/acp/requests/acp-timeline-requests.ts
+  s_767cf5531d83f7::t_72acc1dbc4c3ca 20,43-46,76
+mobile/src/session/native-chat/mobile-native-chat-controller-contract.ts
+  s_767cf5531d83f7::t_cdb1d1af31112f 7
+src/shared/agent-session/view/structured-agent-session-composer.ts
+  s_767cf5531d83f7::t_bc3ab08c2a5ab7 48,118,135,167-169,172,259
+src/main/ipc/runtime-environments/runtime-environment-subscription-handlers.ts
+  s_0ea6d99759c7f0::t_05dc2671c63386 39,41
+src/renderer/src/components/native-chat/session/options/controls/NativeChatSessionOptionPickers.tsx
+  s_210dc32b3c8f30::t_f7d0dcae1f9b3a 333,335
+src/renderer/src/components/tab-bar/native-chat-cli-fork-run.ts
+  s_8f38564f63f944::t_2fdf2204d9299f 242
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.test.ts
+  s_caa2674c839ed9::t_592be14ff9c20c 36,42,46-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "efd9078bdb67edb043e6cda63cdc9e22e3b849c7",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_0ea6d99759c7f0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "72ecfb7b-c0a0-4219-94dd-f230e9627ca5",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_13f1b7e53d8fdf": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4e3616ef-064d-4e91-8183-31ce32f3f6ec",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_210dc32b3c8f30": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "b8659aac-dc94-483c-88c3-6026e9b04dcb",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_37528dfe290bbc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "45710ea3-9a72-47fa-82b8-24f76158f799",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_41cc02f507be91": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "27e6a91b-84f2-42dd-86db-a1bb27ab66f9",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_435fd5999f37df": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "021b859a-bedb-4a26-8206-e76f034baaaf",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_47f783ef5b6cbd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "403d47c9-7e7b-40ae-a554-d47c903eb653",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_8f38564f63f944": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "b5ddccf8-c036-4c31-a34a-1676c38c536e",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_c3c5fe8bbb7f52": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "12d0e2e5-b786-47df-b094-f55dfe781c28",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_caa2674c839ed9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a611da7d-eadf-4ff1-b91f-96564185143e",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d13fa423fc676c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "6162452c-6c6f-401d-b3b4-3492abfe2e92",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d90bd476ba2d44": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5c817159-1747-4a01-9538-e3b1ab4b5da1",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
