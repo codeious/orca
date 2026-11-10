@@ -1,13 +1,17 @@
 src/main/acp/acp-dialects/antigravity-dialect.ts
   s_767cf5531d83f7::t_b80e2fa96d79b3 46-49
+  s_08b0ae162f26b9::t_2e006ea21da702 3-8
 src/main/acp/acp-dialects/grok-requests.ts
   s_767cf5531d83f7::t_26066326f90708 35,71-74,114
+  s_08b0ae162f26b9::t_6bfa0966124434 6
 src/main/acp/transport/acp-incoming-requests.ts
   s_767cf5531d83f7::t_f99281961f74a6 2-7,45,64-67,90,111,114-117
 src/main/acp/requests/acp-structured-prompts.ts
   s_767cf5531d83f7::t_d735997485b419 46-49,65
+  s_08b0ae162f26b9::t_2e006ea21da702 10-14
 src/main/acp/requests/acp-timeline-requests.ts
   s_767cf5531d83f7::t_72acc1dbc4c3ca 20,43-46,76
+  s_08b0ae162f26b9::t_6bfa0966124434 9
 mobile/src/session/native-chat/mobile-native-chat-controller-contract.ts
   s_767cf5531d83f7::t_cdb1d1af31112f 7
 src/shared/agent-session/view/structured-agent-session-composer.ts
@@ -20,6 +24,26 @@ src/renderer/src/components/tab-bar/native-chat-cli-fork-run.ts
   s_8f38564f63f944::t_2fdf2204d9299f 242
 src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.test.ts
   s_caa2674c839ed9::t_592be14ff9c20c 36,42,46-48
+src/main/acp/protocol/acp-session-call.ts
+  s_08b0ae162f26b9::t_2e006ea21da702 5-6
+  s_08b0ae162f26b9::t_6bfa0966124434 27
+src/main/acp/transport/acp-oversized-lines.ts
+  s_08b0ae162f26b9::t_6bfa0966124434 3,23
+src/main/acp/conversation-copy/acp-conversation-copy.ts
+  s_08b0ae162f26b9::t_6bfa0966124434 16,112,171
+src/main/acp/text-task/acp-text-task-policy.ts
+  s_08b0ae162f26b9::t_6bfa0966124434 1
+  s_08b0ae162f26b9::t_2e006ea21da702 95-98
+src/main/acp/session/start/acp-session-reopen-failure.ts
+  s_08b0ae162f26b9::t_2e006ea21da702 14-18
+src/main/acp/protocol/acp-session-setup.ts
+  s_08b0ae162f26b9::t_2e006ea21da702 6-12
+  s_08b0ae162f26b9::t_6bfa0966124434 97,110
+src/main/acp/acp-dialects/omp-dialect.ts
+  s_08b0ae162f26b9::t_6bfa0966124434 3,127
+src/main/acp/protocol/acp-session-runtime.ts
+  s_08b0ae162f26b9::t_2e006ea21da702 4-8
+  s_08b0ae162f26b9::t_6bfa0966124434 110,285,292
 ---
 {
   "schema_version": "authorship/3.0.0",
@@ -32,6 +56,14 @@ src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.test.ts
     }
   },
   "sessions": {
+    "s_08b0ae162f26b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e241a5ba-8a2f-49df-8b78-33914687abfa",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
     "s_0ea6d99759c7f0": {
       "agent_id": {
         "tool": "droid",
