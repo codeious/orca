@@ -1,0 +1,137 @@
+mobile/src/session/native-chat/agent-session/use-mobile-structured-agent-session.ts
+  s_c679e42a69a770::t_7f89011e94824b 11,198-200
+mobile/src/session/native-chat/agent-session/use-mobile-structured-session-prompts.ts
+  s_c679e42a69a770::t_0af4ed85381078 1-30
+src/main/acp/protocol/acp-session-client-requests.ts
+  s_9f617ad61f5ef5::t_8de274b2967284 1-33
+src/main/acp/protocol/acp-session-runtime.ts
+  s_9f617ad61f5ef5::t_ff987663ec15f3 4,8,279-286
+src/main/acp/transport/acp-peer-frame-dispatch.ts
+  s_9f617ad61f5ef5::t_318319b7729f2a 1-66
+src/main/ipc/runtime-environments/runtime-environment-connectivity-handlers.ts
+  s_08b0ae162f26b9::t_2f00c3c5f8b625 182
+src/main/ipc/runtime-environments/runtime-environment-passive-handlers.ts
+  s_9f617ad61f5ef5::t_971407999c4789 1-143
+src/main/ipc/runtime-environments/runtime-environment-subscription-routing.ts
+  s_9f617ad61f5ef5::t_5afab8b3fd29e3 1-159
+src/main/native-chat/agent-model-catalog/agent-model-catalog-configured-default-facts.ts
+  s_5924b3a63e0cc8::t_8fa2f9619db4fe 1-28
+src/main/native-chat/agent-session-journal/history-import/journal-legacy-replacement-items.ts
+  s_5924b3a63e0cc8::t_48d57c42244824 1-62
+src/main/native-chat/agent-session-wire/delivery/structured-agent-session-after-reply-queue.test.ts
+  s_08b0ae162f26b9::t_c085e39fa03487 7-10
+src/main/native-chat/agent-session-wire/delivery/structured-agent-session-queued-messages.ts
+  s_08b0ae162f26b9::t_2d5be8343d2604 110-111
+src/main/native-chat/agent-session-wire/host/structured-agent-session-delivery-wiring.ts
+  s_5924b3a63e0cc8::t_ccda69efc8c334 1-41
+src/main/native-chat/agent-session-wire/operations/structured-agent-session-host-mutations.ts
+  s_5924b3a63e0cc8::t_c037c873c078e6 36,240
+src/main/native-chat/agent-session-wire/operations/structured-agent-session-option-mutation.ts
+  s_5924b3a63e0cc8::t_3779d4cb3b5963 1-85
+src/main/native-chat/agent-session-wire/startup/structured-agent-session-startup-choices.test.ts
+  s_08b0ae162f26b9::t_e23715f771e09f 9-12
+src/main/runtime/construction/runtime-transcript-source-registration.ts
+  s_5924b3a63e0cc8::t_a6a30232be0660 1-19
+src/main/runtime/rpc/methods/structured-sessions/catalog/structured-agent-session-client-permissions.test.ts
+  s_08b0ae162f26b9::t_f392db75412f99 11-14
+src/main/runtime/rpc/methods/structured-sessions/catalog/structured-agent-session-session-options.test.ts
+  s_08b0ae162f26b9::t_d1d4c5ddf42f80 10-13
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-reopen.test.ts
+  s_08b0ae162f26b9::t_8c19c366f55ff5 5-8
+src/main/runtime/session-tabs/structured-session-launch-defaults.ts
+  s_5924b3a63e0cc8::t_9cfb82b8a506ed 1-25
+src/renderer/src/components/native-chat/NativeChatStructuredHistoryState.tsx
+  s_5924b3a63e0cc8::t_b7dac4f6f8c3c0 1-42
+src/renderer/src/components/native-chat/composer/NativeChatComposer.droid-turn-keys.test.tsx
+  s_08b0ae162f26b9::t_e2319775ff773a 69-73
+src/renderer/src/components/native-chat/composer/submit/structured-composer-session-action.ts
+  s_08b0ae162f26b9::t_8bfa274320f414 5,22-28,37-43,50-58,60-66
+src/renderer/src/components/native-chat/composer/use-native-chat-composer-file-intake.ts
+  s_c679e42a69a770::t_19b969edac8e87 1-57
+src/renderer/src/components/native-chat/prompts/NativeChatApprovalNotes.tsx
+  s_08b0ae162f26b9::t_8fc773191c5ae1 4,51,61,72,85,99,111,120-121
+src/renderer/src/components/native-chat/queue/structured-agent-session-sending-queued-cards.ts
+  s_08b0ae162f26b9::t_f2a89482608b5a 26-31
+src/renderer/src/components/native-chat/session/structured/use-structured-agent-session-transcript.ts
+  s_5924b3a63e0cc8::t_fa1dd666780175 1-45
+src/renderer/src/components/right-sidebar/ai-vault/session-actions/ai-vault-session-holder-check.test.ts
+  s_08b0ae162f26b9::t_37dc5b47b1c166 17-19
+src/renderer/src/i18n/locales/en.json
+  s_08b0ae162f26b9::t_3cebe9b15c19e7 20303-20308
+src/shared/agent-hook-listener/normalization/normalize-hook-payload.ts
+  s_9f617ad61f5ef5::t_828f2aaaaacf0b 19,107-111
+src/shared/agent-session/agent-session-model-catalog-wire.ts
+  s_08b0ae162f26b9::t_cdb97a09331d25 1-71
+src/shared/agent-session/agent-session-wire.ts
+  s_08b0ae162f26b9::t_eb5a6695262a41 391-397
+src/shared/agent-session/options/structured-agent-session-option-picks.ts
+  s_08b0ae162f26b9::t_012f9f25218d97 1-43
+src/shared/agent-session/options/structured-agent-session-options.ts
+  s_9f617ad61f5ef5::t_844cec05e088c4 8,18,27,299-302
+src/shared/agent-session/options/structured-agent-session-selection-operations.ts
+  s_9f617ad61f5ef5::t_70fc81b53f7841 7-14
+src/shared/agent-session/view/structured-provider-commands.test.ts
+  s_08b0ae162f26b9::t_d2c0b82aed5fc3 27-29
+src/main/acp/acp-dialects/omp-dialect.ts
+  s_08b0ae162f26b9::t_a304190f45b6a7 3
+src/main/droid/droid-session.ts
+  s_08b0ae162f26b9::t_0b462fd80b9938 15-17
+src/main/ipc/runtime-environments/runtime-environment-mcp-sign-in-receiver.test.ts
+  s_08b0ae162f26b9::t_48104f6f0ce9b7 29-35,47-48,108
+src/main/ipc/runtime-environments/runtime-environment-mcp-sign-in-receiver.ts
+  s_08b0ae162f26b9::t_0802a0f54a50d4 7-14,100
+src/main/native-chat/agent-session-wire/host/structured-agent-session-host.ts
+  s_08b0ae162f26b9::t_b07bfa95f64570 1,28,88,91-92,94-95
+src/main/native-chat/agent-session-wire/publication/subscribers/agent-session-subscriber-snapshot-pages.ts
+  s_08b0ae162f26b9::t_6164f85c06c778 1-36
+src/main/native-chat/agent-session-wire/publication/subscribers/structured-agent-session-subscribers.ts
+  s_08b0ae162f26b9::t_c1dd09cdd280f1 1,179
+src/main/provider-process/provider-process-supervisor.integration.test.ts
+  s_08b0ae162f26b9::t_0a544c574997c1 410
+src/main/startup/main-process-runtime-service.ts
+  s_08b0ae162f26b9::t_254203a9ecfcc7 8,83
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-composer-droid-keys.ts
+  s_08b0ae162f26b9::t_cea358806e91a8 33-37
+src/renderer/src/components/native-chat/session/structured/writes/structured-session-provider-command-write.ts
+  s_08b0ae162f26b9::t_7808c0a6fafe04 4,21-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ecb9193f0ea7dfb037456830e6caf7816b2543fe",
+  "prompts": {},
+  "sessions": {
+    "s_08b0ae162f26b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e241a5ba-8a2f-49df-8b78-33914687abfa",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_5924b3a63e0cc8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "176f928f-8947-4939-ba78-e41260e030b6",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_9f617ad61f5ef5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "92e5b22b-8661-44a5-8058-c15d3801562a",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_c679e42a69a770": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "3ef52bed-9dd4-4953-ab0a-fd91b2314ee2",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
