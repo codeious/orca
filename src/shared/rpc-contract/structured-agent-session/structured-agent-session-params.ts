@@ -20,6 +20,7 @@ import { AGENT_SESSION_RESPONSE_OPTION_ID_MAX_LENGTH as MAX_RESPONSE_OPTION_ID_L
 
 import { AGENT_SESSION_THREAD_GOAL_OBJECTIVE_MAX_LENGTH } from '../../agent-session/agent-session-thread-goal-wire'
 import { MutationEnvelope } from './structured-agent-session-mutation-envelope'
+import { PromptAnswerText } from './structured-agent-session-question-params'
 import { SOURCE_FIELDS, ResumeWriterAdmission } from './structured-agent-session-resume-params'
 
 /** Matches the journal's bounds on one grouped prompt. */
@@ -175,7 +176,9 @@ export const RespondParams = z
     itemId: Identifier('Invalid item id'),
     /** Compare-and-set: the revision the client had on screen. */
     expectedRevision: z.number().int().positive(),
-    optionId: Identifier('Invalid option id', MAX_RESPONSE_OPTION_ID_LENGTH)
+    optionId: Identifier('Invalid option id', MAX_RESPONSE_OPTION_ID_LENGTH),
+    comment: PromptAnswerText.optional(),
+    editedSpecContent: PromptAnswerText.optional()
   })
   .strict()
 

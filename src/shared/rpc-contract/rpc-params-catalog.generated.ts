@@ -657,6 +657,7 @@ import { CurrentRequestsParams } from './structured-agent-session/agent-session-
 import { ReadVisualParams } from './structured-agent-session/agent-session-visual-params'
 import { SkipAsyncQuestionsParams } from './structured-agent-session/skip-async-questions-params'
 import { ContinueInterruptedParams } from './structured-agent-session/structured-agent-session-continue-params'
+import { HostCommandParams } from './structured-agent-session/structured-agent-session-host-command-params'
 import { ContinuationContextParams } from './structured-agent-session/structured-agent-session-identifiers'
 import { AgentSessionMcpParams } from './structured-agent-session/structured-agent-session-mcp-params'
 import {
@@ -884,6 +885,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSession.handoffStatus': HandoffStatusParams,
   'agentSession.history': HistoryParams,
   'agentSession.hold': HoldParams,
+  'agentSession.hostCommand': HostCommandParams,
   'agentSession.item': ItemParams,
   'agentSession.mcp': AgentSessionMcpParams,
   'agentSession.modelCatalog': ModelCatalogParams,

@@ -1,3 +1,4 @@
+import { projectHostCommandCatalog } from '../conversation/structured-agent-session-host-command'
 import {
   AGENT_SESSION_COHERENT_MODEL_CATALOG_CAPABILITY,
   AGENT_SESSION_MODEL_CATALOG_PROGRESS_CAPABILITY
@@ -51,9 +52,11 @@ export const STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS = [
     permission: 'workspace',
     params: OptionsParams,
     handler: async (params, ctx) =>
-      (await requireInstalledStructuredHost(ctx, params.sessionId)).readCommands(
-        params.sessionId,
-        clientRequestsCommands(ctx)
+      projectHostCommandCatalog(
+        await (
+          await requireInstalledStructuredHost(ctx, params.sessionId)
+        ).readCommands(params.sessionId, clientRequestsCommands(ctx)),
+        ctx
       )
   }),
   defineMethod({

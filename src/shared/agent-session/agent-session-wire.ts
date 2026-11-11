@@ -32,10 +32,7 @@ import type { NativeChatSubagentEntry } from '../native-chat/native-chat-types'
 import type { AgentSessionStatusPermissionFields } from './options/permissions/agent-session-status-permission-fields'
 import type { StructuredAgentSessionProjectedStatus } from './view/structured-agent-session-projection'
 
-export type AgentSessionTurnActivity = {
-  turnId: string
-  text: string
-}
+export type AgentSessionTurnActivity = { turnId: string; text: string }
 
 /** Newest turn across the whole journal, including off-page long-running turns. null means no turn; older hosts omit it and clients derive from loaded rows. */
 export type AgentSessionLatestTurn = {
@@ -419,6 +416,8 @@ export type AgentSessionModelCatalogResult = {
 export type AgentSessionSlashCommand = {
   name: string
   kind: 'command' | 'skill'
+  /** Requires host-command.v1; never send this token as a provider message. */
+  hostCommand?: true
   /** Membership is authoritative, but this provider report did not classify the name. */
   kindUnspecified?: true
   /** Provider-authored row text; absent when the report carried names only. */

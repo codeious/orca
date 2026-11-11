@@ -185,12 +185,10 @@ export class StructuredAgentSessionHost {
 
   /** Stop hidden children too, using one bounded host snapshot. */
   sleepWorkspace = createStructuredAgentSessionWorkspaceSleeper(() => ({
-    deps: this.deps,
+    ...this.lifetimeContext(),
     tasks: this.tasks,
     lifetime: this.lifetime,
-    sessions: this.sessions,
     conversationDelivery: this.conversationDelivery,
-    runtimeState: this.runtimeState,
     clientDelivery: this.clientDelivery
   }))
 
@@ -280,6 +278,7 @@ export class StructuredAgentSessionHost {
     () => this.attachContext()
   )
   cancel = this.mutations.cancel
+  hostCommand = this.mutations.hostCommand
   respondToPrompt = this.mutations.respondToPrompt
   setOption = this.mutations.setOption
   changeThreadGoal = this.mutations.changeThreadGoal

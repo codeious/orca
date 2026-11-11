@@ -16,10 +16,7 @@ import {
   projectStructuredPermission,
   projectStructuredQuestion
 } from '../input/prompts/mobile-structured-agent-prompts'
-import type {
-  MobileStructuredAgentSessionArgs,
-  StructuredMobileSession
-} from './mobile-structured-agent-session-contract'
+import type * as Contract from './mobile-structured-agent-session-contract'
 import type { MobileNativeChatVisualSource } from '../visual/mobile-native-chat-visual-read'
 import { useMobileStructuredAgentState } from './use-mobile-structured-agent-state'
 import { useMobileStructuredStopPress } from '../composer/delivery/use-mobile-structured-stop-press'
@@ -55,8 +52,8 @@ import { useMobileStructuredAgentRewind } from './use-mobile-structured-agent-re
 import { useMobileNativeChatUsageLimit } from '../status/use-mobile-native-chat-usage-limit'
 
 export function useMobileStructuredAgentSession(
-  args: MobileStructuredAgentSessionArgs
-): StructuredMobileSession {
+  args: Contract.MobileStructuredAgentSessionArgs
+): Contract.StructuredMobileSession {
   const {
     agent,
     client,
@@ -115,6 +112,7 @@ export function useMobileStructuredAgentSession(
     stateRef,
     mutate,
     questionAnswersSupported: hostSupport?.questionAnswers ?? null,
+    approvalNotesSupported: hostSupport?.approvalNotes === true,
     onSendError
   })
 
@@ -291,7 +289,7 @@ export function useMobileStructuredAgentSession(
       requestCancel(prompt ?? pendingStructuredPromptIdentity(stateRef.current)),
     receipts,
     actionablePromptIds: state.actionablePromptIds,
-    permission: projectStructuredPermission(approvalPrompt),
+    permission: projectStructuredPermission(approvalPrompt, hostSupport?.approvalNotes === true),
     question: projectStructuredQuestion(questionPrompt),
     respondPermission,
     respondQuestion,

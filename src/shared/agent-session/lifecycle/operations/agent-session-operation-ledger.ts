@@ -29,6 +29,9 @@ export type AgentSessionOperationOutcome =
       rewind?: AgentSessionRewindResult
       /** A no-choice answer cannot be rebuilt from saved picks; narrow at replay, not row load. */
       optionResult?: unknown
+      /** Narrow at replay so older records retain their at-most-once evidence. */
+      hostCommand?: unknown
+      conversationCopy?: { providerSessionId: string }
       /** Store the whole launch answer: changed settings cannot reconstruct its mode/downgrade reason. Keep unknown and do not validate at row admission: stricter isAgentLaunchResult checks could drop old rows and permit duplicate effects. Narrow at replay read, where an unreadable payload costs only that reply. */
       launch?: unknown
     }

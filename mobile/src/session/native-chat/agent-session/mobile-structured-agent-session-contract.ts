@@ -7,7 +7,10 @@ import type {
   MobileNativeChatSendOutcome
 } from '../composer/delivery/mobile-native-chat-send'
 import type { MobileNativeChatVisualSource } from '../visual/mobile-native-chat-visual-read'
-import type { MobileChatPermission } from '../input/prompts/mobile-native-chat-permission'
+import type {
+  MobileChatPermission,
+  MobileChatPermissionResponder
+} from '../input/prompts/mobile-native-chat-permission'
 import type { MobileChatQuestion } from '../input/prompts/mobile-native-chat-question'
 import type { MobileNativeChatSession } from '../conversation/use-mobile-native-chat-session'
 import type { NativeChatLiveTurnIndicator } from '../../../../../src/shared/native-chat/transcript/turns/native-chat-turn-status'
@@ -67,7 +70,7 @@ export type StructuredMobileSession = Omit<
     actionablePromptIds: readonly string[] | undefined
     permission: MobileChatPermission | null
     question: MobileChatQuestion | null
-    respondPermission: (optionId: string) => Promise<boolean>
+    respondPermission: MobileChatPermissionResponder
     respondQuestion: (answer: string, prompt?: MobileChatQuestion['prompt']) => Promise<boolean>
     cancelPrompt: (prompt?: { itemId: string; expectedRevision: number }) => Promise<boolean>
     queued: MobileStructuredQueuedMessageControls
