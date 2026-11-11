@@ -6,7 +6,7 @@ import {
   type AcpRequestPresentation
 } from '../acp-dialects/acp-dialect'
 import type { AcpToolTimeline } from '../timeline/acp-tool-timeline'
-import { AcpRpcError } from '../transport/acp-errors'
+import { AcpRpcError, JSON_RPC_INVALID_PARAMS } from '../transport/acp-errors'
 import { ACP_FORM_ELICITATION_METHOD, acpFormElicitationPresentation } from './acp-form-elicitation'
 import { acpUrlElicitationPresentation, isAcpUrlElicitation } from './acp-url-elicitation'
 import { readAcpPermissionRequest } from '../protocol/acp-permission-requests'
@@ -19,7 +19,7 @@ export function acpPermissionPresentation(
   // Runtime parsing already reported dropped fields.
   const request = readAcpPermissionRequest(params, () => {})
   if (!request) {
-    throw new AcpRpcError(-32602, 'Invalid ACP permission request')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid ACP permission request')
   }
   const { toolCall, options } = request
   return {
@@ -43,7 +43,10 @@ export function acpPermissionPresentation(
         response.kind !== 'option' ||
         !options.some((option) => option.optionId === response.optionId)
       ) {
-        throw new AcpRpcError(-32602, 'Permission answer must select an offered option')
+        throw new AcpRpcError(
+          JSON_RPC_INVALID_PARAMS,
+          'Permission answer must select an offered option'
+        )
       }
       return { outcome: { outcome: 'selected', optionId: response.optionId } }
     }
@@ -74,7 +77,7 @@ export function translateAcpRequest(
   const session = requestSessionSchema.safeParse(params)
   const sessionless = options.dialect.sessionlessRequests?.includes(method) && !session.success
   if (!sessionless && (!session.success || session.data.sessionId !== options.sessionId)) {
-    throw new AcpRpcError(-32602, 'ACP request belongs to an unknown session')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'ACP request belongs to an unknown session')
   }
   const tool = requestToolSchema.safeParse(params)
   const callId = tool.success ? (tool.data.toolCall?.toolCallId ?? tool.data.toolCallId) : undefined

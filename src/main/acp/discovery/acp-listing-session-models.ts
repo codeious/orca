@@ -15,7 +15,7 @@ import type {
 } from '../generated/acp-protocol.generated'
 import type { AgentModelCatalogReady } from '../../native-chat/agent-model-catalog/agent-model-catalog-probe-runner'
 import type { AgentModelCatalogProgress } from '../../native-chat/agent-model-catalog/agent-model-catalog-discovery'
-import { AcpAgentError } from '../transport/acp-errors'
+import { AcpAgentError, JSON_RPC_INTERNAL_ERROR } from '../transport/acp-errors'
 
 /** Session-free capability boundary: no session methods are exposed. */
 export type AcpModelCatalogConnection = {
@@ -45,7 +45,7 @@ async function startListingSession(
       signal: operation?.signal,
       assertCurrent: () => assertStructuredAgentResolutionCurrent(operation)
     },
-    (error) => error instanceof AcpAgentError && error.code === -32603
+    (error) => error instanceof AcpAgentError && error.code === JSON_RPC_INTERNAL_ERROR
   )
 }
 

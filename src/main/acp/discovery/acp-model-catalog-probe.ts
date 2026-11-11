@@ -38,7 +38,7 @@ import {
   type AcpModelCatalogConnection,
   type AcpModelCatalogSessionConnection
 } from './acp-listing-session-models'
-import { AcpAgentError, AcpAgentExitedError } from '../transport/acp-errors'
+import { ACP_AUTH_REQUIRED, AcpAgentError, AcpAgentExitedError } from '../transport/acp-errors'
 import { AgentModelCatalogUnavailableError } from '../../native-chat/agent-model-catalog/agent-model-catalog-unavailable'
 import { usesModelSpecificAcpEfforts } from '../../../shared/agent-session/options/model-catalog/agent-model-catalog-ownership'
 
@@ -255,7 +255,7 @@ export function createAcpModelCatalogProbe(
         await resolve(home, options?.workspacePath ?? '', 'recover', options?.operation)
       ).run(options?.signal, options?.operation, options?.selectedModels, options?.publish)
     } catch (error) {
-      if (error instanceof AcpAgentError && error.code === -32000) {
+      if (error instanceof AcpAgentError && error.code === ACP_AUTH_REQUIRED) {
         throw new AgentModelCatalogUnavailableError({ reason: 'notSignedIn' })
       }
       throw error
@@ -270,7 +270,7 @@ export function createAcpModelCatalogProbe(
           try {
             return await resolved.run(...runArgs)
           } catch (error) {
-            if (error instanceof AcpAgentError && error.code === -32000) {
+            if (error instanceof AcpAgentError && error.code === ACP_AUTH_REQUIRED) {
               throw new AgentModelCatalogUnavailableError({ reason: 'notSignedIn' })
             }
             throw error

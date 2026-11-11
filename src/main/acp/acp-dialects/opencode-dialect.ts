@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { usageLimitResetsAt } from '../../../shared/agent-session/failures/agent-session-usage-limit'
-import type { AcpAgentError } from '../transport/acp-errors'
+import { JSON_RPC_INVALID_PARAMS, type AcpAgentError } from '../transport/acp-errors'
 import type { ToolCallUpdate } from '../generated/acp-protocol.generated'
 import type { AcpDialect } from './acp-dialect'
 import { OPENCODE_CHILD_SESSION_CAPABILITY, openCodeChildUpdate } from './opencode-child-sessions'
@@ -82,7 +82,7 @@ const otherFolderRefusalSchema = z.strictObject({ sessionId: z.string(), cwd: z.
 function sessionInOtherFolder(error: AcpAgentError, sessionId: string, cwd: string): boolean {
   const data = otherFolderRefusalSchema.safeParse(error.data)
   return (
-    error.code === -32602 &&
+    error.code === JSON_RPC_INVALID_PARAMS &&
     data.success &&
     data.data.sessionId === sessionId &&
     data.data.cwd === cwd

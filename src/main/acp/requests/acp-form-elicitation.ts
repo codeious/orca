@@ -6,7 +6,7 @@ import {
 import type { AgentJournalQuestion } from '../../../shared/agent-session/journal/agent-session-journal-types'
 import { MAX_JOURNAL_GROUPED_PROMPT_QUESTIONS } from '../../native-chat/agent-session-journal/item-lifecycle/journal-prompt-body-bounds'
 import { pendingAcpResolution, type AcpRequestPresentation } from '../acp-dialects/acp-dialect'
-import { AcpRpcError } from '../transport/acp-errors'
+import { AcpRpcError, JSON_RPC_INVALID_PARAMS } from '../transport/acp-errors'
 
 export const ACP_FORM_ELICITATION_METHOD = 'elicitation/create'
 const OTHER_SUFFIXES = ['__other', '_custom', '_other'] as const
@@ -41,7 +41,8 @@ const formSchema = z.object({
 type Choice = { value: string; label: string; description?: string }
 type Field = { key: string; otherKey?: string; choices?: Choice[]; question: AgentJournalQuestion }
 
-const unsupportedForm = () => new AcpRpcError(-32602, 'Unsupported ACP elicitation form')
+const unsupportedForm = () =>
+  new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Unsupported ACP elicitation form')
 
 // A form field with no choices becomes a text answer; enums and arrays become pickable options.
 function fieldChoices(
@@ -161,7 +162,10 @@ export function acpFormElicitationPresentation(params: unknown): AcpRequestPrese
           ? response.answers
           : legacyAgentSessionQuestionAnswers(body, response.optionId)
       if (!answers || !isValidAgentSessionQuestionAnswers(questions, answers)) {
-        throw new AcpRpcError(-32602, 'Question answer must answer every offered question')
+        throw new AcpRpcError(
+          JSON_RPC_INVALID_PARAMS,
+          'Question answer must answer every offered question'
+        )
       }
       const content: Record<string, string | boolean | string[]> = {}
       for (const { key, otherKey, choices, question } of fields) {

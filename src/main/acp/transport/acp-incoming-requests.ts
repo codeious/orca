@@ -1,7 +1,13 @@
 import { z } from 'zod'
-import { AcpRpcError } from './acp-errors'
+import {
+  ACP_REQUEST_CANCELLED,
+  AcpRpcError,
+  JSON_RPC_INTERNAL_ERROR,
+  JSON_RPC_METHOD_NOT_FOUND
+} from './acp-errors'
 import type { AcpJsonRpcMessage } from './acp-rpc-envelope'
-import type { AcpPeerHandlers } from './acp-json-rpc-peer'
+import type { AcpPeerHandlers } from './acp-peer-handlers'
+import type { AcpPeerDialect } from './acp-peer-dialect'
 
 const cancelRequestSchema = z.looseObject({ requestId: z.union([z.string(), z.number()]) })
 
@@ -20,7 +26,11 @@ export class AcpIncomingRequests {
     private readonly send: (message: AcpJsonRpcMessage) => Promise<void>,
     private readonly onFailure: (error: Error) => void,
     private readonly capacity: number,
-    private readonly diagnose: (message: string) => void
+    private readonly diagnose: (message: string) => void,
+    private readonly dialect: Pick<
+      AcpPeerDialect,
+      'label' | 'overCapacity' | 'startRequestsSynchronously'
+    >
   ) {}
 
   close(error: Error): void {
@@ -37,7 +47,7 @@ export class AcpIncomingRequests {
     for (const [openId, request] of this.open) {
       if ((id === undefined || id === openId) && !request.cancelled) {
         request.cancelled = true
-        request.controller.abort(new AcpRpcError(-32800, 'Request cancelled'))
+        request.controller.abort(new AcpRpcError(ACP_REQUEST_CANCELLED, 'Request cancelled'))
       }
     }
   }
@@ -52,11 +62,11 @@ export class AcpIncomingRequests {
 
   handle(id: string | number | null, method: string, params: unknown): void {
     if (this.open.has(id)) {
-      this.diagnose('Ignored duplicate ACP incoming request id')
+      this.diagnose(`Ignored duplicate ${this.dialect.label} incoming request id`)
       return
     }
     if (this.open.size >= this.capacity) {
-      this.refuse(id, new AcpRpcError(-32603, 'ACP incoming request capacity exceeded'))
+      this.refuse(id, this.dialect.overCapacity())
       return
     }
     const controller = new AbortController()
@@ -71,18 +81,25 @@ export class AcpIncomingRequests {
         this.open.delete(id)
       }
     }
+    const start = (): unknown => {
+      // A cancelled request still reaches its handler, so a permission can answer `cancelled`.
+      if (request.closed) {
+        throw controller.signal.reason
+      }
+      if (!this.handler) {
+        throw new AcpRpcError(
+          JSON_RPC_METHOD_NOT_FOUND,
+          `Unknown ${this.dialect.label} client method: ${method}`
+        )
+      }
+      return this.handler(method, params, { id, signal: controller.signal })
+    }
     void Promise.race([
       abandoned,
-      Promise.resolve().then(() => {
-        // Cancellation still reaches the handler so permissions can answer `cancelled`.
-        if (request.closed) {
-          throw controller.signal.reason
-        }
-        if (!this.handler) {
-          throw new AcpRpcError(-32601, `Unknown ACP client method: ${method}`)
-        }
-        return this.handler(method, params, { id, signal: controller.signal })
-      })
+      // A promise executor runs now, and a throw in it rejects rather than escaping the framer.
+      this.dialect.startRequestsSynchronously
+        ? new Promise<unknown>((resolve) => resolve(start()))
+        : Promise.resolve().then(start)
     ])
       .then(async (result) => {
         if (request.closed) {
@@ -100,10 +117,13 @@ export class AcpIncomingRequests {
         await this.sendError(
           id,
           request.cancelled
-            ? new AcpRpcError(-32800, 'Request cancelled')
+            ? new AcpRpcError(ACP_REQUEST_CANCELLED, 'Request cancelled')
             : error instanceof AcpRpcError
               ? error
-              : new AcpRpcError(-32603, error instanceof Error ? error.message : String(error))
+              : new AcpRpcError(
+                  JSON_RPC_INTERNAL_ERROR,
+                  error instanceof Error ? error.message : String(error)
+                )
         )
       })
       .finally(() => {
