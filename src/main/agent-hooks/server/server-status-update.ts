@@ -14,7 +14,7 @@ import {
 } from '../../../shared/agent-status/identity/agent-status-identity'
 import type { EnrichedAgentHookEventPayload, IncomingAgentHookEvent } from './server-types'
 import type { AgentStatusObservationOrigin } from '../../../shared/agent-status/contracts/agent-status-observation'
-import { ClaudeOwedNotificationExpiryTimers } from '../../../shared/agent-hook-listener/providers/claude-owed-notification-expiry-timers'
+import { HookLeaseExpiryTimers } from '../../../shared/agent-hook-listener/hook-lease-expiry-timers'
 import { setClaudeMainAgentTurnState } from '../../../shared/agent-hook-listener/providers/claude-roster-state'
 import {
   attachClaudePermissionToolUseId,
@@ -28,9 +28,7 @@ import { AgentHookServerStatusApplication } from './server-status-application'
 import { claimsPaneAfterExit } from './agent-exit-evidence'
 
 export abstract class AgentHookServerStatusUpdate extends AgentHookServerStatusApplication {
-  protected readonly claudeOwedNotificationExpiry = new ClaudeOwedNotificationExpiryTimers(
-    this.state
-  )
+  protected readonly leaseExpiry = new HookLeaseExpiryTimers(this.state)
   protected readonly relaySessions = new RelaySessionGenerations()
 
   // Every row mutation passes here, including cancellation and pane moves.
@@ -40,7 +38,7 @@ export abstract class AgentHookServerStatusUpdate extends AgentHookServerStatusA
     emit = true
   ): boolean {
     if (after) {
-      this.claudeOwedNotificationExpiry.arm(after.paneKey, (row) => {
+      this.leaseExpiry.arm(after.paneKey, (row) => {
         if (this.server) {
           this.applyRestatedStatus(row)
         }
