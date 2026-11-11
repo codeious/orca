@@ -17,6 +17,8 @@ export type AiVaultPrepareSessionResumeArgs = Pick<
   }
 
 export const AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY = 'ai-vault.chat-fork-source.v1' as const
+export const AI_VAULT_CHAT_TERMINAL_HANDOFF_CAPABILITY =
+  'ai-vault.chat-terminal-handoff.v1' as const
 
 export type AiVaultChatForkSource = Pick<
   AiVaultSession,
@@ -29,9 +31,16 @@ export type AiVaultPrepareChatForkArgs = {
   fork: true
 }
 
+export type AiVaultPrepareChatTerminalHandoffArgs = {
+  sourceChat: AiVaultPrepareChatForkArgs['sourceChat']
+  executionHostId?: string
+  handoff: true
+}
+
 export type AiVaultPrepareSessionResumeRequest =
   | AiVaultPrepareSessionResumeArgs
   | AiVaultPrepareChatForkArgs
+  | AiVaultPrepareChatTerminalHandoffArgs
 
 export type AiVaultPrepareSessionResumeResult = {
   useRealCodexHome: boolean

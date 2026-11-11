@@ -215,7 +215,7 @@ import {
   ConnectorWatch
 } from './connectors/connector-params'
 import {
-  AttachParams as AttachParamsOfEmulatorParams,
+  AttachParams,
   AxParams,
   ButtonParams,
   EmulatorAvailabilityParams,
@@ -663,12 +663,12 @@ import { AgentSessionMcpParams } from './structured-agent-session/structured-age
 import {
   AcknowledgeAttentionParams,
   AgentsParams,
-  AttachParams,
   AvailabilityParams,
   CancelParams,
   ConversationCommandParams,
   CreateParams,
   CreateSupportParams,
+  EnsureParams,
   HandoffStatusParams,
   HistoryParams,
   HoldParams,
@@ -881,7 +881,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSession.create': CreateParams,
   'agentSession.createSupport': CreateSupportParams,
   'agentSession.currentRequests': CurrentRequestsParams,
-  'agentSession.ensure': AttachParams,
+  'agentSession.ensure': EnsureParams,
   'agentSession.handoffStatus': HandoffStatusParams,
   'agentSession.history': HistoryParams,
   'agentSession.hold': HoldParams,
@@ -1080,7 +1080,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'desktopBrowserBridge.attach': DesktopBrowserBridgeAttachParams,
   'desktopBrowserBridge.result': DesktopBrowserBridgeResultParams,
   'diagnostics.memory': null,
-  'emulator.attach': AttachParamsOfEmulatorParams,
+  'emulator.attach': AttachParams,
   'emulator.availability': EmulatorAvailabilityParams,
   'emulator.ax': AxParams,
   'emulator.button': ButtonParams,

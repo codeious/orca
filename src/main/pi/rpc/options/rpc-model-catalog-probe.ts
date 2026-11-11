@@ -128,7 +128,12 @@ export function createPiModelCatalogProbe(deps: PiModelCatalogProbeDeps): AgentM
               assertStructuredAgentResolutionCurrent(operation)
               if (models?.length) {
                 publish?.(
-                  { models, origin: 'probe', ...(configured ? { configured } : {}) },
+                  {
+                    models,
+                    origin: 'probe',
+                    resolvesConfiguredDefault: true,
+                    ...(configured ? { configured } : {})
+                  },
                   stateKnown
                 )
               }
@@ -168,7 +173,12 @@ export function createPiModelCatalogProbe(deps: PiModelCatalogProbeDeps): AgentM
             if (unknownProvider && models.length === 0) {
               throw new AgentModelCatalogUnavailableError({ reason: 'notSignedIn' })
             }
-            return { models, origin: 'probe', ...(configured ? { configured } : {}) }
+            return {
+              models,
+              origin: 'probe',
+              resolvesConfiguredDefault: true,
+              ...(configured ? { configured } : {})
+            }
           },
           { label: 'pi', signal: options?.signal, timeoutMs: null }
         )
