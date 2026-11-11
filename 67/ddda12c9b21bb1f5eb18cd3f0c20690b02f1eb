@@ -1,0 +1,46 @@
+src/main/droid/droid-model-catalog-probe.ts
+  s_91d04d84653459::t_2760a957f444d4 1-152
+src/main/droid/droid-model-catalog.test.ts
+  s_91d04d84653459::t_79eb6cf4f608fc 1-226
+src/main/droid/droid-project-model-settings.ts
+  s_91d04d84653459::t_2980e67b65eabd 1-37
+src/main/droid/droid-runtime-metadata.ts
+  s_91d04d84653459::t_3bd86f6b21575c 1,25-34
+src/main/native-chat/agent-model-catalog/agent-model-catalog-configured-default-facts.ts
+  s_91d04d84653459::t_c57f16f6843705 1-28
+src/main/native-chat/agent-model-catalog/agent-model-catalog-discovery.ts
+  s_91d04d84653459::t_ad0024a57f00a8 27-28
+src/main/native-chat/agent-model-catalog/agent-model-catalog-entry.ts
+  s_91d04d84653459::t_e2724e8bb98237 1,27-28,66,139-142,254
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.test.ts
+  s_91d04d84653459::t_ae6e57d3deb640 1-51
+  s_91d04d84653459::t_11f8954bdbbfca 1-51
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.ts
+  s_91d04d84653459::t_46867cbc7d9c2d 79,146-148,162-164
+src/main/native-chat/agent-model-catalog/agent-model-catalog-refresh.ts
+  s_91d04d84653459::t_86cbf0192355e5 162
+src/main/native-chat/agent-model-catalog/agent-project-model-override.ts
+  s_91d04d84653459::t_532efa335d8d50 5,52,81
+src/main/native-chat/agent-session-wire/options/structured-agent-session-options-read.ts
+  s_91d04d84653459::t_d2376962b3384f 34,163-168
+src/main/native-chat/agent-session-wire/options/structured-agent-session-resting-options.ts
+  s_91d04d84653459::t_45d947bbfcb057 2-5,76-84,132-136,139,143-144,147-161,181
+src/shared/agent-session/options/structured-agent-session-option-codec.ts
+  s_91d04d84653459::t_a3e81f211d78bf 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "67ddda12c9b21bb1f5eb18cd3f0c20690b02f1eb",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
