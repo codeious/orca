@@ -1,0 +1,19 @@
+src/main/droid/droid-structured-launch-resolution.test.ts
+  s_91d04d84653459::t_6d1919d3b24775 1-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "80e3a8ed6d7abc12835542919af0afcdb1e0fa4e",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
