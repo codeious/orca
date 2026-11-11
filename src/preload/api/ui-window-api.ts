@@ -54,6 +54,8 @@ export type UiWindowApi = {
   setZoomLevel: (level: number) => void
   syncTrafficLights: (zoomFactor: number) => void
   setMarkdownEditorFocused: (focused: boolean) => void
+  /** The agent whose chat composer holds focus, or null once none does. */
+  setChatComposerFocused: (agent: string | null) => void
   setRichMarkdownContextMenuTarget: (target: RichMarkdownContextMenuTableTarget | null) => void
   markPlainTextContextMenuTarget: () => void
   setTerminalInputFocused: (focused: boolean) => void

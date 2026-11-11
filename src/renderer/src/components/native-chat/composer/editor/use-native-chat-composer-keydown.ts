@@ -1,3 +1,16 @@
+import type { AgentType } from '../../../../../../shared/agent-status/contracts/agent-status-types'
+import type { KeybindingInput } from '../../../../../../shared/keybindings'
+import {
+  getNativeChatComposerKeyClaims,
+  getNativeChatAgentProfile,
+  matchNativeChatComposerKey
+} from '../../../../../../shared/native-chat/native-chat-agent-profiles'
+import {
+  composerKeyAction,
+  type ComposerKey,
+  type ComposerKeyActions
+} from '../../../../../../shared/native-chat/native-chat-composer-keys'
+import { getShortcutPlatform } from '@/lib/keyboard/shortcut-platform'
 import {
   useCallback,
   useRef,
@@ -18,6 +31,9 @@ import {
 } from '../../drafts/native-chat-sent-prompt-history'
 
 export type UseNativeChatComposerKeyDownArgs = {
+  agent?: AgentType
+  /** Actions for the keys the agent's registered key map claims; unwired claimed keys fall through. */
+  providerKeys?: ComposerKeyActions | undefined
   autocomplete: ComposerAutocomplete
   mentionFiles: NativeChatMentionFiles
   completeMention: (path: string) => void
@@ -41,7 +57,19 @@ export type UseNativeChatComposerKeyDownArgs = {
   setCaret: Dispatch<SetStateAction<number>>
 }
 
+/** The provider action a keydown runs: a key `agent` claims, wired in `actions`, not spent by an outer layer. */
+export function nativeChatComposerProviderKey(
+  agent: AgentType | undefined,
+  actions: ComposerKeyActions | undefined,
+  event: KeybindingInput & { defaultPrevented: boolean },
+  platform: NodeJS.Platform
+): { key: ComposerKey; run: () => void } | null {
+  return composerKeyAction(getNativeChatAgentProfile(agent)?.composerKeys, actions, event, platform)
+}
+
 export function useNativeChatComposerKeyDown({
+  agent,
+  providerKeys,
   autocomplete,
   mentionFiles,
   completeMention,
@@ -61,6 +89,7 @@ export function useNativeChatComposerKeyDown({
   setDraft,
   setCaret
 }: UseNativeChatComposerKeyDownArgs): KeyboardEventHandler<HTMLElement> {
+  const claims = getNativeChatComposerKeyClaims(agent, getShortcutPlatform())
   // Read through a ref: the transcript changes on every streamed frame.
   const recallRef = useRef(recall)
   recallRef.current = recall
@@ -114,6 +143,12 @@ export function useNativeChatComposerKeyDown({
           event.preventDefault()
           return
         }
+        // Why: a menu on screen outranks a provider's Tab even with no row to take it.
+        // The exact chord match leaves Ctrl, Alt and Meta+Tab to the window shortcuts.
+        if (matchNativeChatComposerKey(agent, event, getShortcutPlatform()) === 'tab') {
+          event.preventDefault()
+          return
+        }
         if (event.key === 'Escape') {
           event.preventDefault()
           dismissPicker(autocomplete.triggerKey)
@@ -121,9 +156,40 @@ export function useNativeChatComposerKeyDown({
         }
       }
 
+      // The provider's keys come after IME and the open menu and before today's handling. Unwired keys fall through.
+      const providerKey = nativeChatComposerProviderKey(
+        agent,
+        providerKeys,
+        event,
+        getShortcutPlatform()
+      )
+      // Steers the waiting card and says whether it did. Platform primary modifier only (AGENTS.md):
+      // ⌘ on Mac, Ctrl elsewhere. Only from an empty composer: the chord never sends a card past
+      // what the user just wrote.
+      const trySteerQueued = (): boolean =>
+        (isMacPlatform() ? event.metaKey : event.ctrlKey) &&
+        draft.trim() === '' &&
+        !hasAttachments &&
+        steerHead?.() === true
+      if (providerKey) {
+        event.preventDefault()
+        event.stopPropagation()
+        if (event.repeat) {
+          return
+        }
+        // Off a Mac the steer chord is also a provider's Ctrl+Enter, so a waiting card still goes first.
+        if (!(providerKey.key === 'ctrlEnter' && trySteerQueued())) {
+          providerKey.run()
+        }
+        return
+      }
+
       if (event.key === 'Escape') {
         event.preventDefault()
-        interrupt()
+        // A provider that claims Escape ends turns only through Stop, even when its Escape is not wired.
+        if (!claims.includes('escape')) {
+          interrupt()
+        }
         return
       }
       const modified = event.key === 'Enter' && (isMacPlatform() ? event.metaKey : event.ctrlKey)
@@ -141,8 +207,8 @@ export function useNativeChatComposerKeyDown({
         if (!modified) {
           send()
         } else if (draft.trim() !== '' || hasAttachments) {
-          // The other thing than the setting, for this one message.
-          send({ alternate: true })
+          // The other thing than the setting; an empty composer has nothing to send either way.
+          send(claims.includes('enter') ? undefined : { alternate: true })
         } else if (chordSteersHead && !event.repeat) {
           // Nothing of its own to steer, so the head card goes; never where the chord means queue,
           // or a second press would steer the card the first one just queued.
@@ -181,12 +247,15 @@ export function useNativeChatComposerKeyDown({
     },
     [
       activeSuggestion,
+      agent,
+      claims,
       autocomplete,
       completeMention,
       completePickerItem,
       dismissPicker,
       dispatchPickerCommand,
       draft,
+      providerKeys,
       hasAttachments,
       interrupt,
       isComposing,

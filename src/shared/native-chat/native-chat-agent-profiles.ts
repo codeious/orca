@@ -1,14 +1,23 @@
 import type { AgentType } from '../agent-status/contracts/agent-status-types'
+import type { KeybindingInput } from '../keybindings'
 import type { SkillDiscoverySource } from '../skills'
 import {
   getAgentSlashCommands,
   type NativeChatCommandReply,
   type SlashCommandSuggestion
 } from './input/native-chat-slash-commands'
+import {
+  composerOwnsWindowChord,
+  getComposerWindowShortcutKeys,
+  matchComposerKey,
+  type ComposerKey,
+  type ComposerKeyMap
+} from './native-chat-composer-keys'
 
 export type NativeChatAgentProfile = {
   /** Chat and terminal take turns on one conversation, reopening its original chat on return. */
   terminalHandoff?: true
+  composerKeys?: ComposerKeyMap
   skillPrefix: '$' | '/'
   /** OpenClaude reads Claude-owned roots, so this can differ from the agent. */
   skillSourceOwner: AgentType
@@ -83,6 +92,38 @@ export function getNativeChatAgentProfile(
   agent: AgentType | null | undefined
 ): NativeChatAgentProfile | null {
   return agent ? (NATIVE_CHAT_AGENT_PROFILES[agent] ?? null) : null
+}
+
+const NO_COMPOSER_KEYS: readonly ComposerKey[] = []
+
+export function getNativeChatComposerKeyClaims(
+  agent: AgentType | null | undefined,
+  platform: NodeJS.Platform
+): readonly ComposerKey[] {
+  return getNativeChatAgentProfile(agent)?.composerKeys?.claims[platform] ?? NO_COMPOSER_KEYS
+}
+
+export function matchNativeChatComposerKey(
+  agent: AgentType | null | undefined,
+  input: KeybindingInput,
+  platform: NodeJS.Platform
+): ComposerKey | null {
+  return matchComposerKey(getNativeChatAgentProfile(agent)?.composerKeys, input, platform)
+}
+
+export function getNativeChatComposerWindowShortcutKeys(
+  agent: AgentType | null | undefined,
+  platform: NodeJS.Platform
+): readonly ComposerKey[] {
+  return getComposerWindowShortcutKeys(getNativeChatAgentProfile(agent)?.composerKeys, platform)
+}
+
+export function nativeChatComposerOwnsWindowChord(
+  agent: AgentType | null | undefined,
+  input: KeybindingInput,
+  platform: NodeJS.Platform
+): boolean {
+  return composerOwnsWindowChord(getNativeChatAgentProfile(agent)?.composerKeys, input, platform)
 }
 
 /** Shared catalog for send/collision/envelope classification; Grok remains skills-only until its command catalog is verified. */

@@ -32,6 +32,7 @@ export type NativeChatPromptEditorProps = Omit<
   'onChange' | 'onSelect'
 > & {
   scopeKey?: string
+  agent?: string
   positionTarget?: string
   /** The composer's thumbnail ids, in order, which number its image chips. */
   imageRow?: readonly string[]
