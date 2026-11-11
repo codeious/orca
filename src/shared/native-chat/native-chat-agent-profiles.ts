@@ -1,4 +1,5 @@
 import type { AgentType } from '../agent-status/contracts/agent-status-types'
+import { DROID_COMPOSER_KEY_MAP } from '../droid-composer-keys'
 import type { KeybindingInput } from '../keybindings'
 import type { SkillDiscoverySource } from '../skills'
 import {
@@ -18,6 +19,7 @@ export type NativeChatAgentProfile = {
   /** Chat and terminal take turns on one conversation, reopening its original chat on return. */
   terminalHandoff?: true
   confirmUnverifiableResume?: true
+  questionCancelOnEscape?: true
   composerKeys?: ComposerKeyMap
   conversationCommandAliases?: Readonly<Record<string, 'clear' | 'compact'>>
   sessionActions?: readonly ('rename' | 'fork')[]
@@ -51,6 +53,8 @@ const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfi
   droid: {
     terminalHandoff: true,
     confirmUnverifiableResume: true,
+    questionCancelOnEscape: true,
+    composerKeys: DROID_COMPOSER_KEY_MAP,
     skillPrefix: '/',
     skillSourceOwner: 'droid',
     conversationCommandAliases: { new: 'clear', compress: 'compact' },

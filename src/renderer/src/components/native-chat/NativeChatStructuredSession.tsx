@@ -8,6 +8,7 @@ import { useNativeChatHandOff } from '@/components/native-chat/pane/actions/use-
 import { cn } from '@/lib/class-names'
 import { NATIVE_CHAT_APPEARANCE_ROOT_CLASS } from '@/components/native-chat/appearance/native-chat-appearance-style'
 import { useNativeChatStoreAppearanceStyle } from '@/components/native-chat/appearance/use-native-chat-store-appearance-style'
+import { getNativeChatAgentProfile } from '../../../../shared/native-chat/native-chat-agent-profiles'
 import { useRef, useState } from 'react'
 import { structuredAgentSessionPaneKey } from '../../../../shared/agent-session/view/structured-agent-session-projection'
 import { useStructuredChatLiveSession } from '@/components/native-chat/session/structured/use-structured-chat-live-session'
@@ -16,9 +17,7 @@ import { NativeChatComposer } from '@/components/native-chat/composer/NativeChat
 import type { NativeChatComposerHandle } from '@/components/native-chat/composer/native-chat-composer-types'
 import type { NativeChatOptionPickerRequest } from '@/components/native-chat/session/options/controls/native-chat-option-picker-request'
 import { structuredAgentSessionDraftScopeKey } from '@/components/native-chat/drafts/native-chat-draft-scope'
-import { NativeChatEmptyState } from '@/components/native-chat/host-access/NativeChatEmptyState'
-import { NativeChatEmptyPane } from '@/components/native-chat/host-access/NativeChatEmptyPane'
-import { NativeChatLoadingCue } from '@/components/native-chat/host-access/NativeChatLoadingCue'
+import { NativeChatStructuredHistoryState } from './NativeChatStructuredHistoryState'
 import { NativeChatMessageList } from '@/components/native-chat/NativeChatMessageList'
 import { NativeChatContextClearFade } from '@/components/native-chat/conversation/projection/NativeChatContextClearFade'
 import { useStructuredNativeChatSubmitReveal } from '@/components/native-chat/pane/actions/use-structured-native-chat-submit-reveal'
@@ -277,17 +276,13 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
             find.isOpen ? <NativeChatFindBar find={find} isVisible={props.isVisible} /> : null
           }
         >
-          {viewState.kind === 'loading' || (viewState.kind === 'error' && !readFailure) ? (
-            historyPhase !== 'unread' && <NativeChatLoadingCue />
-          ) : viewState.kind === 'error' ? (
-            <NativeChatEmptyState
-              kind="error"
-              retrying={!readFailure?.final}
-              {...(readFailure?.named ? { headline: readFailure.text } : {})}
-            />
-          ) : viewState.kind === 'empty' ? (
-            <NativeChatEmptyPane slot={install.slot} agent={props.agent} />
-          ) : (
+          <NativeChatStructuredHistoryState
+            kind={viewState.kind}
+            historyPhase={historyPhase}
+            readFailure={readFailure}
+            slot={install.slot}
+            agent={props.agent}
+          >
             <NativeChatRowActionsProvider pane={props} chat={controller} forks={forks}>
               <NativeChatUsageLimitActionsProvider
                 recovery={controller}
@@ -324,7 +319,7 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
                 </NativeChatHostSetupContext.Provider>
               </NativeChatUsageLimitActionsProvider>
             </NativeChatRowActionsProvider>
-          )}
+          </NativeChatStructuredHistoryState>
         </NativeChatContextClearFade>
       </NativeChatCrewFrame>
       {readFailure?.final ? null : (
@@ -369,6 +364,7 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
             onCancel={cancelPrompt}
             shouldFocus={!promptsUnanswerable && props.isVisible && props.isFocusedGroup}
             answerInputRef={questionAnswerInputRef}
+            cancelOnEscape={getNativeChatAgentProfile(props.agent)?.questionCancelOnEscape}
           />
           {nativeChatStructuredAsyncQuestion(props, controller, session, transport, submits)}
           {composerShown && <NativeChatInstallSlot slot={install.slot} agentLabel={agentLabel} />}

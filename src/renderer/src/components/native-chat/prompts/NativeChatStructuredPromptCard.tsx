@@ -1,9 +1,9 @@
 import type { RefObject } from 'react'
 import { agentSessionPromptQuestions } from '../../../../../shared/agent-session/agent-session-question-answer'
 import type { RuntimeClientTarget } from '../../../../../shared/runtime-client-target'
-import { useStructuredChatApproval } from './use-structured-chat-approval'
 import { NativeChatApprovalCard } from './NativeChatApprovalCard'
 import { NativeChatStructuredQuestionCard } from './NativeChatStructuredQuestionCard'
+import { useStructuredChatApproval } from './use-structured-chat-approval'
 import type { useStructuredPromptResponseHold } from './use-structured-prompt-response-hold'
 
 type PromptResponse = ReturnType<typeof useStructuredPromptResponseHold>
@@ -16,7 +16,8 @@ export function NativeChatStructuredPromptCard({
   promptResponse,
   onCancel,
   shouldFocus,
-  answerInputRef
+  answerInputRef,
+  cancelOnEscape
 }: {
   prompt: PromptItem | null
   target: RuntimeClientTarget
@@ -24,6 +25,7 @@ export function NativeChatStructuredPromptCard({
   onCancel: () => void
   shouldFocus: boolean
   answerInputRef: RefObject<HTMLTextAreaElement | null>
+  cancelOnEscape?: boolean
 }): React.JSX.Element | null {
   const approval = useStructuredChatApproval(prompt?.body, target)
   if (prompt && approval) {
@@ -43,6 +45,7 @@ export function NativeChatStructuredPromptCard({
     return (
       <NativeChatStructuredQuestionCard
         questions={agentSessionPromptQuestions(prompt.body)}
+        cancelOnEscape={cancelOnEscape}
         onAnswer={(response) => void promptResponse.respond(prompt, response)}
         isSubmitting={promptResponse.holds(prompt)}
         onCancel={onCancel}

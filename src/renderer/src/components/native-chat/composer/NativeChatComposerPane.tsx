@@ -310,6 +310,10 @@ export const NativeChatComposerPane = forwardRef<ComposerHandle, C.NativeChatCom
         input: textareaRef,
         draft,
         hasAttachments: imageAttachments.length > 0,
+        sendAfterReply:
+          !disabled && !inputOwnedByCard && !editSession && structuredTransport
+            ? () => send({ afterReply: true })
+            : undefined,
         clear: { setDraft, setCaret, setActiveSuggestion, clearSkillOrigin, clearImageAttachments }
       }),
       autocomplete,

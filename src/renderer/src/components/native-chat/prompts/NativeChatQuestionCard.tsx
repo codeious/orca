@@ -37,6 +37,7 @@ export type NativeChatQuestionCardProps = {
   onCancel: () => void
   /** Fold the card to a strip and give the input back, writing nothing; Escape does too. */
   onCollapse?: () => void
+  cancelOnEscape?: boolean
   /** Take focus when the card takes the input region; number keys pick while it holds. */
   shouldFocus?: boolean
   /** Paste target while the card replaces the composer. */
@@ -63,6 +64,7 @@ export function NativeChatQuestionCard({
   freeTextInputs,
   onCancel,
   onCollapse,
+  cancelOnEscape = false,
   shouldFocus = false,
   answerInputRef
 }: NativeChatQuestionCardProps): React.JSX.Element {
@@ -227,6 +229,13 @@ export function NativeChatQuestionCard({
         onCollapse()
       }
     : undefined
+  const escape = cancelOnEscape
+    ? () => {
+        if (!isCancelling) {
+          cancel()
+        }
+      }
+    : collapse
 
   return (
     <div
@@ -242,13 +251,13 @@ export function NativeChatQuestionCard({
         if (
           event.key === 'Escape' &&
           !event.nativeEvent.isComposing &&
-          collapse &&
+          escape &&
           !isSubmitting &&
           !isEditableTarget(event.target)
         ) {
           event.preventDefault()
           event.stopPropagation()
-          collapse()
+          escape()
         }
       }}
     >

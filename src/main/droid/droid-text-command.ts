@@ -2,6 +2,7 @@ import type { AgentSessionHostCommandResult } from '../../shared/agent-session/a
 import { DROID_TEXT_COMMANDS } from './droid-command-catalog'
 import type { DroidSession } from './droid-session'
 import { runDroidServiceCommand } from './droid-service-command'
+import { droidComposerKeyHelp } from '../../shared/droid-composer-key-help'
 
 export async function runDroidTextCommand(
   session: Pick<DroidSession, 'context' | 'lane' | 'request' | 'mcpSignIn'>,
@@ -41,7 +42,8 @@ export async function runDroidTextCommand(
         '/compact, /compress: compact conversation context',
         ...DROID_TEXT_COMMANDS.filter(({ name }) => name !== 'help').map(
           ({ name, description }) => `/${name}: ${description}`
-        )
+        ),
+        ...droidComposerKeyHelp()
       ].join('\n')
       break
     default:
