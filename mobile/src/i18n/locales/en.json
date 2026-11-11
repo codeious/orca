@@ -3018,6 +3018,7 @@
       "workingAnnouncement": "Agent is working. Model settings unlock when this turn finishes.",
       "modelFullAccessLabel": "Model, {{value}}, full access",
       "modelLabel": "Model, {{value}}",
+      "modelPermissionLevelLabel": "Model, {{value}}, permissions {{level}}",
       "permissionsLabel": "Permissions, {{value}}",
       "backToModels": "Back to models",
       "agentWorking": "Agent is working",

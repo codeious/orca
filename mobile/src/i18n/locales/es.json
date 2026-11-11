@@ -415,6 +415,7 @@
       "dispatchUnconfirmed": "Enviado al agente — sin confirmar",
       "modelFullAccessLabel": "Modelo, {{value}}, acceso total",
       "modelLabel": "Modelo, {{value}}",
+      "modelPermissionLevelLabel": "Modelo, {{value}}, permisos {{level}}",
       "permissions": "Permisos",
       "permissionsLabel": "Permisos, {{value}}",
       "settingsLocked": "La configuración del modelo se desbloqueará cuando termine este turno.",

@@ -411,6 +411,7 @@
       "dispatchUnconfirmed": "Agent に送信済み — 未確認",
       "modelFullAccessLabel": "モデル、{{value}}、フルアクセス",
       "modelLabel": "モデル、{{value}}",
+      "modelPermissionLevelLabel": "モデル、{{value}}、権限 {{level}}",
       "permissions": "権限",
       "permissionsLabel": "権限、{{value}}",
       "settingsLocked": "このターンが完了すると、モデル設定を変更できます。",

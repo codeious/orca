@@ -145,15 +145,22 @@ const CATEGORY_ORDER: Record<string, number> = {
   mode: 2
 }
 
+export function composerPermissionDescriptor(
+  snapshot: readonly SessionOptionDescriptor[]
+): SessionOptionDescriptor | undefined {
+  return (
+    snapshot.find((descriptor) => descriptor.id === AGENT_CHAT_PERMISSION_MODE_OPTION_ID) ??
+    snapshot.find((descriptor) => descriptor.role === 'permission')
+  )
+}
+
 /** Shared desktop/mobile option ordering; exclude model and the separately rendered permission pill. */
 export function sortNativeChatSessionOptions(
   snapshot: readonly SessionOptionDescriptor[]
 ): SessionOptionDescriptor[] {
+  const permission = composerPermissionDescriptor(snapshot)
   return snapshot
-    .filter(
-      (descriptor) =>
-        descriptor.category !== 'model' && descriptor.id !== AGENT_CHAT_PERMISSION_MODE_OPTION_ID
-    )
+    .filter((descriptor) => descriptor.category !== 'model' && descriptor !== permission)
     .sort((left, right) => {
       const leftOrder = CATEGORY_ORDER[left.category ?? ''] ?? 3
       const rightOrder = CATEGORY_ORDER[right.category ?? ''] ?? 3

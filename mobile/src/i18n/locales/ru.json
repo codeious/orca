@@ -419,6 +419,7 @@
       "dispatchUnconfirmed": "Отправлено агенту — получение не подтверждено",
       "modelFullAccessLabel": "Модель: {{value}}, полный доступ",
       "modelLabel": "Модель: {{value}}",
+      "modelPermissionLevelLabel": "Модель: {{value}}, разрешения: {{level}}",
       "permissions": "Разрешения",
       "permissionsLabel": "Разрешения: {{value}}",
       "settingsLocked": "Настройки модели станут доступны после завершения текущего ответа.",

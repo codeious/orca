@@ -411,6 +411,7 @@
       "dispatchUnconfirmed": "Ajana gönderildi, onaylanmadı",
       "modelFullAccessLabel": "Model, {{value}}, tam erişim",
       "modelLabel": "Model, {{value}}",
+      "modelPermissionLevelLabel": "Model, {{value}}, izinler {{level}}",
       "permissions": "İzinler",
       "permissionsLabel": "İzinler, {{value}}",
       "settingsLocked": "Bu tur tamamlandığında model ayarlarının kilidi açılır.",

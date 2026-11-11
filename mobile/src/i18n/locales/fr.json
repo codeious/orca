@@ -415,6 +415,7 @@
       "dispatchUnconfirmed": "Envoyé à l'agent — non confirmé",
       "modelFullAccessLabel": "Modèle, {{value}}, accès complet",
       "modelLabel": "Modèle, {{value}}",
+      "modelPermissionLevelLabel": "Modèle, {{value}}, autorisations {{level}}",
       "permissions": "Autorisations",
       "permissionsLabel": "Autorisations, {{value}}",
       "settingsLocked": "Les paramètres du modèle seront déverrouillés à la fin de ce tour.",

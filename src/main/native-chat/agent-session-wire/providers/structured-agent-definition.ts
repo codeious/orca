@@ -4,6 +4,7 @@ import type { AgentSessionCapabilities } from '../../../../shared/agent-session/
 import type { AgentSessionStoredAgent } from '../../../../shared/agent-session/lifecycle/agent-session-stored-agent'
 import type { AgentSessionModelOption } from '../../../../shared/agent-session/agent-session-wire'
 import type { AgentSessionAccountHome } from '../../../../shared/agent-session/lifecycle/agent-session-account-home'
+import type { SessionOptionDescriptor } from '../../../../shared/native-chat/input/native-chat-session-options'
 
 export type StructuredAgentDefinition = AgentSessionStoredAgent & {
   capabilities: AgentSessionCapabilities
@@ -17,6 +18,10 @@ export type StructuredAgentDefinition = AgentSessionStoredAgent & {
     fallbackModels: () => AgentSessionModelOption[] | null
     /** Unpicked effort follows the model default, matching running-child reports. */
     effortDefaultsToModel: boolean
+    sessionOptions?: (input: {
+      saved: Readonly<Record<string, string>>
+      launchArgs: readonly string[]
+    }) => SessionOptionDescriptor[]
   }
 }
 
