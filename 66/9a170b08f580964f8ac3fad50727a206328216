@@ -1,0 +1,33 @@
+src/main/droid/droid-context-usage.ts
+  s_91d04d84653459::t_a663db67cf9192 1-99
+src/main/droid/droid-environment.ts
+  s_91d04d84653459::t_7ef298f6b553e2 1-9
+src/main/droid/droid-exec-launch.ts
+  s_91d04d84653459::t_e7b4eaa6243111 1-52
+src/main/droid/droid-message-visibility.ts
+  s_91d04d84653459::t_54bde39c253fa3 1-5
+src/main/droid/droid-messages.ts
+  s_91d04d84653459::t_27c5745971db15 1-139
+src/main/droid/droid-prompt.ts
+  s_91d04d84653459::t_2b866ba0a3de47 1-42
+src/main/droid/droid-session-notifications.ts
+  s_91d04d84653459::t_04b915201b3105 1-103
+src/main/droid/droid-turns.ts
+  s_91d04d84653459::t_5790bc5fcec6cd 1-307
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "669a170b08f580964f8ac3fad50727a206328216",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
