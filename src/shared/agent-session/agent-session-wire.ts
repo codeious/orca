@@ -1,5 +1,6 @@
 import type { AgentSessionUnavailable } from './agent-session-availability'
 import type { AgentSessionFrameFields } from './agent-session-frame-fields'
+import type { AgentSessionFastModeSupport } from './agent-session-fast-mode-support'
 import type { AgentSessionCurrentWorkFields } from './requests/agent-session-current-work-wire'
 import type {
   AgentSessionBackgroundTask,
@@ -371,6 +372,8 @@ export type AgentSessionModelOption = {
   label: string
   description?: string
   isDefault: boolean
+  /** Account-defined model; absent on hosts that do not classify catalog rows. */
+  isCustom?: boolean
   defaultEffort?: string
   /** Transient display declaration; null is observed unknown, absence supplies no evidence. */
   declaredDefaultEffort?: string | null
@@ -387,11 +390,7 @@ export type AgentSessionModelOption = {
 
 export type AgentSessionFastModeState = 'off' | 'cooldown' | 'on'
 
-export type AgentSessionFastModeSupport = {
-  supported: boolean
-  /** Provider-authored or host-normalized reason code; presentation may ignore unknown values. */
-  reason?: string
-}
+export type { AgentSessionFastModeSupport } from './agent-session-fast-mode-support'
 
 /** Read the host catalog store outside session queues. unknown keeps the static seed; older hosts lack this additive read method. */
 export type AgentSessionModelCatalogResult = {
@@ -416,6 +415,7 @@ export type AgentSessionModelCatalogResult = {
       /** The listed default is the model a new chat here launches with: the agent's listing names
        *  its configured model and no workspace config can replace it. Absent from an older host. */
       listingNamesConfiguredModel?: boolean
+      configuredSpec?: { model: string; effort?: string }
       /** The named default holds in every workspace: the agent reads no project config for its
        *  model, so an answer naming no workspace serves any new chat. Absent from an older host. */
       defaultHoldsInEveryWorkspace?: true
