@@ -3,6 +3,7 @@ import { createLocalizedCatalog } from '@/i18n/localized-catalog'
 import { translate } from '@/i18n/i18n'
 import { translateSearchKeyword } from '../search/settings-search-keywords'
 import { getNewWorktreeCardStyleSearchEntry } from './new-worktree-card-style-search-entry'
+import { getChatAgentsExperimentalSearchEntry } from './chat-agents-experimental-search-entry'
 import { getEphemeralVmsSearchEntry } from '../virtual-machines/recipes/ephemeral-vms-search'
 import { getWslHostsExperimentalSearchEntry } from '../wsl/hosts/wsl-hosts-experimental-search'
 
@@ -183,6 +184,7 @@ export const getExperimentalSearchEntry = createLocalizedCatalog(
         ]
       },
       newWorktreeCardStyle: getNewWorktreeCardStyleSearchEntry(),
+      chatAgents: getChatAgentsExperimentalSearchEntry(),
       ephemeralVms: getEphemeralVmsSearchEntry()
     }) satisfies Record<string, SettingsSearchEntry>
 )

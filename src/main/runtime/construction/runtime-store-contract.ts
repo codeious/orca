@@ -160,6 +160,7 @@ export type RuntimeStore = {
     terminalCopyTrimsGutter?: GlobalSettings['terminalCopyTrimsGutter']
     agentDefaultSurface?: GlobalSettings['agentDefaultSurface']
     nativeChatProviders?: GlobalSettings['nativeChatProviders']
+    experimentalChatAgents?: GlobalSettings['experimentalChatAgents']
     antigravityChatAuth?: GlobalSettings['antigravityChatAuth']
     defaultTaskSource?: GlobalSettings['defaultTaskSource']
     defaultTaskViewPreset?: GlobalSettings['defaultTaskViewPreset']
