@@ -192,15 +192,7 @@ export const QueuedMessageActionParams = z
 /** Resume dispatch after Stop/restart pauses; gated like queued draft actions. */
 export const QueuedMessagesResumeParams = z.object({ envelope: MutationEnvelope }).strict()
 
-export const RespondParams = z
-  .object({
-    envelope: MutationEnvelope,
-    itemId: Identifier('Invalid item id'),
-    /** Compare-and-set: the revision the client had on screen. */
-    expectedRevision: z.number().int().positive(),
-    optionId: Identifier('Invalid option id', MAX_RESPONSE_OPTION_ID_LENGTH)
-  })
-  .strict()
+export { RespondParams } from './structured-agent-session-approval-params'
 
 export const SetOptionParams = z.strictObject({
   envelope: MutationEnvelope,

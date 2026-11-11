@@ -14,6 +14,8 @@ import type { NativeChatMessage } from '../native-chat-types'
 import { parseOmpPlanReviewPrompt } from '../../omp-plan-review-prompt'
 
 export type ChatApproval = {
+  acceptsComment?: boolean
+  acceptsPlanEdit?: boolean
   title: string
   displayName?: string
   description?: string
@@ -28,10 +30,18 @@ export type ChatApproval = {
   neutralOptions?: true
 }
 
+export type ChatApprovalNotes = { comment?: string; editedSpecContent?: string }
+
 /** A journal approval prompt as its card reads it; each option sends its id. */
-export function chatApprovalFromJournal(body: AgentJournalApprovalItem): ChatApproval {
+export function chatApprovalFromJournal(
+  body: AgentJournalApprovalItem,
+  /** A host without approval notes would refuse the reply, so its card offers no note fields. */
+  takesNotes: boolean
+): ChatApproval {
   return {
     title: body.title,
+    ...(takesNotes && body.acceptsComment ? { acceptsComment: true } : {}),
+    ...(takesNotes && body.acceptsPlanEdit ? { acceptsPlanEdit: true } : {}),
     ...(body.displayName ? { displayName: body.displayName } : {}),
     ...(body.description ? { description: body.description } : {}),
     ...(body.decisionReason ? { decisionReason: body.decisionReason } : {}),

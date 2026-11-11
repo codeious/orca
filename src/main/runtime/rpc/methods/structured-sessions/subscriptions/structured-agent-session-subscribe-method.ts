@@ -12,6 +12,7 @@ import { structuredAgentSessionSubscriptionId as subscriptionIdFor } from './str
 import { SubscribeParams } from '../../../../../../shared/rpc-contract/structured-agent-session-subscribe-params'
 import * as queuedImages from '../attachments/structured-agent-session-queued-image-capability'
 import { projectReceiptDeviceEvent } from './structured-agent-session-receipt-devices'
+import { projectHostCommandCatalog } from '../conversation/structured-agent-session-host-command'
 
 export const STRUCTURED_AGENT_SESSION_SUBSCRIBE_METHOD = defineStreamingMethod({
   name: 'agentSession.subscribe',
@@ -41,10 +42,13 @@ export const STRUCTURED_AGENT_SESSION_SUBSCRIBE_METHOD = defineStreamingMethod({
       emit: (event) =>
         emit(
           projectReceiptDeviceEvent(
-            projectTurnItemEvent(
-              projectBackgroundTaskEvent(event, ctx),
-              ctx,
-              host.sessionAgent(params.sessionId)
+            projectHostCommandCatalog(
+              projectTurnItemEvent(
+                projectBackgroundTaskEvent(event, ctx),
+                ctx,
+                host.sessionAgent(params.sessionId)
+              ),
+              ctx
             ),
             ctx
           )

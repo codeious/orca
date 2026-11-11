@@ -208,6 +208,8 @@ export type AgentJournalApprovalItem = {
   blockedPath?: string
   matchedAskRule?: AgentJournalApprovalMatchedAskRule
   subject?: AgentJournalApprovalSubject
+  acceptsComment?: boolean
+  acceptsPlanEdit?: boolean
   detail: string | null
   options: AgentJournalPromptOption[]
   resolution: AgentJournalResolution
@@ -369,10 +371,7 @@ export type AgentJournalRowAttribution = AgentJournalProducerLinkage & {
   turnScope: AgentJournalTurnScope
 }
 
-export type AgentJournalPosition = {
-  sequence: number
-  index: number
-}
+export type AgentJournalPosition = { sequence: number; index: number }
 
 /** Order by sequence; provider observedAt can precede earlier sequences after crash recovery. */
 export type AgentJournalRenderItem = AgentJournalProducerLinkage & {

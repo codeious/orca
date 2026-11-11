@@ -3,6 +3,10 @@ import { STRUCTURED_AGENT_SESSION_USAGE_LIMIT_CONTINUE_METHODS } from './catalog
 import { STRUCTURED_AGENT_SESSION_CLOSE_METHOD } from './conversation/structured-agent-session-close-method'
 import { STRUCTURED_AGENT_SESSION_SUBSCRIBE_METHOD } from './subscriptions/structured-agent-session-subscribe-method'
 import {
+  projectHostCommandCatalog,
+  STRUCTURED_AGENT_SESSION_HOST_COMMAND_METHODS
+} from './conversation/structured-agent-session-host-command'
+import {
   clientReadsCurrentRequests,
   STRUCTURED_AGENT_SESSION_CURRENT_REQUESTS_METHODS
 } from './conversation/structured-agent-session-current-requests'
@@ -63,6 +67,7 @@ import * as queuedImages from './attachments/structured-agent-session-queued-ima
 import { projectReceiptDeviceHistory } from './subscriptions/structured-agent-session-receipt-devices'
 
 export const STRUCTURED_AGENT_SESSION_METHODS = [
+  ...STRUCTURED_AGENT_SESSION_HOST_COMMAND_METHODS,
   defineMethod({
     name: 'agentSession.rewind',
     permission: 'workspace',
@@ -90,15 +95,22 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
     requires: ['accounts'],
     permission: 'workspace',
     params: CreateParams,
-    handler: ORCA_LAYOUT_OWNER_IS_MAIN
-      ? refusingStructuredAgentSessionCreatesClosedFirst(handleStructuredAgentSessionCreate)
-      : handleStructuredAgentSessionCreate
+    handler: async (params, ctx) =>
+      projectHostCommandCatalog(
+        await (
+          ORCA_LAYOUT_OWNER_IS_MAIN
+            ? refusingStructuredAgentSessionCreatesClosedFirst(handleStructuredAgentSessionCreate)
+            : handleStructuredAgentSessionCreate
+        )(params, ctx),
+        ctx
+      )
   }),
   defineMethod({
     name: 'agentSession.ensure',
     permission: 'workspace',
     params: AttachParams,
-    handler: async (params, ctx) => attachClientSuppliedLocation(params, ctx)
+    handler: async (params, ctx) =>
+      projectHostCommandCatalog(await attachClientSuppliedLocation(params, ctx), ctx)
   }),
   defineMethod({
     name: 'agentSession.send',
@@ -171,21 +183,24 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
     handler: async (params, ctx) => {
       const host = await requireInstalledHost(ctx, params.sessionId)
       return projectReceiptDeviceHistory(
-        projectTurnItemHistory(
-          queuedImages.projectQueuedImageCardHistory(
-            projectBackgroundTaskHistory(
-              await host.history(
-                params,
-                undefined,
-                queuedImages.queuedImageHistoryReader(ctx),
-                clientSupportsSnapshotCatchUp(ctx) && clientReadsCurrentRequests(ctx)
+        projectHostCommandCatalog(
+          projectTurnItemHistory(
+            queuedImages.projectQueuedImageCardHistory(
+              projectBackgroundTaskHistory(
+                await host.history(
+                  params,
+                  undefined,
+                  queuedImages.queuedImageHistoryReader(ctx),
+                  clientSupportsSnapshotCatchUp(ctx) && clientReadsCurrentRequests(ctx)
+                ),
+                ctx
               ),
               ctx
             ),
-            ctx
+            ctx,
+            host.sessionAgent(params.sessionId)
           ),
-          ctx,
-          host.sessionAgent(params.sessionId)
+          ctx
         ),
         ctx
       )

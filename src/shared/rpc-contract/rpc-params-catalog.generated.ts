@@ -637,7 +637,12 @@ import {
   SshTargetUpdate
 } from './ssh-params'
 import { StatusGetParams } from './status-params'
+import { RespondParams } from './structured-agent-session-approval-params'
 import { ContinueInterruptedParams } from './structured-agent-session-continue-params'
+import {
+  CopyConversationParams,
+  HostCommandParams
+} from './structured-agent-session-host-command-params'
 import { ContinuationContextParams } from './structured-agent-session-identifiers'
 import {
   AcknowledgeAttentionParams,
@@ -656,7 +661,6 @@ import {
   OptionsParams,
   QueuedMessageActionParams,
   QueuedMessagesResumeParams,
-  RespondParams,
   RestartResumableParams,
   RestartResumeParams,
   RevealParams,
@@ -837,6 +841,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSession.continueInterrupted': ContinueInterruptedParams,
   'agentSession.conversationCommand': ConversationCommandParams,
   'agentSession.conversationOutline': OptionsParams,
+  'agentSession.copyConversation': CopyConversationParams,
   'agentSession.create': CreateParams,
   'agentSession.createSupport': CreateSupportParams,
   'agentSession.currentRequests': CurrentRequestsParams,
@@ -844,6 +849,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSession.handoffStatus': HandoffStatusParams,
   'agentSession.history': HistoryParams,
   'agentSession.hold': HoldParams,
+  'agentSession.hostCommand': HostCommandParams,
   'agentSession.item': ItemParams,
   'agentSession.modelCatalog': ModelCatalogParams,
   'agentSession.options': OptionsParams,
