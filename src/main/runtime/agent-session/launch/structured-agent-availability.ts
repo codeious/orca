@@ -6,6 +6,7 @@ import type { AgentSessionAgentAvailability } from '../../../../shared/agent-ses
 import type { AgentSessionExecutionLocation } from '../../../../shared/agent-session/lifecycle/agent-session-record'
 import { LOCAL_EXECUTION_HOST_ID } from '../../../../shared/execution-host'
 import type { GlobalSettings } from '../../../../shared/global-settings-types'
+import { isTuiAgent } from '../../../../shared/agent-launch/catalog/tui-agent-config'
 import { onManagedRuntimeReleasesChanged } from '../../../node-runtime/managed-runtime-installation'
 import { onAgentsRefreshedOnHost } from '../../../preflight/agents-refreshed-on-host'
 import {
@@ -70,7 +71,20 @@ async function observeHostAgent(
     return { agent, state: 'available' }
   }
   return seen.status === 'tooOld'
-    ? { agent, state: 'refused', reason: 'agent' }
+    ? {
+        agent,
+        state: 'refused',
+        reason: 'agent',
+        ...(isTuiAgent(agent)
+          ? {
+              agentInstallation: {
+                agent,
+                installedVersion: seen.version,
+                minimumVersion: seen.minimumVersion
+              }
+            }
+          : {})
+      }
     : { agent, state: 'unknown' }
 }
 

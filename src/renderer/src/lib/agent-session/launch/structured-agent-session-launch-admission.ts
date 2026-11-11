@@ -31,6 +31,7 @@ import { notifyHostPermissionRefused } from '@/lib/agent-session/launch/structur
 import { readAgentInventoryForTarget } from '@/lib/agent-session/launch/inventory/agent-detection-target-inventory'
 import type { WebRuntimeTerminalCreateOutcome } from '@/runtime/hosted-terminals/creation/terminal-create-contracts'
 import { structuredLaunchTerminalFromOutcome } from './structured-launch-terminal-outcome'
+import type { AgentCliInstallationProblem } from '../../../../../shared/agent-launch/catalog/agent-cli-installation-problem'
 
 export type AgentTerminalLaunchCompletion = {
   outcome: WebRuntimeTerminalCreateOutcome
@@ -174,10 +175,11 @@ export function beginHostAdmittedStructuredLaunch(args: {
   const failBeforeSurface = (
     error: unknown,
     reason?: string,
-    notify = plan.requestedSurface === 'chat'
+    notify = plan.requestedSurface === 'chat',
+    installation?: AgentCliInstallationProblem
   ): StructuredAgentLaunchSettlement => {
     if (notify && !admitted) {
-      notifyExplicitChatFailure(plan.agent, reason)
+      notifyExplicitChatFailure(plan.agent, reason, installation)
       resolveDelivery(NOT_DELIVERED_NOTIFIED)
       return { kind: 'failed', error, notified: true }
     }
@@ -236,13 +238,14 @@ export function beginHostAdmittedStructuredLaunch(args: {
           return failBeforeSurface(
             new StructuredAgentSessionCreateRefusalError('structured_agent_session_unsupported'),
             admission.reason,
-            plan.requestedSurface === 'chat' || noCli
+            plan.requestedSurface === 'chat' || noCli,
+            admission.agentInstallation
           )
         }
         const terminal = await args.onHostDeclined(args.target)
         const opened = await terminalLaunchOpened(terminal)
-        if (paired && opened) {
-          notifyHostDeclined(plan.agent)
+        if (opened && (paired || admission.agentInstallation)) {
+          notifyHostDeclined(plan.agent, true, admission.agentInstallation)
         }
         const delivery = terminal.promptDeliveryResult ?? (opened ? DELIVERED : NOT_DELIVERED)
         void Promise.resolve(delivery).then(resolveDelivery, () => resolveDelivery(NOT_DELIVERED))
