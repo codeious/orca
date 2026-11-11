@@ -1,0 +1,33 @@
+src/main/agent-hooks/server/server-status-update.ts
+  s_9915298ad8a882::t_1b8dc0c88cc505 17,31,41
+src/shared/agent-hook-listener/listener-state.ts
+  s_9915298ad8a882::t_a5c71ee0856e63 20,37,140,142,159,161,224,269,312
+src/shared/agent-hook-listener/providers/claude-owed-notification-expiry-timers.ts
+  s_9915298ad8a882::t_94de7d5b8b88a8 8,10-20,22-34
+src/shared/agent-hook-listener/pane-state-claims.ts
+  s_9915298ad8a882::t_08343fb06341d4 6
+src/wsl-guest/agent-hook-result-retry-scheduler.ts
+  s_9915298ad8a882::t_db100458204b95 22,55,66,80,83-85
+src/shared/agent-hook-listener/agent-lease-expiry-timers.ts
+  s_9915298ad8a882::t_a90a28b367240f 1-67
+src/wsl-guest/agent-hook-request.ts
+  s_9915298ad8a882::t_010b8c121c04d9 140
+src/main/agent-hooks/server/server-lifecycle.ts
+  s_9915298ad8a882::t_c007b39b221984 276
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "187be5e126fe1e17cefb9d5a69ee31753131ef5a",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
