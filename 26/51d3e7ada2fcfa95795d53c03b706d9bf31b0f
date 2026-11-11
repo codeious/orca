@@ -4,6 +4,7 @@ src/main/droid/droid-runtime-metadata.ts
   s_91d04d84653459::t_fe33e0c6c9cd9d 1-4,11-17,22-23
 src/main/droid/droid-structured-launch-resolution.test.ts
   s_91d04d84653459::t_1d6792f86e75d9 1-114
+  s_91d04d84653459::t_6d1919d3b24775 1-114
 src/main/droid/droid-structured-launch-resolution.ts
   s_91d04d84653459::t_aabc9bbb9e0065 1,7-10,16-17,30-31,76-86,88-97
 src/main/droid/droid-version-support.ts
