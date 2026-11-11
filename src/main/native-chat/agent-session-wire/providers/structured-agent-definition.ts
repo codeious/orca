@@ -10,6 +10,10 @@ export type StructuredAgentDefinition = AgentSessionStoredAgent & {
   capabilities: AgentSessionCapabilities
   /** New chats are offered only while the host has opted into experimental chat agents. */
   experimental?: true
+  rewindMessageTarget?: (
+    itemId: string,
+    providerSessionId: string
+  ) => { sessionId: string; uuid: string } | null
   /** Absent means Orca never supplies this agent’s managed runtime. */
   managedRuntime?: () => boolean
   /** Whether a chat pinned to `home` runs a program the host has rather than the managed runtime. */
