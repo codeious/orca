@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { legacyAgentSessionQuestionAnswers } from '../../../shared/agent-session/agent-session-question-answer'
-import { AcpRpcError, acpErrorDataWords, type AcpAgentError } from '../transport/acp-errors'
+import {
+  AcpRpcError,
+  acpErrorDataWords,
+  type AcpAgentError,
+  JSON_RPC_INVALID_PARAMS
+} from '../transport/acp-errors'
 import { readAcpPermissionRequest } from '../protocol/acp-permission-requests'
 import { acpPermissionPresentation } from '../requests/acp-timeline-requests'
 import type { ToolCallUpdate } from '../generated/acp-protocol.generated'
@@ -38,7 +43,10 @@ function questionRequest(method: string, params: unknown): AcpRequestPresentatio
         answer.other?.trim() ||
         !body.options.some((option) => option.id === optionId)
       ) {
-        throw new AcpRpcError(-32602, 'Question answer must choose one offered option')
+        throw new AcpRpcError(
+          JSON_RPC_INVALID_PARAMS,
+          'Question answer must choose one offered option'
+        )
       }
       return { outcome: { outcome: 'selected', optionId } }
     }

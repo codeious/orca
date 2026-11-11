@@ -5,6 +5,7 @@ export type AcpRequestOptions<T = unknown> = {
   /** 'cancel': a timeout asks the agent to drop the call and never touches the stream, so an
    *  unanswered control cannot end the connection. Default withdraws the write. */
   onTimeout?: 'withdraw' | 'cancel'
+  onId?: (id: string | number) => void
   settle: (response: AcpResponse) => T
 }
 

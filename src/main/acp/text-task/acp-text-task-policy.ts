@@ -1,4 +1,4 @@
-import { AcpRpcError } from '../transport/acp-errors'
+import { AcpRpcError, JSON_RPC_METHOD_NOT_FOUND } from '../transport/acp-errors'
 import type { AcpStructuredConnection } from '../process/acp-structured-connection'
 import { GROK_TEXT_TASK_ENV } from '../../grok/grok-text-task'
 import { waitForPromiseWithSignal } from '../../../shared/abort-signal-reason'
@@ -92,7 +92,10 @@ export function cleanupGrokTextTaskSession(
 }
 
 export function rejectAcpTextTaskWork(failed: AbortController): never {
-  const error = new AcpRpcError(-32601, 'Tools and user input are unavailable during chat naming')
+  const error = new AcpRpcError(
+    JSON_RPC_METHOD_NOT_FOUND,
+    'Tools and user input are unavailable during chat naming'
+  )
   failed.abort(error)
   throw error
 }
