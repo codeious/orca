@@ -76,6 +76,13 @@ void String.raw`
   setInterval(() => {}, 60000)
 `
 
+// Closes its stdout shortly after a first line and keeps running, ignoring its stdin end.
+const ENDS_STDOUT_AND_STAYS_ALIVE_PROVIDER = String.raw`
+  process.stdout.write(JSON.stringify({ provider: process.pid }) + '\n')
+  setTimeout(() => process.stdout.end(), 100)
+  setInterval(() => {}, 60000)
+`
+
 // Answers a one-shot request only after the session stdin-end grace, then exits with its own code.
 const ONE_SHOT_PROVIDER = String.raw`
   process.on('SIGTERM', () => {
@@ -381,6 +388,21 @@ describe.runIf(process.platform !== 'win32')('POSIX provider supervisor processe
     expect(await waitFor(() => !alive(pids.supervisor), 3_000)).toBe(true)
     expect(existsSync(flushFile)).toBe(true)
     expect(existsSync(signalFile)).toBe(false)
+  })
+
+  it("relays a provider's stdout end while the provider keeps running", async () => {
+    const { supervisor } = launchSupervisor(
+      { forwardOutputEnd: true },
+      {},
+      { command: process.execPath, args: ['-e', ENDS_STDOUT_AND_STAYS_ALIVE_PROVIDER] }
+    )
+    let ended = false
+    supervisor.stdout!.once('end', () => (ended = true))
+    const { provider } = await readPids(supervisor, ['provider'])
+
+    expect(await waitFor(() => ended, 2_000)).toBe(true)
+    expect(alive(provider)).toBe(true)
+    expect(alive(supervisor.pid!)).toBe(true)
   })
 
   describe('one-shot lifetime', () => {
