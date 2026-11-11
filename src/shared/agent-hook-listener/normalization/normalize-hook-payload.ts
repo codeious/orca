@@ -7,7 +7,7 @@ import {
   normalizedHookHasExplicitPrompt,
   type HookNormalizationOptions
 } from '../hook-normalization-policy'
-import { prepareProviderHookSession } from '../provider-hook-session'
+import { prepareProviderHookSession, providerHookDefersExit } from '../provider-hook-session'
 import {
   canAcceptClaudeCompactCompletion,
   isClaudeCompactCompletionConsumed,
@@ -183,7 +183,11 @@ export function normalizeHookPayload(
   const agentPresence = agentProcess
     ? { agent: source, process: agentProcess, sessionOwner: true as const }
     : undefined
-  if (agentPresence && isProcessExitSessionEnd(eventName, hookPayloadRecord)) {
+  if (
+    !providerHookDefersExit(source) &&
+    agentPresence &&
+    isProcessExitSessionEnd(eventName, hookPayloadRecord)
+  ) {
     const payload =
       previousStatus?.payload ??
       normalizeAgentStatusPayload({ state: 'done', prompt: '', agentType: source })

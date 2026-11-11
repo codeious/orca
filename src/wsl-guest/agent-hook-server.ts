@@ -18,10 +18,7 @@ import type { createServer } from 'node:http'
 import { randomUUID } from 'node:crypto'
 import { join } from 'node:path'
 
-import {
-  ORCA_HOOK_PROTOCOL_VERSION,
-  ORCA_HOOK_RAW_JSON_TRANSPORT
-} from '../shared/agent-hook-listener/configuration/agent-hook-types'
+import * as hookProtocol from '../shared/agent-hook-listener/configuration/agent-hook-types'
 import {
   clearAllListenerCaches,
   clearPaneCacheState,
@@ -127,7 +124,9 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
     this.portFallbackApplied = false
     await drainRelayHookSpool(this.endpointDir, this.state, this.env, (record) => ({
       providerNormalization: this.providerNormalization,
-      checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey),
+      checkAgentPresence: async (paneKey) => {
+        await this.checkAgentPresence(paneKey)
+      },
       readHookRootEvidence: this.readHookRootEvidence,
       isCurrent,
       apply: (...args) => this.applyEvent(...args),
@@ -149,7 +148,9 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
           env: this.env,
           state: this.state,
           providerNormalization: this.providerNormalization,
-          checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey),
+          checkAgentPresence: async (paneKey) => {
+            await this.checkAgentPresence(paneKey)
+          },
           readHookRootEvidence: this.readHookRootEvidence,
           isPaneSurfaceRetired: this.isPaneSurfaceRetired,
           getAgentLaunchToken: this.getAgentLaunchToken,
@@ -187,9 +188,9 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
       port: this.port,
       token: this.token,
       env: this.env,
-      version: ORCA_HOOK_PROTOCOL_VERSION,
+      version: hookProtocol.ORCA_HOOK_PROTOCOL_VERSION,
       openCodeTui: true,
-      transport: ORCA_HOOK_RAW_JSON_TRANSPORT
+      transport: hookProtocol.ORCA_HOOK_RAW_JSON_TRANSPORT
     })
     return this.endpointFileWritten
   }
@@ -203,6 +204,7 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
     this.endpointFileWritten = false
     this.stopCanonicalHooks()
     this.retryScheduler.clearAll()
+    this.presenceChecks.stop()
     clearAllListenerCaches(this.state)
     this.providerNormalization.clear()
     this.claudeTerminalInterrupts.clear()
@@ -244,7 +246,7 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
     }
   }
 
-  checkAgentPresence(paneKey: string): Promise<void> {
+  checkAgentPresence(paneKey: string) {
     const row = this.state.lastStatusByPaneKey.get(paneKey)
     const meta = this.lastEnvelopeMetaByPaneKey.get(paneKey)
     return this.presenceChecks.check(
@@ -303,7 +305,11 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
         clearAssistantMessageRetry: (paneKey) =>
           this.retryScheduler.clearAssistantMessageRetry(paneKey),
         forward: this.forward,
-        checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey)
+        checkAgentPresence: async (paneKey) => {
+          await this.checkAgentPresence(paneKey)
+        },
+        watchAgentExit: (event) =>
+          this.presenceChecks.watchExit(event, () => this.checkAgentPresence(event.paneKey))
       },
       incoming,
       source,

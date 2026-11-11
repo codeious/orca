@@ -1,4 +1,8 @@
 import type { AgentProcessIdentity } from '../agent-status/process/agent-process-presence'
+import type {
+  AgentExitWatchHost,
+  AgentProcessExitWatch
+} from '../agent-status/process/agent-process-exit-watch'
 import type { ParsedAgentStatusPayload } from '../agent-status/contracts/agent-status-types'
 import type { AgentHookEventPayload } from './listener-event'
 import type { HookListenerState } from './listener-state'
@@ -30,6 +34,7 @@ export type ProviderHookSessionResult =
 
 export type ProviderHookSession = {
   retainPaneRoot?: true
+  exitMarker?(state: HookListenerState, paneKey: string): object | undefined
   admit(input: ProviderHookSessionInput): ProviderHookSessionResult
   readPaneSession?(
     input: Pick<ProviderHookSessionInput, 'state' | 'paneKey' | 'hookPayload'> & {
@@ -44,6 +49,32 @@ const PROVIDERS: Readonly<Record<string, ProviderHookSession>> = {
 
 export function providerHookRetainsPaneRoot(source: string): boolean {
   return PROVIDERS[source]?.retainPaneRoot === true
+}
+
+export function providerHookDefersExit(source: string): boolean {
+  return PROVIDERS[source]?.exitMarker !== undefined
+}
+
+export function watchProviderHookExit(
+  state: HookListenerState,
+  watch: AgentProcessExitWatch,
+  event: AgentHookEventPayload,
+  probe: AgentExitWatchHost['probe']
+): void {
+  if (event.hookEventName !== 'SessionEnd' || event.isReplay) {
+    return
+  }
+  const readMarker = event.source && PROVIDERS[event.source]?.exitMarker
+  if (!readMarker) {
+    return
+  }
+  const marker = readMarker(state, event.paneKey)
+  if (marker) {
+    watch.start(event.paneKey, {
+      isCurrent: () => readMarker(state, event.paneKey) === marker,
+      probe
+    })
+  }
 }
 
 export function prepareProviderHookSession(source: string, input: ProviderHookSessionInput) {

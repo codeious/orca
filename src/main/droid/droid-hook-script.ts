@@ -8,6 +8,10 @@ import {
   buildWindowsHookEnvironmentGuardLines
 } from '../agent-hooks/installation/scripts/hook-stdin-contract'
 import { posixCurlCommand } from '../agent-hooks/installation/scripts/hook-post-command'
+import {
+  buildHookProcessCapture,
+  HOOK_PARENT_CAPTURE
+} from '../agent-hooks/installation/scripts/hook-process-capture'
 
 export function getDroidManagedScriptFileName(): string {
   return process.platform === 'win32' ? 'droid-hook.cmd' : 'droid-hook.sh'
@@ -24,7 +28,7 @@ export function getDroidManagedCommand(
   // Factory runs hooks through cmd.exe, where unquoted profile spaces split the path.
   return target === 'local' && process.platform === 'win32'
     ? wrapWindowsBatchHookCommand(scriptPath)
-    : wrapPosixHookCommand(scriptPath)
+    : wrapPosixHookCommand(scriptPath, {}, { parentCapture: HOOK_PARENT_CAPTURE })
 }
 
 export function getDroidManagedScript(target: 'local' | 'posix' = 'local'): string {
@@ -44,6 +48,7 @@ export function getDroidManagedScript(target: 'local' | 'posix' = 'local'): stri
     '#!/bin/sh',
     ...buildPosixHookPayloadCapture(),
     ...buildPosixHookSpoolLines('droid'),
+    ...buildHookProcessCapture(),
     'if [ -n "$ORCA_AGENT_HOOK_ENDPOINT" ] && [ -r "$ORCA_AGENT_HOOK_ENDPOINT" ]; then',
     '  . "$ORCA_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
     'fi',
@@ -62,6 +67,7 @@ export function getDroidManagedScript(target: 'local' | 'posix' = 'local'): stri
     '  --data-urlencode "worktreeId=${ORCA_WORKTREE_ID}" \\',
     '  --data-urlencode "env=${ORCA_AGENT_HOOK_ENV}" \\',
     '  --data-urlencode "version=${ORCA_AGENT_HOOK_VERSION}" \\',
+    '  --data-urlencode "agentProcess=${orca_agent_process:-}" \\',
     '  --data-urlencode "payload@-" >/dev/null 2>&1 || spool_hook_event',
     'exit 0',
     ''
