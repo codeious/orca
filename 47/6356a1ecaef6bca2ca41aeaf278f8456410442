@@ -1,0 +1,61 @@
+src/main/native-chat/agent-session-wire/providers/structured-agent-definition.ts
+  s_91d04d84653459::t_ef6b94456aedef 11-12
+src/main/runtime/agent-session/launch/structured-agent-host-offer.ts
+  s_91d04d84653459::t_bd0a2d1c1a7748 1-21
+  s_91d04d84653459::t_28e719ae3dda9f 1-21
+src/main/runtime/agent-session/launch/structured-agent-launch-support.ts
+  s_91d04d84653459::t_96b655e391b628 28-31,182,185-187
+  s_91d04d84653459::t_6fb9ac168c55fe 28-31,182,185-187
+src/main/runtime/client/settings/runtime-client-settings-shape.ts
+  s_91d04d84653459::t_60c67990b867a0 64
+  s_91d04d84653459::t_6e875bc2c07b7a 64
+src/main/runtime/construction/runtime-store-contract.ts
+  s_91d04d84653459::t_0fb72dd38fa5bd 161
+  s_91d04d84653459::t_93d8b99c4015e6 161
+src/main/runtime/rpc/methods/structured-sessions/catalog/structured-agent-session-agents.ts
+  s_91d04d84653459::t_68b353ad0d0d4a 23,36-39,63-68
+  s_91d04d84653459::t_d0b6b0854b9b72 23,36-39,63-68
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-create-handler.ts
+  s_91d04d84653459::t_35322725a8a94d 17,73-78
+  s_91d04d84653459::t_61f0d57a2fbd57 17,73-78
+src/renderer/src/components/settings/advanced/ChatAgentsExperimentalSetting.tsx
+  s_91d04d84653459::t_ccbc6b2fbc0b93 1-60
+src/renderer/src/components/settings/advanced/ExperimentalPane.tsx
+  s_91d04d84653459::t_f1202cef7555e1 15,27,254-255
+  s_91d04d84653459::t_fe567b557cd5b5 15,27,254-255
+src/renderer/src/components/settings/advanced/chat-agents-experimental-search-entry.ts
+  s_91d04d84653459::t_86eb90d174d5f8 1-30
+src/renderer/src/components/settings/advanced/experimental-search.ts
+  s_91d04d84653459::t_e254d4a07fe1b8 6,187
+  s_91d04d84653459::t_f93d4bb45d2577 6,187
+src/renderer/src/i18n/locales/en.json
+  s_91d04d84653459::t_26f89e175e0617 8647-8650,10852-10857
+src/renderer/src/runtime/native-chat/agent-catalogs/host-structured-agents.ts
+  s_91d04d84653459::t_687b043d88d42b 154-160
+  s_91d04d84653459::t_ddae193e794144 154-160
+src/shared/default-global-settings.ts
+  s_91d04d84653459::t_d28d6e5fcbe6af 294
+  s_91d04d84653459::t_e25dbfcbd3c6f2 294
+src/shared/global-settings-types.ts
+  s_91d04d84653459::t_99dfcffc3483ae 452-453
+  s_91d04d84653459::t_5c5d2afe4b8c2a 452-453
+src/shared/rpc-contract/client-settings-params.ts
+  s_91d04d84653459::t_1c63cc493ad521 127-128
+  s_91d04d84653459::t_c8798c5a582b82 127-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "476356a1ecaef6bca2ca41aeaf278f8456410442",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

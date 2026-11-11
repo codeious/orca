@@ -1,0 +1,111 @@
+mobile/src/i18n/locales/de.json
+  s_91d04d84653459::t_40b36a8a8fe6ac 411-419
+mobile/src/i18n/locales/en.json
+  s_91d04d84653459::t_68522a54229268 3095-3103
+mobile/src/i18n/locales/es.json
+  s_91d04d84653459::t_5a0dcb4f2eab11 415-423
+mobile/src/i18n/locales/fr.json
+  s_91d04d84653459::t_705fafc888097a 415-423
+mobile/src/i18n/locales/ja.json
+  s_91d04d84653459::t_59f20bf7bf336a 411-419
+mobile/src/i18n/locales/ko.json
+  s_91d04d84653459::t_f7cb36ef1282e9 411-419
+mobile/src/i18n/locales/pt.json
+  s_91d04d84653459::t_5fca08031f3aab 434-442
+mobile/src/i18n/locales/ru.json
+  s_91d04d84653459::t_a2a301e5edbd1b 419-427
+mobile/src/i18n/locales/tr.json
+  s_91d04d84653459::t_18d85c4c64fd69 411-419
+mobile/src/i18n/locales/zh-Hant.json
+  s_91d04d84653459::t_6dab8558f28c6a 411-419
+mobile/src/i18n/locales/zh.json
+  s_91d04d84653459::t_c4922778b7239e 411-419
+mobile/src/session/native-chat/input/mobile-droid-permission-choice-copy.ts
+  s_91d04d84653459::t_ab101fd08e3f0f 1-50
+mobile/src/session/native-chat/input/mobile-native-chat-session-option-labels.ts
+  s_91d04d84653459::t_9c2dc2dd4397e0 8,15-17
+mobile/src/transport/connection/mobile-runtime-client-capabilities.ts
+  s_91d04d84653459::t_1064173c948e1d 30,33
+src/main/native-chat/agent-session-wire/observations/structured-agent-session-status-summary-equality.ts
+  s_91d04d84653459::t_82379a7b4ed49c 37
+src/main/native-chat/agent-session-wire/observations/structured-agent-session-status-summary.ts
+  s_91d04d84653459::t_abd8b75ad21069 71,101
+src/main/native-chat/agent-session-wire/operations/structured-agent-session-option-mutation.ts
+  s_91d04d84653459::t_39d44323d210d8 1-88
+src/renderer/src/components/native-chat/composer/submit/structured-composer-session-action.ts
+  s_91d04d84653459::t_6209f5a924bd29 1-68
+src/renderer/src/components/native-chat/composer/submit/use-native-chat-structured-composer-transport.ts
+  s_91d04d84653459::t_c05742991ea54c 19,167-177,229
+src/renderer/src/components/native-chat/session/options/controls/native-chat-droid-permission-labels.ts
+  s_91d04d84653459::t_56fd9d30e26a38 1-51
+src/renderer/src/components/native-chat/session/options/controls/native-chat-permission-mode-labels.ts
+  s_91d04d84653459::t_0f949bf617775f 10,36-38
+src/renderer/src/components/native-chat/session/structured/writes/structured-session-provider-command-write.ts
+  s_91d04d84653459::t_ab31b7105f2e6e 4,21-24
+src/renderer/src/i18n/locales/de.json
+  s_91d04d84653459::t_670268fcd73a6d 19638-19651
+src/renderer/src/i18n/locales/en.json
+  s_91d04d84653459::t_aa983d6372c79f 20694-20707
+src/renderer/src/i18n/locales/es.json
+  s_91d04d84653459::t_fff9884b005f74 19312-19325
+src/renderer/src/i18n/locales/fr.json
+  s_91d04d84653459::t_dba9110effa455 19584-19597
+src/renderer/src/i18n/locales/ja.json
+  s_91d04d84653459::t_652503b3136fa6 18897-18910
+src/renderer/src/i18n/locales/ko.json
+  s_91d04d84653459::t_a97ec9e959cf67 18894-18907
+src/renderer/src/i18n/locales/pt.json
+  s_91d04d84653459::t_344b9aba12b28b 20835-20848
+src/renderer/src/i18n/locales/ru.json
+  s_91d04d84653459::t_431d9e9ae206a2 20205-20218
+src/renderer/src/i18n/locales/tr.json
+  s_91d04d84653459::t_0f26f09b4c1a5b 19616-19629
+src/renderer/src/i18n/locales/zh-Hant.json
+  s_91d04d84653459::t_449fe1eff94f9c 19377-19390
+src/renderer/src/i18n/locales/zh.json
+  s_91d04d84653459::t_7b72174abd374b 19153-19166
+src/renderer/src/lib/open-structured-chat-fork.ts
+  s_91d04d84653459::t_f6f061f44ac09f 1-47
+src/shared/agent-session/agent-session-wire.ts
+  s_91d04d84653459::t_1580b49d56c369 226,356
+src/shared/agent-session/options/agent-session-option-result.ts
+  s_91d04d84653459::t_a7f529de13e1b8 1-6
+src/shared/agent-session/options/structured-agent-session-droid-spec-option.test.ts
+  s_91d04d84653459::t_a466714186971b 1-29
+src/shared/agent-session/options/structured-agent-session-option-snapshot.ts
+  s_91d04d84653459::t_e09d4dc106e792 6,32,78-87,153-156,264,266,320-321
+src/shared/agent-session/options/structured-agent-session-option-state.ts
+  s_91d04d84653459::t_be287b49cf0208 17-18,90,101-102
+src/shared/agent-session/options/structured-agent-session-options.ts
+  s_91d04d84653459::t_22b91c1f55a202 28,76,146-148,202-203,208
+src/shared/agent-session/options/structured-agent-session-plan-mode-display.ts
+  s_91d04d84653459::t_af6626c8bde106 1-64
+src/shared/agent-session/options/structured-agent-session-spec-option.ts
+  s_91d04d84653459::t_0554bba902e10e 1-26
+src/shared/agent-session/view/structured-agent-session-command-catalog.ts
+  s_91d04d84653459::t_29adcea89946df 1-90
+src/shared/agent-session/view/structured-agent-session-composer-contract.ts
+  s_91d04d84653459::t_ea7302e6fddd5b 33-36
+src/shared/agent-session/view/structured-agent-session-composer.ts
+  s_91d04d84653459::t_2241c2ccd45971 2,5,9-18,60,64-66,87-89,91,127-132,178-187
+src/shared/agent-session/view/structured-droid-provider-commands.test.ts
+  s_91d04d84653459::t_f20c0dc8943fe2 1-26
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_91d04d84653459::t_56b8b801101f90 21-22,50-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "aa44f772f23ce078a82d29d809a4884e0cc5da87",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
