@@ -1,0 +1,19 @@
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.test.ts
+  s_91d04d84653459::t_11f8954bdbbfca 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3a0e36e5bdbf90131ea0d89ae12c87829e6a8901",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
