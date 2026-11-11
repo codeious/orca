@@ -1,4 +1,6 @@
 import type { StructuredSessionSurface } from '../../../../agent-session/structured-agent-session-close'
+import { getNativeChatAgentProfile } from '../../../../../../shared/native-chat/native-chat-agent-profiles'
+import { structuredChatResumeReopen } from './structured-agent-session-reopen'
 import { AGENT_CHAT_PERMISSION_MODE_OPTION_ID } from '../../../../../../shared/agent-launch/permissions/agent-chat-permission-mode-option-id'
 import type { z } from 'zod'
 import { agentSessionRefusalError } from '../../../../../../shared/agent-session/failures/agent-session-wire-refusals'
@@ -161,12 +163,19 @@ export async function handleStructuredAgentSessionCreateSupport(
     params.agent
   )
   if (support.supported && params.resumeFrom) {
+    if (getNativeChatAgentProfile(params.agent)?.terminalHandoff) {
+      await ensureHostInstalled(ctx)
+    }
     // Create refuses the same writer; asked here, the client refuses before it closes or opens anything.
     await ctx.runtime.assertStructuredAdoptionTerminalWritersExited(
       params.agent,
       params.resumeFrom.providerSessionId,
       params.resumeFrom.closingPaneKeys
     )
+    const reopen = structuredChatResumeReopen(params.agent, params.resumeFrom.providerSessionId)
+    if (reopen) {
+      return { ...support, reopen }
+    }
   }
   // Optional: older clients ignore it, and a client seeds its picker with what create will use.
   const seedOptions = support.supported

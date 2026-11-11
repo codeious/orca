@@ -1,3 +1,4 @@
+import { getNativeChatAgentProfile } from '../../../../../../shared/native-chat/native-chat-agent-profiles'
 import { useMemo } from 'react'
 import { SquareTerminal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -101,7 +102,13 @@ export function NativeChatResumeInCliButton({
               nativeChat
             })
             if (subject?.kind === 'chat') {
-              void runNativeChatCliFork({ subject, tab, agent, commandOverrides })
+              void runNativeChatCliFork({
+                subject,
+                tab,
+                agent,
+                commandOverrides,
+                mode: getNativeChatAgentProfile(agent)?.terminalHandoff ? 'handoff' : 'fork'
+              })
             }
           }}
         >

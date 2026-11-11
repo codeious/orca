@@ -3,7 +3,8 @@ import {
   agentModelCatalogEntry,
   agentModelCatalogEntryWithSuccess,
   entryWithConfiguredDefault,
-  type AgentModelCatalogListing
+  type AgentModelCatalogListing,
+  type AgentModelCatalogSuccess
 } from './agent-model-catalog-entry'
 
 const menu = (...levels: string[]) => levels.map((value) => ({ value, label: value }))
@@ -177,4 +178,24 @@ it('marks the versioned row a configured Claude alias runs, and gives its alias 
     { id: 'claude-opus-5-5', isDefault: true, defaultEffort: 'high' },
     { id: 'opus', isDefault: false, defaultEffort: 'high' }
   ])
+})
+
+it('learns the account default from any agent whose discovery resolves it', () => {
+  const success: AgentModelCatalogSuccess = {
+    models: [
+      { id: 'small', label: 'Small', isDefault: false, efforts: [] },
+      { id: 'large', label: 'Large', isDefault: false, efforts: [] }
+    ],
+    origin: 'probe',
+    configured: { model: 'large', effort: 'high' },
+    resolvesConfiguredDefault: true
+  }
+  const entry = agentModelCatalogEntryWithSuccess(
+    undefined,
+    { agent: 'example-agent', fingerprint: 'fp' },
+    success,
+    'discovery',
+    1
+  )
+  expect(entry?.configured).toEqual({ modelId: 'large', effort: 'high', at: 1 })
 })

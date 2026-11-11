@@ -4,6 +4,7 @@ import type {
 } from '../../../../shared/agent-session/lifecycle/agent-session-conversation-view'
 import type { StructuredAgentId } from '../../../../shared/agent-session/lifecycle/agent-session-provider-handle'
 import { agentSessionOwnerObservationVerdict } from '../../../../shared/agent-session/lifecycle/agent-session-lease-adjudication'
+import { getNativeChatAgentProfile } from '../../../../shared/native-chat/native-chat-agent-profiles'
 import { structuredAgentRuntimeMetadata } from '../../../runtime/agent-session/installation/structured-agent-runtime-metadata'
 import {
   keysMayMatch,
@@ -61,15 +62,10 @@ export function agentSessionLeasePossiblyWriting(lease: AgentSessionOwnerObserva
   return agentSessionOwnerObservationVerdict(lease) !== 'exited'
 }
 
-/** Agents whose chats let a terminal resume the same conversation once the chat stopped writing. */
-export function sameIdTerminalResumeEnabled(_provider: StructuredAgentId): boolean {
-  return false
-}
-
 /** Whether a terminal resume of this link's conversation is refused. */
 export function terminalResumeBlocked(holding: StructuredProviderSessionOwnership): boolean {
   return (
-    !sameIdTerminalResumeEnabled(holding.provider) ||
+    !getNativeChatAgentProfile(holding.provider)?.terminalHandoff ||
     (holding.role === 'head' && agentSessionLeasePossiblyWriting(holding.ownerObservation))
   )
 }
