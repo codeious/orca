@@ -1,0 +1,77 @@
+mobile/src/i18n/locales/de.json
+  s_bb5217dd1cbb24::t_74d63b4d6f7345 426
+mobile/src/i18n/locales/en.json
+  s_bb5217dd1cbb24::t_fa23fd4a339194 3036
+mobile/src/i18n/locales/es.json
+  s_bb5217dd1cbb24::t_4c105be63b0a59 430
+mobile/src/i18n/locales/fr.json
+  s_bb5217dd1cbb24::t_04e4c6b733055d 430
+mobile/src/i18n/locales/ja.json
+  s_bb5217dd1cbb24::t_54732a2fe34090 426
+mobile/src/i18n/locales/ko.json
+  s_bb5217dd1cbb24::t_bb03919d428e27 426
+mobile/src/i18n/locales/pt.json
+  s_bb5217dd1cbb24::t_aceb156e47f2cc 451
+mobile/src/i18n/locales/ru.json
+  s_bb5217dd1cbb24::t_8e29cf927b283a 434
+mobile/src/i18n/locales/tr.json
+  s_bb5217dd1cbb24::t_cda25c4d74ba22 426
+mobile/src/i18n/locales/zh-Hant.json
+  s_bb5217dd1cbb24::t_9afc7152fbc888 426
+mobile/src/i18n/locales/zh.json
+  s_bb5217dd1cbb24::t_cf36cc314029d9 426
+mobile/src/session/native-chat/input/MobileNativeChatSessionOptionPickers.tsx
+  s_bb5217dd1cbb24::t_4d9740b1cc553c 140,143,193,195,299,367,391-392
+mobile/src/session/native-chat/input/mobile-droid-permission-choice-copy.ts
+  s_9e473945bea849::t_e70f002e1c973e 1-50
+mobile/src/session/native-chat/input/mobile-native-chat-permission-icons.tsx
+  s_bb5217dd1cbb24::t_b926c9f62e992b 2-4,7-8,20-43,47
+mobile/src/session/native-chat/input/mobile-native-chat-session-option-labels.ts
+  s_9e473945bea849::t_d31bf3877a7c0f 8-26,55-58
+src/renderer/src/components/native-chat/session/options/controls/native-chat-droid-permission-labels.ts
+  s_bb5217dd1cbb24::t_8d859ba24ce5c2 2-6,8-12,14-20,22-28,30-36,38-44,48-50
+src/renderer/src/components/native-chat/session/options/controls/native-chat-permission-mode-labels.ts
+  s_bb5217dd1cbb24::t_6947e8619a59a6 10,12-15,23-28,31-48
+src/renderer/src/lib/agent-session/options/structured-agent-session-selection-controller.ts
+  s_bb5217dd1cbb24::t_1276854579f547 14,79-92
+src/shared/agent-session/options/structured-agent-session-option-snapshot.ts
+  s_bb5217dd1cbb24::t_001aba03ce3e0b 6,156
+src/shared/agent-session/options/structured-agent-session-options.ts
+  s_9e473945bea849::t_e1236d9d8b722f 28,146
+src/shared/agent-session/options/structured-agent-session-plan-mode-display.ts
+  s_bb5217dd1cbb24::t_7d19b1c14185e0 1-4,8-9,15,17,31-32,41-44,49-50,55
+src/shared/rpc-contract/client-settings-params.ts
+  s_51d34b8191f915::t_7cff545a606c83 14,29-35,40-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "132e2e14dc69304476d9647cc333fc18e077f4f6",
+  "prompts": {},
+  "sessions": {
+    "s_51d34b8191f915": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "bbe947ef-36bd-4d2e-bb24-f36d2c545aa7",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_9e473945bea849": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e13e969a-8b8f-472a-b31b-87d5d0067270",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_bb5217dd1cbb24": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f533207f-8bb7-46e9-8d6c-f0aa3f9e7dc1",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
