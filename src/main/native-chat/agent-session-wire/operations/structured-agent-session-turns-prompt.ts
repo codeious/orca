@@ -29,6 +29,7 @@ import { contextStructuredAgentSessionCurrentWork } from '../observations/struct
 import type { AgentSessionTurnContext, TurnOutcome } from './structured-agent-session-turns'
 
 export type AgentSessionPromptRequest = {
+  operationId?: string
   itemId: string
   expectedRevision: number
   kind: 'approval' | 'question'
@@ -149,6 +150,7 @@ export async function performPrompt(
   const committed: { item?: Awaited<ReturnType<typeof ctx.journal.appendItem>> } = {}
   try {
     await ctx.adapter.answerPrompt({
+      ...(input.operationId ? { operationId: input.operationId } : {}),
       sessionId: ctx.sessionId,
       itemId: input.itemId,
       kind: input.kind,

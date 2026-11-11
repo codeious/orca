@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { DroidMcpSignIn } from './droid-mcp-sign-in'
+import { catchUpLoadedDroidSession } from './droid-history-catch-up'
 import { DroidSessionModeReports } from './droid-session-mode-reports'
 import {
   DROID_SPEC_MODEL_OPTION_ID,
@@ -81,7 +82,7 @@ export class DroidSession {
   constructor(
     readonly input: StructuredAgentSessionAcquireInput,
     readonly generation: string,
-    launch: ProviderProcessLaunch,
+    private readonly launch: ProviderProcessLaunch,
     private readonly deps: DroidSessionDeps,
     private readonly begin: DroidSessionBegin
   ) {
@@ -239,6 +240,13 @@ export class DroidSession {
     this.model.capture(result, saved, resumeId === null)
     let reportedLevel = this.settings.current.autonomyLevel
     if (resumeId) {
+      await catchUpLoadedDroidSession(
+        this.input,
+        this.launch,
+        id,
+        () => !this.connection.closed && !this.turns.working && !this.turns.holdsDispatch,
+        this.deps.logger
+      )
       reportedLevel = await this.options.resume(
         { autonomyLevel, interactionMode },
         saved,

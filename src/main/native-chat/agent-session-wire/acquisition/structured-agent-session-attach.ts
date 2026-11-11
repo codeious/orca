@@ -69,6 +69,8 @@ export type AgentSessionAttachParams = {
     providerHandle: AgentSessionProviderHandle
     /** Omit only for exact replay of an already-imported journal. */
     transcriptPath?: string
+    /** Host-validated provider-created context, not an ordinary history adoption. */
+    allowEmpty?: true
     source?: AdoptedTranscriptSource
     /** The source conversation's title; derived, so not part of the attach fingerprint. */
     conversationName?: string

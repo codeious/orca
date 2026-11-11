@@ -1,3 +1,4 @@
+import type { StructuredSessionTabPublicationInput } from '../../session-tabs/structured-session-tab-publication'
 import { getRepoHostIdentityForParts } from '../../../../shared/repo-host-identity'
 import { createRepoRowExecutionHostLookup } from '../../../../shared/execution-host/worktree-execution-host-resolution'
 import { resolveWorktreeHostRouting } from '../catalog/worktree-launch-host-repo'
@@ -63,6 +64,10 @@ import { startPRWatchRuntime } from '../../agent-session/pr-watch-runtime'
 const DEFAULT_WORKTREE_PS_LIMIT = 200
 
 export abstract class OrcaRuntimeWithGetWorktreePs extends RuntimeChatWorkerEvents {
+  abstract publishStructuredAgentSessionTab(
+    input: StructuredSessionTabPublicationInput
+  ): Promise<void>
+
   protected readonly workerAutoReleaseActivity = new WorkerAutoReleaseActivity(
     () => this._orchestrationDb
   )
@@ -292,6 +297,8 @@ export abstract class OrcaRuntimeWithGetWorktreePs extends RuntimeChatWorkerEven
       onSessionTabHidden: (sessionId) => this.onStructuredSessionTabHidden(sessionId),
       queuedAgentMessageOwed: (sessionId, from, peek) =>
         this.structuredChatMailOwed(sessionId, from, peek),
+      publishContinuationTab: (input) =>
+        this.publishStructuredAgentSessionTab({ ...input, activate: true }),
       assertNoTerminalWriter: (record) => this.assertStructuredChatAcquireAdmissible(record),
       attentionDelivery: createStructuredAttentionMobileDelivery({
         readNotificationSettings: () => this.requireStore().getSettings().notifications,
