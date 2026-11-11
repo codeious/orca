@@ -644,6 +644,7 @@ import {
   HostCommandParams
 } from './structured-agent-session-host-command-params'
 import { ContinuationContextParams } from './structured-agent-session-identifiers'
+import { McpSignInOpenedParams } from './structured-agent-session-mcp-sign-in-params'
 import {
   AcknowledgeAttentionParams,
   AgentsParams,
@@ -851,6 +852,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'agentSession.hold': HoldParams,
   'agentSession.hostCommand': HostCommandParams,
   'agentSession.item': ItemParams,
+  'agentSession.mcpSignInOpened': McpSignInOpenedParams,
   'agentSession.modelCatalog': ModelCatalogParams,
   'agentSession.options': OptionsParams,
   'agentSession.queuedMessageDelete': QueuedMessageActionParams,

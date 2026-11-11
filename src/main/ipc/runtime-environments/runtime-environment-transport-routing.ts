@@ -6,6 +6,7 @@ import {
 } from '../../../shared/remote-runtime/host-catalog/runtime-environment-subscription-setup'
 import { assertCrewSourceCurrent } from './runtime-environment-subscription-setup'
 import { getRuntimeEnvironmentStatus } from './runtime-environment-status-probe'
+import { createRuntimeEnvironmentMcpSignInReceiver } from './runtime-environment-mcp-sign-in-receiver'
 import { getPreferredPairedRuntimeConnection } from '../../../shared/remote-runtime/host-catalog/runtime-environments'
 import { ELECTRON_REMOTE_RUNTIME_CLIENT_CAPABILITIES } from '../../../shared/electron-remote-runtime-client-capabilities'
 import { resolveEnvironment } from '../../../shared/remote-runtime/host-store/runtime-environment-store'
@@ -15,7 +16,10 @@ import {
   resolveManagedRuntimeEnvironment,
   type ManagedRuntimeCallPreparation
 } from './runtime-environment-managed-tunnel'
-import { recordRuntimeEnvironmentUsage } from '../../../shared/remote-runtime/host-store/runtime-environment-usage-record'
+import {
+  recordRuntimeEnvironmentUsage,
+  markEnvironmentUsedFromResponse
+} from '../../../shared/remote-runtime/host-store/runtime-environment-usage-record'
 import type * as Rpc from '../../../shared/runtime-rpc-envelope'
 import '../../../shared/remote-runtime/requests/remote-runtime-request-socket'
 import { subscribeRemoteRuntimeTransport } from '../../../shared/remote-runtime/requests/remote-runtime-subscription-transport'
@@ -206,6 +210,10 @@ export async function subscribeRuntimeEnvironment(
   }
   const pairedConnection = getPreferredPairedRuntimeConnection(environment)
   const effectiveTimeoutMs = timeoutMs ?? DEFAULT_REMOTE_RUNTIME_TIMEOUT_MS
+  const mcpSignIn =
+    method === 'agentSession.subscribe'
+      ? createRuntimeEnvironmentMcpSignInReceiver(params, isCurrent, signal)
+      : undefined
   let markedUsed = false
   const markUsedOnce = (runtimeId: string): void => {
     if (markedUsed || !isCurrent()) {
@@ -226,6 +234,7 @@ export async function subscribeRuntimeEnvironment(
           'Runtime environment identity changed; refresh and try again'
         )
       }
+      response = mcpSignIn?.receive(response) ?? response
       if (response.ok === true) {
         markUsedOnce(response._meta.runtimeId)
       }
@@ -233,13 +242,16 @@ export async function subscribeRuntimeEnvironment(
     },
     onBinary: (bytes: Uint8Array<ArrayBufferLike>) =>
       callbacks.onEvent({ type: 'binary' as const, bytes }),
-    onError: (error: { code: string; message: string }) =>
+    onError: (error: { code: string; message: string }) => {
+      mcpSignIn?.close()
       callbacks.onEvent({
         type: 'error' as const,
         code: error.code,
         message: withRuntimeUnreachableHint(environment, error.message, pairedConnection.endpoint)
-      }),
+      })
+    },
     onClose: () => {
+      mcpSignIn?.close()
       callbacks.onEvent({ type: 'close' as const })
       callbacks.onClose()
     }
@@ -276,8 +288,9 @@ export async function subscribeRuntimeEnvironment(
         throw error
       }
     }
-    return subscription
+    return mcpSignIn?.bind(subscription) ?? subscription
   } catch (error) {
+    mcpSignIn?.close()
     if (error instanceof Error && error.name !== 'AbortError') {
       error.message = withRuntimeUnreachableHint(
         environment,
@@ -287,18 +300,6 @@ export async function subscribeRuntimeEnvironment(
     }
     crewAttempt?.observeFailure(runtimeEnvironmentSetupFailure(error, 'subscription'))
     throw error
-  }
-}
-
-function markEnvironmentUsedFromResponse(
-  userDataPath: string,
-  environmentId: string,
-  response: Rpc.RuntimeRpcResponse<unknown>
-): void {
-  if (response.ok === true) {
-    recordRuntimeEnvironmentUsage(userDataPath, environmentId, {
-      runtimeId: response._meta.runtimeId
-    })
   }
 }
 

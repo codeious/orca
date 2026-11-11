@@ -178,6 +178,7 @@ export type RetainedRemoteRuntimeSubscription = RemoteRuntimeTransportSubscripti
   setupController: AbortController
   environmentId: string
   ownerWebContentsId: number
+  mcpSignInSessionId?: string
   disposeRendererLifetime: () => void
   notifyClosed: () => void
 }

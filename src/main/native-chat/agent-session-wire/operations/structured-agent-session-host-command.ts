@@ -81,7 +81,8 @@ export function runStructuredAgentSessionHostCommand(
                 fence: ctx.fence,
                 name,
                 argument,
-                operationId: envelope.clientOperationId
+                operationId: envelope.clientOperationId,
+                openMcpSignIn: caller.openMcpSignIn
               })
             )
             return { ok: true, value }
