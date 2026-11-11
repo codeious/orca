@@ -1,4 +1,8 @@
 import type { AgentModelCatalogReadParams } from '../../agent-model-catalog/agent-model-catalog-service-contract'
+import {
+  structuredPlanModePair,
+  structuredPlanModeShownPair
+} from '../../../../shared/agent-session/options/structured-agent-session-plan-mode-pair'
 import type { AgentSessionModelCatalogResult } from '../../../../shared/agent-session/agent-session-wire'
 import { decodeStructuredAgentSessionOptionValue } from '../../../../shared/agent-session/options/structured-agent-session-option-codec'
 import { finishedListingIds } from '../../../../shared/agent-session/options/structured-agent-session-listing-verified-ids'
@@ -69,6 +73,15 @@ export async function readStructuredAgentSessionOptionsAtRest(
     })
   }
   const saved = record.options ?? {}
+  const pair = structuredPlanModePair(record.provider)
+  if (reader.readsWithoutModel && pair && saved.planMode === 'true') {
+    await deps.modelCatalog?.prepareSaved?.({
+      ...scope,
+      agent: record.provider,
+      sessionId,
+      inSessionWorkspace: true
+    })
+  }
   // The chat's own folder decides its default, as its first frame did.
   const scoped = await readCatalog(true)
   const folderDefault =
@@ -116,16 +129,36 @@ export async function readStructuredAgentSessionOptionsAtRest(
         ? false
         : null
       : decodeStructuredAgentSessionOptionValue('fastMode', saved.fastMode)
+  const planMode = rules?.acceptsKey('planMode')
+    ? saved.planMode === undefined
+      ? false
+      : decodeStructuredAgentSessionOptionValue('planMode', saved.planMode)
+    : null
   // An unknown model is one the client already treats as unconfirmed. Only a real listing names the
   // account's default; a built-in list's default is a guess, so with none the client keeps its own.
-  const model =
+  let model: string | undefined =
     saved.model ??
     (catalog.origin === 'unknown' ? undefined : models.find((entry) => entry.isDefault)?.id)
   // Only saved effort is input; model recommendations remain catalog context.
-  const effort = saved.effort
-  const defaulted = (['model', 'effort'] as const).filter(
+  let effort: string | undefined = saved.effort
+  let defaulted = (['model', 'effort'] as const).filter(
     (key) => saved[key] === undefined && Boolean(key === 'model' ? model : effort)
   )
+  if (pair && planMode === true) {
+    const configured = catalog.origin === 'unknown' ? undefined : catalog.configuredSpec
+    const own = structuredPlanModeShownPair(pair, {}, saved)
+    const shown = structuredPlanModeShownPair(
+      pair,
+      catalog.origin === 'unknown' && deps.modelCatalog ? {} : { model, effort },
+      saved,
+      configured
+    )
+    defaulted = (['model', 'effort'] as const).filter(
+      (key) =>
+        own[key] === undefined && (configured?.[key] !== undefined || defaulted.includes(key))
+    )
+    ;({ model, effort } = shown)
+  }
   // The tier the chat's own model runs; the record keeps the saved one for a model that offers it.
   const serviceTier = savedEffectiveServiceTier(saved, models)
   const sessionOptions = rules?.sessionOptions?.({
@@ -145,6 +178,7 @@ export async function readStructuredAgentSessionOptionsAtRest(
       ...(model ? { model } : {}),
       ...(effort ? { effort } : {}),
       ...(typeof fastMode === 'boolean' ? { fastMode } : {}),
+      ...(typeof planMode === 'boolean' ? { planMode } : {}),
       ...(serviceTier ? { serviceTier } : {}),
       defaulted
     }

@@ -31,6 +31,7 @@ import type { StructuredAgentSessionMutationContext } from '../operations/struct
 import { readStructuredSessionRecovery } from '../recovery/structured-agent-session-recovery-read'
 import { fillUnknownModelEfforts } from '../../../../shared/agent-session/options/agent-session-model-efforts'
 import { structuredAgentSessionModelPicks } from './structured-agent-session-option-intent'
+import { structuredPlanModeSavedOptions } from '../../../../shared/agent-session/options/structured-agent-session-plan-mode-pair'
 
 /** A live child's own answer, or the answer at rest; the goal, usage and rewind either way. */
 export async function readStructuredAgentSessionOptions(
@@ -159,7 +160,12 @@ export async function readStructuredAgentSessionOptions(
           (row) => row.isDefault
         )?.id
       : undefined
-  const saved = record?.options ?? {}
+  const saved = structuredPlanModeSavedOptions(
+    agent,
+    { ...record?.options },
+    options.current,
+    live !== null
+  )
   const model = saved.model ?? (options.current.model || selected.current.model || displayDefault)
   const projected = live?.projectCurrent?.({ ...saved, ...(model ? { model } : {}) })
   const reportedEffort = projected?.confirmed?.includes('effort') ? projected.effort : undefined

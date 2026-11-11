@@ -1,3 +1,4 @@
+import { configuredDefaultFacts } from './agent-model-catalog-configured-default-facts'
 import {
   configuredDeclarationModels,
   mergedAgentModelCatalogModels
@@ -23,7 +24,8 @@ export type AgentModelCatalogSuccess = {
   origin: 'live-session' | 'probe'
   complete?: boolean
   configured?: { model?: string; effort?: string }
-  /** The probe resolved the account default independently of a running chat. */
+  configuredSpec?: { model: string; effort?: string }
+  /** The probe resolved the account's own default, so its listing and `configured` replace a chat's. */
   resolvesConfiguredDefault?: true
   /** Launch-injected rows require independent account-catalog membership. */
   launchOnlyModelId?: string
@@ -61,6 +63,7 @@ export type AgentModelCatalogConfiguredDefault = {
   modelId: string
   sameModelIds?: string[]
   effort?: string
+  spec?: { model: string; effort?: string }
   at: number
 }
 
@@ -133,7 +136,10 @@ export function agentModelCatalogResultFromEntry(
     models: models.map((model) => (namesDefault ? { ...model } : { ...model, isDefault: false })),
     ...(entry.fastModeSupport ? { fastModeSupport: entry.fastModeSupport } : {}),
     fetchedAt: entry.fetchedAt,
-    listingNamesConfiguredModel: namesDefault && namesConfigured
+    listingNamesConfiguredModel: namesDefault && namesConfigured,
+    ...(namesDefault && namesConfigured && useConfigured && entry.configured?.spec
+      ? { configuredSpec: entry.configured.spec }
+      : {})
   }
 }
 
@@ -245,34 +251,13 @@ export function agentModelCatalogEntryWithSuccess(
     const { model, effort } = success.configured ?? {}
     if (model) {
       const facts = configuredDefaultFacts({ modelId: model, effort }, configured)
-      configured = facts && { ...facts, at }
+      configured = facts && { ...facts, spec: success.configuredSpec, at }
     }
     return agentModelCatalogEntry(agent, fingerprint, listing, null, configured)
   }
   return source === 'discovery'
     ? agentModelCatalogEntry(agent, fingerprint, listing, previous?.live ?? null, configured)
     : agentModelCatalogEntry(agent, fingerprint, previous?.discovered ?? null, listing, configured)
-}
-
-/** Preserve effort for the same model when a session pick obscures its configured value. */
-function configuredDefaultFacts(
-  choice: AgentModelCatalogConfiguredChoice | null,
-  previous: AgentModelCatalogConfiguredDefault | null = null
-): Omit<AgentModelCatalogConfiguredDefault, 'at'> | null {
-  if (!choice) {
-    return null
-  }
-  const effort =
-    choice.effort === undefined
-      ? previous?.modelId === choice.modelId
-        ? previous.effort
-        : undefined
-      : (choice.effort ?? undefined)
-  return {
-    modelId: choice.modelId,
-    ...(choice.sameModelIds?.length ? { sameModelIds: [...choice.sameModelIds] } : {}),
-    ...(effort ? { effort } : {})
-  }
 }
 
 export function entryWithConfiguredDefault(

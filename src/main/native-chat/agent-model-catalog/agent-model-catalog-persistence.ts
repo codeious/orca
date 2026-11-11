@@ -76,6 +76,7 @@ function parseModel(value: unknown): AgentSessionModelOption | null {
     ...(row.effortsKnown === false ? { effortsKnown: false as const } : {}),
     ...(description ? { description } : {}),
     isDefault: row.isDefault === true,
+    ...(typeof row.isCustom === 'boolean' ? { isCustom: row.isCustom } : {}),
     ...(defaultEffort ? { defaultEffort } : {}),
     efforts: efforts.filter((effort): effort is AgentSessionOptionChoice => effort !== null),
     ...(typeof row.supportsFastMode === 'boolean'
@@ -142,6 +143,9 @@ function parseEntry(value: unknown): AgentModelCatalogEntry | null {
   const configured = asRecord(row.configured)
   const configuredModelId = text(configured?.modelId)
   const configuredEffort = text(configured?.effort)
+  const spec = asRecord(configured?.spec)
+  const specModel = text(spec?.model)
+  const specEffort = text(spec?.effort)
   const sameModelIds = Array.isArray(configured?.sameModelIds)
     ? configured.sameModelIds.filter((id): id is string => typeof id === 'string')
     : []
@@ -155,6 +159,9 @@ function parseEntry(value: unknown): AgentModelCatalogEntry | null {
           modelId: configuredModelId,
           ...(sameModelIds.length > 0 ? { sameModelIds } : {}),
           ...(configuredEffort ? { effort: configuredEffort } : {}),
+          ...(specModel
+            ? { spec: { model: specModel, ...(specEffort ? { effort: specEffort } : {}) } }
+            : {}),
           at: configured.at
         }
       : null

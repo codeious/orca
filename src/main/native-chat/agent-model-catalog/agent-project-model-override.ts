@@ -2,6 +2,7 @@ import type { Dirent } from 'node:fs'
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { independentAgentModelCatalog } from '../../../shared/agent-session/options/agent-model-catalog-ownership'
+import { DROID_PROJECT_MODEL_LAYERS } from '../../droid/droid-project-model-settings'
 import {
   ompSettingsMayPickModel,
   openCodeAgentFileMayPickModel,
@@ -48,7 +49,7 @@ type ProjectModelFile = {
   mayPickModel: (text: string) => boolean
 }
 
-type ProjectModelLayers = {
+export type ProjectModelLayers = {
   files: readonly ProjectModelFile[]
   agentFolders?: readonly { path: string; recursive: boolean }[]
   codeFolders?: readonly string[]
@@ -77,6 +78,7 @@ const OPENCODE_PROJECT_MODEL_LAYERS: ProjectModelLayers = {
 }
 
 const PROJECT_MODEL_LAYERS: Readonly<Record<string, ProjectModelLayers>> = {
+  droid: DROID_PROJECT_MODEL_LAYERS,
   opencode: OPENCODE_PROJECT_MODEL_LAYERS,
   opencode2: OPENCODE_PROJECT_MODEL_LAYERS,
   // OMP also merges other agents' project settings.
