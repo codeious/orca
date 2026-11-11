@@ -1,0 +1,19 @@
+src/shared/rpc-contract/structured-agent-session-mcp-sign-in-params.ts
+  s_9915298ad8a882::t_2e7da7bc655e58 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f781ea571ce5ad5e6148cb8cce7bf48c17cfa82e",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
