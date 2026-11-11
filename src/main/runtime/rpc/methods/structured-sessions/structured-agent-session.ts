@@ -2,6 +2,7 @@ import { STRUCTURED_AGENT_SESSION_ACCOUNT_USAGE_METHODS } from './catalog/struct
 import { STRUCTURED_AGENT_SESSION_USAGE_LIMIT_CONTINUE_METHODS } from './catalog/structured-agent-session-usage-limit-continue'
 import { STRUCTURED_AGENT_SESSION_CLOSE_METHOD } from './conversation/structured-agent-session-close-method'
 import { STRUCTURED_AGENT_SESSION_SUBSCRIBE_METHOD } from './subscriptions/structured-agent-session-subscribe-method'
+import { ensureReopenedStructuredSession } from './creation/structured-agent-session-reopen'
 import {
   projectHostCommandCatalog,
   STRUCTURED_AGENT_SESSION_HOST_COMMAND_METHODS
@@ -43,11 +44,11 @@ import { STRUCTURED_AGENT_SESSION_ITEM_METHODS } from './history/structured-agen
 import { STRUCTURED_AGENT_SESSION_SEND_RECORDED_METHODS } from './history/structured-agent-session-send-recorded'
 import { STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS } from './catalog/structured-agent-session-options-read'
 import {
-  AttachParams,
   CancelParams,
   ConversationCommandParams,
   CreateParams,
   CreateSupportParams,
+  EnsureParams,
   HistoryParams,
   RewindParams,
   SendParams,
@@ -108,9 +109,14 @@ export const STRUCTURED_AGENT_SESSION_METHODS = [
   defineMethod({
     name: 'agentSession.ensure',
     permission: 'workspace',
-    params: AttachParams,
+    params: EnsureParams,
     handler: async (params, ctx) =>
-      projectHostCommandCatalog(await attachClientSuppliedLocation(params, ctx), ctx)
+      projectHostCommandCatalog(
+        await ('sessionId' in params
+          ? ensureReopenedStructuredSession(params.sessionId, ctx)
+          : attachClientSuppliedLocation(params, ctx)),
+        ctx
+      )
   }),
   defineMethod({
     name: 'agentSession.send',

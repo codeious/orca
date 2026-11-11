@@ -109,6 +109,8 @@ export const CreateSupportParams = z
   })
   .strict()
 
+export const EnsureParams = z.union([AttachParams, z.strictObject({ sessionId: SessionId })])
+
 export const SendParams = z
   .object({
     envelope: MutationEnvelope,

@@ -7,6 +7,8 @@ import {
 } from './input/native-chat-slash-commands'
 
 export type NativeChatAgentProfile = {
+  /** Chat and terminal take turns on one conversation, reopening its original chat on return. */
+  terminalHandoff?: true
   skillPrefix: '$' | '/'
   /** OpenClaude reads Claude-owned roots, so this can differ from the agent. */
   skillSourceOwner: AgentType

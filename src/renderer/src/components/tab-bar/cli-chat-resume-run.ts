@@ -1,12 +1,18 @@
 import { captureStructuredLaunchSurfaceAddress } from '@/lib/agent-session/launch/structured-agent-session-launch-surface'
 import { closeCliChatResumeTerminal } from './cli-chat-resume-close-terminal'
+import { reopenCliChatResume } from './cli-chat-resume-reopen'
 import {
   admitCliChatResumeClose,
   showCliChatResumeLaunchHolder,
   withoutJoiningLaunchHolder,
   type LaunchHeld
 } from './cli-chat-resume-close-admission'
-import { useSyncExternalStore } from 'react'
+import {
+  pendingCliChatResumes as pending,
+  cliChatResumePendingChanged as changed,
+  cliChatResumePendingKey as keyFor
+} from './cli-chat-resume-pending'
+export { useCliChatResumePending } from './cli-chat-resume-pending'
 import { useAppStore } from '@/store'
 
 import { createNonSecureContextUuid } from '../../../../shared/non-secure-context-uuid'
@@ -26,28 +32,6 @@ import {
   reportCliChatResumeTerminalChanged
 } from './cli-chat-resume-feedback'
 import { adoptingAgentOnHost } from '../right-sidebar/ai-vault/session-actions/ai-vault-session-resume-in-chat-launch'
-
-const pending = new Map<string, { controller: AbortController; source: CliChatResumeSource }>()
-const listeners = new Set<() => void>()
-const changed = () => listeners.forEach((listener) => listener())
-const keyFor = (source: CliChatResumeSource) =>
-  [
-    source.executionHostId,
-    CLI_CONVERSATION_ADOPTING_AGENTS[source.agent],
-    source.providerSessionId
-  ].join('\0')
-const subscribe = (listener: () => void) => {
-  listeners.add(listener)
-  return () => listeners.delete(listener)
-}
-
-export function useCliChatResumePending(source: CliChatResumeSource | null): boolean {
-  return useSyncExternalStore(
-    subscribe,
-    () => !!source && pending.has(keyFor(source)),
-    () => false
-  )
-}
 
 export async function runCliChatResume(
   source: CliChatResumeSource,
@@ -163,6 +147,22 @@ export async function runCliChatResume(
       controller.signal
     )
     if (close === null) {
+      return
+    }
+    if (typeof close === 'object') {
+      await reopenCliChatResume({
+        source,
+        admission: close,
+        target,
+        signal: controller.signal,
+        isCurrent,
+        prepared: () => clearTimeout(timer),
+        closing: () => {
+          closing = true
+          stopSource()
+          clearTimeout(timer)
+        }
+      })
       return
     }
     const closes = close !== 'keep'
