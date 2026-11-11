@@ -1,3 +1,4 @@
+import { structuredSessionProviderCommands } from './writes/structured-session-provider-command-write'
 import { useQueuedMessageEditTransport } from '../../queue/editing/use-queued-message-edit-transport'
 import type { StructuredAgentSessionViewArgs } from './structured-agent-session-view-contract'
 import { useStructuredAgentSessionCommandMenu } from '../../composer/pickers/structured-agent-session-command-refresh'
@@ -6,10 +7,7 @@ import { useStructuredAgentSessionSendOptions } from './delivery/use-structured-
 import { useStructuredAgentSessionSends } from './delivery/use-structured-agent-session-sends'
 import { useStructuredAgentSessionCommandWrite } from './writes/use-structured-agent-session-command-write'
 import { structuredAgentSessionSendQueues } from '../../queue/structured-agent-session-queue-request'
-import {
-  nativeChatQueueFollowUps,
-  nativeChatSendFollowUp
-} from '../../../../../../shared/native-chat/input/native-chat-follow-up-behavior'
+import * as followUps from '../../../../../../shared/native-chat/input/native-chat-follow-up-behavior'
 import { structuredAgentLabel } from '@/lib/agent-session/launch/structured-agent-session-launch-label'
 import { useStructuredLegacyLaunchStop } from '@/lib/agent-session/launch/structured-agent-session-legacy-launch-stop'
 import {
@@ -51,7 +49,7 @@ export function useStructuredAgentSession(args: StructuredAgentSessionViewArgs) 
     hostStopping = false,
     launch,
     providerStarting = false,
-    queueFollowUps = nativeChatQueueFollowUps(null),
+    queueFollowUps = followUps.nativeChatQueueFollowUps(null),
     sessionId,
     target,
     transportEnabled = true
@@ -237,6 +235,7 @@ export function useStructuredAgentSession(args: StructuredAgentSessionViewArgs) 
     conversationCommands,
     accountUsage,
     compactInstructions,
+    ...structuredSessionProviderCommands(write, target),
     ...structuredConversationCommandRunner({
       agentName,
       pending: commandPending,
@@ -302,7 +301,7 @@ export function useStructuredAgentSession(args: StructuredAgentSessionViewArgs) 
     /** A plain send would queue: the host takes it, the setting or a waiting command asks, and no unanswerable prompt blocks it. */
     sendsQueue: structuredAgentSessionSendQueues(queue),
     /** What a plain send does now, and whether its alternate would send any differently. */
-    sendFollowUp: nativeChatSendFollowUp((alternate) =>
+    sendFollowUp: followUps.nativeChatSendFollowUp((alternate) =>
       structuredAgentSessionSendQueues(queue, alternate)
     ),
     cancel: (turnId: string | undefined, prompt?: { itemId: string; expectedRevision: number }) =>

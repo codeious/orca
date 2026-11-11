@@ -1,3 +1,4 @@
+import { projectHostCommandCatalog } from '../conversation/structured-agent-session-host-command'
 import { AGENT_SESSION_COHERENT_MODEL_CATALOG_CAPABILITY } from '../../../../../../shared/agent-session/structured-agent-session-surface-capabilities'
 // options reads at-rest records/catalogs or the live provider; modelCatalog reads stored/start-published facts without waiting on attach.
 // Older hosts return method_not_found (mobile may see forbidden); clients retain static seeds.
@@ -48,9 +49,11 @@ export const STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS = [
     permission: 'workspace',
     params: OptionsParams,
     handler: async (params, ctx) =>
-      (await requireInstalledStructuredHost(ctx, params.sessionId)).readCommands(
-        params.sessionId,
-        clientRequestsCommands(ctx)
+      projectHostCommandCatalog(
+        await (
+          await requireInstalledStructuredHost(ctx, params.sessionId)
+        ).readCommands(params.sessionId, clientRequestsCommands(ctx)),
+        ctx
       )
   }),
   defineMethod({

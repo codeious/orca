@@ -35,7 +35,12 @@ export function nativeChatComposerSendState(
     structuredTransport:
       | Pick<
           NativeChatStructuredComposerTransport,
-          'sendOut' | 'sendBlockedReason' | 'threadGoal' | 'sendFollowUp' | 'optionSnapshot'
+          | 'sendOut'
+          | 'sendBlockedReason'
+          | 'threadGoal'
+          | 'sendFollowUp'
+          | 'optionSnapshot'
+          | 'sessionCommands'
         >
       | undefined
     editSession: { canSave: boolean } | undefined
@@ -65,7 +70,8 @@ export function nativeChatComposerSendState(
         input.draft,
         transport.threadGoal !== undefined,
         input.agent,
-        transport.optionSnapshot
+        transport.optionSnapshot,
+        transport.sessionCommands
       ) &&
       !structuredAgentSessionCommandChangesConversation(input.draft))
   const draftHeld = localHold || (hostHold && !runsWhileHostHolds)

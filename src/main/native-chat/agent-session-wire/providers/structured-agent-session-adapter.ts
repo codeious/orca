@@ -1,3 +1,4 @@
+import type { StructuredAgentSessionHostCommandInput } from './structured-agent-session-host-command-input'
 import type { PrepareStructuredRewind } from './structured-agent-session-rewind-contract'
 import type { ProviderProcessCloseOptions } from '../../../provider-process/provider-process-close'
 import type { NativeCopyCoverage } from '../../agent-session-journal/context-epochs/journal-history-origin'
@@ -7,6 +8,7 @@ import type { ClaudeAccountRecipe } from '../../../../shared/agent-session/lifec
 import type { StructuredAgentSessionAdmitFreshInput } from '../delivery/structured-agent-session-input-admission'
 import type { AiVaultConversationCopy } from '../../../../shared/ai-vault/resume/ai-vault-resume-preparation'
 import type { AgentChatPermissionChoice } from '../../../../shared/agent-launch/permissions/agent-chat-permission-mode'
+import type { AgentSessionHostCommandResult } from '../../../../shared/agent-session/agent-session-host-command'
 import type {
   AgentSessionRewindFork,
   AgentSessionRewindReason,
@@ -289,6 +291,9 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
   retireStartup?(sessionId: string, acquisitionGeneration: string): void
   /** Undefined preserves the client catalog when the provider reports none. */
   readCommands?(sessionId: string): AgentSessionSlashCommand[] | undefined
+  hostCommand?(
+    input: StructuredAgentSessionHostCommandInput
+  ): Promise<AgentSessionHostCommandResult>
   atRestCommands?: StructuredAgentSessionAtRestCommands
   /** Claim the live callback, build reply, commit journal CAS, then answer; reject unbuildable replies before commit. */
   answerPrompt(input: {

@@ -1,4 +1,5 @@
 import {
+  AGENT_SESSION_APPROVAL_NOTES_CAPABILITY,
   AGENT_SESSION_COMMANDS_ON_REQUEST_CAPABILITY,
   AGENT_SESSION_MODEL_EFFORT_DISCOVERY_CAPABILITY,
   AGENT_SESSION_COHERENT_MODEL_CATALOG_CAPABILITY
@@ -39,6 +40,7 @@ import { SKILL_DISCOVER_WORKSPACE_CAPABILITY } from '../../../../../src/shared/s
 import { AGENT_SESSION_PHONE_CONTINUE_INTERRUPTED_RUNTIME_CAPABILITY } from '../../../../../src/shared/agent-session/agent-session-continue-interrupted-capability'
 
 export type StructuredAgentSessionHostSupport = {
+  approvalNotes?: boolean
   commandsOnRequest?: boolean
   coherentModelCatalog?: boolean
   modelEffortDiscovery?: boolean
@@ -91,6 +93,7 @@ export function structuredAgentSessionHostSupport(
   capabilities: readonly string[]
 ): StructuredAgentSessionHostSupport {
   return {
+    approvalNotes: capabilities.includes(AGENT_SESSION_APPROVAL_NOTES_CAPABILITY),
     commandsOnRequest: capabilities.includes(AGENT_SESSION_COMMANDS_ON_REQUEST_CAPABILITY),
     coherentModelCatalog: capabilities.includes(AGENT_SESSION_COHERENT_MODEL_CATALOG_CAPABILITY),
     modelEffortDiscovery: capabilities.includes(AGENT_SESSION_MODEL_EFFORT_DISCOVERY_CAPABILITY),
