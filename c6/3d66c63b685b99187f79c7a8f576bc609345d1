@@ -1,0 +1,32 @@
+src/main/droid/droid-cli-conversations.ts
+  h_476903bd8a47d9 1-19
+src/main/droid/droid-experimental-create.test.ts
+  h_476903bd8a47d9 1-40
+src/main/droid/droid-resume-grammar.ts
+  h_476903bd8a47d9 1-133
+src/main/droid/droid-runtime-metadata.ts
+  h_476903bd8a47d9 1-13
+src/main/droid/droid-runtime-registration.ts
+  h_476903bd8a47d9 1-55
+src/main/droid/droid-session-adapter.ts
+  h_476903bd8a47d9 1-142
+src/main/droid/droid-structured-launch-resolution.ts
+  h_476903bd8a47d9 1-82
+src/main/runtime/agent-session/installation/structured-agent-runtime-metadata.ts
+  h_476903bd8a47d9 18,39,144
+src/main/runtime/agent-session/installation/structured-agent-runtime-registrations.ts
+  h_476903bd8a47d9 24,213-214
+src/shared/agent-session/options/structured-agent-session-plan-mode-pair.ts
+  h_476903bd8a47d9 1,12-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c63d66c63b685b99187f79c7a8f576bc609345d1",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
