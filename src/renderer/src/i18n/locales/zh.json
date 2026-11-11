@@ -14285,7 +14285,8 @@
             "resumeInNewCliUnavailable": "无法在 CLI 中打开此会话",
             "resumeInNewCliHostTooOld": "请更新运行此聊天的主机上的 Orca，才能在新的 CLI 中恢复它",
             "folderWorkspaceUnavailable": "文件夹工作区不再可用",
-            "transcriptsSkippedCount_other": "已跳过 {{count}} 份对话记录"
+            "transcriptsSkippedCount_other": "已跳过 {{count}} 份对话记录",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "正在扫描会话",
@@ -14599,6 +14600,11 @@
             "createInProgress": "正在创建 PR...",
             "workspaceHostUnresolved": "无法解析工作区主机。请刷新工作区后重试",
             "branchDiscoveryFailed": "分支发现失败"
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -19849,7 +19855,10 @@
       "splitRight": "向右拆分",
       "splitDown": "向下拆分",
       "newRowsAnnouncement": "你离开期间有新消息",
-      "newRowsMarker": "新消息"
+      "newRowsMarker": "新消息",
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
+      }
     },
     "tab": {
       "bar": {

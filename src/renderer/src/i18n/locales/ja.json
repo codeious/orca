@@ -14040,7 +14040,8 @@
             "resumeInNewCliUnavailable": "このセッションは CLI で開けません。",
             "resumeInNewCliHostTooOld": "このチャットを新しい CLI で再開するには、チャットを実行しているホストの Orca を更新してください。",
             "folderWorkspaceUnavailable": "フォルダーワークスペースは利用できなくなりました。",
-            "transcriptsSkippedCount_other": "{{count}} 件のトランスクリプトをスキップしました"
+            "transcriptsSkippedCount_other": "{{count}} 件のトランスクリプトをスキップしました",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "セッションをスキャンしています",
@@ -14354,6 +14355,11 @@
             "createInProgress": "PR を作成中…",
             "workspaceHostUnresolved": "ワークスペースのホストを特定できません。ワークスペースを更新して再試行してください。",
             "branchDiscoveryFailed": "ブランチの検出に失敗しました。"
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -19593,7 +19599,10 @@
         "many_other": "{{count}} 件のプルリクエストを開きました"
       },
       "splitRight": "右に分割",
-      "splitDown": "下に分割"
+      "splitDown": "下に分割",
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
+      }
     },
     "tab": {
       "bar": {

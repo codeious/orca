@@ -15,6 +15,8 @@ import {
 import type { AgentJournalRenderItem } from '../../../../shared/agent-session/journal/agent-session-journal-types'
 import type { AgentSessionJournal } from '../../agent-session-journal/journal-store'
 import type { JournalReplacementItem } from '../../agent-session-journal/context-epochs/journal-epoch-replacement'
+import type { StructuredAgentDefinition } from '../providers/structured-agent-definition'
+import type { StructuredAgentRegistry } from '../providers/structured-agent-registry'
 // Derive cuts from the journal’s retained old epoch so admission and recovery agree without copying history.
 
 export type StructuredRewindCut = {
@@ -32,7 +34,12 @@ export type StructuredRewindCut = {
 
 export function structuredRewindCut(
   journal: AgentSessionJournal,
-  target: { itemId: string; provider: string; nativeId: string }
+  target: {
+    itemId: string
+    provider: string
+    nativeId: string
+    rewindMessageTarget?: StructuredAgentDefinition['rewindMessageTarget']
+  }
 ): StructuredRewindCut | null {
   const snapshot = journal.currentRead()
   const floor = journal.context.floor()
@@ -42,7 +49,15 @@ export function structuredRewindCut(
   const { providerKey, omitted, nativeIdentity } = savedRewindKeys(snapshot.submissions)
   const selected = items.find((item) => item.itemId === target.itemId)
   const key = selected ? nativeIdentity(selected.itemId) : null
-  if (key?.provider === 'claude' && target.provider === 'claude') {
+  const messageTarget = selected
+    ? target.rewindMessageTarget?.(providerKey(selected.itemId), target.nativeId)
+    : null
+  const beforeMessage =
+    messageTarget ??
+    (key?.provider === 'claude' && target.provider === 'claude'
+      ? { sessionId: key.sessionId, uuid: key.uuid }
+      : null)
+  if (beforeMessage) {
     // Messages before an earlier fork still cut at their original position.
     const boundary = items.findIndex((item) => item.itemId === target.itemId)
     const keptTurns = new Set(items.slice(0, boundary).flatMap((item) => scopedTurn(item) ?? []))
@@ -55,7 +70,7 @@ export function structuredRewindCut(
       )
     })
     return {
-      beforeMessage: { sessionId: key.sessionId, uuid: key.uuid },
+      beforeMessage,
       kept: keptRows.map((item) => keptRow(journal, item))
     }
   }
@@ -212,7 +227,8 @@ export function legacyRewindTurns(
 export function rewindJournalCut(
   record: AgentSessionRecord | null,
   journal: AgentSessionJournal,
-  rewind: AgentSessionRewindRecord
+  rewind: AgentSessionRewindRecord,
+  agents?: StructuredAgentRegistry
 ): { alreadyReplaced: boolean; cut: StructuredRewindCut | null } {
   const alreadyReplaced = journal.cursor().epoch !== rewind.expectedEpoch
   const head = record && agentSessionProviderHandleChainHead(record.providerHandleChain)?.handle
@@ -222,7 +238,8 @@ export function rewindJournalCut(
       : structuredRewindCut(journal, {
           itemId: rewind.itemId,
           provider: record.provider,
-          nativeId: head.nativeId
+          nativeId: head.nativeId,
+          rewindMessageTarget: agents?.definition(record.provider)?.rewindMessageTarget
         })
   return { alreadyReplaced, cut }
 }

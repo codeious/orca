@@ -33,7 +33,10 @@ import type { StructuredAgentSessionLogger } from '../host/structured-agent-sess
 import type { JournalOperationReceipt } from '../../agent-session-journal/writing/journal-row-writer'
 import type { AgentJournalCursor } from '../../../../shared/agent-session/journal/agent-session-journal-identity'
 
+import type { StructuredAgentRegistry } from '../providers/structured-agent-registry'
+
 export type RewindRecoveryDeps = {
+  agents?: StructuredAgentRegistry
   store: AgentSessionRecordStore
   logger: StructuredAgentSessionLogger
   nameProviderConversation?: (record: AgentSessionRecord) => void
@@ -80,7 +83,7 @@ export async function recoverStructuredRewind(
 
 /** Supply the record a pending commit will expose to apply. */
 export async function readStructuredRewindRecovery(
-  { store }: RewindRecoveryDeps,
+  { store, agents }: RewindRecoveryDeps,
   sessionId: string,
   journal: AgentSessionJournal,
   fence: number,
@@ -94,7 +97,7 @@ export async function readStructuredRewindRecovery(
     return null
   }
   const target = parseAgentJournalItemKey(rewind.providerItemId ?? rewind.itemId)
-  const { cut } = rewindJournalCut(record, journal, rewind)
+  const { cut } = rewindJournalCut(record, journal, rewind, agents)
   if (
     target?.provider === 'claude' ||
     rewind.phase !== 'prepared' ||
@@ -147,7 +150,12 @@ export async function applyStructuredRewindRecovery(
     await settleUnsupportedClaudeRewind(deps, sessionId, fence, rewind)
     return
   }
-  const { alreadyReplaced, cut } = rewindJournalCut(store.getRecord(sessionId), journal, rewind)
+  const { alreadyReplaced, cut } = rewindJournalCut(
+    store.getRecord(sessionId),
+    journal,
+    rewind,
+    deps.agents
+  )
   if (!alreadyReplaced && !cut) {
     throw new Error('agent_session_rewind:invalid-target')
   }

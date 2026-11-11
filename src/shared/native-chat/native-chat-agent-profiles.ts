@@ -17,6 +17,7 @@ import {
 export type NativeChatAgentProfile = {
   /** Chat and terminal take turns on one conversation, reopening its original chat on return. */
   terminalHandoff?: true
+  confirmUnverifiableResume?: true
   composerKeys?: ComposerKeyMap
   conversationCommandAliases?: Readonly<Record<string, 'clear' | 'compact'>>
   sessionActions?: readonly ('rename' | 'fork')[]
@@ -48,6 +49,8 @@ const OPENCODE_PROFILE: NativeChatAgentProfile = {
 
 const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfile>> = {
   droid: {
+    terminalHandoff: true,
+    confirmUnverifiableResume: true,
     skillPrefix: '/',
     skillSourceOwner: 'droid',
     conversationCommandAliases: { new: 'clear', compress: 'compact' },

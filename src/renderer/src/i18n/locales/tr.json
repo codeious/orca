@@ -14690,7 +14690,8 @@
             "resumeInNewCliHostTooOld": "Bu sohbeti yeni bir CLI'da sürdürmek için sohbetin çalıştığı ana makinedeki Orca'yı güncelleyin.",
             "folderWorkspaceUnavailable": "Klasör çalışma alanı artık kullanılamıyor.",
             "transcriptsSkippedCount_other": "{{count}} transkript atlandı",
-            "transcriptsSkippedCount_one": "{{count}} transkript atlandı"
+            "transcriptsSkippedCount_one": "{{count}} transkript atlandı",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Oturumlar taranıyor",
@@ -15014,6 +15015,11 @@
             "createInProgress": "PR oluşturuluyor...",
             "workspaceHostUnresolved": "Çalışma alanının sunucusu çözümlenemedi. Çalışma alanını yenileyip tekrar deneyin.",
             "branchDiscoveryFailed": "Branch'ler keşfedilemedi."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -20275,7 +20281,10 @@
         "many_other": "{{count}} pull request oluşturuldu"
       },
       "splitRight": "Sağa Böl",
-      "splitDown": "Aşağı Böl"
+      "splitDown": "Aşağı Böl",
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
+      }
     },
     "tab": {
       "bar": {

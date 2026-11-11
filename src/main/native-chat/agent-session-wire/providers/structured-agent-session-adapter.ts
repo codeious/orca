@@ -243,6 +243,7 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
   }): Promise<
     { ok: true; fork: AgentSessionRewindFork } | { ok: false; reason: AgentSessionRewindReason }
   >
+  forkForRewindRequiresAcquisition?: true
   /** Return provider compaction admission; translator ends the command turn unless child-exit recovery does first. */
   compact?(input: {
     sessionId: string
