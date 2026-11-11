@@ -1,0 +1,18 @@
+src/main/agent-hooks/installation/remote-managed-hook-installers.ts
+  h_476903bd8a47d9 30,86-90
+src/main/agent-hooks/wsl-relay/wsl-hook-fs-adapter.ts
+  h_476903bd8a47d9 65
+src/main/droid/droid-remote-install-platform.test.ts
+  h_476903bd8a47d9 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ea053f32dbf1a1ad39bacf7fa5bfe858b178e741",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
