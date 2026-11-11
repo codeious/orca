@@ -19889,8 +19889,13 @@
         "plan": {
           "file": "Plandatei",
           "reviewTitle": "Vorgeschlagenen Plan prüfen",
-          "refineHint": "„Plan verfeinern“ schließt das Review, damit Änderungswünsche gesendet werden können."
-        }
+          "refineHint": "„Plan verfeinern“ schließt das Review, damit Änderungswünsche gesendet werden können.",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "Nicht zugestellt — Terminal prüfen",
       "subagents": {

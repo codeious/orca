@@ -20968,7 +20968,10 @@
         "plan": {
           "file": "Plan file",
           "reviewTitle": "Review proposed plan",
-          "refineHint": "Refine plan closes the review so you can send what to change."
+          "refineHint": "Refine plan closes the review so you can send what to change.",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
         },
         "worker": "Worker · {{name}}",
         "openWorker": "Open worker",
@@ -20985,7 +20988,9 @@
         "answeredInChat": "Answered in the worker's chat",
         "noLongerOpen": "No longer open",
         "autoDenied": "Auto-denied by Claude after 2:00",
-        "answerInTerminal": "Answer it in the worker's terminal"
+        "answerInTerminal": "Answer it in the worker's terminal",
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "Not delivered — check the terminal",
       "subagents": {

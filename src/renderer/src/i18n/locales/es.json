@@ -19517,8 +19517,13 @@
         "plan": {
           "file": "Archivo de plan",
           "reviewTitle": "Revisar el plan propuesto",
-          "refineHint": "Refinar el plan cierra la revisión para que puedas enviar lo que debe cambiarse."
-        }
+          "refineHint": "Refinar el plan cierra la revisión para que puedas enviar lo que debe cambiarse.",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "No entregado — revisa la terminal",
       "fileLinks": {

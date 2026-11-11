@@ -340,7 +340,12 @@
       "needsAccessTo": "Требуется доступ: ",
       "newerVersionRequired": "Для этого запроса нужна более новая версия Orca.",
       "planFile": "Файл плана: {{filePath}}",
-      "reason": "Причина: "
+      "reason": "Причина: ",
+      "comment": "Comment",
+      "commentPlaceholder": "Add a comment for the agent (optional)",
+      "editedPlan": "Edited plan",
+      "editPlan": "Edit plan",
+      "discardEdits": "Discard edits"
     },
     "promptCard": {
       "answerInTerminal": "Ответить в терминале",

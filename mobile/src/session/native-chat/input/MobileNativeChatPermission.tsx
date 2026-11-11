@@ -13,7 +13,12 @@ import {
   isNewerApprovalSubject,
   isPlanApprovalSubject
 } from '../../../../../src/shared/agent-session/agent-session-approval-subject'
-import type { MobileChatPermission } from './mobile-native-chat-permission'
+import type {
+  MobileChatPermission,
+  MobileChatPermissionResponder
+} from './mobile-native-chat-permission'
+import { MobileNativeChatApprovalNotes } from './MobileNativeChatApprovalNotes'
+import { collectChatApprovalNotes } from '../../../../../src/shared/native-chat/input/native-chat-approval-notes'
 
 function MobileNativeChatPermissionImpl({
   permission,
@@ -23,7 +28,7 @@ function MobileNativeChatPermissionImpl({
   onAnswerInTerminal
 }: {
   permission: MobileChatPermission
-  onRespond: (send: string) => Promise<boolean>
+  onRespond: MobileChatPermissionResponder
   /** Shown when the card has no options: only the terminal can answer it. */
   onAnswerInTerminal?: () => void
   onCancel?: (prompt?: NonNullable<MobileChatPermission['prompt']>) => Promise<boolean>
@@ -33,6 +38,9 @@ function MobileNativeChatPermissionImpl({
   useMobileColorScheme()
   const t = useMobileTranslation()
   const [submitting, setSubmitting] = useState(false)
+  const [comment, setComment] = useState('')
+  const [editedPlan, setEditedPlan] = useState<string | null>(null)
+  const planText = isPlanApprovalSubject(permission.subject) ? permission.subject.text : null
   const submittingRef = useRef(false)
   // Unknown newer-host subjects allow only cancellation; preserve their detail for the reader.
   const newerSubject = isNewerApprovalSubject(permission.subject)
@@ -42,7 +50,8 @@ function MobileNativeChatPermissionImpl({
     }
     submittingRef.current = true
     setSubmitting(true)
-    const accepted = await onRespond(send)
+    const notes = collectChatApprovalNotes(permission, comment, editedPlan)
+    const accepted = notes ? await onRespond(send, notes) : await onRespond(send)
     if (!accepted) {
       submittingRef.current = false
       setSubmitting(false)
@@ -68,6 +77,15 @@ function MobileNativeChatPermissionImpl({
         />
       </View>
       <MobileNativeChatPermissionContext permission={permission} newerSubject={newerSubject} />
+      <MobileNativeChatApprovalNotes
+        canComment={!newerSubject && permission.acceptsComment === true}
+        canEditPlan={!newerSubject && permission.acceptsPlanEdit === true && planText !== null}
+        comment={comment}
+        onComment={setComment}
+        editedPlan={editedPlan}
+        onEditPlan={(text) => setEditedPlan(text === '' && editedPlan === null ? planText : text)}
+        disabled={submitting}
+      />
       <View testID="native-chat-approval-actions" style={styles.options}>
         {permission.options.map((option, index) => {
           const isPrimary = index === 0 && !permission.neutralOptions

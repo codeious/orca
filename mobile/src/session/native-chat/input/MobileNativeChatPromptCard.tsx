@@ -22,7 +22,10 @@ import type {
 import type { AskPrompt } from '../../../../../src/shared/native-chat/input/native-chat-ask-types'
 import { MobileNativeChatAsk } from './MobileNativeChatAsk'
 import { MobileNativeChatPermission } from './MobileNativeChatPermission'
-import type { MobileChatPermission } from './mobile-native-chat-permission'
+import type {
+  MobileChatPermission,
+  MobileChatPermissionResponder
+} from './mobile-native-chat-permission'
 import { MobileNativeChatQuestion } from './MobileNativeChatQuestion'
 import { MobileNativeChatStructuredAsk } from './MobileNativeChatStructuredAsk'
 import { mobileChatQuestionKey, type MobileChatQuestion } from './mobile-native-chat-question'
@@ -73,7 +76,7 @@ export function MobileNativeChatPromptCard({
   onCollapsePrompt?: () => void
   collapsedPrompt?: { title: string; expand: () => void } | null
   permission?: MobileChatPermission | null
-  onRespondPermission?: (send: string) => Promise<boolean>
+  onRespondPermission?: MobileChatPermissionResponder
   question?: MobileChatQuestion | null
   onAnswerQuestion?: (text: string, prompt?: MobileChatQuestion['prompt']) => Promise<boolean>
 }): React.JSX.Element | null {
@@ -126,7 +129,10 @@ export function MobileNativeChatPromptCard({
         // Re-aimed options stay one occurrence, so an in-flight answer keeps its card locked.
         key={JSON.stringify({ ...permission, options: undefined })}
         permission={permission}
-        onRespond={async (send) => (await onRespondPermission?.(send)) ?? false}
+        onRespond={async (send, notes) =>
+          (await (notes ? onRespondPermission?.(send, notes) : onRespondPermission?.(send))) ??
+          false
+        }
         onCancel={onCancelPrompt}
         onCollapse={onCollapsePrompt}
         onAnswerInTerminal={onAnswerInTerminal}

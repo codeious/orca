@@ -19590,8 +19590,13 @@
         "plan": {
           "file": "計畫檔案",
           "reviewTitle": "審查建議的計畫",
-          "refineHint": "「調整計畫」會關閉審查畫面，以便傳送要變更的內容。"
-        }
+          "refineHint": "「調整計畫」會關閉審查畫面，以便傳送要變更的內容。",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "未送達 — 請檢查終端機",
       "subagents": {

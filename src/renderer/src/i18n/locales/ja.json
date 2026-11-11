@@ -19056,8 +19056,13 @@
         "plan": {
           "file": "計画ファイル",
           "reviewTitle": "提案されたプランをレビュー",
-          "refineHint": "プランを調整するとレビューが閉じ、変更内容を送信できます。"
-        }
+          "refineHint": "プランを調整するとレビューが閉じ、変更内容を送信できます。",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "配信されませんでした — ターミナルを確認してください",
       "taskList": {

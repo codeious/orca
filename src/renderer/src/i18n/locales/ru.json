@@ -20532,8 +20532,13 @@
         "plan": {
           "file": "Файл плана",
           "reviewTitle": "Проверить предложенный план",
-          "refineHint": "Уточнение плана закрывает просмотр, чтобы вы могли описать нужные изменения."
-        }
+          "refineHint": "Уточнение плана закрывает просмотр, чтобы вы могли описать нужные изменения.",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "Не доставлено — проверьте терминал",
       "subagents": {

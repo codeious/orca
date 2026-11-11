@@ -332,7 +332,12 @@
       "needsAccessTo": "需要存取： ",
       "newerVersionRequired": "此請求需要更新版本的 Orca。",
       "planFile": "計畫檔案：{{filePath}}",
-      "reason": "原因： "
+      "reason": "原因： ",
+      "comment": "Comment",
+      "commentPlaceholder": "Add a comment for the agent (optional)",
+      "editedPlan": "Edited plan",
+      "editPlan": "Edit plan",
+      "discardEdits": "Discard edits"
     },
     "promptCard": {
       "answerInTerminal": "在終端機中回答",

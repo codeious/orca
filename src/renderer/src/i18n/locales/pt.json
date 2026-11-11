@@ -21102,10 +21102,15 @@
         "plan": {
           "file": "Arquivo do plano",
           "reviewTitle": "Revisar plano proposto",
-          "refineHint": "Refinar plano fecha a revisão para que você possa enviar o que deseja alterar."
+          "refineHint": "Refinar plano fecha a revisão para que você possa enviar o que deseja alterar.",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
         },
         "needsAccess": "Precisa de acesso a",
-        "needsNewerOrca": "Esta solicitação requer uma versão mais recente do Orca."
+        "needsNewerOrca": "Esta solicitação requer uma versão mais recente do Orca.",
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "Não entregue — verifique o terminal",
       "subagents": {
