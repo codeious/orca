@@ -332,7 +332,12 @@
       "needsAccessTo": "Erişim gereken konum: ",
       "newerVersionRequired": "Bu istek için Orca'nın daha yeni bir sürümü gerekiyor.",
       "planFile": "Plan dosyası: {{filePath}}",
-      "reason": "Neden: "
+      "reason": "Neden: ",
+      "comment": "Comment",
+      "commentPlaceholder": "Add a comment for the agent (optional)",
+      "editedPlan": "Edited plan",
+      "editPlan": "Edit plan",
+      "discardEdits": "Discard edits"
     },
     "promptCard": {
       "answerInTerminal": "Terminalde yanıtla",

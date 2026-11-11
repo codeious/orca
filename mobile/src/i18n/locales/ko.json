@@ -332,7 +332,12 @@
       "needsAccessTo": "접근이 필요한 경로: ",
       "newerVersionRequired": "이 요청에는 최신 버전의 Orca가 필요합니다.",
       "planFile": "계획 파일: {{filePath}}",
-      "reason": "이유: "
+      "reason": "이유: ",
+      "comment": "Comment",
+      "commentPlaceholder": "Add a comment for the agent (optional)",
+      "editedPlan": "Edited plan",
+      "editPlan": "Edit plan",
+      "discardEdits": "Discard edits"
     },
     "promptCard": {
       "answerInTerminal": "터미널에서 응답",

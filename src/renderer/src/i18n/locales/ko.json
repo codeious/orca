@@ -19053,8 +19053,13 @@
         "plan": {
           "file": "계획 파일",
           "reviewTitle": "제안된 계획 검토",
-          "refineHint": "계획 다듬기를 선택하면 검토가 닫히고 변경할 내용을 보낼 수 있습니다."
-        }
+          "refineHint": "계획 다듬기를 선택하면 검토가 닫히고 변경할 내용을 보낼 수 있습니다.",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "전달되지 않음 — 터미널을 확인하세요",
       "taskList": {

@@ -19789,8 +19789,13 @@
         "plan": {
           "file": "Dossier de planification",
           "reviewTitle": "Examiner le plan proposé",
-          "refineHint": "Affiner le plan ferme l’examen pour que vous puissiez indiquer ce qui doit changer."
-        }
+          "refineHint": "Affiner le plan ferme l’examen pour que vous puissiez indiquer ce qui doit changer.",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "Non livré — vérifiez le terminal",
       "taskList": {

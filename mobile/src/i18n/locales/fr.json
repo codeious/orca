@@ -336,7 +336,12 @@
       "needsAccessTo": "Accès nécessaire à : ",
       "newerVersionRequired": "Cette demande nécessite une version plus récente d'Orca.",
       "planFile": "Fichier du plan : {{filePath}}",
-      "reason": "Motif : "
+      "reason": "Motif : ",
+      "comment": "Comment",
+      "commentPlaceholder": "Add a comment for the agent (optional)",
+      "editedPlan": "Edited plan",
+      "editPlan": "Edit plan",
+      "discardEdits": "Discard edits"
     },
     "promptCard": {
       "answerInTerminal": "Répondre dans le terminal",

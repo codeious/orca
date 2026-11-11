@@ -332,7 +332,12 @@
       "needsAccessTo": "アクセスが必要なパス: ",
       "newerVersionRequired": "このリクエストには新しいバージョンの Orca が必要です。",
       "planFile": "計画ファイル: {{filePath}}",
-      "reason": "理由: "
+      "reason": "理由: ",
+      "comment": "Comment",
+      "commentPlaceholder": "Add a comment for the agent (optional)",
+      "editedPlan": "Edited plan",
+      "editPlan": "Edit plan",
+      "discardEdits": "Discard edits"
     },
     "promptCard": {
       "answerInTerminal": "ターミナルで回答する",

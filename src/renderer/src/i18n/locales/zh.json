@@ -19310,8 +19310,13 @@
         "plan": {
           "file": "计划文件",
           "reviewTitle": "审阅建议的计划",
-          "refineHint": "优化计划会关闭审阅，以便你发送要更改的内容"
-        }
+          "refineHint": "优化计划会关闭审阅，以便你发送要更改的内容",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
+        },
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "imagePreview": {
         "fileActions": "文件操作",
