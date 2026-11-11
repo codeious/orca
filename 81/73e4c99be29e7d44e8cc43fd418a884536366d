@@ -1,0 +1,91 @@
+mobile/src/i18n/locales/de.json
+  s_91d04d84653459::t_7a85f3fcd1471e 335-340
+mobile/src/i18n/locales/en.json
+  s_91d04d84653459::t_d7e8f167d41b6d 2983-2988
+mobile/src/i18n/locales/es.json
+  s_91d04d84653459::t_a6e6a8eaa38329 339-344
+mobile/src/i18n/locales/fr.json
+  s_91d04d84653459::t_898e26ef61128c 339-344
+mobile/src/i18n/locales/ja.json
+  s_91d04d84653459::t_21640d1099b691 335-340
+mobile/src/i18n/locales/ko.json
+  s_91d04d84653459::t_1df57ca18d5fb9 335-340
+mobile/src/i18n/locales/pt.json
+  s_91d04d84653459::t_c7053d599255fa 357-362
+mobile/src/i18n/locales/ru.json
+  s_91d04d84653459::t_b916413fa46a3d 343-348
+mobile/src/i18n/locales/tr.json
+  s_91d04d84653459::t_53f1fc0adca355 335-340
+mobile/src/i18n/locales/zh-Hant.json
+  s_91d04d84653459::t_ea952648f52694 335-340
+mobile/src/i18n/locales/zh.json
+  s_91d04d84653459::t_9bff9ed76317aa 335-340
+mobile/src/session/native-chat/input/MobileNativeChatApprovalNotes.tsx
+  s_91d04d84653459::t_a633100140f119 1-90
+mobile/src/session/native-chat/input/MobileNativeChatPermission.notes.test.tsx
+  s_3e2460b1afa01c::t_ad819b4265ad8e 1-87
+mobile/src/session/native-chat/input/MobileNativeChatPermission.tsx
+  s_91d04d84653459::t_3c02bc9389eff2 16-21,31,41-43,53-54,80-88
+mobile/src/session/native-chat/input/MobileNativeChatPromptCard.tsx
+  s_91d04d84653459::t_818e7f331033b6 25-28,79,132-135
+mobile/src/session/native-chat/mobile-native-chat-controller-contract.ts
+  s_91d04d84653459::t_d620287284619d 12-15,103
+src/renderer/src/components/native-chat/prompts/NativeChatApprovalCard.notes.test.tsx
+  s_3e2460b1afa01c::t_0a7c77b9f6451d 1-56
+src/renderer/src/components/native-chat/prompts/NativeChatApprovalCard.tsx
+  s_91d04d84653459::t_d10834412add07 1-6,21-24,30-31,65,178,194,212,219-226
+src/renderer/src/components/native-chat/prompts/NativeChatApprovalNotes.tsx
+  s_91d04d84653459::t_ba2c2913434e49 1-129
+src/renderer/src/components/native-chat/prompts/NativeChatStructuredPromptCard.tsx
+  s_91d04d84653459::t_f0d1e6c17a5dc3 33-35
+src/renderer/src/i18n/locales/de.json
+  s_91d04d84653459::t_ac5a79b9e75c0d 19892-19898
+src/renderer/src/i18n/locales/en.json
+  s_91d04d84653459::t_1bf06675e50594 20971-20974,20991-20993
+src/renderer/src/i18n/locales/es.json
+  s_91d04d84653459::t_654f99604103ee 19520-19526
+src/renderer/src/i18n/locales/fr.json
+  s_91d04d84653459::t_823a9e3f9614fc 19792-19798
+src/renderer/src/i18n/locales/ja.json
+  s_91d04d84653459::t_13fb01f7ec0a3f 19059-19065
+src/renderer/src/i18n/locales/ko.json
+  s_91d04d84653459::t_719a8aa69eceac 19056-19062
+src/renderer/src/i18n/locales/pt.json
+  s_91d04d84653459::t_235a53831da901 21105-21108,21111-21113
+src/renderer/src/i18n/locales/ru.json
+  s_91d04d84653459::t_b8892f17d95dcd 20535-20541
+src/renderer/src/i18n/locales/tr.json
+  s_91d04d84653459::t_f6f8bd5658879e 19870-19876
+src/renderer/src/i18n/locales/zh-Hant.json
+  s_91d04d84653459::t_702951f644b97b 19593-19599
+src/renderer/src/i18n/locales/zh.json
+  s_91d04d84653459::t_4d16456ac04185 19313-19319
+src/shared/native-chat/input/native-chat-approval-notes.ts
+  s_91d04d84653459::t_7f57dbb0f90c01 1-23
+src/shared/plugins/languages/protected-copy-keys.json
+  s_91d04d84653459::t_036514efab694c 703-704,713-715
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8173e4c99be29e7d44e8cc43fd418a884536366d",
+  "prompts": {},
+  "sessions": {
+    "s_3e2460b1afa01c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a954d65b-e10c-408f-a022-ce2d95d891d7",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

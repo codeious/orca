@@ -1,0 +1,41 @@
+src/main/droid/droid-missing-method.ts
+  s_91d04d84653459::t_c805bb5e65cee1 1-6
+  s_91d04d84653459::t_18e73af3185924 1-6
+src/main/droid/droid-model-options.ts
+  s_91d04d84653459::t_4b5dd08ba58381 1-198
+  s_91d04d84653459::t_f18769b37aa3d2 1-198
+src/main/droid/droid-session-model.ts
+  s_91d04d84653459::t_f78905e0136088 1-101
+  s_91d04d84653459::t_db704502177c32 1-101
+src/main/droid/droid-session-option-descriptors.ts
+  s_91d04d84653459::t_1b5d128bafb971 1-104
+  s_91d04d84653459::t_d8bbd8dd6bc771 1-104
+src/main/droid/droid-session-options.ts
+  s_91d04d84653459::t_d1050c3da0b3b4 1-296
+  s_91d04d84653459::t_135620d31d82a7 1-296
+src/main/droid/droid-session-settings.ts
+  s_91d04d84653459::t_2a178b6e5039e5 1-128
+  s_91d04d84653459::t_51947cc069ed35 1-128
+src/shared/droid-autonomy-options.ts
+  s_91d04d84653459::t_b563dadcc2a566 1-17
+  s_91d04d84653459::t_f590d741c31e55 1-17
+src/shared/droid-spec-pair-options.ts
+  s_91d04d84653459::t_0a757fd3fefd6a 1-14
+  s_91d04d84653459::t_898c78836445e7 1-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "432631598cde25bb6f14d2dded0408726a46542b",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

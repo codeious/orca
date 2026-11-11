@@ -1,0 +1,21 @@
+src/shared/agent-status/process/agent-process-exit-watch.test.ts
+  s_9915298ad8a882::t_717fd01cea4851 1-88
+src/shared/agent-status/process/agent-process-exit-watch.ts
+  s_9915298ad8a882::t_45a4dce5359e2c 1-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c8bfb9082569a12b476c8f4e42b9de067af380bd",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

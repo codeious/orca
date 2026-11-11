@@ -1,0 +1,41 @@
+src/main/droid/droid-context-usage.ts
+  s_91d04d84653459::t_a663db67cf9192 1-99
+  s_91d04d84653459::t_dde109b8d1a3fb 1-99
+src/main/droid/droid-environment.ts
+  s_91d04d84653459::t_7ef298f6b553e2 1-9
+  s_91d04d84653459::t_495078b6017157 1-9
+src/main/droid/droid-exec-launch.ts
+  s_91d04d84653459::t_e7b4eaa6243111 1-52
+  s_91d04d84653459::t_f5716536fe8e01 1-52
+src/main/droid/droid-message-visibility.ts
+  s_91d04d84653459::t_54bde39c253fa3 1-5
+  s_91d04d84653459::t_0655ffc5b0fd3a 1-5
+src/main/droid/droid-messages.ts
+  s_91d04d84653459::t_27c5745971db15 1-139
+  s_91d04d84653459::t_a437772e8c925f 1-139
+src/main/droid/droid-prompt.ts
+  s_91d04d84653459::t_2b866ba0a3de47 1-42
+  s_91d04d84653459::t_7367939713062b 1-42
+src/main/droid/droid-session-notifications.ts
+  s_91d04d84653459::t_04b915201b3105 1-103
+  s_91d04d84653459::t_ca46e6d8daf743 1-103
+src/main/droid/droid-turns.ts
+  s_91d04d84653459::t_5790bc5fcec6cd 1-307
+  s_91d04d84653459::t_8dd73ab9c02316 1-307
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ca4fb87c032461e75174796caa6a1385e1756577",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
