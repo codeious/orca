@@ -8,7 +8,10 @@ import {
   type AgentChatPermissionModeIconName
 } from '../../../../../../../shared/agent-launch/permissions/agent-chat-permission-mode'
 
-const ICONS_BY_NAME: Record<AgentChatPermissionModeIconName, LucideIcon> = {
+export const NATIVE_CHAT_PERMISSION_ICONS_BY_NAME: Record<
+  AgentChatPermissionModeIconName,
+  LucideIcon
+> = {
   Hand,
   FilePenLine,
   ShieldCheck,
@@ -16,11 +19,29 @@ const ICONS_BY_NAME: Record<AgentChatPermissionModeIconName, LucideIcon> = {
 }
 
 export const NATIVE_CHAT_PERMISSION_MODE_ICONS = {
-  ask: ICONS_BY_NAME[AGENT_CHAT_PERMISSION_MODE_ICON_NAMES.ask],
-  'accept-edits': ICONS_BY_NAME[AGENT_CHAT_PERMISSION_MODE_ICON_NAMES['accept-edits']],
-  auto: ICONS_BY_NAME[AGENT_CHAT_PERMISSION_MODE_ICON_NAMES.auto],
-  'full-access': ICONS_BY_NAME[AGENT_CHAT_PERMISSION_MODE_ICON_NAMES['full-access']]
+  ask: NATIVE_CHAT_PERMISSION_ICONS_BY_NAME[AGENT_CHAT_PERMISSION_MODE_ICON_NAMES.ask],
+  'accept-edits':
+    NATIVE_CHAT_PERMISSION_ICONS_BY_NAME[AGENT_CHAT_PERMISSION_MODE_ICON_NAMES['accept-edits']],
+  auto: NATIVE_CHAT_PERMISSION_ICONS_BY_NAME[AGENT_CHAT_PERMISSION_MODE_ICON_NAMES.auto],
+  'full-access':
+    NATIVE_CHAT_PERMISSION_ICONS_BY_NAME[AGENT_CHAT_PERMISSION_MODE_ICON_NAMES['full-access']]
 } as const satisfies Record<AgentChatPermissionMode, LucideIcon>
+
+export type NativeChatDeclaredChoiceCopy = (
+  value: string
+) => { label: string; description: string } | undefined
+
+// Providers translate the choices they declare; other choices keep the host's own words.
+const DECLARED_CHOICE_COPY: Readonly<Record<string, NativeChatDeclaredChoiceCopy>> = {}
+
+export function nativeChatDeclaredChoiceCopy(
+  optionId: string,
+  value: string
+): ReturnType<NativeChatDeclaredChoiceCopy> {
+  return Object.hasOwn(DECLARED_CHOICE_COPY, optionId)
+    ? DECLARED_CHOICE_COPY[optionId]?.(value)
+    : undefined
+}
 
 export function nativeChatPermissionModeLabel(
   mode: AgentChatPermissionMode,

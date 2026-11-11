@@ -23,6 +23,7 @@ import {
 } from '../../../../../../src/shared/native-chat/input/session-options/native-chat-session-speed-tiers'
 import { sayMobileNativeChatSessionOption as say } from './native-chat-session-option-copy'
 import { MobileSwitch } from '../../../../components/controls/MobileSwitch'
+import { mobileDeclaredChoiceCopy } from './mobile-native-chat-session-option-labels'
 
 export function SessionOptionCaption({ children }: { children: string }): React.JSX.Element {
   useMobileColorScheme()
@@ -95,6 +96,7 @@ export function SessionOptionSummaryRow({
   subtitle,
   accessibleValue,
   valueColor,
+  leading,
   disabled,
   onPress
 }: {
@@ -104,6 +106,7 @@ export function SessionOptionSummaryRow({
   subtitle?: string
   accessibleValue?: string
   valueColor?: string
+  leading?: ReactNode
   disabled: boolean
   onPress?: () => void
 }): React.JSX.Element {
@@ -112,6 +115,7 @@ export function SessionOptionSummaryRow({
     <ListRow
       title={label}
       subtitle={subtitle}
+      leading={leading}
       value={tinted ? undefined : value}
       accessory={tinted}
       navigates={onPress !== undefined}
@@ -216,17 +220,20 @@ export function descriptorRowElements(
     ]
   }
   const { currentValue, choices } = descriptor.kind
-  const choiceRow = (choice: (typeof choices)[number]) => (
-    <ListRow
-      key={choice.value}
-      title={nativeChatSessionChoiceLabel(choice, say, descriptor.id)}
-      subtitle={choice.description}
-      leading={choiceLeading ? (choiceLeading(choice.value) ?? null) : undefined}
-      selected={choice.value === currentValue}
-      disabled={locked}
-      onPress={() => onSetOption(choice.value)}
-    />
-  )
+  const choiceRow = (choice: (typeof choices)[number]) => {
+    const declared = mobileDeclaredChoiceCopy(descriptor.id, choice.value)
+    return (
+      <ListRow
+        key={choice.value}
+        title={declared?.label ?? nativeChatSessionChoiceLabel(choice, say, descriptor.id)}
+        subtitle={declared?.description ?? choice.description}
+        leading={choiceLeading ? (choiceLeading(choice.value) ?? null) : undefined}
+        selected={choice.value === currentValue}
+        disabled={locked}
+        onPress={() => onSetOption(choice.value)}
+      />
+    )
+  }
   // No search here, so search-only rows stay out; folded ones follow a More models toggle.
   const listed = choices.filter((choice) => !choice.hidden || choice.value === currentValue)
   const more = moreChoices ? listed.filter((choice) => choice.legacy) : []

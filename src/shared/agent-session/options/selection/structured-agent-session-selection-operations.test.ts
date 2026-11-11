@@ -1,6 +1,28 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createStructuredSessionSelectionController } from './structured-agent-session-selection-operations'
 
+const PLAN_PAIR = { modelOptionId: 'planModel', effortOptionId: 'planEffort', sameAsMain: 'main' }
+
+it('remembers only the newest accepted plan-mode pair and marks its unpicked half as the main pair', () => {
+  const remember = vi.fn()
+  const controller = createStructuredSessionSelectionController(remember, () => true, PLAN_PAIR)
+  const older = controller.issue('planModel', 'opus', 'sol')
+  older.transmitted = true
+  const newer = controller.issue('effort', 'high', 'sol')
+  controller.settle(newer, {
+    kind: 'accepted',
+    options: { planMode: 'true', model: 'sol', planModel: 'sonnet' }
+  })
+  controller.settle(older, {
+    kind: 'accepted',
+    options: { model: 'sol', planModel: 'opus', planEffort: 'xhigh' }
+  })
+  expect(remember).toHaveBeenCalledExactlyOnceWith([
+    { modelId: 'sol', optionId: 'planModel', value: 'sonnet' },
+    { modelId: 'sol', optionId: 'planEffort', value: 'main' }
+  ])
+})
+
 // Creation, attachment and revalidation share identities even when two picks have equal values.
 describe('chat selection operation handoff', () => {
   it('freezes opening identities, supersedes unsent holds and issues attached picks before old replies', async () => {
