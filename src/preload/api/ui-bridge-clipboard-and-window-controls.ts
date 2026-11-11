@@ -166,6 +166,9 @@ export const uiClipboardAndWindowControlsApi = {
   setMarkdownEditorFocused: (focused: boolean): void => {
     ipcRenderer.send('ui:setMarkdownEditorFocused', focused)
   },
+  setChatComposerFocused: (agent: string | null): void => {
+    ipcRenderer.send('ui:setChatComposerFocused', agent)
+  },
   setRichMarkdownContextMenuTarget: (target: RichMarkdownContextMenuTableTarget | null): void => {
     ipcRenderer.send(richMarkdownContextMenuTargetChannel, target)
   },

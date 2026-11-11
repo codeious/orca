@@ -1,7 +1,7 @@
 import { useNativeChatComposerEditSession } from '../queue/editing/use-native-chat-composer-edit-session'
 import { useNativeChatComposerNotice } from './controls/use-native-chat-composer-notice'
 import { useNativeChatMobileHoldNotice } from '../host-access/use-native-chat-mobile-hold-notice'
-import { forwardRef, useCallback, useState, useRef } from 'react'
+import { forwardRef, useState, useRef } from 'react'
 import { useNativeChatComposerInterrupt } from './submit/use-native-chat-composer-interrupt'
 import { useNativeChatContextUsageSummary } from '../usage/use-native-chat-context-usage-summary'
 import { useNativeChatMentionFiles } from './pickers/use-native-chat-mention-files'
@@ -11,11 +11,10 @@ import { useNativeChatComposerRecall } from '../drafts/use-native-chat-composer-
 import { useNativeChatLaunchDraftAdoption } from '../drafts/use-native-chat-launch-draft-adoption'
 import { NativeChatComposerWorkspace } from './controls/NativeChatComposerWorkspace'
 import { NativeChatComposerField } from './editor/NativeChatComposerField'
-import { useNativeChatComposerAttachments } from '../attachments/chips/use-native-chat-composer-attachments'
+import { useNativeChatComposerFileIntake } from './use-native-chat-composer-file-intake'
 import { nativeChatComposerSendState } from './submit/native-chat-composer-send-state'
 import { useNativeChatSteerChordPreview } from './controls/use-native-chat-steer-chord-preview'
 import { useNativeChatComposerHandle } from './editor/use-native-chat-composer-handle'
-import { useNativeChatFileDrops } from '../attachments/intake/use-native-chat-file-drops'
 import { useNativeChatComposerKeyDown } from './editor/use-native-chat-composer-keydown'
 import { useNativeChatSendLifecycle } from '../session/terminal/send/use-native-chat-send-lifecycle'
 import { useNativeChatComposerSessionOptions } from './controls/use-native-chat-composer-session-options'
@@ -27,6 +26,7 @@ import { useNativeChatComposerAppMenuSelection } from './focus/use-native-chat-c
 import { useNativeChatComposerSubmit } from './submit/use-native-chat-composer-submit'
 import { useNativeChatComposerCommandPicker } from './pickers/use-native-chat-composer-command-picker'
 import type * as C from './native-chat-composer-types'
+import { useNativeChatComposerProviderKeys } from './editor/use-native-chat-composer-provider-keys'
 
 type ComposerHandle = C.NativeChatComposerHandle
 
@@ -101,9 +101,6 @@ export const NativeChatComposerPane = forwardRef<ComposerHandle, C.NativeChatCom
     const [hasPty, disabled] = structuredTransport
       ? [true, !canSend || unavailableHint !== undefined]
       : [targetPtyId !== null, targetPtyId === null || !canSend || inputOwnedByCard]
-    const attachDisabled =
-      disabled ||
-      (structuredTransport?.runtime === 'remote' && structuredTransport.sessionPending === true)
 
     const { picker, orcaCommands } = useNativeChatComposerCommandPicker({
       mode: editSession ? 'edit' : launchPrompt || pending ? 'launch' : undefined,
@@ -134,40 +131,22 @@ export const NativeChatComposerPane = forwardRef<ComposerHandle, C.NativeChatCom
       structuredWorktreeId: structuredTransport?.worktreeId
     })
 
-    const resolveTarget = useCallback(
-      () => (targetPtyId ? { ptyId: targetPtyId } : null),
-      [targetPtyId]
-    )
-
-    const attachments = useNativeChatComposerAttachments({
-      attachmentScopeKey: draftScopeKey,
-      allowWithoutTarget: Boolean(structuredTransport),
-      acceptsImages: structuredTransport?.acceptsImages !== false,
-      imageReferences: Boolean(structuredTransport),
-      caret,
-      disabled,
-      isComposing: imeEnterGesture.isComposing,
-      resolveTarget,
-      textareaRef,
-      setCaret,
-      setDraft,
-      setNotice
-    })
-    const { imageAttachments, attachResolvedPaths, clearImageAttachments } = attachments
-
-    const fileDrops = useNativeChatFileDrops({
+    const intake = useNativeChatComposerFileIntake({
       paneKey,
       draftScopeKey,
       targetPtyId,
       structuredTransport,
       terminalTabId,
-      structuredWorktreeId: structuredTransport?.worktreeId,
-      structuredSession: structuredTransport,
+      caret,
       disabled,
-      attachResolvedPaths,
-      pendingChips: attachments.pendingChips,
+      isComposing: imeEnterGesture.isComposing,
+      textareaRef,
+      setCaret,
+      setDraft,
       setNotice
     })
+    const { attachments, fileDrops, attachDisabled, resolveTarget } = intake
+    const { imageAttachments, attachResolvedPaths, clearImageAttachments } = attachments
 
     const localHandle = useRef<C.NativeChatComposerHandle>(null)
     const root = useRef<HTMLDivElement>(null)
@@ -320,6 +299,19 @@ export const NativeChatComposerPane = forwardRef<ComposerHandle, C.NativeChatCom
     })
 
     const handleKeyDown = useNativeChatComposerKeyDown({
+      agent: editSession ? undefined : agent,
+      providerKeys: useNativeChatComposerProviderKeys({
+        agent: editSession ? undefined : agent,
+        snapshot: sessionOptions.snapshot,
+        surface: disabled || editSession ? null : sessionOptions.surface,
+        isWorking: isWorking || inputOwnedByCard,
+        inert: inputOwnedByCard,
+        stopTurn: isWorking && onStop ? interrupt : undefined,
+        input: textareaRef,
+        draft,
+        hasAttachments: imageAttachments.length > 0,
+        clear: { setDraft, setCaret, setActiveSuggestion, clearSkillOrigin, clearImageAttachments }
+      }),
       autocomplete,
       mentionFiles,
       completeMention,
