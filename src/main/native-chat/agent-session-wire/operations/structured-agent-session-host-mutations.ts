@@ -243,7 +243,7 @@ export function respondToStructuredAgentSessionPrompt(
     context,
     caller,
     params.envelope,
-    promptPlan(params),
+    promptPlan({ ...params, operationId: params.envelope.clientOperationId }),
     openForProviderWrite(context, params.envelope)
   )
 }

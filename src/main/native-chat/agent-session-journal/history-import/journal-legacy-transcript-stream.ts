@@ -1,3 +1,6 @@
+import type { AgentType } from '../../../../shared/agent-status/contracts/agent-status-types'
+import { resolveNativeChatTranscriptAgent } from '../../../../shared/native-chat/native-chat-agent-support'
+import { decodeDroidTranscriptLine } from '../../../droid/droid-transcript-line-decoder'
 import { decodeClaudeTranscriptLine } from '../../transcript-line-decoders-claude'
 import { decodeCodexTranscriptLine } from '../../transcript-line-decoders-codex'
 import { decodeGrokTranscriptLine } from '../../transcript-line-decoders-grok'
@@ -35,5 +38,17 @@ export const TRANSCRIPT_DECODERS = {
   codex: (line: string, fallbackId: string) =>
     decodeCodexTranscriptLine(line, fallbackId, { historyImport: true }),
   grok: decodeGrokTranscriptLine,
-  omp: decodeOmpTranscriptLine
+  omp: decodeOmpTranscriptLine,
+  droid: decodeDroidTranscriptLine
 } as const
+
+export function resolveLegacyTranscriptAgent(agent: AgentType) {
+  return agent === 'pi'
+    ? 'omp'
+    : (resolveNativeChatTranscriptAgent(agent) ??
+        (isLineDecodedTranscriptAgent(agent) ? agent : null))
+}
+
+function isLineDecodedTranscriptAgent(agent: string): agent is keyof typeof TRANSCRIPT_DECODERS {
+  return Object.hasOwn(TRANSCRIPT_DECODERS, agent)
+}
