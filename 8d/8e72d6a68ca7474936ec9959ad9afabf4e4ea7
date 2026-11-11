@@ -1,0 +1,105 @@
+mobile/src/i18n/locales/de.json
+  s_2ff199e299c023::t_725e62f38572e6 414
+mobile/src/i18n/locales/en.json
+  s_2ff199e299c023::t_67aa5f861bf6d1 3021
+mobile/src/i18n/locales/es.json
+  s_2ff199e299c023::t_04e2ff20acc845 418
+mobile/src/i18n/locales/fr.json
+  s_2ff199e299c023::t_a90b0fb2065879 418
+mobile/src/i18n/locales/ja.json
+  s_2ff199e299c023::t_8837a35213e134 414
+mobile/src/i18n/locales/ko.json
+  s_2ff199e299c023::t_2687f4ce913c43 414
+mobile/src/i18n/locales/pt.json
+  s_2ff199e299c023::t_c003b996a18701 437
+mobile/src/i18n/locales/ru.json
+  s_2ff199e299c023::t_f12f43d18e6573 422
+mobile/src/i18n/locales/tr.json
+  s_2ff199e299c023::t_1051ff741fba78 414
+mobile/src/i18n/locales/zh-Hant.json
+  s_2ff199e299c023::t_cf8148c2a6d72f 414
+mobile/src/i18n/locales/zh.json
+  s_2ff199e299c023::t_3efc3e49eaf43c 414
+mobile/src/session/native-chat/input/MobileNativeChatSessionOptionPickers.test.ts
+  s_2ff199e299c023::t_7f87d902b6e926 171-194
+mobile/src/session/native-chat/input/MobileNativeChatSessionOptionPickers.tsx
+  s_2ff199e299c023::t_ec7dcf10335a06 3,38-45,103,140,142-144,193-208,237-241,296-301,367,390-394
+mobile/src/session/native-chat/input/MobileNativeChatSessionOptionRows.tsx
+  s_2ff199e299c023::t_af6dafded2a84e 26,97,104,112,217-230
+mobile/src/session/native-chat/input/mobile-native-chat-permission-icons.tsx
+  s_2ff199e299c023::t_b3e81759d820b5 1-51
+mobile/src/session/native-chat/input/mobile-native-chat-session-option-labels.ts
+  s_2ff199e299c023::t_844fe680938c03 9-24,52-55
+mobile/src/session/native-chat/input/use-mobile-structured-selection-controller.ts
+  s_2ff199e299c023::t_e9ab58ab66c2d3 3,26-27
+src/main/native-chat/agent-session-wire/acquisition/structured-agent-session-acquisition.ts
+  s_2ff199e299c023::t_3f4ca1e451b826 68
+src/main/native-chat/agent-session-wire/options/structured-agent-session-option-intent.ts
+  s_2ff199e299c023::t_c8ddbc6ef7e3e6 26,35-38,45-46
+src/main/native-chat/agent-session-wire/options/structured-agent-session-option-models.ts
+  s_2ff199e299c023::t_baf4a02620c150 26
+src/main/native-chat/agent-session-wire/options/structured-agent-session-resting-options.ts
+  s_2ff199e299c023::t_9deefe57c77e57 23-26,131-134,143
+src/main/native-chat/agent-session-wire/providers/structured-agent-definition.ts
+  s_2ff199e299c023::t_c7f79da7d15aa1 7,21-24
+src/main/native-chat/agent-session-wire/startup/structured-agent-session-startup-attempt-mint.ts
+  s_2ff199e299c023::t_110bd51f04078f 7-10,20,23-33
+src/main/runtime/rpc/methods/structured-sessions/catalog/structured-agent-session-options-read.ts
+  s_2ff199e299c023::t_0ea42dba548e46 30,64-70
+src/renderer/src/components/native-chat/session/options/controls/NativeChatPermissionModePicker.tsx
+  s_2ff199e299c023::t_14059df30d2853 2,18,21,25,27,34-37,40,53,60-74,132-167,185,203,212-274,287,292-306,323
+src/renderer/src/components/native-chat/session/options/controls/NativeChatSessionOptionPickers.tsx
+  s_2ff199e299c023::t_775044923a03ef 9,336-337
+src/renderer/src/components/native-chat/session/options/controls/native-chat-permission-mode-labels.ts
+  s_2ff199e299c023::t_6a7fcd63d9c0db 11-14,22-27,30-45
+src/renderer/src/lib/agent-session/options/structured-agent-session-selection-controller.ts
+  s_2ff199e299c023::t_f51660c526759b 14,79-92
+src/shared/agent-session/options/agent-session-options-result.ts
+  s_2ff199e299c023::t_01ab363b886cb6 6,23
+src/shared/agent-session/options/agent-session-session-options.ts
+  s_2ff199e299c023::t_b633b4ac089ccd 1-63
+src/shared/agent-session/options/structured-agent-session-option-picks.ts
+  s_2ff199e299c023::t_c89740dc5cfe9e 1-43
+src/shared/agent-session/options/structured-agent-session-option-snapshot.ts
+  s_2ff199e299c023::t_94083bb1951b0c 31-34,248-252,286-289
+src/shared/agent-session/options/structured-agent-session-options.ts
+  s_2ff199e299c023::t_da26ac878ffca8 8,18,24,27,49,173,215,282-285,294-297
+src/shared/agent-session/options/structured-agent-session-plan-mode-pair.ts
+  s_2ff199e299c023::t_58a8c35d8208fe 1-69
+src/shared/agent-session/options/structured-agent-session-selection-operation.ts
+  s_2ff199e299c023::t_06d993294f6b6d 1-23
+src/shared/agent-session/options/structured-agent-session-selection-operations.test.ts
+  s_2ff199e299c023::t_cafc8ab07419a3 4-25
+src/shared/agent-session/options/structured-agent-session-selection-operations.ts
+  s_2ff199e299c023::t_425b92946ceb97 7-15,26-27,29,77-129
+src/shared/agent-session/structured-agent-session-surface-capabilities.ts
+  s_2ff199e299c023::t_bbe9044626ac3f 2,59
+src/shared/native-chat/input/native-chat-permission-choice-mark.ts
+  s_2ff199e299c023::t_d6182de421290c 1-24
+src/shared/native-chat/input/native-chat-session-option-defaults.ts
+  s_2ff199e299c023::t_f90cf4383a7767 3-6,37-38,46-53,58,62-64,67,71,156-160,208-220,242,259,293-303
+src/shared/native-chat/input/native-chat-session-option-snapshot.test.ts
+  s_2ff199e299c023::t_8c1b62d42207fa 20-21,29-53
+src/shared/native-chat/input/native-chat-session-option-snapshot.ts
+  s_2ff199e299c023::t_ec1f840fcfd0ed 148-156,161,163
+src/shared/native-chat/input/native-chat-session-options.ts
+  s_2ff199e299c023::t_fa6b57a50ca59e 2,12-15,35-38,102
+src/shared/rpc-contract/client-settings-params.ts
+  s_2ff199e299c023::t_b7fed39f1321e3 14,29-35,40-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8d8e72d6a68ca7474936ec9959ad9afabf4e4ea7",
+  "prompts": {},
+  "sessions": {
+    "s_2ff199e299c023": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "cc8b1f7a-85cb-44a3-8d11-54b5b380d9f7",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
