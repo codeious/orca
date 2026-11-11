@@ -1,0 +1,53 @@
+src/main/runtime/agent-session/launch/structured-agent-launch-support.test.ts
+  s_9e473945bea849::t_c2e484a9f97af3 1-42
+src/main/runtime/client/settings/runtime-client-settings-shape.ts
+  s_bb5217dd1cbb24::t_9652cb9840b83f 64
+src/main/runtime/construction/runtime-store-contract.ts
+  s_bb5217dd1cbb24::t_ca3542637ff426 161
+src/main/runtime/rpc/methods/structured-sessions/catalog/structured-agent-session-experimental-agents.test.ts
+  s_9e473945bea849::t_1f306d08b7bc3d 1-88
+src/renderer/src/components/settings/advanced/ChatAgentsExperimentalSetting.tsx
+  s_aca4473266c22a::t_e27d68f257b881 1-60
+src/renderer/src/components/settings/advanced/ExperimentalPane.tsx
+  s_aca4473266c22a::t_a230cd351868f6 15,27,254-255
+src/renderer/src/components/settings/advanced/chat-agents-experimental-search-entry.ts
+  s_9e473945bea849::t_8691f9fb6eb8d0 1-34
+src/renderer/src/components/settings/advanced/experimental-search.ts
+  s_aca4473266c22a::t_e9027dcd9d3624 6,187
+src/renderer/src/runtime/native-chat/agent-catalogs/host-structured-agents.ts
+  s_aca4473266c22a::t_e319b578e3bbcb 154-160
+src/shared/rpc-contract/client-settings-params.ts
+  s_bb5217dd1cbb24::t_919c79815ff8b2 117-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fab4ad5da9cda41b9f0e8d46987ff9a18e308987",
+  "prompts": {},
+  "sessions": {
+    "s_9e473945bea849": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e13e969a-8b8f-472a-b31b-87d5d0067270",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_aca4473266c22a": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "10f47f83-2385-404f-8c99-dc63782d2148",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_bb5217dd1cbb24": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f533207f-8bb7-46e9-8d6c-f0aa3f9e7dc1",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
