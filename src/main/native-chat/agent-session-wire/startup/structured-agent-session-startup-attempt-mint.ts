@@ -4,6 +4,10 @@ import type { AgentSessionRecord } from '../../../../shared/agent-session/lifecy
 import type { AgentChatPermissionChoice } from '../../../../shared/agent-launch/permissions/agent-chat-permission-mode'
 import type { StructuredAgentSessionEventSink } from '../journal-ingress/structured-agent-session-event-sink'
 import type { StructuredAgentSessionStartupAttempt } from './structured-agent-session-startup-attempt-contract'
+import { AgentSessionExecutionOptionsSchema } from '../../../../shared/agent-session/options/agent-session-execution-options'
+import type { StructuredAgentDefinition } from '../providers/structured-agent-definition'
+
+const executionOptionKeys = new Set(Object.keys(AgentSessionExecutionOptionsSchema.shape))
 
 export function mintStructuredAgentSessionStartupAttempt(input: {
   record: AgentSessionRecord
@@ -13,10 +17,20 @@ export function mintStructuredAgentSessionStartupAttempt(input: {
   events?: StructuredAgentSessionEventSink
   signal?: AbortSignal
   startupOptions?: Readonly<Record<string, string>>
+  restingOptions: StructuredAgentDefinition['restingOptions'] | undefined
   attemptId?: string
 }): StructuredAgentSessionStartupAttempt {
-  const { record } = input
-  const selected = input.startupOptions ?? record.options
+  const { record, restingOptions } = input
+  const selected = input.startupOptions
+    ? {
+        ...Object.fromEntries(
+          Object.entries(record.options ?? {}).filter(
+            ([key]) => restingOptions?.acceptsKey(key) && !executionOptionKeys.has(key)
+          )
+        ),
+        ...input.startupOptions
+      }
+    : record.options
   const options = record.provider === 'claude' ? { fastMode: 'false', ...selected } : selected
   return {
     attemptId: input.attemptId ?? randomUUID(),

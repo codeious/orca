@@ -23,6 +23,7 @@ import {
 } from '../../../../../src/shared/native-chat/input/native-chat-session-speed-tiers'
 import { sayMobileNativeChatSessionOption as say } from './native-chat-session-option-copy'
 import { MobileSwitch } from '../../../components/MobileSwitch'
+import { mobileDeclaredChoiceCopy } from './mobile-native-chat-session-option-labels'
 
 export function SessionOptionCaption({ children }: { children: string }): React.JSX.Element {
   useMobileColorScheme()
@@ -93,12 +94,14 @@ export function SessionOptionSummaryRow({
   label,
   value,
   valueColor,
+  leading,
   disabled,
   onPress
 }: {
   label: string
   value: string
   valueColor?: string
+  leading?: ReactNode
   disabled: boolean
   onPress?: () => void
 }): React.JSX.Element {
@@ -106,6 +109,7 @@ export function SessionOptionSummaryRow({
   const row = (
     <ListRow
       title={label}
+      leading={leading}
       value={tinted ? undefined : value}
       accessory={tinted}
       navigates={onPress !== undefined}
@@ -210,17 +214,20 @@ export function descriptorRowElements(
     ]
   }
   const { currentValue, choices } = descriptor.kind
-  const choiceRow = (choice: (typeof choices)[number]) => (
-    <ListRow
-      key={choice.value}
-      title={nativeChatSessionChoiceLabel(choice, say, descriptor.id)}
-      subtitle={choice.description}
-      leading={choiceLeading ? (choiceLeading(choice.value) ?? null) : undefined}
-      selected={choice.value === currentValue}
-      disabled={locked}
-      onPress={() => onSetOption(choice.value)}
-    />
-  )
+  const choiceRow = (choice: (typeof choices)[number]) => {
+    const declared = mobileDeclaredChoiceCopy(descriptor.id, choice.value)
+    return (
+      <ListRow
+        key={choice.value}
+        title={declared?.label ?? nativeChatSessionChoiceLabel(choice, say, descriptor.id)}
+        subtitle={declared?.description ?? choice.description}
+        leading={choiceLeading ? (choiceLeading(choice.value) ?? null) : undefined}
+        selected={choice.value === currentValue}
+        disabled={locked}
+        onPress={() => onSetOption(choice.value)}
+      />
+    )
+  }
   // No search here: search-only aliases follow a More models toggle, as compact pickers show them.
   const more = moreChoices ? choices.filter((choice) => choice.searchOnly) : []
   return [

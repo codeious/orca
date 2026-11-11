@@ -1,5 +1,9 @@
 import { resolveAgentChoiceLayers } from '../../agent-launch/choices/agent-choice-layers'
 import { isTuiAgent } from '../../agent-launch/catalog/tui-agent-config'
+import {
+  STRUCTURED_PLAN_MODE_PAIR_OPTION_IDS,
+  structuredPlanModePair
+} from '../../agent-session/options/structured-agent-session-plan-mode-pair'
 import type { AgentType } from '../../agent-status/contracts/agent-status-types'
 import {
   AGENT_CHAT_PERMISSION_MODE_OPTION_ID,
@@ -30,11 +34,8 @@ export function resolveNativeChatSessionOptionDefaults(
   const entry = persisted?.[agent]
   // Preserve CLI-configured defaults until the user explicitly selects a model that authorizes launch flags.
   const modelId = typeof entry?.model === 'string' && entry.model.trim() ? entry.model : undefined
-  if (!modelId) {
-    return undefined
-  }
-  const values: Record<string, SessionOptionValue> = { model: modelId }
-  const storedValues = entry?.valuesByModel?.[modelId]
+  const values: Record<string, SessionOptionValue> = modelId ? { model: modelId } : {}
+  const storedValues = modelId ? entry?.valuesByModel?.[modelId] : undefined
   if (storedValues && typeof storedValues === 'object') {
     for (const [id, value] of Object.entries(storedValues)) {
       if (sessionOptionValueIsValid(value)) {
@@ -42,24 +43,32 @@ export function resolveNativeChatSessionOptionDefaults(
       }
     }
   }
-  return values
+  const pair = structuredPlanModePair(agent)
+  if (pair && entry?.spec?.model) {
+    values[pair.modelOptionId] = entry.spec.model
+  }
+  if (pair && entry?.spec?.effort) {
+    values[pair.effortOptionId] = entry.spec.effort
+  }
+  return Object.keys(values).length > 0 ? values : undefined
 }
 
 /** Canonical values seed through the existing durable string record; the codec
  *  is the only boundary that represents the boolean Fast preference as text. */
-export const STRUCTURED_LAUNCH_SEED_OPTION_IDS = [
+export const STRUCTURED_LAUNCH_SEED_OPTION_IDS: readonly string[] = [
   'model',
   'effort',
   'fastMode',
-  'serviceTier'
-] as const
+  'serviceTier',
+  ...STRUCTURED_PLAN_MODE_PAIR_OPTION_IDS
+]
 
 /** What a launch may hold and a create may seed; the permission mode never rewrites the selection. */
-export const STRUCTURED_LAUNCH_OPTION_IDS = [
+export const STRUCTURED_LAUNCH_OPTION_IDS: readonly string[] = [
   ...STRUCTURED_LAUNCH_SEED_OPTION_IDS,
   'interactionMode',
   AGENT_CHAT_PERMISSION_MODE_OPTION_ID
-] as const
+]
 
 /** Share bounded-string seed narrowing with orchestration --model/--effort. Empty results must be undefined:
  * an empty durable map throws agent_session_options_invalid outside wire refusals and strands launch fallback. */
@@ -144,7 +153,11 @@ export function structuredLaunchSeedOptions(
       })
     : undefined
   const selection = choices
-    ? parseStructuredLaunchSeedOptions({ ...choices.options, model: choices.model })
+    ? parseStructuredLaunchSeedOptions({
+        ...seededPlanModePair(remembered),
+        ...choices.options,
+        model: choices.model
+      })
     : remembered
   const permissionMode = newChatPermissionModeForSettings(agent, settings)
   return permissionMode
@@ -192,6 +205,19 @@ export function updateNativeChatSessionOptionDefaults(args: {
   adoptModelAsLaunchDefault?: boolean
 }): PersistedNativeChatSessionOptions {
   const currentAgent = args.persisted?.[args.agent]
+  const pair = structuredPlanModePair(args.agent)
+  if (pair && (args.optionId === pair.modelOptionId || args.optionId === pair.effortOptionId)) {
+    return {
+      ...args.persisted,
+      [args.agent]: {
+        ...currentAgent,
+        spec: {
+          ...currentAgent?.spec,
+          [args.optionId === pair.modelOptionId ? 'model' : 'effort']: String(args.value)
+        }
+      }
+    }
+  }
   const currentModelValues = currentAgent?.valuesByModel?.[args.modelId] ?? {}
   const valuesByModel = {
     ...currentAgent?.valuesByModel,
@@ -213,7 +239,7 @@ export function updateNativeChatSessionOptionDefaults(args: {
   }
 }
 
-/** A different model drops the prior model’s options, keeping the chat’s permission choice. Without
+/** A different model drops the prior model’s options, keeping permissions and the plan-mode pair. Without
  *  a requested `model` the result only overlays the shown selection. */
 export function structuredLaunchRequestedOptions(selection: {
   explicit?: Readonly<Record<string, string>>
@@ -230,6 +256,7 @@ export function structuredLaunchRequestedOptions(selection: {
   return {
     ...(permissionMode ? { [AGENT_CHAT_PERMISSION_MODE_OPTION_ID]: permissionMode } : {}),
     ...(explicit.interactionMode ? { interactionMode: explicit.interactionMode } : {}),
+    ...seededPlanModePair({ ...seed, ...explicit }),
     ...(changed ? {} : explicit),
     ...held
   }
@@ -262,4 +289,15 @@ export function seededPermissionMode(
 ): Record<string, string> {
   const mode = options?.[AGENT_CHAT_PERMISSION_MODE_OPTION_ID]
   return mode ? { [AGENT_CHAT_PERMISSION_MODE_OPTION_ID]: mode } : {}
+}
+
+function seededPlanModePair(
+  options: Readonly<Record<string, string>> | undefined
+): Record<string, string> {
+  return Object.fromEntries(
+    STRUCTURED_PLAN_MODE_PAIR_OPTION_IDS.flatMap((id) => {
+      const value = options?.[id]
+      return value ? [[id, value]] : []
+    })
+  )
 }

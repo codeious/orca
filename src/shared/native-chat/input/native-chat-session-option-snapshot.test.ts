@@ -17,12 +17,39 @@ import {
 } from './native-chat-session-option-state'
 import {
   buildNativeChatSessionOptionSnapshot,
+  composerPermissionDescriptor,
+  sortNativeChatSessionOptions,
   withTrackedNativeChatModel
 } from './native-chat-session-option-snapshot'
 
 function claudeRecord(): NativeChatSessionOptionRecord {
   return createNativeChatSessionOptionRecord('claude')
 }
+
+describe('composerPermissionDescriptor', () => {
+  it('gives a declared permission option the permission slot instead of a popover row', () => {
+    const permission: SessionOptionDescriptor = {
+      id: 'permissionMode',
+      label: 'Permissions',
+      category: 'mode',
+      kind: { type: 'select', currentValue: 'ask', choices: [{ value: 'ask', label: 'Ask' }] },
+      valueSource: 'applied',
+      transport: 'agent-session',
+      settable: true
+    }
+    const access: SessionOptionDescriptor = {
+      ...permission,
+      id: 'accessLevel',
+      role: 'permission',
+      kind: { type: 'select', currentValue: 'read', choices: [{ value: 'read', label: 'Read' }] }
+    }
+
+    expect(composerPermissionDescriptor([access])).toBe(access)
+    expect(sortNativeChatSessionOptions([access])).toEqual([])
+    expect(composerPermissionDescriptor([access, permission])).toBe(permission)
+    expect(sortNativeChatSessionOptions([access, permission])).toEqual([access])
+  })
+})
 
 describe('buildNativeChatSessionOptionSnapshot', () => {
   // Both lanes emit dispatched; only an explicit transport distinguishes their descriptors.

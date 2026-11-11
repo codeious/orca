@@ -5,10 +5,7 @@ import {
   replaceStructuredAgentSessionAnsweredValues,
   type StructuredAgentSessionOptionRecord
 } from './structured-agent-session-option-state'
-import {
-  STRUCTURED_LAUNCH_OPTION_IDS,
-  STRUCTURED_LAUNCH_SEED_OPTION_IDS
-} from '../../native-chat/input/native-chat-session-option-defaults'
+import { STRUCTURED_LAUNCH_OPTION_IDS } from '../../native-chat/input/native-chat-session-option-defaults'
 import { AGENT_CHAT_PERMISSION_MODE_OPTION_ID } from '../../agent-launch/permissions/agent-chat-permission-mode'
 import {
   usesInstalledAgentModelCatalog,
@@ -18,19 +15,16 @@ import {
   fillUnknownCatalogEfforts,
   enrichStructuredAgentEfforts
 } from './agent-session-model-efforts'
-import { structuredAgentSessionRememberedPickModel } from './structured-agent-session-remembered-pick-model'
-import type { SessionOptionValue } from '../../native-chat/input/native-chat-session-options'
+import type { SessionOptionDescriptor } from '../../native-chat/input/native-chat-session-options'
 import type {
   AgentSessionAcceptedInputSources,
   AgentSessionOptionsResult
 } from './agent-session-options-result'
 import { labelFromModelId } from '../../model-id-label'
+import { replaceSessionScopedOptions } from './agent-session-session-options'
 import type { AgentSessionModelCatalogResult } from '../agent-session-wire'
 import { listingVerifiedModelIds } from './structured-agent-session-listing-verified-ids'
-import {
-  decodeStructuredAgentSessionOptionValue,
-  encodeStructuredAgentSessionOptionValue
-} from './structured-agent-session-option-codec'
+import { decodeStructuredAgentSessionOptionValue } from './structured-agent-session-option-codec'
 
 export function structuredAgentSessionOptionCatalog(
   seed: AgentSessionOptionCatalog,
@@ -52,6 +46,7 @@ export function structuredAgentSessionOptionCatalog(
 }
 
 export type StructuredAgentSessionOptionState = {
+  sessionOptions?: SessionOptionDescriptor[]
   catalog: AgentSessionOptionCatalog | null
   /** Catalog provenance, independent of known input: seed offers no replacement models;
    * builtin enables static rows only after unavailable discovery. */
@@ -175,6 +170,7 @@ export function applyStructuredAgentSessionOptions(
   launch: { newLaunch: boolean; coherentCatalog?: boolean } = { newLaunch: false }
 ): StructuredAgentSessionOptionState {
   const { current } = result
+  replaceSessionScopedOptions(state, result.sessionOptions)
   let acceptedInputSources = current.acceptedInputSources
   const policyEffort = acceptedInputSources?.effort === 'policy'
   if (policyEffort) {
@@ -216,6 +212,7 @@ export function applyStructuredAgentSessionOptions(
     interactionModeSupported: current.interactionMode !== undefined,
     sessionNeverStarted: result.sessionNeverStarted,
     reportedModel: current.reportedModel,
+    sessionOptions: result.sessionOptions,
     reportedEffort: state.record.agent === 'pi' ? current.reportedEffort : undefined,
     catalog: keepCatalog ? state.catalog : answeredCatalog,
     fastModeRestricted:
@@ -282,7 +279,10 @@ export function commitStructuredAgentSessionOptionValues(
   origin: 'picked' | 'seeded' = 'picked'
 ): StructuredAgentSessionOptionState {
   let next = state
-  for (const id of STRUCTURED_LAUNCH_OPTION_IDS) {
+  for (const id of [
+    ...STRUCTURED_LAUNCH_OPTION_IDS,
+    ...(state.sessionOptions ?? []).filter((row) => row.scope === 'session').map((row) => row.id)
+  ]) {
     const value = values[id]
     if (value !== undefined) {
       next = commitStructuredAgentSessionOption(next, id, value, origin)
@@ -291,37 +291,7 @@ export function commitStructuredAgentSessionOptionValues(
   return next
 }
 
-export type StructuredSessionOptionPick = {
-  modelId: string
-  optionId: string
-  value: SessionOptionValue
-  adoptModelAsLaunchDefault?: boolean
-}
-
-/** Persist only reseedable IDs, using provider-committed values after reconciliation. Effort-only picks adopt their controls’ model
- * because launch reads effort only under a stored model. Pre-commit state is valid: committed supplies changed model, record supplies unchanged model. */
-export function structuredAgentSessionOptionPicks(
-  state: StructuredAgentSessionOptionState,
-  committed: Readonly<Record<string, string>>,
-  existingChat = false
-): StructuredSessionOptionPick[] {
-  if (!state.catalog) {
-    return []
-  }
-  const remembered = structuredAgentSessionRememberedPickModel(state, committed.model, existingChat)
-  if (!remembered) {
-    return []
-  }
-  return STRUCTURED_LAUNCH_SEED_OPTION_IDS.flatMap((optionId) => {
-    const value = committed[optionId]
-    if (value === undefined) {
-      return []
-    }
-    const decoded = decodeStructuredAgentSessionOptionValue(optionId, value)
-    return decoded === null ||
-      (typeof decoded === 'string' && !decoded.trim()) ||
-      encodeStructuredAgentSessionOptionValue(optionId, decoded) === null
-      ? []
-      : [{ ...remembered, optionId, value: decoded }]
-  })
-}
+export {
+  structuredAgentSessionOptionPicks,
+  type StructuredSessionOptionPick
+} from './structured-agent-session-option-picks'

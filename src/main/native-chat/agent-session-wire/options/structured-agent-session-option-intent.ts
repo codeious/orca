@@ -23,6 +23,7 @@ import type {
   StructuredAgentSessionHostSession,
   StructuredAgentSessionProviderChild
 } from '../host/structured-agent-session-host-types'
+import { sessionScopedOptionAccepts } from '../../../../shared/agent-session/options/agent-session-session-options'
 
 function acceptsOptionPick(
   agents: Pick<StructuredAgentRegistry, 'definition'>,
@@ -31,13 +32,18 @@ function acceptsOptionPick(
   value: string
 ): boolean {
   const definition = agents.definition(provider)
+  // A session option the agent declares takes only the choices it declares.
+  const declared = definition?.restingOptions
+    .sessionOptions?.({ saved: {}, launchArgs: [] })
+    .find((row) => row.id === key)
   return key === AGENT_CHAT_PERMISSION_MODE_OPTION_ID
     ? definition !== null &&
         agentChatPermissionModes(provider) !== null &&
         (value === 'own' ||
           agentChatPermissionModes(provider)?.modes.some((mode) => mode === value) === true)
     : definition?.restingOptions.acceptsKey(key) === true &&
-        (key !== 'interactionMode' || isAgentSessionInteractionMode(value))
+        (key !== 'interactionMode' || isAgentSessionInteractionMode(value)) &&
+        (declared === undefined || sessionScopedOptionAccepts(declared, value))
 }
 
 export function structuredAgentSessionOptionOverridesRefusal(

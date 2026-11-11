@@ -168,6 +168,30 @@ describe('MobileNativeChatSessionOptionPickers', () => {
     await act(async () => rowByText('Full access').props.onPress())
     expect(setOption).toHaveBeenCalledExactlyOnceWith('permissionMode', 'full-access')
   })
+  it('presents a declared permission option as Permissions and applies its pick', async () => {
+    const access: SessionOptionDescriptor = {
+      id: 'accessLevel',
+      label: 'Access',
+      role: 'permission',
+      category: 'mode',
+      kind: {
+        type: 'select',
+        currentValue: 'read',
+        choices: [
+          { value: 'read', label: 'Read only', icon: 'Hand' },
+          { value: 'all', label: 'Everything', icon: 'ShieldAlert', dangerous: true }
+        ]
+      },
+      valueSource: 'applied',
+      transport: 'agent-session',
+      settable: true
+    }
+    mount([MODEL_DESCRIPTOR, access])
+    await act(async () => pill('Model').props.onPress())
+    await act(async () => rowByText('Permissions').props.onPress())
+    await act(async () => rowByText('Everything').props.onPress())
+    expect(setOption).toHaveBeenCalledExactlyOnceWith('accessLevel', 'all')
+  })
 })
 
 const PERMISSION_CHOICES: SessionOptionSelectChoice[] = [

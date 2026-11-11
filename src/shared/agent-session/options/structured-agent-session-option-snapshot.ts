@@ -28,6 +28,10 @@ import { listedModelDescribing } from './structured-agent-session-listed-model'
 import { structuredAgentSessionPermissionDescriptor } from './structured-agent-session-permission-option'
 import { structuredAgentSessionInteractionDescriptor } from './agent-session-interaction-mode'
 import type { StructuredAgentSessionOptionState } from './structured-agent-session-options'
+import {
+  sessionScopedOptionAccepts,
+  sessionScopedOptionSnapshot
+} from './agent-session-session-options'
 
 /** Unpickable placeholder cannot become a launch selection before a real model answer. */
 const PROVIDER_DEFAULT_MODEL_PLACEHOLDER: SessionOptionDescriptor = {
@@ -241,7 +245,11 @@ export function structuredAgentSessionOptionSnapshot(
   state: StructuredAgentSessionOptionState
 ): SessionOptionDescriptor[] {
   const permission = structuredAgentSessionPermissionDescriptor(state)
-  const options = modelOptionSnapshot(state).map((option) =>
+  const extra = sessionScopedOptionSnapshot(state)
+  const options = [
+    ...modelOptionSnapshot(state).filter((row) => !extra.some((option) => option.id === row.id)),
+    ...extra
+  ].map((option) =>
     state.fastModeRestricted && option.id === 'fastMode'
       ? { ...option, settable: false }
       : option.id === 'model' && state.reportedModel
@@ -274,6 +282,10 @@ export function canSetStructuredAgentSessionOption(
 ): boolean {
   if (!interactionReady || pending || (id === 'fastMode' && state.fastModeRestricted)) {
     return false
+  }
+  const sessionOption = snapshot.find((entry) => entry.id === id && entry.scope === 'session')
+  if (sessionOption) {
+    return sessionScopedOptionAccepts(sessionOption, value)
   }
   if (id === 'permissionMode' || id === 'interactionMode') {
     const descriptor = snapshot.find((entry) => entry.id === id)

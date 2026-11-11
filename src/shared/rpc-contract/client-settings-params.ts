@@ -11,6 +11,7 @@ import { MACHINE_NAME_MAX_LENGTH } from '../machine-name'
 import { normalizePRBotAuthorOverrides } from '../source-control/review-comments/pr-bot-author-overrides'
 import { WorktreeVisibilityDefaultsUpdate } from './worktree-visibility-defaults-params'
 import { AGENT_CHAT_PERMISSION_MODES } from '../agent-launch/permissions/agent-chat-permission-mode'
+import { STRUCTURED_PLAN_MODE_PAIR_OPTION_IDS } from '../agent-session/options/structured-agent-session-plan-mode-pair'
 
 export const TaskProviderParam = z.custom<TaskProvider>(isTaskProvider, {
   message: 'Unknown task provider'
@@ -25,11 +26,20 @@ export const NativeChatSessionOptionPickBase = {
   adoptModelAsLaunchDefault: z.boolean().optional()
 }
 
+const NATIVE_CHAT_STRING_PICK_OPTION_IDS: readonly string[] = [
+  'model',
+  'effort',
+  'serviceTier',
+  ...STRUCTURED_PLAN_MODE_PAIR_OPTION_IDS
+]
+
 export const NativeChatSessionOptionPick = z.union([
   z
     .object({
       ...NativeChatSessionOptionPickBase,
-      optionId: z.enum(['model', 'effort', 'serviceTier']),
+      optionId: z.string().refine((id) => NATIVE_CHAT_STRING_PICK_OPTION_IDS.includes(id), {
+        message: 'Unknown session option'
+      }),
       value: z.string().trim().min(1).max(512)
     })
     .strict(),

@@ -411,6 +411,7 @@
       "dispatchUnconfirmed": "已傳送給代理程式 — 尚未確認",
       "modelFullAccessLabel": "模型，{{value}}，完整存取權",
       "modelLabel": "模型，{{value}}",
+      "modelPermissionLevelLabel": "模型，{{value}}，權限 {{level}}",
       "permissions": "權限",
       "permissionsLabel": "權限，{{value}}",
       "settingsLocked": "本回合結束後即可變更模型設定。",

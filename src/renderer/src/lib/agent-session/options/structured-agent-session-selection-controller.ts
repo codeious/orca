@@ -11,6 +11,7 @@ import {
   createStructuredSessionSelectionController,
   type StructuredSessionSelectionController
 } from '../../../../../shared/agent-session/options/structured-agent-session-selection-operations'
+import { structuredPlanModePair } from '../../../../../shared/agent-session/options/structured-agent-session-plan-mode-pair'
 import type { RuntimeClientTarget } from '../../../../../shared/runtime-client-target'
 import type { AgentType } from '../../../../../shared/agent-status/contracts/agent-status-types'
 import { enqueueSessionOptionSettingsWrite } from '@/components/native-chat/session/options/native-chat-session-option-settings-write'
@@ -75,16 +76,20 @@ export function structuredSessionSelectionController(
     target.kind === 'environment' ? getRuntimeEnvironmentRevision(target.environmentId) : undefined
   const isCurrent = () => controllers.get(key)?.controller === controller
   const controller: SessionSelectionController = {
-    ...createStructuredSessionSelectionController((picks) => {
-      void controller
-        .request((options) => {
-          const mutation = { type: 'apply-picks', agent, picks } as const
-          return options.expectedEnvironmentPairingRevision === undefined
-            ? enqueueSessionOptionSettingsWrite(target, mutation)
-            : enqueueSessionOptionSettingsWrite(target, mutation, options)
-        })
-        .catch(() => undefined)
-    }, isCurrent),
+    ...createStructuredSessionSelectionController(
+      (picks) => {
+        void controller
+          .request((options) => {
+            const mutation = { type: 'apply-picks', agent, picks } as const
+            return options.expectedEnvironmentPairingRevision === undefined
+              ? enqueueSessionOptionSettingsWrite(target, mutation)
+              : enqueueSessionOptionSettingsWrite(target, mutation, options)
+          })
+          .catch(() => undefined)
+      },
+      isCurrent,
+      structuredPlanModePair(agent)
+    ),
     isCurrent,
     async request(perform) {
       if (!isCurrent()) {

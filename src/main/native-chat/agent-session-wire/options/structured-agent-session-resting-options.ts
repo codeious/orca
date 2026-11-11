@@ -20,7 +20,10 @@ export const IN_PROCESS_OPTIONS_READER: StructuredAgentSessionOptionsReader = {
 }
 
 export async function readStructuredAgentSessionOptionsAtRest(
-  deps: Pick<StructuredAgentSessionHostDeps, 'store' | 'agents' | 'modelCatalog'>,
+  deps: Pick<
+    StructuredAgentSessionHostDeps,
+    'store' | 'agents' | 'modelCatalog' | 'resolveLaunchArgs'
+  >,
   sessionId: string,
   reader: StructuredAgentSessionOptionsReader,
   scope: Pick<AgentModelCatalogReadParams, 'records' | 'operation'>
@@ -125,6 +128,10 @@ export async function readStructuredAgentSessionOptionsAtRest(
   )
   // The tier the chat's own model runs; the record keeps the saved one for a model that offers it.
   const serviceTier = savedEffectiveServiceTier(saved, models)
+  const sessionOptions = rules?.sessionOptions?.({
+    saved,
+    launchArgs: (await deps.resolveLaunchArgs?.(record.provider)) ?? []
+  })
   return {
     inventory: catalog,
     fallback: catalog.origin === 'unknown' ? models : [],
@@ -133,6 +140,7 @@ export async function readStructuredAgentSessionOptionsAtRest(
       ? { fastModeSupport: catalog.fastModeSupport }
       : {}),
     ...(listedModelIds ? { listedModelIds } : {}),
+    ...(sessionOptions ? { sessionOptions } : {}),
     current: {
       ...(model ? { model } : {}),
       ...(effort ? { effort } : {}),

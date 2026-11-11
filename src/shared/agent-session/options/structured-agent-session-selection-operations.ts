@@ -4,13 +4,15 @@ import {
 } from '../../native-chat/input/native-chat-session-option-defaults'
 import { decodeStructuredAgentSessionOptionValue } from './structured-agent-session-option-codec'
 import type { NativeChatSessionOptionSettingsMutation } from '../../native-chat/input/native-chat-session-options'
-import type { AgentSessionWriteFailure } from '../failures/agent-session-write-failure'
-
-export type SelectionOutcome =
-  | { kind: 'accepted'; options: Readonly<Record<string, string>> }
-  | { kind: 'refused'; failure?: AgentSessionWriteFailure }
-  | { kind: 'superseded' }
-  | { kind: 'unknown'; failure?: AgentSessionWriteFailure }
+import type {
+  SelectionOutcome,
+  SelectionOperation
+} from './structured-agent-session-selection-operation'
+export type {
+  SelectionOutcome,
+  SelectionOperation
+} from './structured-agent-session-selection-operation'
+import type { StructuredPlanModePair } from './structured-agent-session-plan-mode-pair'
 
 const OPTION_ORDER: readonly string[] = STRUCTURED_LAUNCH_OPTION_IDS
 
@@ -18,27 +20,13 @@ type RememberedPicks = Extract<
   NativeChatSessionOptionSettingsMutation,
   { type: 'apply-picks' }
 >['picks']
-export type SelectionOperation = {
-  identity: number
-  key: string
-  value: string
-  model: string | null
-  /** False when remembering must leave the new-chat model alone. */
-  adoptsModel?: false
-  transmitted: boolean
-  outcome?: SelectionOutcome
-  request?: Promise<SelectionOutcome>
-  result: Promise<SelectionOutcome>
-  resolve: (outcome: SelectionOutcome) => void
-  previousPending?: SelectionOperation
-  nextPending?: SelectionOperation
-}
-
 /** Finite operation precedence above a queried host answer; no mutation reply installs a base. */
 export function createStructuredSessionSelectionController(
   remember: (picks: RememberedPicks) => void,
-  isCurrent: () => boolean = () => true
+  isCurrent: () => boolean = () => true,
+  planModePair: StructuredPlanModePair | null = null
 ) {
+  const pairIds = planModePair ? [planModePair.modelOptionId, planModePair.effortOptionId] : []
   let sequence = 0
   let revision = 0
   let adopted = 0
@@ -86,35 +74,59 @@ export function createStructuredSessionSelectionController(
       terminalRevision = revision + 1
     }
     if (outcome.kind === 'accepted') {
-      const model =
-        operation.key === 'model' ? (outcome.options.model ?? operation.model) : operation.model
-      const value = decodeStructuredAgentSessionOptionValue(
-        operation.key,
-        outcome.options[operation.key] ?? operation.value
-      )
-      const key = operation.key === 'model' ? 'model' : JSON.stringify([model, operation.key])
-      if (
-        model &&
-        value !== null &&
-        STRUCTURED_LAUNCH_SEED_OPTION_IDS.some((id) => id === operation.key) &&
-        (remembered.get(key) ?? 0) < operation.identity
-      ) {
-        remembered.set(key, operation.identity)
-        const adopt = adopted <= operation.identity
-        adopted = Math.max(adopted, operation.identity)
-        try {
-          remember([
-            {
-              modelId: model,
-              optionId: operation.key,
-              value,
-              ...(!adopt || operation.adoptsModel === false
-                ? { adoptModelAsLaunchDefault: false }
-                : {})
-            }
-          ])
-        } catch {
-          /* Remembering never gates selection. */
+      const pairPick =
+        pairIds.includes(operation.key) ||
+        ((operation.key === 'model' || operation.key === 'effort') &&
+          outcome.options.planMode === 'true' &&
+          pairIds.some((id) => outcome.options[id] !== undefined))
+      if (planModePair && pairPick) {
+        if ((remembered.get('planModePair') ?? 0) < operation.identity) {
+          remembered.set('planModePair', operation.identity)
+          const { sameAsMain } = planModePair
+          const modelId = outcome.options.model ?? operation.model ?? sameAsMain
+          try {
+            remember(
+              pairIds.map((optionId) => ({
+                modelId,
+                optionId,
+                value: outcome.options[optionId] ?? sameAsMain
+              }))
+            )
+          } catch {
+            /* Remembering never gates selection. */
+          }
+        }
+      } else {
+        const model =
+          operation.key === 'model' ? (outcome.options.model ?? operation.model) : operation.model
+        const value = decodeStructuredAgentSessionOptionValue(
+          operation.key,
+          outcome.options[operation.key] ?? operation.value
+        )
+        const key = operation.key === 'model' ? 'model' : JSON.stringify([model, operation.key])
+        if (
+          model &&
+          value !== null &&
+          STRUCTURED_LAUNCH_SEED_OPTION_IDS.some((id) => id === operation.key) &&
+          (remembered.get(key) ?? 0) < operation.identity
+        ) {
+          remembered.set(key, operation.identity)
+          const adopt = adopted <= operation.identity
+          adopted = Math.max(adopted, operation.identity)
+          try {
+            remember([
+              {
+                modelId: model,
+                optionId: operation.key,
+                value,
+                ...(!adopt || operation.adoptsModel === false
+                  ? { adoptModelAsLaunchDefault: false }
+                  : {})
+              }
+            ])
+          } catch {
+            /* Remembering never gates selection. */
+          }
         }
       }
     } else if (outcome.kind !== 'unknown') {

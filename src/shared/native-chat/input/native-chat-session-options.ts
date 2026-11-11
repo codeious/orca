@@ -1,4 +1,5 @@
 import type { AgentType } from '../../agent-status/contracts/agent-status-types'
+import type { AgentChatPermissionModeIconName } from '../../agent-launch/permissions/agent-chat-permission-mode'
 
 export type SessionOptionValue = string | boolean
 
@@ -8,6 +9,10 @@ export type SessionOptionSelectChoice = {
   description?: string
   /** An alias of a listed versioned row: listed only for a matching search. */
   searchOnly?: true
+  /** The mark a permission control draws beside this choice. */
+  icon?: AgentChatPermissionModeIconName
+  /** Warned like Full access: the agent acts without asking. */
+  dangerous?: true
 }
 
 /** default describes catalog display, never running-agent evidence. dispatched is sent but unread and may be corrected by reports.
@@ -27,6 +32,10 @@ export type SessionOptionDescriptor = {
   label: string
   description?: string
   category?: 'model' | 'thought_level' | 'model_config' | 'mode'
+  /** Session-only values must never become model defaults for the next launch. */
+  scope?: 'session'
+  /** A provider's own permission option takes the composer's permission control. */
+  role?: 'permission'
   kind:
     | {
         type: 'select'
@@ -90,6 +99,7 @@ export type PersistedNativeChatSessionOptions = Partial<
     string,
     {
       model?: string
+      spec?: { model?: string; effort?: string }
       valuesByModel?: Record<string, Record<string, SessionOptionValue>>
     }
   >

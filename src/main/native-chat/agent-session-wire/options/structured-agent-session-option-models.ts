@@ -23,7 +23,7 @@ export type StructuredAgentSessionLiveOptions = AgentSessionOptionsResult & {
 
 export type StructuredAgentSessionRestingOptions = Pick<
   AgentSessionOptionsResult,
-  'models' | 'listedModelIds' | 'fastModeSupport' | 'current'
+  'models' | 'listedModelIds' | 'fastModeSupport' | 'current' | 'sessionOptions'
 > & {
   inventory: AgentSessionModelCatalogResult
   fallback: AgentSessionOptionsResult['models']

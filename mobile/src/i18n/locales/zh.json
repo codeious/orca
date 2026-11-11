@@ -411,6 +411,7 @@
       "dispatchUnconfirmed": "已发送给智能体 — 尚未确认",
       "modelFullAccessLabel": "模型，{{value}}，完全访问权限",
       "modelLabel": "模型，{{value}}",
+      "modelPermissionLevelLabel": "模型，{{value}}，权限 {{level}}",
       "permissions": "权限",
       "permissionsLabel": "权限，{{value}}",
       "settingsLocked": "本轮结束后将解锁模型设置",
