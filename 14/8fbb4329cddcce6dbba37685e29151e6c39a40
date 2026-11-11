@@ -1,0 +1,14 @@
+src/main/runtime/session-tabs/structured-session-create-support.ts
+  h_476903bd8a47d9 177,179-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "148fbb4329cddcce6dbba37685e29151e6c39a40",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
