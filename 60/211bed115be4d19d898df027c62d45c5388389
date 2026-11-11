@@ -1,0 +1,14 @@
+src/shared/ai-vault/ai-vault-session-holder.ts
+  h_476903bd8a47d9 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "60211bed115be4d19d898df027c62d45c5388389",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
