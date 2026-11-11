@@ -19150,7 +19150,20 @@
         "sessionAttachmentsFailed": "{{agent}} 聊天无法打开，请在聊天中点击重试，然后重新附加文件",
         "sessionAttachmentsStarting": "{{agent}} 聊天仍在打开中，请等待其打开后再重新附加文件",
         "moreControls": "更多聊天控件",
-        "exitPlanMode": "退出计划模式"
+        "exitPlanMode": "退出计划模式",
+        "renameNeedsName": "Use /rename followed by a chat name.",
+        "forkTakesNoArguments": "/fork does not take arguments.",
+        "forkOpenFailed": "The fork could not be opened.",
+        "sessionActionFailed": "The chat action could not be completed.",
+        "hostCommandsUnsupported": "This host does not support chat commands. Update Orca on the host.",
+        "autonomyPermissionOff": "关闭",
+        "autonomyPermissionOffDescription": "编辑和执行命令前会询问",
+        "autonomyPermissionLow": "低",
+        "autonomyPermissionLowDescription": "编辑文件并运行只读命令；其余操作会询问",
+        "autonomyPermissionMedium": "中",
+        "autonomyPermissionMediumDescription": "还会运行安装、构建和本地提交等可撤销的命令；其余操作会询问",
+        "autonomyPermissionHigh": "高",
+        "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
       },
       "tool": {
         "result": "结果",

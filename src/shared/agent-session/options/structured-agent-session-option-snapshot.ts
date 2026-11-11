@@ -3,6 +3,7 @@ import type {
   CatalogModel,
   CatalogOption
 } from './agent-session-option-catalog-types'
+import { planModeDisplayRecord } from './structured-agent-session-plan-mode-display'
 import {
   nativeChatSessionOptionDescriptors,
   withTrackedNativeChatModel,
@@ -28,6 +29,7 @@ import { listedModelDescribing } from './structured-agent-session-listed-model'
 import { structuredAgentSessionPermissionDescriptor } from './structured-agent-session-permission-option'
 import { structuredAgentSessionInteractionDescriptor } from './agent-session-interaction-mode'
 import type { StructuredAgentSessionOptionState } from './structured-agent-session-options'
+import { withSpecModeSnapshot } from './structured-agent-session-spec-option'
 import {
   sessionScopedOptionAccepts,
   sessionScopedOptionSnapshot
@@ -71,6 +73,16 @@ export function structuredAgentSessionShownModel(
     controlsModelId: currentId ?? supplied,
     isCliDefault: currentId !== null && currentId === defaultId
   }
+}
+
+/** The model a pick's values were chosen under: the chat's own, else the default shown. */
+export function structuredAgentSessionControlsModelId(
+  state: StructuredAgentSessionOptionState
+): string | null {
+  return state.catalog
+    ? structuredAgentSessionShownModel(state.catalog, state.catalog.models, state.record)
+        .controlsModelId
+    : null
 }
 
 /** Only the chat’s verified listing describes a model; an unlisted chat model has no inferred capabilities. */
@@ -137,8 +149,11 @@ export function structuredAgentSessionDisplayCatalog(
 }
 
 function drawnModelControls(state: StructuredAgentSessionOptionState) {
-  const { record } = state
   const displayCatalog = structuredAgentSessionDisplayCatalog(state)
+  const main = displayCatalog
+    ? structuredAgentSessionShownModel(displayCatalog, displayCatalog.models, state.record)
+    : null
+  const record = planModeDisplayRecord(state, main?.shown.currentId, main?.isCliDefault ?? false)
   if (
     !displayCatalog ||
     (state.catalogSource === 'seed' && structuredAgentSessionModelId(record, 'own') === null)
@@ -246,8 +261,9 @@ export function structuredAgentSessionOptionSnapshot(
 ): SessionOptionDescriptor[] {
   const permission = structuredAgentSessionPermissionDescriptor(state)
   const extra = sessionScopedOptionSnapshot(state)
+  const base = withSpecModeSnapshot(modelOptionSnapshot(state), state.record)
   const options = [
-    ...modelOptionSnapshot(state).filter((row) => !extra.some((option) => option.id === row.id)),
+    ...base.filter((row) => !extra.some((option) => option.id === row.id)),
     ...extra
   ].map((option) =>
     state.fastModeRestricted && option.id === 'fastMode'
@@ -301,6 +317,7 @@ export function canSetStructuredAgentSessionOption(
     (['model', 'effort', 'serviceTier', 'personality'].includes(id) &&
       typeof value === 'string' &&
       value.length > 0) ||
-    (id === 'fastMode' && typeof value === 'boolean')
+    (id === 'fastMode' && typeof value === 'boolean') ||
+    (id === 'planMode' && state.record.values.planMode !== undefined && typeof value === 'boolean')
   )
 }

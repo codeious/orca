@@ -408,7 +408,15 @@
       "toggleOption": "{{value0}} umschalten",
       "ultra": "Ultra",
       "xhigh": "Sehr hoch",
-      "xhighShort": "Sehr hoch"
+      "xhighShort": "Sehr hoch",
+      "autonomyPermissionOff": "Aus",
+      "autonomyPermissionOffDescription": "Fragt vor Änderungen und Befehlen nach",
+      "autonomyPermissionLow": "Niedrig",
+      "autonomyPermissionLowDescription": "Bearbeitet Dateien und führt nur lesende Befehle aus; fragt bei allem anderen nach",
+      "autonomyPermissionMedium": "Mittel",
+      "autonomyPermissionMediumDescription": "Führt auch rückgängig machbare Befehle wie Installationen, Builds und lokale Commits aus; fragt bei allem anderen nach",
+      "autonomyPermissionHigh": "Hoch",
+      "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
     },
     "sessionOptionPickers": {
       "agentWorking": "Agent arbeitet",

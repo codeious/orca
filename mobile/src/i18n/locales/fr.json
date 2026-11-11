@@ -412,7 +412,15 @@
       "toggleOption": "Basculer {{value0}}",
       "ultra": "Ultra",
       "xhigh": "Extra élevé",
-      "xhighShort": "Extra"
+      "xhighShort": "Extra",
+      "autonomyPermissionOff": "Désactivé",
+      "autonomyPermissionOffDescription": "Demande avant les modifications et les commandes",
+      "autonomyPermissionLow": "Faible",
+      "autonomyPermissionLowDescription": "Modifie les fichiers et exécute les commandes en lecture seule ; demande pour le reste",
+      "autonomyPermissionMedium": "Moyen",
+      "autonomyPermissionMediumDescription": "Exécute aussi les commandes réversibles comme les installations, les compilations et les commits locaux ; demande pour le reste",
+      "autonomyPermissionHigh": "Élevé",
+      "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
     },
     "sessionOptionPickers": {
       "agentWorking": "L'agent travaille",

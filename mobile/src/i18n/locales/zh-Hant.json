@@ -408,7 +408,15 @@
       "toggleOption": "切換{{value0}}",
       "ultra": "極致",
       "xhigh": "極高",
-      "xhighShort": "極高"
+      "xhighShort": "極高",
+      "autonomyPermissionOff": "關閉",
+      "autonomyPermissionOffDescription": "編輯和執行命令前會詢問",
+      "autonomyPermissionLow": "低",
+      "autonomyPermissionLowDescription": "編輯檔案並執行唯讀命令；其餘操作會詢問",
+      "autonomyPermissionMedium": "中",
+      "autonomyPermissionMediumDescription": "也會執行安裝、建置和本機提交等可復原的命令；其餘操作會詢問",
+      "autonomyPermissionHigh": "高",
+      "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
     },
     "sessionOptionPickers": {
       "agentWorking": "代理程式正在執行",

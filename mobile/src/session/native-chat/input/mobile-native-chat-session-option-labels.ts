@@ -5,13 +5,16 @@ import {
   selectedNativeChatChoice
 } from '../../../../../src/shared/native-chat/input/native-chat-session-option-labels'
 import { sayMobileNativeChatSessionOption as say } from './native-chat-session-option-copy'
+import { MOBILE_DROID_CHOICE_COPY } from './mobile-droid-permission-choice-copy'
 
 export type MobileDeclaredChoiceCopy = (
   value: string
 ) => { label: string; description: string } | undefined
 
 // Providers translate the choices they declare; other choices keep the host's own words.
-const DECLARED_CHOICE_COPY: Readonly<Record<string, MobileDeclaredChoiceCopy>> = {}
+const DECLARED_CHOICE_COPY: Readonly<Record<string, MobileDeclaredChoiceCopy>> = {
+  ...MOBILE_DROID_CHOICE_COPY
+}
 
 export function mobileDeclaredChoiceCopy(
   optionId: string,

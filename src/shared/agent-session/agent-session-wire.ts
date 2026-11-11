@@ -223,6 +223,7 @@ export type AgentSessionStatusSummary = {
    *  client re-reads options. Absent from older hosts. */
   effort?: string
   fastMode?: string
+  planMode?: string
   serviceTier?: string
   /** Saved next-turn intent; moves clients' option stamps without a turn or model change. */
   interactionMode?: 'default' | 'plan'
@@ -352,12 +353,7 @@ export type AgentSessionPromptResult = {
   resolution: AgentJournalResolution
 }
 
-export type AgentSessionOptionResult = {
-  key: string
-  value: string
-  /** Full effective next-turn values when the provider reconciled related options. */
-  options?: Record<string, string>
-}
+export type { AgentSessionOptionResult } from './options/agent-session-option-result'
 
 export type AgentSessionOptionChoice = {
   value: string

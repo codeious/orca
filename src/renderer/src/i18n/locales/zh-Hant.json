@@ -19374,7 +19374,20 @@
         },
         "imageUnavailable": "無法預覽",
         "moreControls": "更多聊天控制項",
-        "exitPlanMode": "結束計畫模式"
+        "exitPlanMode": "結束計畫模式",
+        "renameNeedsName": "Use /rename followed by a chat name.",
+        "forkTakesNoArguments": "/fork does not take arguments.",
+        "forkOpenFailed": "The fork could not be opened.",
+        "sessionActionFailed": "The chat action could not be completed.",
+        "hostCommandsUnsupported": "This host does not support chat commands. Update Orca on the host.",
+        "autonomyPermissionOff": "關閉",
+        "autonomyPermissionOffDescription": "編輯和執行命令前會詢問",
+        "autonomyPermissionLow": "低",
+        "autonomyPermissionLowDescription": "編輯檔案並執行唯讀命令；其餘操作會詢問",
+        "autonomyPermissionMedium": "中",
+        "autonomyPermissionMediumDescription": "也會執行安裝、建置和本機提交等可復原的命令；其餘操作會詢問",
+        "autonomyPermissionHigh": "高",
+        "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
       },
       "tool": {
         "exitCode": "結束碼 {{value0}}",

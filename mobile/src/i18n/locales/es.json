@@ -412,7 +412,15 @@
       "toggleOption": "Alternar {{value0}}",
       "ultra": "Supremo",
       "xhigh": "Muy alto",
-      "xhighShort": "Muy alto"
+      "xhighShort": "Muy alto",
+      "autonomyPermissionOff": "Desactivado",
+      "autonomyPermissionOffDescription": "Pregunta antes de editar y ejecutar comandos",
+      "autonomyPermissionLow": "Bajo",
+      "autonomyPermissionLowDescription": "Edita archivos y ejecuta comandos de solo lectura; pregunta por lo demás",
+      "autonomyPermissionMedium": "Medio",
+      "autonomyPermissionMediumDescription": "También ejecuta comandos reversibles como instalaciones, compilaciones y commits locales; pregunta por lo demás",
+      "autonomyPermissionHigh": "Alto",
+      "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
     },
     "sessionOptionPickers": {
       "agentWorking": "El agente está trabajando",

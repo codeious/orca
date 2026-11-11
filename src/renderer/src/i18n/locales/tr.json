@@ -19613,7 +19613,20 @@
         },
         "imageUnavailable": "Önizleme kullanılamıyor",
         "exitPlanMode": "Plan modundan çık",
-        "moreControls": "Diğer sohbet kontrolleri"
+        "moreControls": "Diğer sohbet kontrolleri",
+        "renameNeedsName": "Use /rename followed by a chat name.",
+        "forkTakesNoArguments": "/fork does not take arguments.",
+        "forkOpenFailed": "The fork could not be opened.",
+        "sessionActionFailed": "The chat action could not be completed.",
+        "hostCommandsUnsupported": "This host does not support chat commands. Update Orca on the host.",
+        "autonomyPermissionOff": "Kapalı",
+        "autonomyPermissionOffDescription": "Düzenleme ve komutlardan önce sorar",
+        "autonomyPermissionLow": "Düşük",
+        "autonomyPermissionLowDescription": "Dosyaları düzenler ve salt okunur komutları çalıştırır; diğer işlemler için sorar",
+        "autonomyPermissionMedium": "Orta",
+        "autonomyPermissionMediumDescription": "Kurulum, derleme ve yerel commit gibi geri alınabilir komutları da çalıştırır; diğer işlemler için sorar",
+        "autonomyPermissionHigh": "Yüksek",
+        "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
       },
       "tool": {
         "exitCode": "çıkış {{value0}}",

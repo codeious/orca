@@ -408,7 +408,15 @@
       "toggleOption": "{{value0}}を切り替える",
       "ultra": "ウルトラ",
       "xhigh": "最高",
-      "xhighShort": "最高"
+      "xhighShort": "最高",
+      "autonomyPermissionOff": "オフ",
+      "autonomyPermissionOffDescription": "編集やコマンドの実行前に確認します",
+      "autonomyPermissionLow": "低",
+      "autonomyPermissionLowDescription": "ファイルを編集し、読み取り専用コマンドを実行します。それ以外は確認します",
+      "autonomyPermissionMedium": "中",
+      "autonomyPermissionMediumDescription": "インストール、ビルド、ローカルコミットなど元に戻せるコマンドも実行します。それ以外は確認します",
+      "autonomyPermissionHigh": "高",
+      "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
     },
     "sessionOptionPickers": {
       "agentWorking": "Agent が作業中",

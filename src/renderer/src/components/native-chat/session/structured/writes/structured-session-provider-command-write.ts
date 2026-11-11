@@ -1,7 +1,7 @@
 import type { AgentSessionHostCommandResult } from '../../../../../../../shared/agent-session/agent-session-host-command'
 import { AGENT_SESSION_HOST_COMMAND_CAPABILITY } from '../../../../../../../shared/agent-session/agent-session-host-command'
 import { structuredAgentSessionHostSupports } from '@/runtime/native-chat/host-capabilities/structured-agent-session-host-support'
-import { structuredComposerFailure } from '../../../../../../../shared/agent-session/failures/structured-agent-session-composer-failure'
+import { translate } from '@/i18n/i18n'
 import type { RuntimeClientTarget } from '../../../../../../../shared/runtime-client-target'
 import type { StructuredAgentSessionWrite } from './use-structured-agent-session-mutate'
 import type { StructuredAgentSessionComposerOptions } from '../../../../../../../shared/agent-session/view/structured-agent-session-composer'
@@ -18,7 +18,10 @@ export function structuredSessionProviderCommands(
     ) {
       return {
         accepted: false,
-        ...structuredComposerFailure('commandUnsupportedByHost', { name })
+        error: translate(
+          'components.native-chat.composer.hostCommandsUnsupported',
+          'This host does not support chat commands. Update Orca on the host.'
+        )
       }
     }
     const outcome = await write<AgentSessionHostCommandResult>(
