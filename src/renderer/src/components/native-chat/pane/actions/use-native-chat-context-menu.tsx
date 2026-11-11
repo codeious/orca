@@ -7,7 +7,6 @@ import {
   type RefObject
 } from 'react'
 import { flushSync } from 'react-dom'
-import { markdownMathSelectionText } from '../../../../../../shared/markdown/markdown-math-selection'
 import { Clipboard, Copy, Image as ImageIcon, SquareTerminal } from 'lucide-react'
 import {
   DropdownMenu,
@@ -29,6 +28,7 @@ import { useAppStore } from '@/store'
 import { isEditableTarget } from '@/lib/text-input/focus/editable-target'
 import { findEditablePrimarySelectionPasteTarget } from '@/lib/clipboard/primary-selection/primary-selection-paste'
 import { NativeChatCopyOrcaSessionIdMenuItem } from './NativeChatCopyOrcaSessionIdMenuItem'
+import { getNativeChatSelectedText } from './native-chat-selected-text'
 import { NativeChatSelectionQuote } from '../../selection-quotes/NativeChatSelectionQuote'
 import {
   formatNativeChatQuote,
@@ -387,24 +387,4 @@ function menuPointMissesSelection(x: number, y: number): boolean {
 // Why: only Chromium's own menu for a typing target carries the OS spellchecker's suggestions.
 function opensNativeEditableMenu(target: EventTarget | null): boolean {
   return findEditablePrimarySelectionPasteTarget(target) !== null
-}
-
-function getNativeChatSelectedText(root: HTMLElement | null): string {
-  const selection = window.getSelection()
-  if (!root || !selection || selection.isCollapsed) {
-    return ''
-  }
-  const anchor = selection.anchorNode
-  const focus = selection.focusNode
-  if (!nodeBelongsToRoot(anchor, root) || !nodeBelongsToRoot(focus, root)) {
-    return ''
-  }
-  return markdownMathSelectionText(selection, root) ?? selection.toString()
-}
-
-function nodeBelongsToRoot(node: Node | null, root: HTMLElement): boolean {
-  if (!node) {
-    return false
-  }
-  return root.contains(node)
 }

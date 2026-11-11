@@ -24,6 +24,7 @@ import {
   textInputOwnsComposition,
   type TextShortcutInput
 } from '../../../shared/keybindings/text-input-shortcut-policy'
+import { nativeChatComposerOwnsWindowChord } from '../../../shared/native-chat/native-chat-agent-profiles'
 
 export function installMainWindowShortcutRouting(args: {
   focus: MainWindowFocusLifecycle
@@ -117,6 +118,11 @@ export function installMainWindowShortcutRouting(args: {
 
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (focus.isShortcutRecorderFocused()) {
+      return
+    }
+    if (
+      nativeChatComposerOwnsWindowChord(focus.focusedChatComposerAgent(), input, process.platform)
+    ) {
       return
     }
 
