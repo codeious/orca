@@ -1,0 +1,55 @@
+src/shared/__fixtures__/droid-subagent-hooks.jsonl
+  s_cc5e4a6cdbd85d::t_9c2da58e7e4738 1-37
+src/shared/__fixtures__/droid-subagent-hooks.meta.json
+  s_cc5e4a6cdbd85d::t_a0c9edd067aa12 1-12
+src/shared/agent-hook-listener/hook-lease-expiry-timers.ts
+  s_9915298ad8a882::t_5af8f40890b773 4,8
+src/shared/agent-hook-listener/hook-normalization-policy.ts
+  s_9915298ad8a882::t_c5bdfd08c0ab84 1-43
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-driver.test-support.ts
+  s_cc5e4a6cdbd85d::t_a11bcc0f45a9a1 1-103
+src/shared/agent-hook-listener/normalization/hook-prompt-identity.ts
+  s_9915298ad8a882::t_a27eb7c3ce0754 1-23
+src/shared/agent-hook-listener/normalization/normalize-hook-payload.ts
+  s_9915298ad8a882::t_20be529eed6b8e 6-10,19,41,107-111,213-233,242-248,280,300
+src/shared/agent-hook-listener/pane-provider-session.ts
+  s_9915298ad8a882::t_a944c1a83f793d 16,74-82,255-256
+src/shared/agent-hook-listener/provider-dispatch.ts
+  s_9915298ad8a882::t_9c4335f86a5c26 37,62,65-74
+src/shared/agent-hook-listener/provider-hook-session.ts
+  s_9915298ad8a882::t_0585ca999bc917 1-59
+src/shared/agent-hook-listener/provider-hook-state-slots.ts
+  s_9915298ad8a882::t_46631240cdab67 41-55
+src/shared/agent-hook-listener/providers/droid-events.ts
+  s_9915298ad8a882::t_b49ebfe84bed22 1,4-5,8,13-23,31-107,113-116,118-134,147,157,159,167-177
+src/shared/agent-hook-listener/providers/droid-lease-expiry.ts
+  s_9915298ad8a882::t_4fc9c4fd2ef618 1-31
+src/shared/agent-hook-listener/providers/droid-session-status.ts
+  s_9915298ad8a882::t_55ff2a79435550 1-107
+src/shared/agent-hook-listener/providers/droid-transcript-origin.ts
+  s_9915298ad8a882::t_babb91204d0b25 1-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bbb97a1c2d540330b31be5bde77619c4e7893c16",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_cc5e4a6cdbd85d": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f26e0b46-5399-4064-a893-2fcb3c48f02e",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
