@@ -1,0 +1,53 @@
+src/main/window/chat-composer-focus-mirror.ts
+  s_bb5217dd1cbb24::t_2641ba365df91e 2,4,6,10,12-15,17-18,22,24,26,28,34,36
+src/renderer/src/components/native-chat/composer/NativeChatComposerPane.tsx
+  s_aca4473266c22a::t_da0b783fe13232 29,303
+src/renderer/src/components/native-chat/composer/editor/use-chat-composer-focus-mirror.test.tsx
+  s_420e4ed4f5ff76::t_272befca580388 5,7,10,16,19,28-30,32,34,37,41,43,46-47,49-50,52,54-55,58-64,68
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-composer-keydown-provider-keys.test.tsx
+  s_420e4ed4f5ff76::t_ed4af21a6124d8 3-4,8,10-13,25,40-44,47-48,51,57,59,65,79-80,89-93,97,101,112-114,116-131,133,135-146,149-155,158-163,167-170,172,175-177,179,181,183-185,188-197,201,209-210,212
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-composer-keydown.ts
+  s_0054756ae01add::t_77bc95d4feaff1 2-10,33-34,58-69,72,146,148,159-165,174,180-182,189,250,258
+src/shared/droid-composer-keys.ts
+  s_bb5217dd1cbb24::t_c92b17b973815c 2,13,45-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "65c12ee3ba5d3f74b84dee91a6a688ad02116ab6",
+  "prompts": {},
+  "sessions": {
+    "s_0054756ae01add": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "cbcdfe4f-d435-4611-9794-6557fecf5b86",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_420e4ed4f5ff76": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "344bdfa8-06f3-4ed9-b926-4eecfaa78851",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_aca4473266c22a": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "10f47f83-2385-404f-8c99-dc63782d2148",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_bb5217dd1cbb24": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f533207f-8bb7-46e9-8d6c-f0aa3f9e7dc1",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
