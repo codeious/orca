@@ -56,6 +56,7 @@ export async function maybeQueueStructuredAgentSessionSend(
     envelope: { clientOperationId: string }
     body: AgentJournalMessageItem
     delivery?: 'queue-if-active'
+    afterReply?: true
     queuedImageCards?: boolean
     options?: Readonly<Record<string, string>>
     selection?: Readonly<Record<string, string>>
@@ -106,7 +107,8 @@ export async function maybeQueueStructuredAgentSessionSend(
       {
         messageId: clientMessageId,
         body: params.body,
-        deliveryMode: params.delivery === 'queue-if-active' ? 'queue' : 'steer',
+        deliveryMode:
+          params.delivery === 'queue-if-active' || params.afterReply ? 'queue' : 'steer',
         unattended: !params.userSend && !params.personsMessage,
         options: captured.options,
         ...(params.userSend ? { requireAttachments: true } : {})

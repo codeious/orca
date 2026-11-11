@@ -4,6 +4,7 @@ import { AGENT_SESSION_PERMISSION_OWN_RUNTIME_CAPABILITY } from './agent-session
 import { AGENT_SESSION_SESSION_OPTIONS_CAPABILITY } from './options/agent-session-session-options'
 
 export const AGENT_SESSION_APPROVAL_NOTES_CAPABILITY = 'agent-session.approval-notes.v1' as const
+export const AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY = 'agent-session.after-reply.v1' as const
 // Registered-agent hosts accept only their agentSession.agents inventory; offer agents beyond Claude/Codex only after negotiation.
 // Clients advertising this can render those agents’ tabs; withhold extra-agent tabs from older clients to avoid empty panes.
 export const STRUCTURED_AGENT_SESSION_REGISTERED_AGENTS_RUNTIME_CAPABILITY =
@@ -62,6 +63,7 @@ export const AGENT_SESSION_COMMANDS_ON_REQUEST_CAPABILITY =
 export const STRUCTURED_AGENT_SESSION_SURFACE_RUNTIME_CAPABILITIES = [
   AGENT_SESSION_HOST_COMMAND_CAPABILITY,
   AI_VAULT_SESSION_HOLDER_CAPABILITY,
+  AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY,
   AGENT_SESSION_APPROVAL_NOTES_CAPABILITY,
   AGENT_SESSION_SESSION_OPTIONS_CAPABILITY,
   AGENT_SESSION_COMMANDS_ON_REQUEST_CAPABILITY,

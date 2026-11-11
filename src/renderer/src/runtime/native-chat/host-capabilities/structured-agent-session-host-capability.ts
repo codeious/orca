@@ -1,3 +1,4 @@
+import { AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY } from '../../../../../shared/agent-session/structured-agent-session-surface-capabilities'
 import {
   useAppStateViewActive,
   useAppViewExternalStore,
@@ -183,6 +184,15 @@ export function useStructuredAgentSessionHostQueuesMessagesState(
   return useStructuredAgentSessionHostCapabilityState(
     target,
     AGENT_SESSION_QUEUED_MESSAGES_RUNTIME_CAPABILITY
+  )
+}
+
+/** Whether the host takes `afterReply` on a send. An older host rejects the unknown key, so a
+ *  client sends it only once this is known, and `unknown` sends an ordinary message. */
+export function useStructuredAgentSessionHostWaitsForReply(target: RuntimeClientTarget): boolean {
+  return useStructuredAgentSessionHostCapability(
+    target,
+    AGENT_SESSION_AFTER_REPLY_RUNTIME_CAPABILITY
   )
 }
 

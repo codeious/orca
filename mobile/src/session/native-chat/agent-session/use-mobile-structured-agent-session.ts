@@ -192,7 +192,8 @@ export function useMobileStructuredAgentSession(
     onSendError,
     queueSendsNext,
     sendSelection: options.sendSelection,
-    takesSkills: hostSupport?.sendSkills === true
+    takesSkills: hostSupport?.sendSkills === true,
+    waitsForReply: hostSupport?.afterReply === true
   })
   const { items, currentRequests, actionablePromptIds, status, epoch } = state
   // Prefer host actionability: ended-agent prompts must receive no answer.

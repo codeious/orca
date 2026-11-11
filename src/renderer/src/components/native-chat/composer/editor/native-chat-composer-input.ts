@@ -27,6 +27,10 @@ export type NativeChatComposerInput = Pick<
   isCaretOnVisualEdge?: (edge: 'start' | 'end') => boolean
 }
 
+export function nativeChatComposerSelectedText(input: NativeChatComposerInput | null): string {
+  return input ? input.value.slice(input.selectionStart ?? 0, input.selectionEnd ?? 0) : ''
+}
+
 export type NativeChatPromptEditorProps = Omit<
   HTMLAttributes<HTMLDivElement>,
   'onChange' | 'onSelect'

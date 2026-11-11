@@ -115,6 +115,7 @@ export const SendParams = z
   .object({
     envelope: MutationEnvelope,
     retryUnknown: z.literal(true).optional(),
+    afterReply: z.literal(true).optional(),
     /** Host-held draft while active; gate strict payloads on agent-session.queued-messages.v2.
      * Operation fingerprint only, never body fingerprint. */
     delivery: z.literal('queue-if-active').optional(),

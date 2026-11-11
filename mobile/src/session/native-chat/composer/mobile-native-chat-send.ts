@@ -43,6 +43,7 @@ export type MobileNativeChatSendOutcome = 'accepted' | 'rejected' | 'unknown' | 
 /** How one send goes: `alternate` does the other thing than the host's follow-up setting; `goal` sends the draft as the chat's goal objective. */
 export type MobileNativeChatSendIntent = {
   alternate?: true
+  afterReply?: true
   goal?: true
   /** Continues this usage-limit cut; the host refuses it once the chat has moved on. */
   usageLimitContinuationOfTurnItemId?: string

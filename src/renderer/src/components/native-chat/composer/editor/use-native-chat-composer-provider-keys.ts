@@ -6,6 +6,7 @@ import type {
   SessionOptionsSurface
 } from '../../../../../../shared/native-chat/input/native-chat-session-options'
 import type { NativeChatComposerInput } from './native-chat-composer-input'
+import { useNativeChatComposerDroidKeys } from './use-native-chat-composer-droid-keys'
 
 export type NativeChatComposerProviderKeyArgs = {
   agent: AgentType | undefined
@@ -17,6 +18,7 @@ export type NativeChatComposerProviderKeyArgs = {
   input: RefObject<NativeChatComposerInput | null>
   draft: string
   hasAttachments: boolean
+  sendAfterReply?: (() => void) | undefined
   clear: {
     setDraft: Dispatch<SetStateAction<string>>
     setCaret: Dispatch<SetStateAction<number>>
@@ -28,7 +30,9 @@ export type NativeChatComposerProviderKeyArgs = {
 
 type ProviderKeyHook = (args: NativeChatComposerProviderKeyArgs) => ComposerKeyActions | undefined
 
-const PROVIDER_KEY_HOOKS: Readonly<Partial<Record<AgentType, ProviderKeyHook>>> = {}
+const PROVIDER_KEY_HOOKS: Readonly<Partial<Record<AgentType, ProviderKeyHook>>> = {
+  droid: useNativeChatComposerDroidKeys
+}
 
 export function useNativeChatComposerProviderKeys(
   args: NativeChatComposerProviderKeyArgs
