@@ -27,6 +27,7 @@ import {
   type OpenedProvider
 } from './structured-agent-session-start-provider-answer'
 import type { StructuredRewindRecoveryEvidence } from '../rewind/structured-rewind-recovery'
+import { pickAgentSessionOptions } from '../../../runtime/agent-session/records/agent-session-record-options'
 
 export type StructuredAgentSessionProviderStartedContext = {
   deps: StructuredAgentSessionHostDeps
@@ -219,7 +220,25 @@ export async function settleStructuredAgentSessionOptionsReported(
   if (context.sessions.get(event.sessionId)?.child !== child) {
     return
   }
-  context.publishStatus?.(event.sessionId)
+  await context.serialize(event.sessionId, async () => {
+    if (context.sessions.get(event.sessionId)?.child !== child) {
+      return
+    }
+    const record = context.deps.store.getRecord(event.sessionId)
+    const rules = record && context.deps.agents.definition(record.provider)?.restingOptions
+    const options = Object.fromEntries(
+      Object.entries(event.providerPicks ?? {}).filter(([key]) => rules?.acceptsKey(key))
+    )
+    if (Object.keys(options).length > 0) {
+      await context.deps.store.reviseSessionOptions(pickAgentSessionOptions, {
+        sessionId: event.sessionId,
+        fence: event.fence,
+        options,
+        now: context.now()
+      })
+    }
+    context.publishStatus?.(event.sessionId)
+  })
   await noteStructuredAgentSessionReportedOptions(
     context,
     event.sessionId,

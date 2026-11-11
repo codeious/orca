@@ -14,6 +14,8 @@ export type StructuredAgentSessionProviderOpenResult = {
   newConversation?: boolean
   link?: AgentSessionProviderHandleLink
   reportedOptions: AgentSessionOptionsResult['current']
+  /** Person-chosen options confirmed by the provider, not inferred runtime defaults. */
+  providerPicks?: Readonly<Record<string, string>>
   catalogListing?: AgentModelCatalogLiveListing
 }
 
