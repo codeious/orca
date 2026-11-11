@@ -1,0 +1,41 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8a703033b279b53238f479a9a6062a807426a784",
+  "prompts": {},
+  "sessions": {
+    "s_2ff199e299c023": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "cc8b1f7a-85cb-44a3-8d11-54b5b380d9f7",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_41b057fc6a7e24": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "01de2f4f-b27c-4d29-b7d8-0c3f94886fa5",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_81ba6feba81e27": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5eb8a6c5-5f41-4d48-96b4-a43a7c9a6504",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_9591f6f76450ed": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "c962a90c-6839-48b5-bcf2-f1bd1c523426",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
