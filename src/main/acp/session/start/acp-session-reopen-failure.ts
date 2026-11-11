@@ -11,13 +11,16 @@ import {
   spelledProviderTimelineItemKey
 } from '../../../native-chat/agent-session-timeline/provider-timeline-identity'
 import type { ProviderTimelineEvent } from '../../../native-chat/agent-session-timeline/provider-timeline-event'
-import { AcpAuthRequiredError, AcpRpcError } from '../../transport/acp-errors'
+import {
+  AcpAuthRequiredError,
+  AcpRpcError,
+  ACP_RESOURCE_NOT_FOUND
+} from '../../transport/acp-errors'
 import type { AcpStructuredLaunch } from '../../launch/acp-structured-launch-resolution'
 import { providerRequestTimeoutOf } from '../../../provider-process/provider-request-timeout'
 
 import { temporaryAcpStartupAnswer } from './acp-startup-outcome'
 
-const ACP_RESOURCE_NOT_FOUND = -32002
 export const ACP_REOPEN_FAILED = 'ACP agent could not reopen its saved session; starting a new one'
 
 export function acpReopenTakeover(

@@ -1,11 +1,11 @@
 import type { AcpSessionRuntimeOptions } from './acp-session-runtime-options'
 import type { Readable, Writable } from 'node:stream'
 import { z } from 'zod'
-import { AcpRpcError } from '../transport/acp-errors'
+import { AcpRpcError, JSON_RPC_INVALID_PARAMS } from '../transport/acp-errors'
 import { AcpPromptRequest } from './acp-prompt-request'
 import { callAcpSession } from './acp-session-call'
 import { AcpJsonRpcPeer, type AcpRequestContext } from '../transport/acp-json-rpc-peer'
-import { answerAcpPermission, readAcpPermissionRequest } from './acp-permission-requests'
+import { handleAcpSessionClientRequest } from './acp-session-client-requests'
 import { readAcpSessionEvent, type AcpSessionEvent } from './acp-session-events'
 import {
   setupAcpSession,
@@ -103,7 +103,7 @@ export class AcpSessionRuntime {
       .then((response) => {
         if (response.protocolVersion !== ACP_PROTOCOL_VERSION) {
           const error = new AcpRpcError(
-            -32602,
+            JSON_RPC_INVALID_PARAMS,
             `Unsupported ACP protocol version: ${response.protocolVersion}`
           )
           this.peer.close(error)
@@ -276,22 +276,14 @@ export class AcpSessionRuntime {
   }
 
   private handleRequest(method: string, params: unknown, context: AcpRequestContext): unknown {
-    if (method !== 'session/request_permission') {
-      if (!this.options.onRequest) {
-        throw new AcpRpcError(-32601, `Unknown ACP client method: ${method}`)
-      }
-      return this.options.onRequest(method, params, context)
-    }
-    const diagnose = (message: string): void => this.diagnose(message)
-    const request = readAcpPermissionRequest(params, diagnose)
-    if (!request) {
-      throw new AcpRpcError(-32602, 'Invalid ACP permission request')
-    }
-    // Only the started session asks the caller; the caller decides who can answer.
-    if (request.sessionId !== this.started?.sessionId) {
-      return { outcome: { outcome: 'cancelled' } }
-    }
-    return answerAcpPermission(request, context, this.options.onPermission, diagnose)
+    return handleAcpSessionClientRequest(
+      method,
+      params,
+      context,
+      this.options,
+      this.started?.sessionId,
+      (message) => this.diagnose(message)
+    )
   }
 
   private diagnose(message: string): void {

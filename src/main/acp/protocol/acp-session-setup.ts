@@ -3,7 +3,13 @@ import {
   withProviderDiagnostic
 } from '../../../shared/agent-session/failures/agent-session-failure'
 import type { z } from 'zod'
-import { AcpAuthRequiredError, AcpRpcError, acpAuthRequiredError } from '../transport/acp-errors'
+import {
+  AcpAuthRequiredError,
+  AcpRpcError,
+  acpAuthRequiredError,
+  JSON_RPC_INVALID_PARAMS,
+  JSON_RPC_METHOD_NOT_FOUND
+} from '../transport/acp-errors'
 import {
   NewSessionResponseSchema,
   LoadSessionResponseSchema,
@@ -88,7 +94,7 @@ export async function setupAcpSession(
         )
       }
     }
-    throw new AcpRpcError(-32601, 'ACP agent cannot load or resume this session')
+    throw new AcpRpcError(JSON_RPC_METHOD_NOT_FOUND, 'ACP agent cannot load or resume this session')
   }
   try {
     return await setup()
@@ -101,7 +107,7 @@ export async function setupAcpSession(
     if (!method) {
       if (initialized.authMethods && options.authMethodId && options.authMethodUnavailableMessage) {
         throw withProviderDiagnostic(
-          new AcpRpcError(-32602, options.authMethodUnavailableMessage),
+          new AcpRpcError(JSON_RPC_INVALID_PARAMS, options.authMethodUnavailableMessage),
           providerDiagnostic(options.authMethodUnavailableMessage, 'person')
         )
       }

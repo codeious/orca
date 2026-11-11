@@ -13,7 +13,7 @@ import { waitForPromiseWithSignal } from '../../../shared/abort-signal-reason'
 import type { AiVaultConversationCopy } from '../../../shared/ai-vault/resume/ai-vault-resume-preparation'
 import { resolveSessionFilePath } from '../../native-chat/session-file-resolver'
 import { resolveOmpSessionsDir } from '../../ai-vault/scanners/omp/omp-session-root'
-import { AcpRpcError } from '../transport/acp-errors'
+import { AcpRpcError, JSON_RPC_METHOD_NOT_FOUND } from '../transport/acp-errors'
 import { acpAgentName } from '../session/acp-structured-agent-definitions'
 import type { AcpStructuredConnection } from '../process/acp-structured-connection'
 import type { AcpStructuredSessionAdapterDeps } from '../session/acp-structured-session-adapter-deps'
@@ -109,7 +109,7 @@ export async function copyAcpConversation(
         throw error
       }
       throw new Error(
-        error instanceof AcpRpcError && error.code === -32601
+        error instanceof AcpRpcError && error.code === JSON_RPC_METHOD_NOT_FOUND
           ? `This ${name} version cannot copy a chat. Update ${name} to resume this chat in a new CLI.`
           : `${name} could not copy this chat.`,
         { cause: error }
@@ -168,7 +168,7 @@ async function forkAdvertised(
   observeAcpForkSupport(agent, initialized)
   const { agentCapabilities } = initialized
   if (agentCapabilities?.sessionCapabilities?.fork == null) {
-    throw new AcpRpcError(-32601, 'session/fork is not advertised')
+    throw new AcpRpcError(JSON_RPC_METHOD_NOT_FOUND, 'session/fork is not advertised')
   }
   return connection.forkSession(sessionId, cwd)
 }
