@@ -1,0 +1,19 @@
+src/main/provider-process/provider-process-supervisor.integration.test.ts
+  s_bb5217dd1cbb24::t_5f2be756af1511 422
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8d77081777d3fc0c050cb278d990f28a2dfbd3be",
+  "prompts": {},
+  "sessions": {
+    "s_bb5217dd1cbb24": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f533207f-8bb7-46e9-8d6c-f0aa3f9e7dc1",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
