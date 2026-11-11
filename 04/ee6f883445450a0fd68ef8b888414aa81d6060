@@ -1,0 +1,20 @@
+src/main/provider-process/managed-provider-process.ts
+  h_476903bd8a47d9 48-49,100-102,105,107
+src/main/provider-process/provider-process-close.ts
+  h_476903bd8a47d9 55-58,60
+src/main/provider-process/provider-process-supervisor.integration.test.ts
+  h_476903bd8a47d9 79-85,391-405
+src/main/provider-process/provider-process-supervisor.ts
+  h_476903bd8a47d9 6-7,143-144,156-160,210-211,224-232,248-249,252,272,292-300,311,320,329-330
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "04ee6f883445450a0fd68ef8b888414aa81d6060",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
