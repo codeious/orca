@@ -25,6 +25,7 @@ import { replaceSessionScopedOptions } from './agent-session-session-options'
 import type { AgentSessionModelCatalogResult } from '../agent-session-wire'
 import { listingVerifiedModelIds } from './structured-agent-session-listing-verified-ids'
 import { decodeStructuredAgentSessionOptionValue } from './structured-agent-session-option-codec'
+import { structuredPlanModePair } from './structured-agent-session-plan-mode-pair'
 
 export function structuredAgentSessionOptionCatalog(
   seed: AgentSessionOptionCatalog,
@@ -72,6 +73,7 @@ export type StructuredAgentSessionOptionState = {
   permissionOwnSupported?: boolean | null
   reportedModel?: string
   reportedEffort?: string
+  configuredSpec?: { model: string; effort?: string }
   /** The host is still listing models; it only keeps a seed from settling to built-in, since controls follow their data. */
   listingInProgress?: boolean
   fastModeRestricted?: boolean
@@ -141,6 +143,9 @@ export function applyStructuredAgentSessionModelCatalog(
   const verifiedModelIds = listingVerifiedModelIds(state.verifiedModelIds, catalog, models)
   return {
     ...state,
+    ...(structuredPlanModePair(state.record.agent)
+      ? { configuredSpec: namesDefault ? catalog.configuredSpec : undefined }
+      : {}),
     // Real-listing defaults are nameable but provisional, never confirmed picks.
     catalog: {
       ...(state.catalogSource === 'live' ? (state.catalog ?? seed) : seed),
@@ -194,12 +199,13 @@ export function applyStructuredAgentSessionOptions(
       ...(!policyEffort && current.effort ? { effort: current.effort } : {}),
       ...(current.fastMode !== undefined ? { fastMode: current.fastMode } : {}),
       ...(current.serviceTier ? { serviceTier: current.serviceTier } : {}),
-      ...(current.interactionMode ? { interactionMode: current.interactionMode } : {})
+      ...(current.interactionMode ? { interactionMode: current.interactionMode } : {}),
+      ...(current.planMode !== undefined ? { planMode: current.planMode } : {})
     },
     (id) =>
       current.defaulted?.some((key) => key === id)
         ? 'default'
-        : current.confirmed?.includes(id)
+        : current.confirmed?.includes(id) || id === 'planMode'
           ? 'reported'
           : id === 'serviceTier' && current.defaulted !== undefined
             ? 'applied'

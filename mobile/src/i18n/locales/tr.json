@@ -408,7 +408,15 @@
       "toggleOption": "{{value0}} aç/kapat",
       "ultra": "Ultra",
       "xhigh": "Ekstra yüksek",
-      "xhighShort": "Çok yüksek"
+      "xhighShort": "Çok yüksek",
+      "autonomyPermissionOff": "Kapalı",
+      "autonomyPermissionOffDescription": "Düzenleme ve komutlardan önce sorar",
+      "autonomyPermissionLow": "Düşük",
+      "autonomyPermissionLowDescription": "Dosyaları düzenler ve salt okunur komutları çalıştırır; diğer işlemler için sorar",
+      "autonomyPermissionMedium": "Orta",
+      "autonomyPermissionMediumDescription": "Kurulum, derleme ve yerel commit gibi geri alınabilir komutları da çalıştırır; diğer işlemler için sorar",
+      "autonomyPermissionHigh": "Yüksek",
+      "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
     },
     "sessionOptionPickers": {
       "agentWorking": "Ajan çalışıyor",

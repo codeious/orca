@@ -416,7 +416,15 @@
       "toggleOption": "Переключить {{value0}}",
       "ultra": "Предельный",
       "xhigh": "Очень высокий",
-      "xhighShort": "Очень выс."
+      "xhighShort": "Очень выс.",
+      "autonomyPermissionOff": "Выкл.",
+      "autonomyPermissionOffDescription": "Спрашивает перед правками и командами",
+      "autonomyPermissionLow": "Низкий",
+      "autonomyPermissionLowDescription": "Редактирует файлы и выполняет команды только для чтения; для остального спрашивает",
+      "autonomyPermissionMedium": "Средний",
+      "autonomyPermissionMediumDescription": "Также выполняет обратимые команды, например установку, сборку и локальные коммиты; для остального спрашивает",
+      "autonomyPermissionHigh": "Высокий",
+      "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
     },
     "sessionOptionPickers": {
       "agentWorking": "Агент работает",

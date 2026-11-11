@@ -18,6 +18,8 @@ export type NativeChatAgentProfile = {
   /** Chat and terminal take turns on one conversation, reopening its original chat on return. */
   terminalHandoff?: true
   composerKeys?: ComposerKeyMap
+  conversationCommandAliases?: Readonly<Record<string, 'clear' | 'compact'>>
+  sessionActions?: readonly ('rename' | 'fork')[]
   skillPrefix: '$' | '/'
   /** OpenClaude reads Claude-owned roots, so this can differ from the agent. */
   skillSourceOwner: AgentType
@@ -45,6 +47,12 @@ const OPENCODE_PROFILE: NativeChatAgentProfile = {
 }
 
 const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfile>> = {
+  droid: {
+    skillPrefix: '/',
+    skillSourceOwner: 'droid',
+    conversationCommandAliases: { new: 'clear', compress: 'compact' },
+    sessionActions: ['rename', 'fork']
+  },
   codex: {
     skillPrefix: '$',
     skillSourceOwner: 'codex',

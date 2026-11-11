@@ -68,6 +68,7 @@ export function structuredAgentSessionStatusSummary({
   const fastMode = record?.options?.fastMode
   const serviceTier = record?.options?.serviceTier
   const interactionMode = record?.options?.interactionMode
+  const planMode = record?.options?.planMode
   const launchDirectory = record ? agentSessionPinnedLaunchDirectory(record) : undefined
   return {
     sessionId,
@@ -97,6 +98,7 @@ export function structuredAgentSessionStatusSummary({
     ...(fastMode ? { fastMode } : {}),
     ...(serviceTier ? { serviceTier } : {}),
     ...(isAgentSessionInteractionMode(interactionMode) ? { interactionMode } : {}),
+    ...(planMode ? { planMode } : {}),
     ...childWork,
     ...(providerSession ? { providerSession } : {}),
     ...(launchDirectory ? { launchDirectory } : {}),

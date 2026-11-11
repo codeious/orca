@@ -30,6 +30,10 @@ export type StructuredAgentSessionComposerOptions = {
     name: string,
     argument: string
   ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'>>
+  runSessionAction?: (
+    name: 'rename' | 'fork',
+    argument: string
+  ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'>>
   /** Without host goal support, /goal remains agent-handled text. */
   changeThreadGoal?: (change: AgentSessionThreadGoalChange) => Promise<boolean>
 }

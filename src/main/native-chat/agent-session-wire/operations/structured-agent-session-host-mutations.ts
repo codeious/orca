@@ -11,7 +11,6 @@ import type {
   AgentSessionCancelResult,
   AgentSessionMutationEnvelope,
   AgentSessionMutationResult,
-  AgentSessionOptionResult,
   AgentSessionPromptResult,
   AgentSessionSendResult
 } from '../../../../shared/agent-session/agent-session-wire'
@@ -31,16 +30,10 @@ import {
 } from './structured-agent-session-mutation-context'
 import {
   openForProviderWrite,
-  openForWrite,
   sendPreparation,
   structuredAgentSessionSendBlock
 } from './structured-agent-session-send-preparation'
-import {
-  cancelPlan,
-  sendPlan,
-  setOptionPlan,
-  type MutationPlan
-} from './structured-agent-session-mutation-plans'
+import { cancelPlan, sendPlan, type MutationPlan } from './structured-agent-session-mutation-plans'
 import { promptPlan } from './structured-agent-session-prompt-plan'
 import { agentSessionMutationAdmitsNow } from './structured-agent-session-mutation-admits-now'
 import { runQueueableStructuredAgentSessionSend } from '../delivery/structured-agent-session-queued-send'
@@ -55,11 +48,6 @@ import { openWithReadyStructuredAgentSessionChild } from './structured-agent-ses
 
 import type { StructuredAgentSessionCaller } from '../host/structured-agent-session-host-types'
 import '../options/structured-agent-session-options-read'
-import {
-  noteStructuredAgentSessionOptionPick,
-  recordStructuredAgentSessionOptionIntent
-} from '../options/structured-agent-session-option-intent'
-import { confirmIdleStructuredAgentSessionOption } from '../options/structured-agent-session-idle-option'
 
 export function sendStructuredAgentSessionTurn(
   context: StructuredAgentSessionMutationContext,
@@ -248,44 +236,7 @@ export function respondToStructuredAgentSessionPrompt(
   )
 }
 
-export async function setStructuredAgentSessionOption(
-  context: StructuredAgentSessionMutationContext,
-  caller: StructuredAgentSessionCaller,
-  params: { envelope: AgentSessionMutationEnvelope; key: string; value: string }
-): Promise<AgentSessionMutationResult<AgentSessionOptionResult>> {
-  const plan = setOptionPlan(params)
-  const noChoice =
-    caller.readsOptionsWithoutModel === false && params.key === 'model' && params.value === ''
-  return mutateStructuredAgentSession(
-    context,
-    caller,
-    params.envelope,
-    {
-      ...plan,
-      conversationWrite: true,
-      run: async (ctx) => {
-        const picked = await recordStructuredAgentSessionOptionIntent(context.deps, ctx, params, {
-          readsWithoutModel: caller.readsOptionsWithoutModel !== false
-        })
-        if (picked.ok) {
-          noteStructuredAgentSessionOptionPick(context, ctx, params, !noChoice)
-          confirmIdleStructuredAgentSessionOption(context, ctx, params)
-        }
-        return picked
-      },
-      ...(noChoice
-        ? {
-            settledOutcome: (value: AgentSessionOptionResult) => ({
-              status: 'succeeded' as const,
-              sessionId: params.envelope.sessionId,
-              optionResult: { version: 1, ...value }
-            })
-          }
-        : {})
-    },
-    openForWrite(context, params.envelope)
-  )
-}
+export { setStructuredAgentSessionOption } from './structured-agent-session-option-mutation'
 
 export async function changeStructuredAgentSessionThreadGoal(
   context: StructuredAgentSessionMutationContext,
