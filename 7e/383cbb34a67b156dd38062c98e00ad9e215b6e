@@ -1,0 +1,65 @@
+src/main/acp/acp-dialects/antigravity-dialect.ts
+  s_9915298ad8a882::t_444d5c0f9de97f 3-8,46-49
+src/main/acp/acp-dialects/grok-background-task-stop.ts
+  s_9915298ad8a882::t_55f9c993ff6369 1,18
+src/main/acp/acp-dialects/grok-requests.ts
+  s_9915298ad8a882::t_c2de8de17a7937 6,35,71-74,114
+src/main/acp/acp-dialects/grok-subagent-stop.ts
+  s_9915298ad8a882::t_05ef156b1b3801 1,18
+src/main/acp/acp-dialects/omp-dialect.ts
+  s_9915298ad8a882::t_d3eae501eef9a8 3,127
+src/main/acp/conversation-copy/acp-conversation-copy.ts
+  s_9915298ad8a882::t_95de9ab274168e 16,112,171
+src/main/acp/protocol/acp-session-call.ts
+  s_9915298ad8a882::t_566b76b3051b71 5-6,27
+src/main/acp/protocol/acp-session-client-requests.ts
+  s_9915298ad8a882::t_41efd87e5b4199 1-33
+src/main/acp/protocol/acp-session-runtime.ts
+  s_9915298ad8a882::t_1c895e83d563f1 4,8,106,279-286
+src/main/acp/protocol/acp-session-setup.ts
+  s_9915298ad8a882::t_1059843a4f60d8 6-12,97,110
+src/main/acp/requests/acp-structured-prompts.ts
+  s_9915298ad8a882::t_8179dadf9c3977 10-14,46-49,65
+src/main/acp/requests/acp-timeline-requests.ts
+  s_9915298ad8a882::t_98241400e09b75 9,21,45-48,78
+src/main/acp/session/start/acp-session-reopen-failure.ts
+  s_9915298ad8a882::t_afb27700c8782d 14-18
+src/main/acp/text-task/acp-text-task-policy.ts
+  s_9915298ad8a882::t_845218e2ad7acc 1,95-98
+src/main/acp/transport/acp-errors.ts
+  s_9915298ad8a882::t_fa7cbc56699e26 19-27,53,78,130-132,136
+src/main/acp/transport/acp-incoming-requests.ts
+  s_9915298ad8a882::t_7ed7da3c738c83 2-7,9-10,29-33,50,65,69,84-96,99-102,120,123-126
+src/main/acp/transport/acp-json-rpc-peer.ts
+  s_9915298ad8a882::t_c37599eb8fab83 1,14,17-20,23-26,29,31,43-44,48-55,62-63,70,90,95,107,118,128,130-131,140-154,183,188,256,271-274,280,293-295,297-300,302
+src/main/acp/transport/acp-oversized-lines.ts
+  s_9915298ad8a882::t_2b506ede593b7c 3,23
+src/main/acp/transport/acp-peer-dialect.ts
+  s_9915298ad8a882::t_5042842e312c0e 1-63
+src/main/acp/transport/acp-peer-frame-dispatch.ts
+  s_9915298ad8a882::t_e58f1815bd944a 1-66
+src/main/acp/transport/acp-peer-handlers.ts
+  s_9915298ad8a882::t_41bbb5d4c27b81 1-14
+src/main/acp/transport/acp-peer-reply.ts
+  s_9915298ad8a882::t_5797eeb7e2c3de 1,3,5-10,13-20,27-28,31,33,35-37,41-42,47
+src/main/acp/transport/acp-response-settlement.ts
+  s_9915298ad8a882::t_e4910445c6eea5 8
+src/main/acp/transport/acp-rpc-envelope.ts
+  s_9915298ad8a882::t_d443bd997f51c2 2,19-31,33-34,38,40-41,46-47,50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7e383cbb34a67b156dd38062c98e00ad9e215b6e",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
