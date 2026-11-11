@@ -1,0 +1,29 @@
+src/shared/agent-status/process/agent-process-exit-watch.test.ts
+  s_51d34b8191f915::t_d691f62187678d 25,33-36,39,73,76-78,81,85-86
+src/shared/agent-status/process/agent-process-exit-watch.ts
+  s_420e4ed4f5ff76::t_bfdb91ada29647 4-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5cb115f7ea52d7c7e4ec2ee8af041aa586b5adfc",
+  "prompts": {},
+  "sessions": {
+    "s_420e4ed4f5ff76": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "344bdfa8-06f3-4ed9-b926-4eecfaa78851",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_51d34b8191f915": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "bbe947ef-36bd-4d2e-bb24-f36d2c545aa7",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
