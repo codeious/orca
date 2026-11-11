@@ -1,0 +1,23 @@
+src/shared/agent-session/agent-session-host-command.ts
+  s_9915298ad8a882::t_29dc83812e6343 1
+src/shared/rpc-contract/structured-agent-session-approval-params.ts
+  s_9915298ad8a882::t_6b4f741ca5d2c2 1
+src/shared/rpc-contract/structured-agent-session-host-command-params.ts
+  s_9915298ad8a882::t_fdb8d42625e7fa 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "95a3e17e7929c13a8e1630217d8dacea88105a5c",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
