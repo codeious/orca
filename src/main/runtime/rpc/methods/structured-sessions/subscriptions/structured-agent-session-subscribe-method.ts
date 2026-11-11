@@ -12,7 +12,10 @@ import { structuredAgentSessionSubscriptionId as subscriptionIdFor } from './str
 import { SubscribeParams } from '../../../../../../shared/rpc-contract/structured-agent-session-subscribe-params'
 import * as queuedImages from '../attachments/structured-agent-session-queued-image-capability'
 import { projectReceiptDeviceEvent } from './structured-agent-session-receipt-devices'
-import { projectHostCommandCatalog } from '../conversation/structured-agent-session-host-command'
+import {
+  mcpSignInCallerFor,
+  projectHostCommandCatalog
+} from '../conversation/structured-agent-session-host-command'
 
 export const STRUCTURED_AGENT_SESSION_SUBSCRIBE_METHOD = defineStreamingMethod({
   name: 'agentSession.subscribe',
@@ -32,6 +35,7 @@ export const STRUCTURED_AGENT_SESSION_SUBSCRIBE_METHOD = defineStreamingMethod({
     }
     // Resolve after opening snapshot/missed batch; a racing close disposes the bound stream.
     dispose = await host.subscribe({
+      mcpSignInCaller: mcpSignInCallerFor(ctx),
       commandsOnRequest: clientRequestsCommands(ctx),
       readsCurrentRequests: clientReadsCurrentRequests(ctx),
       id: subscriptionId,

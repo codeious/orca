@@ -1,10 +1,12 @@
+import { subscriberSnapshotPages } from './agent-session-subscriber-snapshot-pages'
 import type { QueuePublication } from '../../delivery/structured-agent-session-queued-publication'
 import type { ForkMarker } from '../history/agent-session-fork-marker'
 import { ForkMarkerSubscriptions } from './agent-session-fork-marker-delivery'
 import type { AgentSessionSubscribeInput, Subscriber } from './agent-session-subscribe-input'
+import { AgentSessionMcpSignInForwarding } from './agent-session-mcp-sign-in-forwarding'
+import { bindSessionMcpSignIn } from './structured-agent-session-mcp-sign-in'
 
 import type {
-  AgentSessionHistoryPage,
   AgentSessionSubscribeEvent,
   AgentSessionTurnActivity
 } from '../../../../../shared/agent-session/agent-session-wire'
@@ -42,6 +44,7 @@ export type AgentSessionSubscribersHooks = SubscriberFieldHooks & {
 }
 
 export class AgentSessionSubscribers {
+  readonly mcpSignIn = new AgentSessionMcpSignInForwarding()
   private readonly bySession = new Map<string, Map<string, Subscriber>>()
   private readonly forkMarkers = new ForkMarkerSubscriptions(
     () => this.deliveryPort(),
@@ -77,6 +80,7 @@ export class AgentSessionSubscribers {
     const session = this.bySession.get(input.sessionId) ?? new Map<string, Subscriber>()
     session.set(input.id, subscriber)
     this.bySession.set(input.sessionId, session)
+    subscriber.closeMcpSignIn = bindSessionMcpSignIn(this.mcpSignIn, input, subscriber)
 
     this.forkMarkers.add(subscriber)
     const hostNow = this.now()
@@ -172,25 +176,7 @@ export class AgentSessionSubscribers {
   snapshot(sessionId: string, journal: AgentSessionJournal, fence: number): void {
     const view = journal.publicRead()
     const work = this.hooks.readCurrentWork?.(sessionId, journal)
-    // Cache each stored/bounded form separately; each sizes its own page.
-    let storedPage: AgentSessionHistoryPage | undefined
-    let boundedPage: AgentSessionHistoryPage | undefined
-    const read = (subscriber: Subscriber): AgentSessionHistoryPage =>
-      withPublishedWork(
-        readAgentSessionHydrationPage(
-          journal,
-          fence,
-          subscriberHistoryReader(subscriber),
-          view.currentSnapshot()
-        ),
-        work
-      )
-    const pageFor = (subscriber: Subscriber): AgentSessionHistoryPage =>
-      subscriber.readHistorySnapshot
-        ? read(subscriber)
-        : subscriber.boundedFrames
-          ? (boundedPage ??= read(subscriber))
-          : (storedPage ??= read(subscriber))
+    const pageFor = subscriberSnapshotPages(journal, fence, view, work)
     const hostNow = this.now()
     for (const subscriber of this.subscribers(sessionId)) {
       const page = pageFor(subscriber)
@@ -315,6 +301,7 @@ export class AgentSessionSubscribers {
   }
 
   private drop(subscriber: Subscriber): void {
+    subscriber.closeMcpSignIn?.()
     const session = this.bySession.get(subscriber.sessionId)
     session?.delete(subscriber.id)
     if (session?.size === 0) {

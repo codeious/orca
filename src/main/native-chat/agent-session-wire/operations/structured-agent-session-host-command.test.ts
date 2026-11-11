@@ -35,6 +35,47 @@ function envelope(method: string, fields: Record<string, unknown>) {
 }
 
 describe('provider host commands', () => {
+  it('forwards sign-in to its initiating reader without journaling or replaying the URL', async () => {
+    const { host } = rig
+    await host.attach(CALLER, hostTestAttachParams(null))
+    const identity = { callerKey: CALLER.callerKey, connectionId: 'connection' }
+    const fields = { name: 'mcp', argument: 'sign-in sample' }
+    const params = { ...fields, envelope: envelope('agentSession.hostCommand', fields) }
+    host.deps.adapter.readCommands = () => [{ name: 'mcp', kind: 'command', hostCommand: true }]
+    host.deps.adapter.hostCommand = async (input) => {
+      expect(
+        await input.openMcpSignIn?.('https://auth.example.invalid/?state=not-in-journal')
+      ).toBe(true)
+      return { text: 'sample: signed-in' }
+    }
+    const urls: string[] = []
+    const dispose = await host.subscribe({
+      id: 'reader',
+      sessionId: SESSION,
+      mcpSignInCaller: identity,
+      emit: (event) => {
+        if (event.type === 'batch' && event.mcpSignInOpen) {
+          urls.push(event.mcpSignInOpen.url)
+          host.mcpSignIn.acknowledge(
+            event.sessionId,
+            event.mcpSignInOpen.requestId,
+            'connection',
+            CALLER.callerKey,
+            true
+          )
+        }
+      }
+    })
+    const caller = { ...CALLER, mcpSignInCaller: identity }
+    expect(await host.hostCommand(caller, params)).toMatchObject({ ok: true })
+    expect(await host.hostCommand(caller, params)).toMatchObject({ ok: true, replayed: true })
+    expect(urls).toEqual(['https://auth.example.invalid/?state=not-in-journal'])
+    expect(JSON.stringify(await host.journalSnapshot(SESSION))).not.toContain(
+      'https://auth.example.invalid/?state=not-in-journal'
+    )
+    dispose()
+  })
+
   it('replays the accepted reply without a second provider command or a model message', async () => {
     const run = vi
       .fn(async () => ({ text: 'Unexpected second execution' }))

@@ -6,6 +6,7 @@ import type { AgentSessionSubscribeEvent } from '../../../../../shared/agent-ses
 import type { SubscriberFieldState } from './agent-session-subscriber-frame-fields'
 
 export type AgentSessionSubscribeInput = {
+  mcpSignInCaller?: { callerKey: string; connectionId: string }
   commandsOnRequest?: boolean
   id: string
   sessionId: string
@@ -27,6 +28,7 @@ export type AgentSessionSubscribeInput = {
 export type AgentSessionSubscriberEmit = (event: AgentSessionSubscribeEvent) => void
 export type Subscriber = {
   id: string
+  closeMcpSignIn?: () => void
   emit: AgentSessionSubscriberEmit
   end?: (cause: unknown) => void
   cursor: AgentJournalCursor

@@ -1,3 +1,4 @@
+import { toBinaryPayload } from './runtime-environment-subscription-binary'
 import {
   assertCrewSubscriptionInputs,
   runtimeEnvironmentSubscriptionId,
@@ -11,6 +12,7 @@ import {
 } from './runtime-environment-subscription-setup'
 import type * as SubscriptionSetup from '../../../shared/remote-runtime/host-catalog/runtime-environment-subscription-setup'
 import { ipcMain } from 'electron'
+import { mcpSignInSubscriptionFields } from './runtime-environment-mcp-sign-in-routing'
 import { abortWhenRendererGone } from '../renderer-lifetime-abort'
 import type { RemoteRuntimeTransportSubscription } from '../../../shared/remote-runtime/requests/remote-runtime-subscription-contract'
 import { getRuntimeEnvironmentTransportGeneration } from './runtime-environment-transport-generation'
@@ -236,6 +238,12 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
             : { subscriptionId, requestId: subscription.requestId }
         }
         remoteRuntimeSubscriptions.set(subscriptionId, {
+          ...mcpSignInSubscriptionFields(
+            args.method,
+            args.params,
+            subscription,
+            () => transportIsCurrent() && !setupController.signal.aborted
+          ),
           setupController,
           requestId: subscription.requestId,
           environmentId: environment.id,
@@ -292,17 +300,4 @@ export function registerRuntimeEnvironmentSubscriptionHandlers(
       }
     }
   )
-}
-
-function toBinaryPayload(value: unknown): Uint8Array<ArrayBufferLike> | null {
-  if (value instanceof Uint8Array) {
-    return value
-  }
-  if (value instanceof ArrayBuffer) {
-    return new Uint8Array(value)
-  }
-  if (ArrayBuffer.isView(value)) {
-    return new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
-  }
-  return null
 }
