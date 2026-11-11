@@ -1,0 +1,19 @@
+src/shared/native-chat/input/native-chat-interactive-prompt.test.ts
+  s_9e473945bea849::t_6f17e24fd3e4e2 3,8,77-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "41498d094f4ac2d02498e1d8ee080e111ac7a3d3",
+  "prompts": {},
+  "sessions": {
+    "s_9e473945bea849": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e13e969a-8b8f-472a-b31b-87d5d0067270",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
