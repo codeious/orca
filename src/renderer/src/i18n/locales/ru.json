@@ -15140,7 +15140,8 @@
             "transcriptsSkippedCount_one": "Пропущена {{count}} история",
             "transcriptsSkippedCount_few": "Пропущено {{count}} истории",
             "transcriptsSkippedCount_many": "Пропущено {{count}} историй",
-            "transcriptsSkippedCount_other": "Пропущено {{count}} истории"
+            "transcriptsSkippedCount_other": "Пропущено {{count}} истории",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Сканирование сессий",
@@ -15488,6 +15489,11 @@
             "createInProgress": "Создание PR...",
             "workspaceHostUnresolved": "Не удалось определить сервер рабочего пространства. Обновите рабочее пространство и повторите попытку.",
             "branchDiscoveryFailed": "Не удалось обнаружить ветки."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -20958,7 +20964,10 @@
         "many_many": "Создано {{count}} запросов на слияние"
       },
       "splitRight": "Разделить вправо",
-      "splitDown": "Разделить вниз"
+      "splitDown": "Разделить вниз",
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
+      }
     },
     "tab": {
       "bar": {

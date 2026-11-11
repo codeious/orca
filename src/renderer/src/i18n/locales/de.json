@@ -14713,7 +14713,8 @@
             "resumeInNewCliHostTooOld": "Orca auf dem Host aktualisieren, auf dem dieser Chat läuft, um ihn in einer neuen CLI fortzusetzen.",
             "folderWorkspaceUnavailable": "Der Ordner-Arbeitsbereich ist nicht mehr verfügbar.",
             "transcriptsSkippedCount_one": "{{count}} Transkript übersprungen",
-            "transcriptsSkippedCount_other": "{{count}} Transkripte übersprungen"
+            "transcriptsSkippedCount_other": "{{count}} Transkripte übersprungen",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Sitzungen werden durchsucht",
@@ -15037,6 +15038,11 @@
             "createInProgress": "PR wird erstellt...",
             "workspaceHostUnresolved": "Der Host des Arbeitsbereichs konnte nicht ermittelt werden. Den Arbeitsbereich aktualisieren und erneut versuchen.",
             "branchDiscoveryFailed": "Branch-Erkennung fehlgeschlagen."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -20300,7 +20306,10 @@
         "many_other": "{{count}} Pull Requests erstellt"
       },
       "splitRight": "Rechts teilen",
-      "splitDown": "Unten teilen"
+      "splitDown": "Unten teilen",
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
+      }
     },
     "tab": {
       "bar": {

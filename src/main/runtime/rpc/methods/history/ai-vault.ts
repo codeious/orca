@@ -35,10 +35,18 @@ import {
   AiVaultDeleteSessionParams,
   AiVaultListSessionsParams,
   AiVaultPrepareSessionResumeParams,
+  AiVaultSessionHolderParams,
   AiVaultSessionTitlesParams
 } from '../../../../../shared/rpc-contract/ai-vault-params'
 
 export const AI_VAULT_METHODS = [
+  defineMethod({
+    name: 'aiVault.sessionHolder',
+    permission: 'workspace',
+    params: AiVaultSessionHolderParams,
+    handler: (params, { runtime }) =>
+      runtime.getAiVaultSessionHolder(params.agent, params.sessionId)
+  }),
   defineMethod({
     name: 'aiVault.searchSessions',
     requires: ['sessionSearch'],

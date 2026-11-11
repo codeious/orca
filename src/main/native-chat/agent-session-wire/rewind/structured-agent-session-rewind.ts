@@ -49,9 +49,9 @@ export async function rewindStructuredAgentSession(
   const operation = { method: 'agentSession.rewind', fields }
   // A fork can be saved without a running agent; other rewinds require the provider itself.
   const agent = store.getConversation(sessionId)?.provider
-  const rewindsByFork =
-    agent !== undefined &&
-    context.deps.agents.registration(agent)?.adapter.forkForRewind !== undefined
+  const adapter = agent ? context.deps.agents.registration(agent)?.adapter : undefined
+  const rewindsByFork = adapter?.forkForRewind !== undefined
+  const needsAgent = !rewindsByFork || adapter?.forkForRewindRequiresAcquisition === true
   const run = async (selection: ReadyOperationSelection) => {
     let completionReceipt: JournalOperationReceipt | undefined
     const result = await admitAndRunAgentSessionMutation<AgentSessionRewindResult>({
@@ -61,7 +61,7 @@ export async function rewindStructuredAgentSession(
       logger: context.deps.logger,
       callerKey: caller.callerKey,
       envelope: params.envelope,
-      prepareSession: rewindsByFork
+      prepareSession: !needsAgent
         ? sendPreparation(context, params.envelope, { refusesInRun: true }, selection)
         : openWithReadyStructuredAgentSessionChild(context, params.envelope, selection),
       journal: () => context.sessions.get(sessionId)?.journal,
@@ -120,7 +120,9 @@ export async function rewindStructuredAgentSession(
             ? structuredRewindCut(ctx.journal, {
                 itemId: params.itemId,
                 provider: record.provider,
-                nativeId: head.nativeId
+                nativeId: head.nativeId,
+                rewindMessageTarget: context.deps.agents.definition(record.provider)
+                  ?.rewindMessageTarget
               })
             : null
           if (!cut) {
@@ -253,7 +255,7 @@ export async function rewindStructuredAgentSession(
     operation,
     run,
     {
-      needsAgent: () => !rewindsByFork,
+      needsAgent: () => needsAgent,
       beforeAgent: () => rewindRefusalBehindClear(context.sessions.get(sessionId)?.journal, params)
     }
   )

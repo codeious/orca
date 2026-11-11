@@ -14668,7 +14668,8 @@
             "folderWorkspaceUnavailable": "L'espace de travail de type dossier n'est plus disponible.",
             "transcriptsSkippedCount_one": "{{count}} transcript ignoré",
             "transcriptsSkippedCount_other": "{{count}} transcripts ignorés",
-            "transcriptsSkippedCount_many": "{{count}} transcripts ignorés"
+            "transcriptsSkippedCount_many": "{{count}} transcripts ignorés",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Analyse des sessions",
@@ -14987,6 +14988,11 @@
             "createInProgress": "Création de la PR en cours...",
             "workspaceHostUnresolved": "L'hôte de l'espace de travail n'a pas pu être résolu. Actualisez l'espace de travail et réessayez.",
             "branchDiscoveryFailed": "Échec de la détection des branches."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -20372,7 +20378,10 @@
         "many_many": "{{count}} pull requests créées"
       },
       "splitRight": "Diviser à droite",
-      "splitDown": "Diviser vers le bas"
+      "splitDown": "Diviser vers le bas",
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
+      }
     },
     "tab": {
       "bar": {

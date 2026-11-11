@@ -14037,7 +14037,8 @@
             "resumeInNewCliUnavailable": "이 세션은 CLI에서 열 수 없습니다.",
             "resumeInNewCliHostTooOld": "이 채팅을 새 CLI에서 재개하려면 채팅을 실행하는 호스트의 Orca를 업데이트하세요.",
             "folderWorkspaceUnavailable": "폴더 워크스페이스는 더 이상 사용할 수 없습니다.",
-            "transcriptsSkippedCount_other": "대화 기록 {{count}}개 건너뜀"
+            "transcriptsSkippedCount_other": "대화 기록 {{count}}개 건너뜀",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "세션 스캔 중",
@@ -14351,6 +14352,11 @@
             "createInProgress": "PR 생성 중...",
             "workspaceHostUnresolved": "워크스페이스 호스트를 확인할 수 없습니다. 워크스페이스를 새로 고친 후 다시 시도하세요.",
             "branchDiscoveryFailed": "브랜치를 감지하지 못했습니다."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -19590,7 +19596,10 @@
         "many_other": "풀 리퀘스트 {{count}}개 열림"
       },
       "splitRight": "오른쪽으로 분할",
-      "splitDown": "아래로 분할"
+      "splitDown": "아래로 분할",
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
+      }
     },
     "tab": {
       "bar": {

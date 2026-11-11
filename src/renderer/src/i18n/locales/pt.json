@@ -11060,7 +11060,8 @@
             "folderWorkspaceUnavailable": "O espaço de trabalho de pasta não está mais disponível.",
             "transcriptsSkippedCount_one": "{{count}} transcrição ignorada",
             "transcriptsSkippedCount_other": "{{count}} transcrições ignoradas",
-            "transcriptsSkippedCount_many": "{{count}} transcrições ignoradas"
+            "transcriptsSkippedCount_many": "{{count}} transcrições ignoradas",
+            "resumeInChatHeld": "A terminal is still running this conversation. Open that terminal instead."
           },
           "AiVaultSessionRow": {
             "noPreviewAvailable": "Nenhuma pré-visualização de conversa disponível",
@@ -11655,6 +11656,11 @@
             "createInProgress": "Criação do PR em andamento...",
             "workspaceHostUnresolved": "Não foi possível resolver o host do espaço de trabalho. Atualize o espaço de trabalho e tente novamente.",
             "branchDiscoveryFailed": "Falha na detecção de branches."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Resume in a new chat?",
+            "description": "Orca cannot tell whether a terminal is still running this conversation. If one is, both will write to the same history and split it in two.",
+            "confirm": "Resume anyway"
           }
         }
       },
@@ -21805,6 +21811,9 @@
           "noCredit": "Não há créditos de redefinição do Codex nesta conta.",
           "alreadyRedeemed": "Esse crédito de redefinição já foi usado."
         }
+      },
+      "sessionHolder": {
+        "openTerminal": "Open terminal"
       }
     },
     "tab": {
