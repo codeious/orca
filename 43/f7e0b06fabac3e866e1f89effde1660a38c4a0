@@ -1,0 +1,77 @@
+src/main/native-chat/agent-session-wire/providers/structured-agent-session-adapter.ts
+  s_e709f6525cdb61::t_0d1c193d3b11b4 246
+src/main/native-chat/agent-session-wire/rewind/structured-agent-session-rewind.ts
+  s_e709f6525cdb61::t_7cf431f7d8b244 52-54,64,123-125,258
+src/main/native-chat/agent-session-wire/rewind/structured-rewind-cut.ts
+  s_e709f6525cdb61::t_7acad67f4903cd 18-19,37-42,52-60,73,230-231,241-242
+src/main/native-chat/agent-session-wire/rewind/structured-rewind-recovery.ts
+  s_e709f6525cdb61::t_78c9fc33874482 36-37,39,86,100,153-158
+src/main/runtime/agent-session/installation/structured-agent-session-host-assembly.ts
+  s_e709f6525cdb61::t_4e6844e577e39c 85
+src/main/runtime/agent-session/lifecycle/structured-agent-cli-writers.ts
+  s_e709f6525cdb61::t_3ef8bdacb83e38 7-10,23-52
+src/main/runtime/rpc/methods/history/ai-vault.ts
+  s_e709f6525cdb61::t_8d319af09b58ca 38,43-49
+src/main/runtime/session-tabs/structured-session-cli-writer-host.ts
+  s_e709f6525cdb61::t_569d3c8f9b8d6c 7-10,19-29
+src/renderer/src/components/right-sidebar/ai-vault/session-actions/ai-vault-session-holder-check.ts
+  s_e709f6525cdb61::t_7c1e373e748800 1-97
+src/renderer/src/components/right-sidebar/ai-vault/session-actions/ai-vault-session-launch-actions.ts
+  s_e709f6525cdb61::t_1e01b73bec998b 6,58,218-220,223
+src/renderer/src/components/right-sidebar/ai-vault/session-actions/ai-vault-session-resume-here.ts
+  s_e709f6525cdb61::t_b66ff2e77689ce 183-184
+src/renderer/src/components/right-sidebar/ai-vault/session-actions/ai-vault-session-resume-in-chat-launch.ts
+  s_e709f6525cdb61::t_f75c594961b878 28-29,56-57,70-73
+src/renderer/src/i18n/locales/de.json
+  s_e709f6525cdb61::t_5f145d030334ad 14716-14717,15041-15045,20309-20312
+src/renderer/src/i18n/locales/en.json
+  s_e709f6525cdb61::t_e59e81da81523b 15508-15509,15837-15841,21467-21469
+src/renderer/src/i18n/locales/es.json
+  s_e709f6525cdb61::t_b65f023fea4db7 14401-14402,14721-14725,20109-20112
+src/renderer/src/i18n/locales/fr.json
+  s_e709f6525cdb61::t_abfc3ac76a5405 14671-14672,14991-14995,20381-20384
+src/renderer/src/i18n/locales/ja.json
+  s_e709f6525cdb61::t_de8322701a484e 14043-14044,14358-14362,19602-19605
+src/renderer/src/i18n/locales/ko.json
+  s_e709f6525cdb61::t_bf4eb9598c0e13 14040-14041,14355-14359,19599-19602
+src/renderer/src/i18n/locales/pt.json
+  s_e709f6525cdb61::t_145947156b6061 11063-11064,11659-11663,21814-21816
+src/renderer/src/i18n/locales/ru.json
+  s_e709f6525cdb61::t_ee752e17e78140 15143-15144,15492-15496,20967-20970
+src/renderer/src/i18n/locales/tr.json
+  s_e709f6525cdb61::t_14bd6430fb590d 14693-14694,15018-15022,20284-20287
+src/renderer/src/i18n/locales/zh-Hant.json
+  s_e709f6525cdb61::t_437cb781608c1b 14516-14517,14831-14835,20000-20003
+src/renderer/src/i18n/locales/zh.json
+  s_e709f6525cdb61::t_81f38d0b53aa5d 14288-14289,14603-14607,19858-19861
+src/shared/agent-launch/startup/agent-resume-argv.ts
+  s_e709f6525cdb61::t_0e8ba25748d9c8 99
+src/shared/agent-session/structured-agent-session-surface-capabilities.ts
+  s_e709f6525cdb61::t_229e846affbfe3 2,64
+src/shared/ai-vault/ai-vault-session-holder.ts
+  s_e709f6525cdb61::t_15173c3bc4518e 1-57
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_e709f6525cdb61::t_4096ba368be0a3 20,52-53
+src/shared/rpc-contract/ai-vault-params.ts
+  s_e709f6525cdb61::t_e79a97612ed494 12-16
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_e709f6525cdb61::t_47765121c1ce80 91,901
+src/shared/structured-agent-cli-conversation-adoption.ts
+  s_e709f6525cdb61::t_c3a84f1b284d38 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "43f7e0b06fabac3e866e1f89effde1660a38c4a0",
+  "prompts": {},
+  "sessions": {
+    "s_e709f6525cdb61": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "0d853de5-b261-491f-9c34-d9ab4f2c4e13",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
