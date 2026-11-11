@@ -124,6 +124,8 @@ export const SettingsUpdate = z
     experimentalNewWorktreeCardStyle: z.boolean().optional(),
     /** No UI: the host-side switch for connectors, so a headless server can be turned on. */
     experimentalConnectors: z.boolean().optional(),
+    /** Host-side opt-in for experimental chat agents, so a paired or headless host can offer them. */
+    experimentalChatAgents: z.boolean().optional(),
     agentStatusHooksEnabled: z.boolean().optional(),
     codexShareHistoryAcrossAccounts: z.boolean().optional(),
     claudeSubagentNavigationEnabled: z.boolean().optional(),

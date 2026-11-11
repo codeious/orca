@@ -61,6 +61,7 @@ export type RuntimeClientSettingsUpdate = Pick<
   | 'agentStatusHooksEnabled'
   | 'claudeSubagentNavigationEnabled'
   | 'experimentalConnectors'
+  | 'experimentalChatAgents'
   | 'defaultTuiAgent'
   | 'disabledTuiAgents'
   | 'agentDefaultArgs'

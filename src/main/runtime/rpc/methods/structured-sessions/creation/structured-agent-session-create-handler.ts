@@ -14,6 +14,7 @@ import {
   requireStructuredCreateSupportAdmission,
   structuredCallerFor as callerFor
 } from './structured-agent-session-gate'
+import { hostOffersStructuredAgent } from '../../../../agent-session/launch/structured-agent-host-offer'
 import type { AgentSessionAttachParams } from '../../../../../native-chat/agent-session-wire/acquisition/structured-agent-session-attach'
 import type {
   AttachParams,
@@ -69,6 +70,12 @@ export async function handleStructuredAgentSessionCreate(
   capture?: (surface: StructuredSessionSurface) => void
 ) {
   requireStructuredAgentAudience(ctx, params.agent)
+  // Forks and client-supplied locations never ask create support, which refuses the rest.
+  if (!hostOffersStructuredAgent(ctx.runtime, params.agent)) {
+    throw agentSessionRefusalError('structured_agent_session_unsupported', {
+      reason: 'hostUnsupported'
+    })
+  }
   if (params.envelope.expectedRuntimeFence !== null) {
     throw agentSessionRefusalError('agent_session_operation_invalid', {
       reason: 'requestMalformed'

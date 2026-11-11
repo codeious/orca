@@ -12,6 +12,7 @@ import { useTranslate } from '@/i18n/use-translate'
 import { AgentDashboardExperimentalSetting } from '../../dashboard/AgentDashboardExperimentalSetting'
 import { EphemeralVmsExperimentalSetting } from '../virtual-machines/recipes/EphemeralVmsExperimentalSetting'
 import { WslHostsExperimentalSetting } from '../wsl/hosts/WslHostsExperimentalSetting'
+import { ChatAgentsExperimentalSetting } from './ChatAgentsExperimentalSetting'
 import { wslHostsAvailable } from '../../sidebar/use-wsl-hosts-enabled'
 import {
   MAX_AGENT_HIBERNATION_IDLE_MS,
@@ -23,7 +24,7 @@ const MS_PER_MINUTE = 60 * 1000
 
 type ExperimentalPaneProps = {
   settings: GlobalSettings
-  updateSettings: (updates: Partial<GlobalSettings>) => void
+  updateSettings: (updates: Partial<GlobalSettings>) => void | Promise<void>
   /** Unlocked by Option-clicking the Experimental title. */
   hiddenExperimentalUnlocked?: boolean
 }
@@ -249,6 +250,8 @@ export function ExperimentalPane({
             </div>
           </SearchableSetting>
         ) : null}
+
+        <ChatAgentsExperimentalSetting settings={settings} updateSettings={updateSettings} />
 
         <EphemeralVmsExperimentalSetting settings={settings} updateSettings={updateSettings} />
 

@@ -8644,6 +8644,10 @@
             "title": "Agent sleep",
             "toggleLabel": "Toggle agent sleep"
           },
+          "chatAgents": {
+            "copy": "Offers chat agents that are still experimental when you start a new chat. Chats you already have keep opening while this is off.",
+            "toggleLabel": "Toggle experimental chat agents"
+          },
           "newWorktreeCardStyle": {
             "copy": "Preview updated worktree-card layout, metadata placement, card-display menu options, and status presentation.",
             "description": "Preview updated worktree-card layout, metadata placement, card-display menu options, and status presentation.",
@@ -10844,6 +10848,12 @@
               "sleep": "sleep",
               "terminal": "terminal",
               "title": "Agent sleep"
+            },
+            "chatAgents": {
+              "agents": "agents",
+              "chat": "chat",
+              "description": "Offer chat agents that are still experimental for new chats.",
+              "title": "Experimental chat agents"
             },
             "newWorktreeCardStyle": {
               "card": "card",

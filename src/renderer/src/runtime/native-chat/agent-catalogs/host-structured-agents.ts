@@ -151,6 +151,13 @@ export async function relearnHostStructuredAgents(
   await loadHostStructuredAgents(executionHostId, capabilities, runtimeId)
 }
 
+/** Forgets what a host listed, so the next read asks it again after the agents it offers changed. */
+export function forgetHostStructuredAgents(executionHostId: string): void {
+  if (entries.delete(executionHostId)) {
+    publish()
+  }
+}
+
 /** Drops hosts no longer paired; a stale runtime is already ignored by the reader. */
 export function retainHostStructuredAgents(executionHostIds: ReadonlySet<string>): void {
   let removed = false

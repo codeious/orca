@@ -26,6 +26,10 @@ import {
 } from '../../../native-chat/structured-agent-command-resolution'
 import { structuredAgentRuntimeMetadata } from '../installation/structured-agent-runtime-metadata'
 import {
+  hostOffersStructuredAgent,
+  type StructuredAgentHostOfferRuntime
+} from './structured-agent-host-offer'
+import {
   refreshHostAgentBaseEnvironmentAfterMiss,
   resolveHostAgentBaseEnvironment,
   createStructuredAgentEnvironmentResolvers
@@ -175,9 +179,12 @@ export async function resolveHostStructuredAgentCreateSupport(input: {
   agent: StructuredAgentId
   worktreeSelector: string
   location: AgentSessionExecutionLocation
-  runtime: LaunchSupportRuntime
+  runtime: LaunchSupportRuntime & StructuredAgentHostOfferRuntime
 }): Promise<StructuredAgentSessionCreateSupport> {
   const { agent, location, runtime } = input
+  if (!hostOffersStructuredAgent(runtime, agent)) {
+    return { supported: false, reason: 'agent' }
+  }
   const supportsLocation =
     structuredAgentRuntimeMetadata(agent)?.supportsLocation(location) ?? false
   const supportsLaunch = supportsLocation

@@ -20,6 +20,7 @@ import '../../../../../../shared/rpc-contract/structured-agent-session-continue-
 import '../../../../../../shared/rpc-contract/structured-agent-session-rename-params'
 import '../../../../../../shared/rpc-contract/structured-agent-session-queued-edit-params'
 import { clientReadsStructuredSessionAgent } from '../structured-agent-session-policy'
+import { hostOffersStructuredAgent } from '../../../../agent-session/launch/structured-agent-host-offer'
 import { bindStructuredAgentSessionStream } from '../subscriptions/structured-agent-session-status-stream'
 import { structuredAgentSessionAvailabilitySubscriptionId } from '../subscriptions/structured-agent-session-subscription-id'
 
@@ -32,8 +33,10 @@ export const STRUCTURED_AGENT_SESSION_AGENTS_METHODS = [
     handler: async (_params, ctx): Promise<AgentSessionAgentsResult> => {
       requireStructuredCapability(ctx)
       return {
-        agents: STRUCTURED_AGENT_RUNTIME_METADATA.filter(({ definition }) =>
-          clientReadsStructuredSessionAgent(ctx, definition.agent)
+        agents: STRUCTURED_AGENT_RUNTIME_METADATA.filter(
+          ({ definition }) =>
+            clientReadsStructuredSessionAgent(ctx, definition.agent) &&
+            hostOffersStructuredAgent(ctx.runtime, definition.agent)
         ).map(({ definition }) => ({
           agent: definition.agent,
           capabilities: { ...definition.capabilities },
@@ -57,8 +60,12 @@ export const STRUCTURED_AGENT_SESSION_AGENTS_METHODS = [
       release = ctx.runtime.subscribeStructuredAgentAvailability((agents) => {
         const frame: AgentSessionAvailabilityFrame = {
           type: 'availability',
-          // Expose only agents the client can open.
-          agents: agents.filter(({ agent }) => clientReadsStructuredSessionAgent(ctx, agent))
+          // Expose only agents the client can open and the host offers.
+          agents: agents.filter(
+            ({ agent }) =>
+              clientReadsStructuredSessionAgent(ctx, agent) &&
+              hostOffersStructuredAgent(ctx.runtime, agent)
+          )
         }
         emit(frame)
       })
