@@ -14,6 +14,7 @@ src/main/native-chat/agent-model-catalog/agent-model-catalog-entry.ts
   s_91d04d84653459::t_e2724e8bb98237 1,27-28,66,139-142,254
 src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.test.ts
   s_91d04d84653459::t_ae6e57d3deb640 1-51
+  s_91d04d84653459::t_11f8954bdbbfca 1-51
 src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.ts
   s_91d04d84653459::t_46867cbc7d9c2d 79,146-148,162-164
 src/main/native-chat/agent-model-catalog/agent-model-catalog-refresh.ts
