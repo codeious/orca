@@ -1,3 +1,4 @@
+import { DROID_PLAN_MODE_PAIR } from '../../droid-spec-pair-options'
 import type { AgentType } from '../../agent-status/contracts/agent-status-types'
 
 /** The options an agent saves its plan-mode model and effort under, apart from its main pair. */
@@ -8,7 +9,9 @@ export type StructuredPlanModePair = {
   sameAsMain: string
 }
 
-const PLAN_MODE_PAIRS: Partial<Record<AgentType, StructuredPlanModePair>> = {}
+const PLAN_MODE_PAIRS: Partial<Record<AgentType, StructuredPlanModePair>> = {
+  droid: DROID_PLAN_MODE_PAIR
+}
 
 export function structuredPlanModePair(
   agent: AgentType | null | undefined
