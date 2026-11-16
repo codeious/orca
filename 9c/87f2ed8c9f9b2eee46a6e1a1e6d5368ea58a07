@@ -1,0 +1,47 @@
+src/shared/__fixtures__/droid-subagent-hooks.jsonl
+  s_ad00747fcb93b9::t_b2cfdec2c63a54 1-37
+src/shared/__fixtures__/droid-subagent-hooks.meta.json
+  s_ad00747fcb93b9::t_1325064fe7d72e 1-12
+src/shared/agent-hook-listener/hook-normalization-policy.ts
+  s_ad00747fcb93b9::t_52e4fe07de657e 1-43
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-driver.test-support.ts
+  s_ad00747fcb93b9::t_cc9ca795747bb0 1-103
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-ownership.test.ts
+  s_ad00747fcb93b9::t_ae85a3ced49f4f 1-72
+src/shared/agent-hook-listener/normalization/hook-prompt-identity.ts
+  s_ad00747fcb93b9::t_d02261c3611d36 1-23
+src/shared/agent-hook-listener/pane-provider-session.ts
+  s_ad00747fcb93b9::t_4d5a0759527346 16,74-82,255-256
+src/shared/agent-hook-listener/provider-hook-session.ts
+  s_ad00747fcb93b9::t_65c5246bd4b9e2 1-59
+src/shared/agent-hook-listener/providers/droid/droid-hook-session.ts
+  s_ad00747fcb93b9::t_419d0792e43f90 1-33
+src/shared/agent-hook-listener/providers/droid/droid-lease-expiry.ts
+  s_ad00747fcb93b9::t_4e1be37e1d53f7 1-31
+src/shared/agent-hook-listener/providers/droid/droid-probe-log-replay.test-fixture.ts
+  s_ad00747fcb93b9::t_22be420bef89ad 1-141
+src/shared/agent-hook-listener/providers/droid/droid-session-status.ts
+  s_ad00747fcb93b9::t_e7de81fdb0dc4a 1-107
+src/shared/agent-hook-listener/providers/droid/droid-sessions.ts
+  s_ad00747fcb93b9::t_8846a2a80cf99c 1-247
+src/shared/agent-hook-listener/providers/droid/droid-transcript-origin.ts
+  s_ad00747fcb93b9::t_9cf67e4b6cd03e 1-17
+src/shared/agent-hook-listener/state/provider-hook-state-slots.ts
+  s_ad00747fcb93b9::t_81fefef896345b 41-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9c87f2ed8c9f9b2eee46a6e1a1e6d5368ea58a07",
+  "prompts": {},
+  "sessions": {
+    "s_ad00747fcb93b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "76dd52ab-a5b9-4faa-8d3f-2f25a389af4b",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
