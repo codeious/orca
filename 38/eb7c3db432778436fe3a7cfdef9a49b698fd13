@@ -1,0 +1,27 @@
+src/main/jsonl-rpc/session-adapter.ts
+  s_60abc5ab8a5cf1::t_0f52ac5fa8cb45 1-340
+src/main/jsonl-rpc/session-lifecycle.ts
+  s_60abc5ab8a5cf1::t_6ba8a4ed78e142 1-8,10-25,27-127,130-132,134-188
+src/main/pi/rpc/rpc-exit-classification.ts
+  s_60abc5ab8a5cf1::t_2c8ae614956bd2 8,10
+src/main/pi/rpc/rpc-session-adapter.ts
+  s_60abc5ab8a5cf1::t_493d3e4531851a 5-6,10,13,23-27,30-32,34-71,74,77-80,167-168,170,172-173,175,177-180
+src/main/pi/rpc/rpc-session.ts
+  s_60abc5ab8a5cf1::t_928440ed599244 22,49-58,92-116,156,193,209,211,216-217,221,225,230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "38eb7c3db432778436fe3a7cfdef9a49b698fd13",
+  "prompts": {},
+  "sessions": {
+    "s_60abc5ab8a5cf1": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fe34e294-0295-42b1-ac6a-14a9b74fbfc2",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
