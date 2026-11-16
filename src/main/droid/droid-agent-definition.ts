@@ -1,4 +1,5 @@
 import type { DirectoryAccountAgentDefinition } from '../native-chat/agent-session-wire/providers/structured-agent-definition'
+import { droidRewindMessageTarget } from './droid-rewind-target'
 import {
   DROID_AUTONOMY_LEVELS,
   DROID_AUTONOMY_OPTION_ID,
@@ -22,9 +23,13 @@ export const DROID_AGENT: DirectoryAccountAgentDefinition = {
   experimental: true,
   handleTransport: DROID_HANDLE_TRANSPORT,
   accountHomeVariable: DROID_ACCOUNT_HOME_VARIABLE,
+  rewindMessageTarget: droidRewindMessageTarget,
   capabilities: {
-    rewind: false,
-    compact: false,
+    rewind: true,
+    compact: true,
+    // Droid forks its running session as it stands, so a copy reaches only the latest reply.
+    fork: 'tip',
+    mcpServers: true,
     threadGoal: false,
     // The ring reads Droid's own context breakdown after each turn.
     contextUsage: true,
