@@ -20081,7 +20081,10 @@
         "plan": {
           "file": "計画ファイル",
           "reviewTitle": "提案されたプランをレビュー",
-          "refineHint": "プランを調整するとレビューが閉じ、変更内容を送信できます。"
+          "refineHint": "プランを調整するとレビューが閉じ、変更内容を送信できます。",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
         },
         "worker": "ワーカー · {{name}}",
         "openWorker": "ワーカーを開く",
@@ -20099,7 +20102,9 @@
         "closedUnnamed": "回答が記録されないまま閉じられました",
         "autoDenied": "2:00 経過後に Claude が自動的に拒否しました",
         "workerEnded": "閉じられました · ワーカーが終了しました",
-        "answerInTerminal": "ワーカーのターミナルで回答してください"
+        "answerInTerminal": "ワーカーのターミナルで回答してください",
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "launchPromptNotDelivered": "配信されませんでした — ターミナルを確認してください",
       "taskList": {

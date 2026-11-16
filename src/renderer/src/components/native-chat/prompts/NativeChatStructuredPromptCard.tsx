@@ -30,7 +30,9 @@ export function NativeChatStructuredPromptCard({
     return (
       <NativeChatApprovalCard
         approval={approval}
-        onChoose={(optionId) => void promptResponse.respond(prompt, { kind: 'option', optionId })}
+        onChoose={(optionId, notes) =>
+          void promptResponse.respond(prompt, { kind: 'option', optionId, ...notes })
+        }
         isSubmitting={promptResponse.holds(prompt)}
         onCancel={onCancel}
         shouldFocus={shouldFocus}

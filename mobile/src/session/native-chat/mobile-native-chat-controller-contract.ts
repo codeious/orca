@@ -9,7 +9,10 @@ import type {
   NativeChatAnswerSource
 } from '../../../../src/shared/native-chat/input/questions/native-chat-ask-answer'
 import type { AskPrompt } from '../../../../src/shared/native-chat/input/questions/native-chat-ask-types'
-import type { MobileChatPermission } from './input/prompts/mobile-native-chat-permission'
+import type {
+  MobileChatPermission,
+  MobileChatPermissionResponder
+} from './input/prompts/mobile-native-chat-permission'
 import type { MobileChatQuestion } from './input/prompts/mobile-native-chat-question'
 import type {
   NativeChatLiveTurnIndicator,
@@ -98,7 +101,7 @@ export type MobileNativeChatController = {
     itemId: string
     expectedRevision: number
   }) => Promise<boolean>
-  handleNativeChatRespondPermission: (text: string) => Promise<boolean>
+  handleNativeChatRespondPermission: MobileChatPermissionResponder
   handleNativeChatStop: () => void
   nativeChatQueued: MobileStructuredQueuedMessageControls
   nativeChatBackgroundTasks: MobileStructuredBackgroundTasks | null
