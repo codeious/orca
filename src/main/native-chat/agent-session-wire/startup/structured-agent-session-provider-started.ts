@@ -219,7 +219,23 @@ export async function settleStructuredAgentSessionOptionsReported(
   if (context.sessions.get(event.sessionId)?.child !== child) {
     return
   }
-  context.publishStatus?.(event.sessionId)
+  await context.serialize(event.sessionId, async () => {
+    if (context.sessions.get(event.sessionId)?.child !== child) {
+      return
+    }
+    const record = context.deps.store.getRecord(event.sessionId)
+    const rules = record && context.deps.agents.definition(record.provider)?.restingOptions
+    const options = Object.fromEntries(
+      Object.entries(event.providerPicks ?? {}).filter(([key]) => rules?.acceptsKey(key))
+    )
+    if (Object.keys(options).length > 0) {
+      await context.deps.store.updateRecord(event.sessionId, {
+        kind: 'pick-options',
+        args: { sessionId: event.sessionId, fence: event.fence, options, now: context.now() }
+      })
+    }
+    context.publishStatus?.(event.sessionId)
+  })
   await noteStructuredAgentSessionReportedOptions(
     context,
     event.sessionId,
