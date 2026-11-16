@@ -1,0 +1,69 @@
+src/main/runtime/agent-session/launch/structured-agent-availability.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 81-83,94
+  s_08b0ae162f26b9::t_f0c378b7dcf259 9,84-93
+src/renderer/src/lib/agent-session/launch/structured-agent-session-host-admission.ts
+  s_08b0ae162f26b9::t_5b2feb5c43d214 14-17,50,101,108,111-113
+src/shared/agent-session/failures/agent-session-failure-copy.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 256-259
+src/shared/agent-session/failures/agent-session-refusal-details.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 189-193,196-204,220,276,280
+src/shared/agent-session/agent-session-agent-availability.ts
+  s_08b0ae162f26b9::t_2ae454ec8544da 14
+  s_08b0ae162f26b9::t_1590564af6ced9 11-13,26-31,47,71,75-83
+src/main/agent-launch/agent-launch-mode.ts
+  s_08b0ae162f26b9::t_a205a13945f3ed 26-32,240-251
+tests/e2e/structured-agent-session-launch-admission.unit.test.ts
+  s_08b0ae162f26b9::t_a72365bd4fcb5b 158-175
+src/main/agent-launch/agent-launch-mode-settings.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 2-19
+src/shared/agent-session/failures/agent-session-refusal-notice.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 96-97
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-failure.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 77-84
+src/main/agent-launch/agent-launch-version-receipt.test.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 1-2,5-58
+  s_08b0ae162f26b9::t_1d0fad3854302b 3-4,59-60
+src/main/native-chat/agent-launch/structured-agent-session-create-support.ts
+  s_08b0ae162f26b9::t_7375f7313afd83 9,17,20-27,30-33
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-create-call.ts
+  s_08b0ae162f26b9::t_60444c2e70ff18 16
+  s_08b0ae162f26b9::t_1590564af6ced9 12-15,91-100
+src/shared/agent-session/failures/agent-session-write-failure.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 92-95,111
+src/shared/agent-session/structured-agent-create-support-reply.ts
+  s_08b0ae162f26b9::t_3b992207d57007 1-2,15-16
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-admission-notices.ts
+  s_08b0ae162f26b9::t_e991a69ab4222b 11-13,15-19,26-30,34-38,48-54
+src/main/runtime/agent-session/launch/structured-agent-launch-support.ts
+  s_08b0ae162f26b9::t_1590564af6ced9 187,189-190,192
+  s_08b0ae162f26b9::t_b2a2183ade1b95 6,94-95,98-102,108-119,123,188,191,193,196-198
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-admission.ts
+  s_08b0ae162f26b9::t_69143f95c32e35 34,178-179,182,241-242,247-248
+src/shared/agent-launch/contracts/agent-launch-intent.ts
+  s_08b0ae162f26b9::t_e5bed5aa21b143 5
+  s_08b0ae162f26b9::t_1590564af6ced9 155
+src/main/runtime/session-tabs/structured-session-create-support.ts
+  h_476903bd8a47d9 177,179-180
+  s_08b0ae162f26b9::t_e237eee7d60394 33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4a0955f1b7c44ea565340c77cffe1bb04edbaee1",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_08b0ae162f26b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e241a5ba-8a2f-49df-8b78-33914687abfa",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
