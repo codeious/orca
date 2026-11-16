@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useAppStore } from '@/store'
-import { parseExecutionHostId, type ExecutionHostId } from '../../../shared/execution-host'
+import {
+  parseExecutionHostId,
+  type ExecutionHostId
+} from '../../../shared/execution-host/execution-host'
 import { BROWSER_GOOGLE_COOKIE_CLEAR_CAPABILITY } from '../../../shared/browser/runtime/browser-runtime-capabilities'
 import { useConfirmationDialog } from './confirmation-dialog-context'
 import {
@@ -9,6 +12,7 @@ import {
   confirmAndClearGoogleCookies
 } from '@/lib/browser/cookies/browser-google-cookie-clear'
 import { useTranslate } from '@/i18n/use-translate'
+import { translateBrowserSessionProfileLabel } from '@/lib/browser/profiles/browser-session-profile-label'
 import { getRuntimeEnvironmentRevision } from '@/runtime/rpc/environment-revisions/runtime-environment-revision'
 
 export function useGoogleCookieClear(hostId: ExecutionHostId, profileId: string, label?: string) {
@@ -111,7 +115,12 @@ export function useGoogleCookieClear(hostId: ExecutionHostId, profileId: string,
         t(
           'browser.googleCookieClear.unverified',
           "Couldn't check {{profile}}'s Google cookies. Try again.",
-          { profile: label || (profileId === 'default' ? 'Default' : 'Browser profile') }
+          {
+            profile: translateBrowserSessionProfileLabel(
+              label || (profileId === 'default' ? 'Default' : 'Browser profile'),
+              profileId
+            )
+          }
         )
       )
     } finally {

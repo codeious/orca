@@ -32,7 +32,7 @@ type GitHubProviderSelectionInput = Pick<
 >
 
 import { useCallback } from 'react'
-import type { GitHubWorkItem } from '../../../../shared/github/work-item-types'
+import type { GitHubWorkItem } from '../../../../shared/github/work-items/work-item-types'
 import { resolveGitHubWorkItemIdentity } from '../../../../shared/new-workspace/github-work-item-identity'
 import '@/components/sidebar/workspace-creation/folder/folder-workspace-source-repos'
 import {
@@ -41,7 +41,7 @@ import {
 } from '../../../../shared/new-workspace/workspace-source'
 import { getLinkedItemDisplayName } from '@/components/sidebar/workspace-creation/folder/folder-workspace-source-selection'
 import { ipcOrRuntimeTargetForHostId } from '@/runtime/rpc/targets/runtime-client-target'
-import { getRepoExecutionHostId } from '../../../../shared/execution-host'
+import { getRepoExecutionHostId } from '../../../../shared/execution-host/execution-host'
 import { resolveGitHubPrStartPointForRepo } from '@/lib/source-control/review/github-pr-start-point'
 import { getForkPushWarning } from '../fork-push-warning'
 import { toast } from 'sonner'

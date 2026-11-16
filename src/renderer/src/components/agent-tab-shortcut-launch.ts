@@ -1,10 +1,11 @@
 import { toast } from 'sonner'
-import { launchAgentInNewTab } from '@/lib/agent-session/launch/new-tab/launch-agent-in-new-tab'
-import { newAgentLaunchRequestId } from '@/lib/agent-session/launch/routing/agent-launch-request-id'
+import { launchAgentInNewTabWithOutcome } from '@/lib/agent-session/launch/new-tab/launch-agent-in-new-tab'
+
+import { createNonSecureContextUuid } from '../../../shared/identifiers/non-secure-context-uuid'
 import { translate } from '@/i18n/i18n'
 import { selectFloatingWorkspacePanelVisible } from '@/store/workspaces/floating/floating-workspace-panel-selector'
 import { useAppStore } from '../store'
-import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../shared/constants'
+import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../shared/workspace/identity/floating-workspace-id'
 import type { TuiAgent } from '../../../shared/agent-launch/catalog/tui-agent'
 import {
   captureAgentTabLaunchContext,
@@ -17,8 +18,8 @@ function launchAgentTab(
   agent: TuiAgent,
   { groupId, focusIntent }: AgentTabLaunchContext
 ): void {
-  launchAgentInNewTab({
-    requestId: newAgentLaunchRequestId(),
+  launchAgentInNewTabWithOutcome({
+    requestId: createNonSecureContextUuid(),
     focusIntent,
     agent,
     worktreeId,

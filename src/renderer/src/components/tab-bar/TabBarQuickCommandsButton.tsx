@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Play } from 'lucide-react'
-import { useAppStore } from '@/store'
-import { getTerminalQuickCommandHostPromptMaxLength } from '@/lib/terminal-quick-command-host-prompt-limit'
+import { useAppStore } from '@/store/index'
+import { getTerminalQuickCommandHostPromptMaxLength } from '@/lib/terminal/quick-commands/terminal-quick-command-host-prompt-limit'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   createTerminalQuickCommandDraft,
@@ -12,8 +12,8 @@ import {
   isTerminalQuickCommandComplete
 } from '../../../../shared/terminal/quick-commands/terminal-quick-commands'
 import { getRepoIdFromWorktreeId } from '../../../../shared/worktree/id'
-import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
-import { runQuickCommandInNewTab } from '@/lib/run-quick-command-in-new-tab'
+import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/workspace/identity/floating-workspace-id'
+import { runQuickCommandInNewTab } from '@/lib/terminal/quick-commands/run-quick-command-in-new-tab'
 import type { TerminalQuickCommand } from '../../../../shared/terminal/quick-commands/terminal-quick-command-types'
 import { useConfirmationDialog } from '@/components/confirmation-dialog-context'
 import { useTranslate } from '@/i18n/use-translate'
@@ -23,9 +23,12 @@ import {
   type HostedTerminalQuickCommand,
   useTerminalQuickCommandHosts
 } from '@/hooks/use-terminal-quick-command-hosts'
-import { getRepoExecutionHostId, type ExecutionHostId } from '../../../../shared/execution-host'
+import {
+  getRepoExecutionHostId,
+  type ExecutionHostId
+} from '../../../../shared/execution-host/execution-host'
 import { useProjectHostSetupProjection } from '@/store/projects/use-project-host-setup-projection'
-import { terminalQuickCommandMatchesWorkspaceProject } from '@/lib/terminal-quick-command-project-scope'
+import { terminalQuickCommandMatchesWorkspaceProject } from '@/lib/terminal/quick-commands/terminal-quick-command-project-scope'
 
 type TabBarQuickCommandsButtonProps = {
   worktreeId: string
@@ -122,15 +125,14 @@ export function TabBarQuickCommandsButton({
   const handleDeleteCommand = async (entry: HostedTerminalQuickCommand): Promise<void> => {
     const { command } = entry
     const confirmed = await confirm({
-      title: t(
-        'auto.components.tab.bar.TabBarQuickCommandsButton.e8e1a52edb',
-        'Delete "{{value0}}"?',
-        { value0: command.label }
-      ),
-      description: t(
-        'auto.components.tab.bar.TabBarQuickCommandsButton.3220e2da27',
-        'This quick command will be removed from your saved list.'
-      ),
+      title: t('common.delete', 'Delete'),
+      description: [
+        command.label,
+        t(
+          'auto.components.tab.bar.TabBarQuickCommandsButton.3220e2da27',
+          'This quick command will be removed from your saved list.'
+        )
+      ].join('\n'),
       confirmLabel: t('auto.components.tab.bar.TabBarQuickCommandsButton.be8f0ff166', 'Delete'),
       confirmVariant: 'destructive'
     })

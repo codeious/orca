@@ -1,4 +1,4 @@
-import { parseExecutionHostId, type ExecutionHostId } from '../../execution-host'
+import { parseExecutionHostId, type ExecutionHostId } from '../../execution-host/execution-host'
 import type { TextActionPickerCatalog } from './agent-launch-picker-text-action'
 import { agentPickerLaunchChoices } from './agent-launch-picker-effective-choices'
 import { agentPickerPanelArguments } from './agent-launch-picker-arguments'
@@ -21,7 +21,11 @@ import type { CurrentActionSelection } from '../../source-control/ai/recipes/sou
 
 export type AgentPickerSurface = 'chat' | 'terminal'
 export type AgentPickerDraftOwner = object
-export type AgentPickerModel = AgentSessionModelOption & { isLegacy?: true; hidden?: true }
+export type AgentPickerModel = AgentSessionModelOption & {
+  isLegacy?: true
+  /** Listed only by a matching search, or while it is the current choice. */
+  hidden?: true
+}
 export type AgentPickerEntry = {
   textGeneration?: TextActionPickerCatalog
   agent: TuiAgent
@@ -35,6 +39,7 @@ export type AgentPickerEntry = {
   structured: AgentDedicatedChoices
   arguments?: string | null
   catalog: AgentSessionModelCatalogResult
+  coherentCatalog?: boolean
   catalogRead?: 'pending' | 'settled' | 'failed' | 'unsupported'
   ownerKey?: string
   draftTarget?: { key: string; worktreeId?: string; repoId?: string; executionHostId: string }

@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import { settleComposerSubmit } from '@/lib/workspace/creation/composer-submit-cancellation'
 import { getWorkspaceSourceProvider } from '../../../../shared/new-workspace/workspace-source'
 import { canUseIssueCommandForLinkedItemProvider } from '@/lib/workspace/creation/new-workspace'
-import { getSetupConfig } from '../../../../shared/orca-hook-setup-config'
+import { getSetupConfig } from '../../../../shared/workspace-setup/hooks/orca-hook-setup-config'
 import {
   deriveWorkspaceSetupState,
   readWorkspaceSetupInspection,
@@ -13,7 +13,7 @@ import {
 import type { SetupDecision } from '../../../../shared/worktree/create-types'
 import type { WorktreeCreationRequest } from '@/lib/workspace/creation/pending-worktree-creation'
 import { resolveComposerBranchNameOverrideForCreate } from '../composer-branch-selection'
-import { resolveFolderSetupSupported } from '@/lib/use-folder-setup-supported'
+import { resolveFolderSetupSupported } from '@/lib/workspace/creation/setup/folder-setup-support'
 import { translate } from '@/i18n/i18n'
 import { resolveWorktreeCreateBaseBranch } from '@/runtime/source-control/worktree-creation/worktree-create-base'
 import type { TuiAgent } from '../../../../shared/agent-launch/catalog/tui-agent'
