@@ -20794,7 +20794,16 @@
         },
         "imageUnavailable": "Prévia indisponível",
         "exitPlanMode": "Sair do modo de planejamento",
-        "moreControls": "Mais controles do chat"
+        "moreControls": "Mais controles do chat",
+        "renameNeedsName": "Use /rename followed by a chat name.",
+        "autonomyPermissionOff": "Desativado",
+        "autonomyPermissionOffDescription": "Pede aprovação antes de edições e comandos",
+        "autonomyPermissionLow": "Baixo",
+        "autonomyPermissionLowDescription": "Edita arquivos e executa comandos somente de leitura; pede aprovação para o restante",
+        "autonomyPermissionMedium": "Médio",
+        "autonomyPermissionMediumDescription": "Também executa comandos reversíveis como instalações, compilações e commits locais; pede aprovação para o restante",
+        "autonomyPermissionHigh": "Alto",
+        "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
       },
       "tool": {
         "exitCode": "saída {{value0}}",

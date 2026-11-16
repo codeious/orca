@@ -18,6 +18,10 @@ export type NativeChatAgentProfile = {
   /** Chat and terminal take turns on one conversation, reopening its original chat on return. */
   terminalHandoff?: true
   composerKeys?: ComposerKeyMap
+  /** The agent's own names for the host's conversation commands. */
+  conversationCommandAliases?: Readonly<Record<string, 'clear' | 'compact'>>
+  /** Commands Orca runs on the chat itself rather than sending to the agent. */
+  sessionActions?: readonly 'rename'[]
   skillPrefix: '$' | '/'
   /** OpenClaude reads Claude-owned roots, so this can differ from the agent. */
   skillSourceOwner: AgentType
@@ -47,9 +51,17 @@ const OPENCODE_PROFILE: NativeChatAgentProfile = {
 }
 
 const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfile>> = {
+  droid: {
+    skillPrefix: '/',
+    skillSourceOwner: 'droid',
+    conversationCommandAliases: { new: 'clear', compress: 'compact' },
+    sessionActions: ['rename']
+  },
   codex: {
     skillPrefix: '$',
     skillSourceOwner: 'codex',
+    // Its app-server would read /new as prose; `$` skills never share the name.
+    conversationCommandAliases: { new: 'clear' },
     // App-server has no slash parser; the model owns goal tools and receives /goal objectives as prose.
     textDrivenCommands: ['goal']
   },

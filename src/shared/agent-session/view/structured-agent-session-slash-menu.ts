@@ -1,4 +1,7 @@
-import { getTextDrivenNativeChatCommands } from '../../native-chat/native-chat-agent-profiles'
+import {
+  getNativeChatAgentProfile,
+  getTextDrivenNativeChatCommands
+} from '../../native-chat/native-chat-agent-profiles'
 import type { AgentType } from '../../agent-status/contracts/agent-status-types'
 import {
   sessionSlashCommandSuggestions,
@@ -52,6 +55,33 @@ export function structuredSlashCommands(
   ]
 }
 
+const SESSION_ACTION_ROWS: Readonly<Record<'rename', SlashCommandSuggestion>> = {
+  rename: {
+    name: 'rename',
+    description: 'Rename this chat',
+    argumentHint: '<name>',
+    orcaOwned: true
+  }
+}
+
+/** The agent's names for offered conversation commands, and the session actions this client runs. */
+function agentCommandRows(
+  agent: AgentType,
+  conversationCommands: readonly AgentSessionConversationCommand[] | undefined,
+  sessionActions: boolean
+): SlashCommandSuggestion[] {
+  const profile = getNativeChatAgentProfile(agent)
+  return [
+    ...Object.entries(profile?.conversationCommandAliases ?? {}).flatMap(([name, command]) => {
+      const target = CONVERSATION_COMMANDS.find((entry) => entry.name === command)
+      return target && conversationCommands?.includes(command) ? [{ ...target, name }] : []
+    }),
+    ...(sessionActions
+      ? (profile?.sessionActions ?? []).map((name) => SESSION_ACTION_ROWS[name])
+      : [])
+  ]
+}
+
 /** Host commands remain first; reported catalogs add other names. */
 export function structuredSessionSlashCommands(
   agent: AgentType,
@@ -59,7 +89,8 @@ export function structuredSessionSlashCommands(
   reported: readonly AgentSessionSlashCommand[] | undefined,
   compactInstructions?: boolean,
   interactionModeSupported = false,
-  mcpPanel = false
+  mcpPanel = false,
+  sessionActions = false
 ): readonly SlashCommandSuggestion[] {
   const modeCommands: SlashCommandSuggestion[] = interactionModeSupported
     ? [
@@ -70,10 +101,16 @@ export function structuredSessionSlashCommands(
       ]
     : []
   const orcaOwned = [...modeCommands, ...(mcpPanel ? [STRUCTURED_AGENT_SESSION_MCP_COMMAND] : [])]
-  const hostOwned = [
+  const offeredFirst = [
     ...orcaOwned,
     ...structuredSlashCommands(conversationCommands, agent, compactInstructions).filter(
       ({ name }) => !orcaOwned.some((entry) => entry.name === name)
+    )
+  ]
+  const hostOwned = [
+    ...offeredFirst,
+    ...agentCommandRows(agent, conversationCommands, sessionActions).filter(
+      ({ name }) => !offeredFirst.some((entry) => entry.name === name)
     )
   ]
   if (reported === undefined) {

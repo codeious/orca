@@ -216,6 +216,7 @@ export type AgentSessionStatusSummary = {
    *  client re-reads options. Absent from older hosts. */
   effort?: string
   fastMode?: string
+  planMode?: string
   serviceTier?: string
   /** Saved next-turn intent; moves clients' option stamps without a turn or model change. */
   interactionMode?: 'default' | 'plan'

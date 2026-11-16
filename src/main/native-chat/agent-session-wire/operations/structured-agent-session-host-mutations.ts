@@ -53,6 +53,7 @@ import type { StructuredAgentSessionCaller } from '../host/structured-agent-sess
 import '../options/structured-agent-session-options-read'
 import { recordStructuredAgentSessionOptionIntent } from '../options/structured-agent-session-option-intent'
 import { confirmIdleStructuredAgentSessionOption } from '../options/structured-agent-session-idle-option'
+import { structuredAgentSessionPlanModePick } from '../options/structured-agent-session-plan-mode-pick'
 
 export function sendStructuredAgentSessionTurn(
   context: StructuredAgentSessionMutationContext,
@@ -236,21 +237,25 @@ export async function setStructuredAgentSessionOption(
       ...plan,
       conversationWrite: true,
       run: async (ctx) => {
-        const picked = await recordStructuredAgentSessionOptionIntent(context.deps, ctx, params, {
+        const input = noChoice
+          ? params
+          : await structuredAgentSessionPlanModePick(context, ctx, params)
+        const picked = await recordStructuredAgentSessionOptionIntent(context.deps, ctx, input, {
           readsWithoutModel: caller.readsOptionsWithoutModel !== false
         })
-        if (picked.ok) {
-          const confirming = confirmIdleStructuredAgentSessionOption(context, ctx, params)
-          context.trackProviderOperation?.(confirming)
-          void confirming.catch((error) => {
-            ctx.logger.warn('confirming idle session metadata failed', {
-              scope: 'idle-option',
-              sessionId: ctx.sessionId,
-              error
-            })
-          })
+        if (!picked.ok) {
+          return picked
         }
-        return picked
+        const confirming = confirmIdleStructuredAgentSessionOption(context, ctx, input)
+        context.trackProviderOperation?.(confirming)
+        void confirming.catch((error) => {
+          ctx.logger.warn('confirming idle session metadata failed', {
+            scope: 'idle-option',
+            sessionId: ctx.sessionId,
+            error
+          })
+        })
+        return { ...picked, value: { ...picked.value, key: params.key } }
       },
       ...(noChoice
         ? {

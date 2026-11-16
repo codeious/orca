@@ -1,4 +1,5 @@
 import { agentSessionInteractionCommand } from '../options/permissions/agent-session-interaction-mode'
+import { getNativeChatAgentProfile } from '../../native-chat/native-chat-agent-profiles'
 import type { AgentType } from '../../agent-status/contracts/agent-status-types'
 import type { SessionOptionDescriptor } from '../../native-chat/input/native-chat-session-options'
 import type { SlashCommandSuggestion } from '../../native-chat/input/commands/native-chat-slash-commands'
@@ -28,8 +29,8 @@ function commandParts(text: string, agent?: AgentType) {
     return null
   }
   const typed = match[1]!.toLowerCase()
-  // Codex's /new starts a new chat, which its app-server would read as prose; `$` skills never share the name.
-  const name = agent === 'codex' && typed === 'new' ? 'clear' : typed
+  const aliases = getNativeChatAgentProfile(agent)?.conversationCommandAliases ?? {}
+  const name = Object.hasOwn(aliases, typed) ? aliases[typed] : typed
   const argument = match[2]?.trim() ?? ''
   // Other commands take one line; a longer message that starts with their name is for the agent.
   return /[\n\r\u2028\u2029]/.test(argument) &&
@@ -40,6 +41,10 @@ function commandParts(text: string, agent?: AgentType) {
 
 function structuredRecognizedCommands(): readonly SlashCommandSuggestion[] {
   return [...STRUCTURED_AGENT_SESSION_SLASH_COMMANDS, ...CONVERSATION_COMMANDS]
+}
+
+function sessionAction(agent: AgentType | undefined, name: string | undefined) {
+  return getNativeChatAgentProfile(agent)?.sessionActions?.find((action) => action === name)
 }
 
 /** Whether the chat host, rather than the agent, owns this command. Callers also
@@ -55,7 +60,8 @@ export function isStructuredAgentSessionComposerCommand(
   return Boolean(
     (command &&
       (structuredRecognizedCommands().some((entry) => entry.name === command.name) ||
-        reported?.some((entry) => entry.hostCommand && entry.name === command.name))) ||
+        reported?.some((entry) => entry.hostCommand && entry.name === command.name) ||
+        sessionAction(agent, command.name) !== undefined)) ||
     (agentSessionInteractionCommand(agent ?? '', text) !== null &&
       snapshot.some((entry) => entry.id === 'interactionMode'))
   )
@@ -87,7 +93,8 @@ export function prepareStructuredAgentSessionComposerCommand(
     return (
       command !== null &&
       (names.has(command.name) ||
-        reported?.some((entry) => entry.hostCommand && entry.name === command.name) === true)
+        reported?.some((entry) => entry.hostCommand && entry.name === command.name) === true ||
+        sessionAction(agent, command.name) !== undefined)
     )
   }
 }
@@ -170,6 +177,12 @@ export async function dispatchStructuredAgentSessionComposerCommand(
     return controller.runHostCommand
       ? { handled: true, ...(await controller.runHostCommand(command.name, command.argument)) }
       : unavailable(command.name)
+  }
+  const action = sessionAction(controller.agent, command?.name)
+  if (action && command) {
+    return controller.runSessionAction
+      ? { handled: true, ...(await controller.runSessionAction(action, command.argument)) }
+      : unavailable(action)
   }
   if (command?.name === 'goal' && controller.changeThreadGoal) {
     if (!command.argument) {

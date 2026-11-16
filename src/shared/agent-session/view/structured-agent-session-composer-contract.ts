@@ -30,6 +30,11 @@ export type StructuredAgentSessionComposerOptions = {
     name: string,
     argument: string
   ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'>>
+  /** Without it, an agent's session actions such as /rename report as unavailable. */
+  runSessionAction?: (
+    name: 'rename',
+    argument: string
+  ) => Promise<Omit<StructuredAgentSessionCommandOutcome, 'handled'>>
   /** Without host goal support, /goal remains agent-handled text. */
   changeThreadGoal?: (change: AgentSessionThreadGoalChange) => Promise<boolean>
   /** Without it, /mcp remains agent-handled text. */

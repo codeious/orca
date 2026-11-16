@@ -43,7 +43,8 @@ export function useNativeChatComposerCatalog(
         reported,
         compactInstructions,
         interactionModeSupported,
-        mcpPanel
+        mcpPanel,
+        true
       ),
       accountUsage,
       fork

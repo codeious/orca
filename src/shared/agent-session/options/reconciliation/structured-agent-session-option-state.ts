@@ -14,7 +14,8 @@ const ANSWERED_VALUE_IDS = [
   'effort',
   'fastMode',
   'serviceTier',
-  'interactionMode'
+  'interactionMode',
+  'planMode'
 ] as const
 
 export function createStructuredAgentSessionOptionRecord(
@@ -79,7 +80,13 @@ export function structuredAgentSessionOptionStamp(
   summary:
     | Pick<
         AgentSessionStatusSummary,
-        'model' | 'permissionMode' | 'effort' | 'fastMode' | 'serviceTier' | 'interactionMode'
+        | 'model'
+        | 'permissionMode'
+        | 'effort'
+        | 'fastMode'
+        | 'serviceTier'
+        | 'interactionMode'
+        | 'planMode'
       >
     | undefined
 ): string {
@@ -89,7 +96,8 @@ export function structuredAgentSessionOptionStamp(
     summary?.effort,
     summary?.fastMode,
     summary?.serviceTier,
-    summary?.interactionMode
+    summary?.interactionMode,
+    summary?.planMode
   ]
     .map((value) => value ?? '')
     .join('|')
