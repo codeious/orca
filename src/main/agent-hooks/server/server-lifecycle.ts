@@ -273,7 +273,7 @@ export abstract class AgentHookServerLifecycle extends AgentHookServerStatusHook
     this.hookSilenceRechecks.clear()
     this.programStatusFacetRepublishes.clear()
     this.clearAllTranscriptPolls()
-    this.claudeOwedNotificationExpiry.clearAll()
+    this.leaseExpiry.clearAll()
     this.endpointDir = null
     this.endpointFilePathCache = null
     this.endpointFileWritten = false
