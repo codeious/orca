@@ -1,0 +1,26 @@
+native/provider-exec/provider-exec.c
+  h_476903bd8a47d9 42
+src/main/droid/droid-agent-connection.ts
+  h_476903bd8a47d9 19-20,34-35,69
+src/main/native-chat/agent-session-wire/recovery/structured-agent-session-recovery-resolution.ts
+  h_476903bd8a47d9 11,28
+src/main/native-chat/agent-session-wire/termination/structured-agent-session-host-teardown.ts
+  h_476903bd8a47d9 7,30
+src/main/provider-process/managed-provider-process.ts
+  h_476903bd8a47d9 8,21,42-44,99,106,109,113-115,117
+src/main/provider-process/provider-process-close.ts
+  h_476903bd8a47d9 5-8,56-65,67-70,72-74
+src/main/provider-process/provider-process-supervisor.ts
+  h_476903bd8a47d9 8-9,21-24,26,239,303
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5639f3e19462e04e33607e47b5cd5752729d51be",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
