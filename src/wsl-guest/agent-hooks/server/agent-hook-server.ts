@@ -204,6 +204,7 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
     this.endpointFileWritten = false
     this.stopCanonicalHooks()
     this.retryScheduler.clearAll()
+    this.presenceChecks.stop()
     clearAllListenerCaches(this.state)
     this.providerNormalization.clear()
     this.claudeTerminalInterrupts.clear()
@@ -245,7 +246,7 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
     }
   }
 
-  checkAgentPresence(paneKey: string): Promise<void> {
+  checkAgentPresence(paneKey: string) {
     const row = this.state.lastStatusByPaneKey.get(paneKey)
     const meta = this.lastEnvelopeMetaByPaneKey.get(paneKey)
     return this.presenceChecks.check(
@@ -304,7 +305,9 @@ export class RelayAgentHookServer extends RelayAgentHookCanonicalStatus {
         clearAssistantMessageRetry: (paneKey) =>
           this.retryScheduler.clearAssistantMessageRetry(paneKey),
         forward: this.forward,
-        checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey)
+        checkAgentPresence: (paneKey) => this.checkAgentPresence(paneKey),
+        watchAgentExit: (event) =>
+          this.presenceChecks.watchExit(event, () => this.checkAgentPresence(event.paneKey))
       },
       incoming,
       source,
