@@ -1,0 +1,19 @@
+mobile/src/session/native-chat/input/session-options/MobileNativeChatSessionOptionPickers.tsx
+  s_96673cf912c415::t_3a147ec726db96 41-44,106,143,145-147,199-211,238-242,294-299,369,394-398
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a273223edfebb06da142574f0d04abb2e24b8709",
+  "prompts": {},
+  "sessions": {
+    "s_96673cf912c415": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4ae29918-15ea-41dd-9b44-817eecf4a4d4",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
