@@ -1,0 +1,45 @@
+src/main/droid/droid-history-catch-up.test.ts
+  s_0fac14e05d9b7e::t_575c29da94db0e 1-66
+src/main/droid/droid-spec-continuation.ts
+  s_0fac14e05d9b7e::t_815167a730990e 1-114
+src/main/droid/droid-spec-handoff.test.ts
+  s_0fac14e05d9b7e::t_5d5148ef9be5ac 1-77
+src/main/native-chat/agent-session-journal/history-import/journal-legacy-import.ts
+  s_43920249aac634::t_22c33787dff61c 14,98
+src/main/native-chat/agent-session-journal/history-import/journal-legacy-transcript-agent.ts
+  s_43920249aac634::t_2e38ef91410782 1-15
+src/main/native-chat/agent-session-journal/history-import/journal-legacy-transcript-stream.ts
+  s_43920249aac634::t_5e4af3b7df96ac 1,42-43
+src/main/native-chat/agent-session-wire/providers/structured-agent-session-adapter.ts
+  s_43920249aac634::t_ca48b2d07a9e4b 2,309
+src/main/native-chat/agent-session-wire/providers/structured-agent-session-prompt-answer-input.ts
+  s_43920249aac634::t_9595dc198cd7c2 1-12
+src/main/runtime/orchestration/workers/turn-stops/chat-worker-runtime-events.ts
+  s_43920249aac634::t_b7c27ee92e3c64 5-6,17-32
+src/main/runtime/workspaces/process-listing/workspace-process-listing.ts
+  s_43920249aac634::t_db79131d7cb342 297
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a5f0d9499a5c9610b547a817ea2d772979e1b9e2",
+  "prompts": {},
+  "sessions": {
+    "s_0fac14e05d9b7e": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "80f74e4a-e5db-4d4c-895a-dd482590df27",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_43920249aac634": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2681e27e-9e12-4985-9fae-40e83dc7fc53",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
