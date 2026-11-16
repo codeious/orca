@@ -378,7 +378,7 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
           <NativeChatStructuredPromptCard
             key={prompt ? `${prompt.itemId}:${prompt.revision}` : undefined}
             prompt={prompt}
-            target={props.target}
+            pane={props}
             promptResponse={promptResponse}
             onCancel={() => cancelStructuredPrompt(controller, prompt)}
             shouldFocus={!promptsUnanswerable && props.isVisible && props.isFocusedGroup}

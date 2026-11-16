@@ -1,4 +1,5 @@
 import type { AgentType } from '../agent-status/contracts/agent-status-types'
+import { DROID_COMPOSER_KEY_MAP } from '../droid/droid-composer-keys'
 import type { KeybindingInput } from '../keybindings/types'
 import type { SkillDiscoverySource } from '../skills/discovery/skills'
 import {
@@ -19,6 +20,8 @@ export type NativeChatAgentProfile = {
   terminalHandoff?: true
   /** Resuming history in a chat asks first when the host cannot prove no terminal still writes it. */
   confirmUnverifiableResume?: true
+  /** Escape on a question card cancels it, as in the agent's own terminal, instead of folding it. */
+  questionCancelOnEscape?: true
   composerKeys?: ComposerKeyMap
   /** The agent's own names for the host's conversation commands. */
   conversationCommandAliases?: Readonly<Record<string, 'clear' | 'compact'>>
@@ -58,6 +61,8 @@ const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfi
   droid: {
     terminalHandoff: true,
     confirmUnverifiableResume: true,
+    questionCancelOnEscape: true,
+    composerKeys: DROID_COMPOSER_KEY_MAP,
     skillPrefix: '/',
     skillSourceOwner: 'droid',
     conversationCommandAliases: { new: 'clear', compress: 'compact' },
