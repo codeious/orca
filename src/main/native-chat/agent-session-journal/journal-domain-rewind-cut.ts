@@ -13,7 +13,13 @@ import {
   type JournalRewindMembership
 } from './journal-domain-rewind-membership'
 
-export type JournalRewindSelection = { itemId: string; provider: string; nativeId: string }
+export type JournalRewindSelection = {
+  itemId: string
+  provider: string
+  nativeId: string
+  /** The provider's own message for the item, resolved by its agent; it applies only to that item. */
+  message?: { providerItemId: string; sessionId: string; uuid: string }
+}
 export type JournalRewindCut = {
   floor: number
   providerItemId: string
@@ -45,9 +51,14 @@ export function planJournalDomainRewindCut(scope: JournalSqlScope, target: Journ
   scope.examined(selected)
   const providerItemId = String(selected.provider_item_id)
   const key = parseAgentJournalItemKey(providerItemId)
-  const claude = key?.provider === 'claude' && target.provider === 'claude'
+  const beforeMessage =
+    key?.provider === 'claude' && target.provider === 'claude'
+      ? { sessionId: key.sessionId, uuid: key.uuid }
+      : target.message?.providerItemId === providerItemId
+        ? { sessionId: target.message.sessionId, uuid: target.message.uuid }
+        : null
   if (
-    !claude &&
+    !beforeMessage &&
     (key?.provider !== 'codex' || target.provider !== 'codex' || key.threadId !== target.nativeId)
   ) {
     return null
@@ -56,14 +67,10 @@ export function planJournalDomainRewindCut(scope: JournalSqlScope, target: Journ
     floor,
     boundary: rewindPosition(selected),
     nativeId: target.nativeId,
-    claude
+    claude: beforeMessage !== null
   }
-  if (claude && key?.provider === 'claude') {
-    const cut: JournalRewindCut = {
-      floor,
-      providerItemId,
-      beforeMessage: { sessionId: key.sessionId, uuid: key.uuid }
-    }
+  if (beforeMessage) {
+    const cut: JournalRewindCut = { floor, providerItemId, beforeMessage }
     return { cut, membership }
   }
   if (key?.provider !== 'codex') {

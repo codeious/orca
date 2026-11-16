@@ -15,12 +15,23 @@ import type {
   JournalRewindCut,
   JournalRewindSelection
 } from '../../agent-session-journal/journal-domain-rewind-cut'
+import type { StructuredAgentDefinition } from '../providers/structured-agent-definition'
+import type { StructuredAgentRegistry } from '../providers/structured-agent-registry'
 
 export type StructuredRewindCut = JournalRewindCut
 
 /** The SQL planner returns only the provider boundary; retained history stays on the writer. */
-export function structuredRewindCut(journal: AgentSessionJournal, target: JournalRewindSelection) {
-  return journal.reads.rewindCut(target)
+export async function structuredRewindCut(
+  journal: AgentSessionJournal,
+  target: Omit<JournalRewindSelection, 'message'>,
+  messageTarget?: StructuredAgentDefinition['rewindMessageTarget']
+) {
+  // The reader takes plain data, so the agent names its message here.
+  const providerItemId = messageTarget ? await providerItemIdOf(journal, target.itemId) : null
+  const message = providerItemId ? messageTarget?.(providerItemId, target.nativeId) : null
+  return journal.reads.rewindCut(
+    message && providerItemId ? { ...target, message: { providerItemId, ...message } } : target
+  )
 }
 
 /** Admission only; already-saved rewinds complete even if their target is no longer eligible. */
@@ -51,18 +62,19 @@ export function legacyRewindTurns(
 export async function rewindJournalCut(
   record: AgentSessionRecord | null,
   journal: AgentSessionJournal,
-  rewind: AgentSessionRewindRecord
+  rewind: AgentSessionRewindRecord,
+  agents?: StructuredAgentRegistry
 ): Promise<{ alreadyReplaced: boolean; cut: StructuredRewindCut | null }> {
   const alreadyReplaced = (await journal.reads.cursor()).epoch !== rewind.expectedEpoch
   const head = record && agentSessionProviderHandleChainHead(record.providerHandleChain)?.handle
   const cut =
     alreadyReplaced || !record || !head
       ? null
-      : await structuredRewindCut(journal, {
-          itemId: rewind.itemId,
-          provider: record.provider,
-          nativeId: head.nativeId
-        })
+      : await structuredRewindCut(
+          journal,
+          { itemId: rewind.itemId, provider: record.provider, nativeId: head.nativeId },
+          agents?.definition(record.provider)?.rewindMessageTarget
+        )
   return { alreadyReplaced, cut }
 }
 

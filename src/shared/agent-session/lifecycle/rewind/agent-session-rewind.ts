@@ -9,6 +9,7 @@ import {
   parseAgentJournalItemKey
 } from '../../journal/agent-session-journal-item-key'
 import { isQueuedAgentJournalSubmission } from '../../requests/agent-session-queued-submission'
+import { legacyItemKeysAreNative } from '../../../native-chat/native-chat-agent-profiles'
 import type {
   AgentJournalRenderItem,
   AgentJournalSubmission
@@ -110,7 +111,11 @@ export function savedRewindKeys(submissions: readonly AgentJournalSubmission[]) 
     hasSubmission: (itemId: string) => providerKeys.has(itemId),
     nativeIdentity: (itemId: string) => {
       const key = parseAgentJournalItemKey(providerKey(itemId))
-      return key?.provider === 'claude' || key?.provider === 'codex' ? key : null
+      return key?.provider === 'claude' ||
+        key?.provider === 'codex' ||
+        (key?.provider === 'legacy' && legacyItemKeysAreNative(key.agent))
+        ? key
+        : null
     }
   }
 }

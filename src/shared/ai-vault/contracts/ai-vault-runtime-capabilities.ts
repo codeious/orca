@@ -10,12 +10,15 @@ export const AI_VAULT_SESSION_TITLE_REFRESH_RUNTIME_CAPABILITY =
   'aiVault.session-title-refresh.v1' as const
 /** The host deletes its own history rows through aiVault.deleteSession. */
 export const AI_VAULT_DELETE_SESSION_RUNTIME_CAPABILITY = 'aiVault.delete-session.v1' as const
+/** The host says which of its terminals still holds a conversation, through aiVault.sessionHolder. */
+export const AI_VAULT_SESSION_HOLDER_RUNTIME_CAPABILITY = 'aiVault.session-holder.v1' as const
 
 export const AI_VAULT_RUNTIME_CAPABILITIES = [
   AI_VAULT_RUNTIME_CAPABILITY,
   AI_VAULT_SESSION_TITLES_RUNTIME_CAPABILITY,
   AI_VAULT_SESSION_TITLE_REFRESH_RUNTIME_CAPABILITY,
   AI_VAULT_DELETE_SESSION_RUNTIME_CAPABILITY,
+  AI_VAULT_SESSION_HOLDER_RUNTIME_CAPABILITY,
   AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY,
   AI_VAULT_CHAT_TERMINAL_HANDOFF_CAPABILITY
 ] as const

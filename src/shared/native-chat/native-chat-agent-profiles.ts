@@ -17,6 +17,8 @@ import {
 export type NativeChatAgentProfile = {
   /** Chat and terminal take turns on one conversation, reopening its original chat on return. */
   terminalHandoff?: true
+  /** Resuming history in a chat asks first when the host cannot prove no terminal still writes it. */
+  confirmUnverifiableResume?: true
   composerKeys?: ComposerKeyMap
   /** The agent's own names for the host's conversation commands. */
   conversationCommandAliases?: Readonly<Record<string, 'clear' | 'compact'>>
@@ -39,6 +41,8 @@ export type NativeChatAgentProfile = {
   textDrivenCommands?: readonly string[]
   /** The agent's own /goal resumes a paused goal with `/goal resume`. */
   resumesOwnGoal?: true
+  /** Its legacy journal item keys hold the agent's own message ids, which rewind can address. */
+  legacyItemKeysAreNative?: true
 }
 
 // Both lines read `.claude/skills` beside their own folders, and 2.x reports no skill as a command.
@@ -52,10 +56,13 @@ const OPENCODE_PROFILE: NativeChatAgentProfile = {
 
 const NATIVE_CHAT_AGENT_PROFILES: Partial<Record<AgentType, NativeChatAgentProfile>> = {
   droid: {
+    terminalHandoff: true,
+    confirmUnverifiableResume: true,
     skillPrefix: '/',
     skillSourceOwner: 'droid',
     conversationCommandAliases: { new: 'clear', compress: 'compact' },
-    sessionActions: ['rename']
+    sessionActions: ['rename'],
+    legacyItemKeysAreNative: true
   },
   codex: {
     skillPrefix: '$',
@@ -113,6 +120,13 @@ export function getNativeChatAgentProfile(
   agent: AgentType | null | undefined
 ): NativeChatAgentProfile | null {
   return agent ? (NATIVE_CHAT_AGENT_PROFILES[agent] ?? null) : null
+}
+
+/** Takes the agent as stored in a journal item key, which may name an agent this build lacks. */
+export function legacyItemKeysAreNative(agent: string): boolean {
+  return Object.entries(NATIVE_CHAT_AGENT_PROFILES).some(
+    ([name, profile]) => name === agent && profile?.legacyItemKeysAreNative === true
+  )
 }
 
 const NO_COMPOSER_KEYS: readonly ComposerKey[] = []

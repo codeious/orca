@@ -1,5 +1,7 @@
 import { afterEach, expect, it } from 'vitest'
 import { rewindMessage, sqlRewindFixture } from './journal-sql-rewind.test-fixture'
+import { planJournalDomainRewindCut } from './journal-domain-rewind-cut'
+import { JournalSqlScope } from './journal-sql-scope'
 import { agentSessionFailureWords } from '../../../shared/agent-session/failures/agent-session-failure-words'
 import { agentSessionFailureFact } from '../../../shared/agent-session/failures/agent-session-failure'
 
@@ -250,4 +252,37 @@ it('keeps the cleared prefix and late Claude turn rows, remapping the inherited 
     itemId: 'claude:native:kept'
   })
   expect(f.readRecord().providerHandleChain.at(-1)?.handle.nativeId).toBe('forked')
+})
+
+it('cuts before an agent-named message only at the item it names, replanning it on commit', async () => {
+  const f = sqlRewindFixture(cleanup, 'claude')
+  const droid = (recordId: string) => ({
+    provider: 'legacy' as const,
+    agent: 'droid' as const,
+    sessionId: 'native',
+    recordId
+  })
+  await f.write(droid('kept'), rewindMessage('kept', 'user'))
+  await f.write(droid('target'), rewindMessage('target', 'user'))
+  await f.write(droid('reply'), rewindMessage('reply'))
+  const target = 'legacy:droid:native:target'
+  const named = { providerItemId: target, sessionId: 'native', uuid: 'target' }
+  const plan = (message?: typeof named) =>
+    planJournalDomainRewindCut(new JournalSqlScope(f.db, 'chat-rewind', 'epoch'), {
+      itemId: target,
+      provider: 'droid',
+      nativeId: 'native',
+      ...(message ? { message } : {})
+    })?.cut ?? null
+  expect(plan()).toBeNull()
+  expect(plan({ ...named, providerItemId: 'legacy:droid:native:kept' })).toBeNull()
+  expect(plan(named)).toEqual({
+    floor: 0,
+    providerItemId: target,
+    beforeMessage: { sessionId: 'native', uuid: 'target' }
+  })
+  await f.prepare(target, {}, {}, named).complete()
+  expect(f.item('legacy:droid:native:kept')).toBeDefined()
+  expect(f.item(target)).toBeUndefined()
+  expect(f.item('legacy:droid:native:reply')).toBeUndefined()
 })

@@ -15122,7 +15122,8 @@
             "transcriptsSkippedCount_one": "Пропущена {{count}} история",
             "transcriptsSkippedCount_few": "Пропущено {{count}} истории",
             "transcriptsSkippedCount_many": "Пропущено {{count}} историй",
-            "transcriptsSkippedCount_other": "Пропущено {{count}} истории"
+            "transcriptsSkippedCount_other": "Пропущено {{count}} истории",
+            "resumeInChatHeld": "Этот разговор всё ещё выполняется в терминале. Откройте этот терминал."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Сканирование сессий",
@@ -15469,6 +15470,11 @@
             "createInProgress": "Создание PR...",
             "workspaceHostUnresolved": "Не удалось определить сервер рабочего пространства. Обновите рабочее пространство и повторите попытку.",
             "branchDiscoveryFailed": "Не удалось обнаружить ветки."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "Продолжить в новом чате?",
+            "description": "Orca не может определить, выполняется ли этот разговор ещё в терминале. Если да, оба будут писать в одну историю и разделят её надвое.",
+            "confirm": "Всё равно продолжить"
           }
         }
       },
@@ -20922,7 +20928,10 @@
         "many_many": "Создано {{count}} запросов на слияние"
       },
       "splitRight": "Разделить вправо",
-      "splitDown": "Разделить вниз"
+      "splitDown": "Разделить вниз",
+      "sessionHolder": {
+        "openTerminal": "Открыть терминал"
+      }
     },
     "tab": {
       "bar": {

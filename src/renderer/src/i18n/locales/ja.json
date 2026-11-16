@@ -14834,7 +14834,8 @@
             "resumeInNewCliUnavailable": "このセッションは CLI で開けません。",
             "resumeInNewCliHostTooOld": "このチャットを新しい CLI で再開するには、チャットを実行しているホストの Orca を更新してください。",
             "folderWorkspaceUnavailable": "フォルダーワークスペースは利用できなくなりました。",
-            "transcriptsSkippedCount_other": "{{count}} 件のトランスクリプトをスキップしました"
+            "transcriptsSkippedCount_other": "{{count}} 件のトランスクリプトをスキップしました",
+            "resumeInChatHeld": "この会話はまだターミナルで実行中です。代わりにそのターミナルを開いてください。"
           },
           "AiVaultPanelControls": {
             "scanningSessions": "セッションをスキャンしています",
@@ -15151,6 +15152,11 @@
             "createInProgress": "PR を作成中…",
             "workspaceHostUnresolved": "ワークスペースのホストを特定できません。ワークスペースを更新して再試行してください。",
             "branchDiscoveryFailed": "ブランチの検出に失敗しました。"
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "新しいチャットで再開しますか？",
+            "description": "Orca は、この会話がまだターミナルで実行中かどうかを判断できません。実行中の場合、両方が同じ履歴に書き込み、履歴が 2 つに分かれます。",
+            "confirm": "このまま再開"
           }
         }
       },
@@ -20705,6 +20711,9 @@
         "questionNotSentDetail": "質問はこのチャットに残っています。再試行するには、もう一度 /btw を送信してください。",
         "questionUnconfirmed": "{{agent}} のサイドチャットに質問が届いたか確認できませんでした",
         "questionUnconfirmedDetail": "もう一度質問する前に、サイドチャットを確認してください。質問はこのチャットに残っています。"
+      },
+      "sessionHolder": {
+        "openTerminal": "ターミナルを開く"
       }
     },
     "tab": {

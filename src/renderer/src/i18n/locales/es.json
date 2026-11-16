@@ -14387,7 +14387,8 @@
             "folderWorkspaceUnavailable": "El espacio de trabajo de carpeta ya no está disponible.",
             "transcriptsSkippedCount_one": "{{count}} transcripción omitida",
             "transcriptsSkippedCount_other": "{{count}} transcripciones omitidas",
-            "transcriptsSkippedCount_many": "{{count}} transcripciones omitidas"
+            "transcriptsSkippedCount_many": "{{count}} transcripciones omitidas",
+            "resumeInChatHeld": "Un terminal sigue ejecutando esta conversación. Abre ese terminal en su lugar."
           },
           "AiVaultPanelControls": {
             "scanningSessions": "Buscando sesiones",
@@ -14705,6 +14706,11 @@
             "createInProgress": "Creación del PR en curso...",
             "workspaceHostUnresolved": "No se ha podido resolver el host del espacio de trabajo. Actualiza el espacio de trabajo e inténtalo de nuevo.",
             "branchDiscoveryFailed": "No se pudieron detectar las ramas."
+          },
+          "AiVaultResumeInChatHeldDialog": {
+            "title": "¿Reanudar en un chat nuevo?",
+            "description": "Orca no puede saber si un terminal sigue ejecutando esta conversación. Si es así, ambos escribirán en el mismo historial y lo dividirán en dos.",
+            "confirm": "Reanudar de todos modos"
           }
         }
       },
@@ -20070,7 +20076,10 @@
         "many_many": "{{count}} solicitudes de extracción creadas"
       },
       "splitRight": "Dividir a la derecha",
-      "splitDown": "Dividir hacia abajo"
+      "splitDown": "Dividir hacia abajo",
+      "sessionHolder": {
+        "openTerminal": "Abrir terminal"
+      }
     },
     "tab": {
       "bar": {

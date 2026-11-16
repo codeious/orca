@@ -23,6 +23,7 @@ import {
   prepareAiVaultSessionForTerminalResume
 } from '@/lib/agent-session/resume/history/ai-vault-session-resume-preparation'
 import { translate } from '@/i18n/i18n'
+import { useConfirmationDialog } from '@/components/confirmation-dialog-context'
 import { describeAiVaultCliForkFailure } from './ai-vault-session-cli-fork'
 import {
   loadDatabaseAiVaultSessionContinuation,
@@ -65,6 +66,7 @@ export function useAiVaultSessionLaunchActions({
   } | null>(null)
   // Only the latest Hand Off may fill or close the dialog.
   const continuationAttempt = useRef<object | null>(null)
+  const confirm = useConfirmationDialog()
 
   const buildResumeCommand = useCallback(
     (session: AiVaultSession, worktreeId?: string | null): string =>
@@ -222,10 +224,12 @@ export function useAiVaultSessionLaunchActions({
         session,
         session.agent,
         worktreeId,
-        createNonSecureContextUuid()
+        createNonSecureContextUuid(),
+        undefined,
+        confirm
       )
     },
-    [activeWorktree?.id, activeWorktreeId]
+    [activeWorktree?.id, activeWorktreeId, confirm]
   )
 
   const handleContinueInNewSession = useCallback(

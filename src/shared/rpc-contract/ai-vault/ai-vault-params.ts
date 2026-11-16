@@ -21,6 +21,11 @@ export const executionHostIdSchema = z.string().transform((value, ctx): `runtime
   return z.NEVER
 })
 
+export const AiVaultSessionHolderParams = z.strictObject({
+  agent: z.enum(AI_VAULT_AGENTS),
+  sessionId: z.string().min(1).max(512)
+})
+
 export const AiVaultListSessionsParams = z
   .object({
     limit: z
