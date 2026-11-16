@@ -14,6 +14,11 @@ src/main/pi/rpc/rpc-session.ts
   "git_ai_version": "1.7.5",
   "base_commit_sha": "516957d9a339ce2d28d5237373639fbe099c3ef9",
   "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
   "sessions": {
     "s_60abc5ab8a5cf1": {
       "agent_id": {
