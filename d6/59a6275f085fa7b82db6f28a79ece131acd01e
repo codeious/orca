@@ -1,0 +1,57 @@
+src/main/window/main-window/chat-composer-focus-mirror.ts
+  s_96673cf912c415::t_63bcf44ea354a3 1-39
+src/main/window/main-window/main-window-focus-lifecycle.ts
+  s_96673cf912c415::t_c024448368df58 30,37,55,144,301,320
+src/main/window/main-window/main-window-shortcut-routing.ts
+  s_96673cf912c415::t_7fb8407bf73996 27,123-127
+src/preload/api/window-ui/ui-bridge-clipboard-and-window-controls.ts
+  s_96673cf912c415::t_3fd5bc17a261e8 169-171
+src/preload/api/window-ui/ui-window-api.ts
+  s_96673cf912c415::t_7907e448de6c45 57-58
+src/renderer/src/components/native-chat/composer/NativeChatComposerPane.tsx
+  s_96673cf912c415::t_96d84ae484a9e6 4,14,29,134-139,148,302-314
+src/renderer/src/components/native-chat/composer/editor/NativeChatComposerField.tsx
+  s_96673cf912c415::t_8976437e866684 335
+src/renderer/src/components/native-chat/composer/editor/NativeChatPromptEditor.tsx
+  s_96673cf912c415::t_0f326c396e7491 42,58,71,408
+src/renderer/src/components/native-chat/composer/editor/native-chat-composer-input.ts
+  s_96673cf912c415::t_d19a4ce9eeabb9 35
+src/renderer/src/components/native-chat/composer/editor/use-chat-composer-focus-mirror.ts
+  s_96673cf912c415::t_84b7b17a7d13a3 1-68
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-composer-keydown.ts
+  s_96673cf912c415::t_1908554ce65be5 1-13,34-36,60-69,71-72,92,146-151,159-186,189-192,210-211,250-251,258
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-composer-provider-keys.ts
+  s_96673cf912c415::t_2f6b74b045e19d 1-45
+src/renderer/src/components/native-chat/composer/use-native-chat-composer-file-intake.ts
+  s_96673cf912c415::t_5a505b01f59940 1-57
+src/renderer/src/components/native-chat/pane/actions/native-chat-selected-text.ts
+  s_96673cf912c415::t_cb73f8ce34c724 1-48
+src/renderer/src/components/native-chat/pane/actions/use-native-chat-context-menu.tsx
+  s_96673cf912c415::t_54db227e5e3b12 31
+src/renderer/src/components/native-chat/pane/actions/use-structured-native-chat-pane-commands.tsx
+  s_96673cf912c415::t_5f4ce86380845b 22,95-101,125
+src/renderer/src/web/preload-api/web-ui-api.ts
+  s_96673cf912c415::t_c05d9363b27bce 279
+src/shared/native-chat/input/composer/native-chat-composer-keys.test.ts
+  s_96673cf912c415::t_c3e2d12f14235a 1-53
+src/shared/native-chat/input/composer/native-chat-composer-keys.ts
+  s_96673cf912c415::t_aa9abca366ddbc 1-56
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_96673cf912c415::t_1fee97547ae6e0 2,9-15,20,106-137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d659a6275f085fa7b82db6f28a79ece131acd01e",
+  "prompts": {},
+  "sessions": {
+    "s_96673cf912c415": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4ae29918-15ea-41dd-9b44-817eecf4a4d4",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
