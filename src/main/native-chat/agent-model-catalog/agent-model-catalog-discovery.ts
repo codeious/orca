@@ -37,6 +37,8 @@ export type AgentModelCatalogProbe = ((
     publish?: AgentModelCatalogProgress
   }
 ) => Promise<AgentModelCatalogSuccess>) & {
+  /** Safe after an owner exits: discovery never initializes a chat. */
+  listsWithoutSession?: true
   resolveLegacy?: (
     home: AgentSessionAccountHome,
     operation?: StructuredAgentResolutionOperation,
