@@ -1,0 +1,57 @@
+src/main/runtime/client/settings/runtime-client-settings-shape.ts
+  s_91d04d84653459::t_6e875bc2c07b7a 71
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-create-handler.ts
+  s_91d04d84653459::t_61f0d57a2fbd57 17,73-78
+src/main/runtime/construction/runtime-store-contract.ts
+  s_91d04d84653459::t_93d8b99c4015e6 163
+src/renderer/src/components/settings/advanced/chat-agents-experimental-search-entry.ts
+  s_91d04d84653459::t_86eb90d174d5f8 1-30
+src/renderer/src/i18n/locales/en.json
+  s_91d04d84653459::t_26f89e175e0617 8840-8843,11060-11065
+src/renderer/src/runtime/native-chat/agent-catalogs/host-structured-agents.ts
+  s_91d04d84653459::t_ddae193e794144 154-160
+src/shared/settings/default-global-settings.ts
+  s_91d04d84653459::t_e25dbfcbd3c6f2 301
+src/renderer/src/components/settings/advanced/ChatAgentsExperimentalSetting.tsx
+  s_91d04d84653459::t_ccbc6b2fbc0b93 1-60
+src/renderer/src/components/settings/advanced/experimental-search.ts
+  s_91d04d84653459::t_f93d4bb45d2577 6,187
+src/main/runtime/rpc/methods/structured-sessions/catalog/structured-agent-session-agents.ts
+  s_91d04d84653459::t_d0b6b0854b9b72 23,36-39,63-68
+src/shared/settings/global-settings-types.ts
+  s_91d04d84653459::t_5c5d2afe4b8c2a 449-450
+src/main/runtime/agent-session/launch/structured-agent-host-offer.ts
+  s_91d04d84653459::t_28e719ae3dda9f 1-21
+src/main/runtime/agent-session/launch/structured-agent-launch-support.ts
+  s_91d04d84653459::t_6fb9ac168c55fe 28-31,186,189-191
+src/renderer/src/components/settings/advanced/ExperimentalPane.tsx
+  s_91d04d84653459::t_fe567b557cd5b5 15,286-287
+src/main/native-chat/agent-session-wire/providers/structured-agent-definition.ts
+  s_91d04d84653459::t_ef6b94456aedef 11-12
+src/shared/rpc-contract/client-ui/client-settings-params.ts
+  s_ad00747fcb93b9::t_c72fa55f71d762 131-132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b902fc6a804a63fbd21787c621c0da2ddd8e8096",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ad00747fcb93b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "76dd52ab-a5b9-4faa-8d3f-2f25a389af4b",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
