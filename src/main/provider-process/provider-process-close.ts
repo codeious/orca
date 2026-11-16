@@ -2,8 +2,10 @@ import type { ProviderChild } from './provider-child'
 import type { DescendantTreeVerdict } from '../pty/process-retirement/pty-descendant-exit-verification'
 import { waitForProcessExitUntil } from './provider-process-exit-deadline'
 import {
-  PROVIDER_SUPERVISOR_MAX_STOP_MS,
-  PROVIDER_SUPERVISOR_REAP_NOW_SIGNAL
+  PROVIDER_STDIN_END_GRACE_MAX_MS,
+  PROVIDER_STDIN_END_GRACE_MS,
+  PROVIDER_SUPERVISOR_REAP_NOW_SIGNAL,
+  PROVIDER_SUPERVISOR_STOP_AFTER_STDIN_END_MS
 } from './provider-process-supervisor'
 import type { ProviderProcessTeardownVerdict } from './provider-process-teardown'
 
@@ -51,10 +53,25 @@ export type ProviderProcessCloseResult = {
 export const ROOT_ONLY_GRACEFUL_EXIT_MS = 1_500
 const ROOT_ONLY_FORCED_EXIT_MS = 1_000
 
+/** The supervisor's full stop for a provider's stdin-end grace. */
+export function providerSupervisorMaxStopMs(stdinEndGraceMs: number): number {
+  return stdinEndGraceMs + PROVIDER_SUPERVISOR_STOP_AFTER_STDIN_END_MS
+}
+
+/** Covers any provider's supervised stop, including one that opted into the longest stdin-end grace. */
+export const PROVIDER_SUPERVISOR_LONGEST_STOP_MS = providerSupervisorMaxStopMs(
+  PROVIDER_STDIN_END_GRACE_MAX_MS
+)
+
 /** Providers without their own reaper must allow the supervisor its full stop before fallback. */
-export function rootOnlyProviderClosePolicy(supervised: boolean): ProviderProcessClosePolicy {
+export function rootOnlyProviderClosePolicy(
+  supervised: boolean,
+  stdinEndGraceMs = PROVIDER_STDIN_END_GRACE_MS
+): ProviderProcessClosePolicy {
   return {
-    gracefulExitMs: supervised ? PROVIDER_SUPERVISOR_MAX_STOP_MS : ROOT_ONLY_GRACEFUL_EXIT_MS,
+    gracefulExitMs: supervised
+      ? providerSupervisorMaxStopMs(stdinEndGraceMs)
+      : Math.max(ROOT_ONLY_GRACEFUL_EXIT_MS, stdinEndGraceMs),
     forcedExitMs: ROOT_ONLY_FORCED_EXIT_MS
   }
 }

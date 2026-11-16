@@ -5,6 +5,8 @@ import { PROVIDER_SPAWN_FAILURE_MARKER } from './provider-spawn-failure-report'
 
 /** Time the provider gets to exit on its own after its stdin ends, before SIGTERM. */
 export const PROVIDER_STDIN_END_GRACE_MS = 1_000
+/** Longest stdin-end grace a provider slow to exit on EOF may opt into; the native helper shares it. */
+export const PROVIDER_STDIN_END_GRACE_MAX_MS = 3_000
 /** Time the provider group gets to flush and exit after SIGTERM, before SIGKILL. */
 export const PROVIDER_SIGTERM_GRACE_MS = 3_000
 /** A stop the user waits on (context clear) asks the supervisor to reap its group after this;
@@ -16,12 +18,12 @@ export const PROVIDER_SUPERVISOR_REAP_NOW_SIGNAL = 'SIGUSR2'
 export const PROVIDER_GROUP_REAP_TIMEOUT_MS = 1_500
 /** Longest a supervisor waits, after its provider exits, to relay output still in the pipes. */
 export const PROVIDER_OUTPUT_DRAIN_TIMEOUT_MS = 1_000
-/** Wrapper stop budget; killing it before both graces and reap finish can orphan the group. */
+/** Wrapper stop budget after its stdin-end grace; killing it sooner can orphan the group. */
+export const PROVIDER_SUPERVISOR_STOP_AFTER_STDIN_END_MS =
+  PROVIDER_SIGTERM_GRACE_MS + PROVIDER_GROUP_REAP_TIMEOUT_MS + PROVIDER_OUTPUT_DRAIN_TIMEOUT_MS
+/** Wrapper stop budget at the default stdin-end grace. */
 export const PROVIDER_SUPERVISOR_MAX_STOP_MS =
-  PROVIDER_STDIN_END_GRACE_MS +
-  PROVIDER_SIGTERM_GRACE_MS +
-  PROVIDER_GROUP_REAP_TIMEOUT_MS +
-  PROVIDER_OUTPUT_DRAIN_TIMEOUT_MS
+  PROVIDER_STDIN_END_GRACE_MS + PROVIDER_SUPERVISOR_STOP_AFTER_STDIN_END_MS
 
 /** Inline supervisor source kept dependency-free for the spawned Node child. */
 export const POSIX_PROVIDER_SUPERVISOR_SCRIPT = `
@@ -234,7 +236,7 @@ export function supervisedPosixLaunch(
     sigtermGraceMs = PROVIDER_SIGTERM_GRACE_MS
   }: ProviderSupervisorOptions = {}
 ): { command: string; args: string[]; env: NodeJS.ProcessEnv } {
-  assertGraceWithin('stdin-end', stdinEndGraceMs, PROVIDER_STDIN_END_GRACE_MS)
+  assertGraceWithin('stdin-end', stdinEndGraceMs, PROVIDER_STDIN_END_GRACE_MAX_MS)
   assertGraceWithin('SIGTERM', sigtermGraceMs, PROVIDER_SIGTERM_GRACE_MS)
   // Keep prompts in argv: Linux caps individual env strings at 128 KiB; Node startup options belong only in the spec.
   const supervisorEnv = { ...childEnv }
@@ -298,7 +300,7 @@ export function createProviderSpawnSpec(
     sigtermGraceMs = PROVIDER_SIGTERM_GRACE_MS
   }: ProviderSupervisorOptions = {}
 ) {
-  assertGraceWithin('stdin-end', stdinEndGraceMs, PROVIDER_STDIN_END_GRACE_MS)
+  assertGraceWithin('stdin-end', stdinEndGraceMs, PROVIDER_STDIN_END_GRACE_MAX_MS)
   assertGraceWithin('SIGTERM', sigtermGraceMs, PROVIDER_SIGTERM_GRACE_MS)
   const supervised = platform !== 'win32'
   return {
