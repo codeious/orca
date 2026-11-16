@@ -9,9 +9,9 @@ import type { AgentType } from '../../../../shared/agent-status/contracts/agent-
 import type * as ids from '../../../../shared/agent-session/journal/agent-session-journal-identity'
 import type { AgentJournalItemBody } from '../../../../shared/agent-session/journal/agent-session-journal-types'
 import type { NativeChatMessage } from '../../../../shared/native-chat/native-chat-types'
-import { resolveNativeChatTranscriptAgent } from '../../../../shared/native-chat/native-chat-agent-support'
 import { resolveSessionFilePath, type ResolveSessionFileOptions } from '../../session-file-resolver'
 import { readLegacyImportTranscript, TRANSCRIPT_DECODERS } from './journal-legacy-transcript-stream'
+import { resolveLegacyTranscriptAgent } from './journal-legacy-transcript-agent'
 import { readOpenCodeNativeChatTranscriptFull } from '../../transcript-history/opencode/transcript-opencode'
 import { mayBeClaudeConversationRecord } from '../../transcript-decoding/transcript-line-decoders-claude'
 import { createLegacyIdentityTracker } from './journal-legacy-identity'
@@ -95,8 +95,7 @@ export async function prepareLegacyTranscriptImport(input: {
   const options = input.options ?? {}
   const limits = options.limits ?? LEGACY_IMPORT_BLOCK_LIMITS
   // OMP retained Pi's format, so its decoder also reads Pi sessions.
-  const transcriptAgent =
-    input.agent === 'pi' ? 'omp' : resolveNativeChatTranscriptAgent(input.agent)
+  const transcriptAgent = resolveLegacyTranscriptAgent(input.agent)
   if (!transcriptAgent) {
     return { ok: false, error: `Unsupported agent for journal import: ${input.agent}` }
   }
