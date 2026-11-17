@@ -1,4 +1,6 @@
+import { getNativeChatAgentProfile } from '../../../../../shared/native-chat/native-chat-agent-profiles'
 import type { TuiAgent } from '../../../../../shared/agent-launch/catalog/tui-agent'
+import type { AgentSessionConversationOwner } from '../../../../../shared/agent-session/failures/agent-session-refusal-details'
 import {
   isAgentSessionCreateAdmissionRefusal,
   isDefinitiveAgentSessionCreateRefusal
@@ -40,6 +42,7 @@ function runtimeErrorCode(error: unknown): string {
 /** The owning host's answer to "can you run this chat here?", asked before anything is created.
  *  An admitting host also names the saved selection create will seed, when it is new enough to. */
 export type StructuredLaunchAdmission =
+  | { kind: 'reopen'; owner: AgentSessionConversationOwner; seedOptions?: never }
   | {
       kind: 'admitted'
       seedOptions?: Readonly<Record<string, string>>
@@ -99,6 +102,7 @@ export async function askHostCreateSupport(
         reason?: string
         seedOptions?: unknown
         agentInstallation?: unknown
+        reopen?: { sessionId?: unknown; workspaceId?: unknown }
       }>(target, 'agentSession.createSupport', {
         worktree,
         agent,
@@ -115,6 +119,22 @@ export async function askHostCreateSupport(
             ? { reason: support.reason }
             : {})
         }
+      }
+      if (
+        asksWriters &&
+        getNativeChatAgentProfile(agent)?.terminalHandoff &&
+        support.reopen !== undefined
+      ) {
+        const { sessionId, workspaceId } = support.reopen
+        if (
+          typeof sessionId !== 'string' ||
+          !sessionId.trim() ||
+          typeof workspaceId !== 'string' ||
+          !workspaceId.trim()
+        ) {
+          throw new Error('Invalid chat reopen response')
+        }
+        return { kind: 'reopen', owner: { sessionId, workspaceId } }
       }
       const seedOptions = parseStructuredLaunchSeedOptions(support.seedOptions)
       return { kind: 'admitted', ...(seedOptions ? { seedOptions } : {}), ...writers }

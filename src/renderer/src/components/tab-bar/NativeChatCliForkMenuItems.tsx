@@ -1,3 +1,4 @@
+import { getNativeChatAgentProfile } from '../../../../shared/native-chat/native-chat-agent-profiles'
 import { useState } from 'react'
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { ContextMenuSeparator } from '@/components/ui/context-menu'
@@ -46,7 +47,14 @@ export function NativeChatCliForkMenuItems({
         cliPending={pending}
         onResumeInNewCli={(event) => {
           event.preventDefault()
-          void runNativeChatCliFork({ subject: chat, tab, agent, commandOverrides, onComplete })
+          void runNativeChatCliFork({
+            subject: chat,
+            tab,
+            agent,
+            commandOverrides,
+            onComplete,
+            mode: getNativeChatAgentProfile(agent)?.terminalHandoff ? 'handoff' : 'fork'
+          })
         }}
       />
     </>

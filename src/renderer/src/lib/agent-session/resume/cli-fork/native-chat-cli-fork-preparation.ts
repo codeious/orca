@@ -7,6 +7,7 @@ import {
 } from '../../../../../../shared/ai-vault/contracts/ai-vault-types'
 import {
   AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY,
+  AI_VAULT_CHAT_TERMINAL_HANDOFF_CAPABILITY,
   type AiVaultPrepareSessionResumeRequest,
   type AiVaultPrepareSessionResumeResult
 } from '../../../../../../shared/ai-vault/resume/ai-vault-resume-preparation'
@@ -28,6 +29,7 @@ export type NativeChatCliForkPreparation = {
   session: AiVaultResumeCommandSession
   copied: boolean
   sourceAgent?: AiVaultAgent
+  handoff?: boolean
 }
 
 function sourceChatChangedError(): Error {
@@ -41,7 +43,12 @@ function sourceChatChangedError(): Error {
 
 export async function prepareNativeChatCliFork(
   subject: NativeChatCliForkSubject,
-  options: { pairingRevision?: number; isCurrent: () => boolean; signal: AbortSignal }
+  options: {
+    pairingRevision?: number
+    isCurrent: () => boolean
+    signal: AbortSignal
+    mode?: 'fork' | 'handoff'
+  }
 ): Promise<NativeChatCliForkPreparation> {
   const hostId = subject.request.executionHostScope
   const host = parseExecutionHostId(hostId)
@@ -99,25 +106,35 @@ export async function prepareNativeChatCliFork(
           )
     )
   // Local desktop and host ship together; only a paired peer needs negotiation.
-  const modern =
-    host.kind === 'local' ||
-    (
-      await observe(30_000, (signal) =>
-        callRuntimeRpc<RuntimeStatus>(target, 'status.get', undefined, callOptions(30_000, signal))
-      )
-    ).capabilities?.includes(AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY) === true
+  const capabilities =
+    host.kind === 'local'
+      ? [AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY, AI_VAULT_CHAT_TERMINAL_HANDOFF_CAPABILITY]
+      : ((
+          await observe(30_000, (signal) =>
+            callRuntimeRpc<RuntimeStatus>(
+              target,
+              'status.get',
+              undefined,
+              callOptions(30_000, signal)
+            )
+          )
+        ).capabilities ?? [])
+  const handoff =
+    options.mode === 'handoff' && capabilities.includes(AI_VAULT_CHAT_TERMINAL_HANDOFF_CAPABILITY)
+  const modern = capabilities.includes(AI_VAULT_CHAT_FORK_SOURCE_CAPABILITY)
   if (!options.isCurrent()) {
     throw sourceChatChangedError()
   }
-  if (modern) {
-    return prepareAiVaultSessionForFork(
+  if (modern || handoff) {
+    const prepared = await prepareAiVaultSessionForFork(
       {
         sourceChat: { sessionId: subject.sessionId, workspaceId: subject.workspaceId },
         executionHostId: host.id,
-        fork: true
+        ...(handoff ? { handoff: true as const } : { fork: true as const })
       },
       request
     )
+    return { ...prepared, ...(handoff ? { handoff: true } : {}) }
   }
   // Old peers alone need one same-host inventory; never force a rescan or retry a modern error.
   const listed = await observe(150_000, (signal) =>

@@ -23,6 +23,8 @@ export type AgentModelCatalogSuccess = {
   origin: 'live-session' | 'probe'
   complete?: boolean
   configured?: { model?: string; effort?: string }
+  /** The probe resolved the account default independently of a running chat. */
+  resolvesConfiguredDefault?: true
   /** Launch-injected rows require independent account-catalog membership. */
   launchOnlyModelId?: string
   /** Successful model listings can still report that chats cannot start. */
@@ -226,10 +228,11 @@ export function agentModelCatalogEntryWithSuccess(
     return null
   }
   const { agent, fingerprint } = identity
+  const probeDefaults = source === 'discovery' && success.resolvesConfiguredDefault === true
   const listing: AgentModelCatalogListing = {
     models: configuredDeclarationModels(
       models.map((model) => ({ ...model })),
-      agent === 'pi' && source === 'discovery' && success.configured?.model
+      probeDefaults && success.configured?.model
         ? { modelId: success.configured.model, effort: success.configured.effort }
         : undefined
     ),
@@ -238,7 +241,7 @@ export function agentModelCatalogEntryWithSuccess(
     at
   }
   let configured = previous?.configured ?? null
-  if (agent === 'pi' && source === 'discovery') {
+  if (probeDefaults) {
     const { model, effort } = success.configured ?? {}
     if (model) {
       const facts = configuredDefaultFacts({ modelId: model, effort }, configured)
