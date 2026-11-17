@@ -161,7 +161,7 @@ export class DroidSessionAdapter
       input.response,
       input.commit,
       true,
-      undefined
+      input.operationId
     )
   // copyConversation needs the running child, so only its answer confirms a fork.
   readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = async (input) => ({

@@ -1,4 +1,5 @@
 import type { StructuredAgentSessionHostCommandInput } from './structured-agent-session-host-command-input'
+import type { StructuredAgentSessionPromptAnswerInput } from './structured-agent-session-prompt-answer-input'
 import type { StructuredMessageSteeringInputs } from '../../../../shared/agent-session/options/codex-message-compiler'
 import type {
   AgentSessionMcpOperation,
@@ -47,7 +48,6 @@ export type AgentSessionIdleConfirmation = 'idle' | 'busy' | 'unknown'
 
 import type { AgentJournalDispatchRejection } from '../../../../shared/agent-session/failures/agent-session-failure-words'
 import type { AgentSessionExecutionOptions } from '../../../../shared/agent-session/options/protocol/agent-session-execution-options'
-import type { AgentSessionPromptResponse } from '../../../../shared/agent-session/agent-session-question-answer'
 import type {
   StructuredAgentSessionStartupAttempt,
   StructuredAgentSessionAcquisitionReceipt as AcquisitionReceipt
@@ -306,14 +306,7 @@ export type StructuredAgentSessionAdapter = StructuredAgentSessionAdapterStop & 
   ): Promise<AgentSessionHostCommandResult>
   atRestCommands?: StructuredAgentSessionAtRestCommands
   /** Claim the live callback, build reply, commit journal CAS, then answer; reject unbuildable replies before commit. */
-  answerPrompt(input: {
-    sessionId: string
-    itemId: string
-    kind: 'approval' | 'question'
-    response: AgentSessionPromptResponse
-    fence: number
-    commit: () => Promise<void>
-  }): Promise<void>
+  answerPrompt(input: StructuredAgentSessionPromptAnswerInput): Promise<void>
   setOption(
     input: StructuredAgentSessionSetOptionInput
   ): Promise<void | Readonly<Record<string, string>>>
