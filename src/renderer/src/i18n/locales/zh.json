@@ -20056,7 +20056,10 @@
         "plan": {
           "file": "计划文件",
           "reviewTitle": "审阅建议的计划",
-          "refineHint": "优化计划会关闭审阅，以便你发送要更改的内容"
+          "refineHint": "优化计划会关闭审阅，以便你发送要更改的内容",
+          "editLabel": "Edited plan",
+          "discardEdit": "Discard edits",
+          "edit": "Edit plan"
         },
         "folderTrust": {
           "title": "信任此文件夹？",
@@ -20084,7 +20087,9 @@
         "closedUnnamed": "已关闭，未记录回答",
         "autoDenied": "已由 Claude 在 2:00 后自动拒绝",
         "workerEnded": "已关闭 · 工作者已结束",
-        "answerInTerminal": "请在工作者的终端中回答"
+        "answerInTerminal": "请在工作者的终端中回答",
+        "commentLabel": "Comment",
+        "commentPlaceholder": "Add a comment for the agent (optional)"
       },
       "imagePreview": {
         "fileActions": "文件操作",
