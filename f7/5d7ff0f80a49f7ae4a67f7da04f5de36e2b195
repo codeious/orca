@@ -1,0 +1,33 @@
+src/main/droid/droid-model-catalog-probe.ts
+  s_0fac14e05d9b7e::t_5bc9bd9504100f 1-152
+src/main/droid/droid-model-catalog.test.ts
+  s_0fac14e05d9b7e::t_88e91727db15a1 1-229
+src/main/droid/droid-project-model-settings.ts
+  s_0fac14e05d9b7e::t_8a17a3bb797772 1-37
+src/main/droid/droid-runtime-metadata.ts
+  s_0fac14e05d9b7e::t_6ab90420a1b5c8 1,25-34
+src/main/native-chat/agent-model-catalog/agent-model-catalog-configured-default-facts.ts
+  s_0fac14e05d9b7e::t_ff9a511cca54d1 1-28
+src/main/native-chat/agent-model-catalog/agent-model-catalog-entry.ts
+  s_0fac14e05d9b7e::t_bf0808daeeaa50 1,27-28,66,139-142,254
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.test.ts
+  s_0fac14e05d9b7e::t_cfded3d00740bd 1-51
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.ts
+  s_0fac14e05d9b7e::t_ae27194bde405c 79,147-149,163-165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f75d7ff0f80a49f7ae4a67f7da04f5de36e2b195",
+  "prompts": {},
+  "sessions": {
+    "s_0fac14e05d9b7e": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "80f74e4a-e5db-4d4c-895a-dd482590df27",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
