@@ -22,7 +22,7 @@ import type { StructuredAgentSessionAttachContext } from '../acquisition/structu
 import type { AgentSessionRewindParams } from '../../../../shared/agent-session/lifecycle/rewind/agent-session-rewind'
 import { rewindStructuredAgentSession } from '../rewind/structured-agent-session-rewind'
 import type { StructuredAgentSessionClientDelivery } from '../publication/subscribers/structured-agent-session-client-delivery'
-
+import { runStructuredAgentSessionHostCommand } from '../operations/structured-agent-session-host-command'
 import type { StructuredAgentSessionConversations } from './structured-agent-session-conversations'
 import type * as conversation from '../delivery/structured-agent-session-host-delivery'
 import type { StructuredAgentSessionHostRuntimeState } from './structured-agent-session-host-runtime-state'
@@ -98,6 +98,10 @@ export function structuredAgentSessionMutationDelegates(
   attachContext: () => StructuredAgentSessionAttachContext
 ) {
   return {
+    hostCommand: (
+      caller: StructuredAgentSessionCaller,
+      params: Parameters<typeof runStructuredAgentSessionHostCommand>[2]
+    ) => runStructuredAgentSessionHostCommand(context(), caller, params),
     cancel: (
       caller: StructuredAgentSessionCaller,
       params: Parameters<typeof cancelStructuredAgentSessionTurn>[2]

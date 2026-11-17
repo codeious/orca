@@ -193,6 +193,7 @@ export function useNativeChatStructuredComposerTransport(args: {
             conversationCommands: controller.conversationCommands,
             compactInstructions: controller.compactInstructions,
             runConversationCommand: controller.runConversationCommand,
+            runHostCommand: controller.runHostCommand,
             ...(changeThreadGoal ? { changeThreadGoal } : {}),
             ...(mcpPanel ? { openMcpPanel: mcpPanel.open } : {})
           },

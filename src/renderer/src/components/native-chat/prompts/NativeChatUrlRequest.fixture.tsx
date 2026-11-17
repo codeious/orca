@@ -33,7 +33,10 @@ const opened: AgentJournalApprovalItem = {
 export const open = defineFixture({
   width: 720,
   render: () => (
-    <NativeChatApprovalCard approval={chatApprovalFromJournal(request)} onChoose={() => {}} />
+    <NativeChatApprovalCard
+      approval={chatApprovalFromJournal(request, false)}
+      onChoose={() => {}}
+    />
   )
 })
 

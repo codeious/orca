@@ -197,7 +197,6 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
   const installLayout = viewState.kind === 'empty' ? 'hero' : 'strip'
   const install = useNativeChatInstallSlot(props, agentLabel, installLayout)
   const canMention = composerShown && install.unavailableHint === undefined
-  const cancelPrompt = () => cancelStructuredPrompt(controller, prompt)
   const rootInput = useNativeChatRootInputRouting({
     tabId: props.tabId,
     rootRef,
@@ -379,8 +378,9 @@ export function NativeChatStructuredSession(props: Omit<NativeChatStructuredView
           <NativeChatStructuredPromptCard
             key={prompt ? `${prompt.itemId}:${prompt.revision}` : undefined}
             prompt={prompt}
+            target={props.target}
             promptResponse={promptResponse}
-            onCancel={cancelPrompt}
+            onCancel={() => cancelStructuredPrompt(controller, prompt)}
             shouldFocus={!promptsUnanswerable && props.isVisible && props.isFocusedGroup}
             answerInputRef={questionAnswerInputRef}
           />

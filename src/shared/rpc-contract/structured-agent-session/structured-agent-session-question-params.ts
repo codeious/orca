@@ -11,6 +11,14 @@ const MAX_QUESTION_ANSWER_QUESTIONS = 4
 
 const MAX_QUESTION_ANSWER_OPTIONS = 64
 
+export const PromptAnswerText = z
+  .string()
+  .max(AGENT_SESSION_QUESTION_ANSWER_MAX_BYTES)
+  .refine(
+    (value) => Buffer.byteLength(value, 'utf8') <= AGENT_SESSION_QUESTION_ANSWER_MAX_BYTES,
+    'Answer is too large'
+  )
+
 const QuestionAnswer = z
   .object({
     // Codex question ids are model-written and untrimmed; the host matches them exactly.
@@ -22,14 +30,7 @@ const QuestionAnswer = z
       .array(Identifier('Invalid option id', MAX_RESPONSE_OPTION_ID_LENGTH))
       .max(MAX_QUESTION_ANSWER_OPTIONS),
     // Hashed verbatim by both peers, so no trim or transform here.
-    other: z
-      .string()
-      .max(AGENT_SESSION_QUESTION_ANSWER_MAX_BYTES)
-      .refine(
-        (value) => Buffer.byteLength(value, 'utf8') <= AGENT_SESSION_QUESTION_ANSWER_MAX_BYTES,
-        'Answer is too large'
-      )
-      .optional()
+    other: PromptAnswerText.optional()
   })
   .strict()
 

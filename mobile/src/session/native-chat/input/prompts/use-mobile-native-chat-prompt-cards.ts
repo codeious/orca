@@ -1,6 +1,7 @@
 import type { MobileNativeChatController } from '../../mobile-native-chat-controller-contract'
 import type { useMobileStructuredAgentSession } from '../../agent-session/use-mobile-structured-agent-session'
 import { useNativeChatAcceptedAction } from './use-native-chat-action-outcomes'
+import type { MobileChatPermissionResponder } from './mobile-native-chat-permission'
 import { useMobileNativeChatPromptPresentation } from './use-mobile-native-chat-prompt-presentation'
 
 export function useMobileNativeChatPromptCards({
@@ -25,17 +26,18 @@ export function useMobileNativeChatPromptCards({
   | 'collapseNativeChatPrompt'
   | 'nativeChatCollapsedPrompt'
 > {
-  const respond = useNativeChatAcceptedAction(
-    structured?.respondPermission ?? terminal.respondPermission,
+  const respond = useNativeChatAcceptedAction<Parameters<MobileChatPermissionResponder>>(
+    structured?.respondPermission ?? (async () => false),
     onSendResolved
   )
+  const respondTerminal = useNativeChatAcceptedAction(terminal.respondPermission, onSendResolved)
   const cancel = useNativeChatAcceptedAction(
     structured?.cancelPrompt ?? (async () => false),
     onSendResolved
   )
   const presentation = useMobileNativeChatPromptPresentation({
     ...terminal,
-    respondPermission: respond
+    respondPermission: respondTerminal
   })
   return {
     nativeChatPermission: structured ? structured.permission : presentation.permission,

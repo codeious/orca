@@ -41,6 +41,7 @@ export function nativeChatComposerSendState(
           | 'sendFollowUp'
           | 'optionSnapshot'
           | 'mcpPanel'
+          | 'sessionCommands'
         >
       | undefined
     editSession: { canSave: boolean } | undefined
@@ -71,7 +72,8 @@ export function nativeChatComposerSendState(
         transport.threadGoal !== undefined,
         input.agent,
         transport.optionSnapshot,
-        transport.mcpPanel !== undefined
+        transport.mcpPanel !== undefined,
+        transport.sessionCommands
       ) &&
       !structuredAgentSessionCommandChangesConversation(input.draft, input.agent))
   const draftHeld = localHold || (hostHold && !runsWhileHostHolds)
