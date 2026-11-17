@@ -19,7 +19,10 @@ import {
 } from '../../../shared/agent-session/lifecycle/operations/agent-session-operation-ledger'
 import { agentSessionRecordFixture } from '../testing/agent-session-record-test-fixture'
 import { domainLifecycleFixture } from './journal-domain-lifecycle.test-fixture'
-import { planJournalDomainRewindCut } from './journal-domain-rewind-cut'
+import {
+  planJournalDomainRewindCut,
+  type JournalRewindSelection
+} from './journal-domain-rewind-cut'
 import { JournalSqlScope } from './journal-sql-scope'
 import type { JournalItemAppendOptions } from './journal-store-contracts'
 
@@ -85,7 +88,8 @@ export function sqlRewindFixture(cleanups: (() => void)[], provider: 'codex' | '
   const prepare = (
     itemId: string,
     overrides: Partial<AgentSessionRewindRecord> = {},
-    extra: Partial<AgentSessionRecord> = {}
+    extra: Partial<AgentSessionRecord> = {},
+    message?: JournalRewindSelection['message']
   ) => {
     const rewind: AgentSessionRewindRecord = {
       operationId: '1700000000000-00000000000000000000000000000001',
@@ -108,7 +112,8 @@ export function sqlRewindFixture(cleanups: (() => void)[], provider: 'codex' | '
       planJournalDomainRewindCut(new JournalSqlScope(f.db, sessionId, 'epoch'), {
         itemId,
         provider,
-        nativeId: provider === 'codex' ? 'thread' : 'native'
+        nativeId: provider === 'codex' ? 'thread' : 'native',
+        ...(message ? { message } : {})
       })?.cut ?? null
     return {
       rewind,

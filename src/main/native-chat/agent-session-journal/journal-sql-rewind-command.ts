@@ -88,12 +88,17 @@ export function applyJournalSqlRewindCommand(
   let childBoundary = record.forkedFrom?.childBoundary
   if (cursor.epoch === rewind.expectedEpoch) {
     const handle = agentSessionProviderHandleChainHead(record.providerHandleChain)?.handle
+    const expected = operation.expectedCut
     const plan =
       handle &&
       planJournalDomainRewindCut(new JournalSqlScope(db, target.sessionId, target.epoch), {
         itemId: rewind.itemId,
         provider: record.provider,
-        nativeId: handle.nativeId
+        nativeId: handle.nativeId,
+        // Only the agent can name its message; the replan still proves the item and boundary.
+        ...(expected && 'beforeMessage' in expected
+          ? { message: { providerItemId: expected.providerItemId, ...expected.beforeMessage } }
+          : {})
       })
     if (!plan) {
       throw new Error('agent_session_rewind:invalid-target')

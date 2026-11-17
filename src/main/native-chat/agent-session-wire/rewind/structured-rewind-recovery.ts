@@ -15,12 +15,15 @@ import type { AgentSessionRecordStore } from '../../../runtime/agent-session/rec
 import type { AgentSessionJournal } from '../../agent-session-journal/journal-store'
 import type { StructuredAgentSessionAdapter } from '../providers/structured-agent-session-adapter'
 import type { StructuredAgentSessionLogger } from '../host/structured-agent-session-logger'
+import type { StructuredAgentRegistry } from '../providers/structured-agent-registry'
 import {
   onJournalReceiptCommitted,
   type JournalOperationReceipt
 } from '../../agent-session-journal/writing/journal-row-writer'
 
 export type RewindRecoveryDeps = {
+  /** Resolves agent-named rewind messages; without it only Claude and Codex cuts plan. */
+  agents?: StructuredAgentRegistry
   store: AgentSessionRecordStore
   logger: StructuredAgentSessionLogger
   nameProviderConversation?: (record: AgentSessionRecord) => void
@@ -61,7 +64,7 @@ export async function recoverStructuredRewind(
 
 /** Supply the record a pending commit will expose to apply. */
 export async function readStructuredRewindRecovery(
-  { store }: RewindRecoveryDeps,
+  { store, agents }: RewindRecoveryDeps,
   sessionId: string,
   journal: AgentSessionJournal,
   fence: number,
@@ -75,7 +78,7 @@ export async function readStructuredRewindRecovery(
     return null
   }
   const target = parseAgentJournalItemKey(rewind.providerItemId ?? rewind.itemId)
-  const { cut } = await rewindJournalCut(record, journal, rewind)
+  const { cut } = await rewindJournalCut(record, journal, rewind, agents)
   if (
     target?.provider === 'claude' ||
     rewind.phase !== 'prepared' ||
@@ -125,7 +128,8 @@ export async function applyStructuredRewindRecovery(
   const { alreadyReplaced, cut } = await rewindJournalCut(
     store.getRecord(sessionId),
     journal,
-    rewind
+    rewind,
+    deps.agents
   )
   if (!alreadyReplaced && !cut) {
     throw new Error('agent_session_rewind:invalid-target')

@@ -4,6 +4,10 @@ import { namesCliConversation } from '../../../../shared/agent-session/view/stru
 import { agentSessionRefusalError } from '../../../../shared/agent-session/failures/agent-session-wire-refusals'
 import type { CliWriterObservation } from '../../../agent-hooks/server/cli-writer-observation'
 import { forEachWithConcurrency } from '../../../../shared/concurrency/map-with-concurrency'
+import type {
+  AiVaultHoldingPane,
+  AiVaultSessionHolderResult
+} from '../../../../shared/ai-vault/contracts/ai-vault-session-holder'
 
 /** The process table's own reader takes about this many reads at once. */
 const WRITER_PROBE_CONCURRENCY = 8
@@ -14,6 +18,39 @@ export type CliWriterHost = {
   /** Resolves the host PTY a pane key names now, so a row under an older key still matches its
    *  pane. One resolver serves one synchronous read, sharing its look at the terminals. */
   ptyResolver?: () => (paneKey: string) => string | null
+}
+
+/** Every terminal pane still naming the conversation, with what its process says; one proven
+ *  exited holds nothing, and one with no recorded process cannot be told apart from a writer. */
+export async function readCliConversationHolders(
+  host: Pick<CliWriterHost, 'rows' | 'observation'>,
+  agent: string,
+  providerSessionId: string
+): Promise<AiVaultSessionHolderResult> {
+  // Read in one synchronous pass, so pane identity is taken at one instant, before any probe waits.
+  const candidates = host
+    .rows()
+    .filter((row) => !row.structuredHost && namesCliConversation(row, agent, providerSessionId))
+    .map((row) => ({ paneKey: row.paneKey, observation: host.observation(row) }))
+  const panes: AiVaultHoldingPane[] = []
+  await forEachWithConcurrency(
+    candidates,
+    WRITER_PROBE_CONCURRENCY,
+    async ({ paneKey, observation }) => {
+      const verdict = await observation?.presence().catch(() => null)
+      const current = observation?.current() === true
+      if (current && verdict === 'exited') {
+        return
+      }
+      panes.push({ paneKey, verdict: current && verdict === 'live' ? 'live' : 'unverifiable' })
+    }
+  )
+  const holder = panes.some((pane) => pane.verdict === 'live')
+    ? 'live'
+    : panes.length > 0
+      ? 'unverifiable'
+      : null
+  return { holder, panes }
 }
 
 /** Only a live holder in the execution host's status store blocks continuation. `closingPaneKeys`
