@@ -23,9 +23,11 @@ import { releaseAgentSessionOwnerAfterSurfaceClose } from '../ownership/agent-se
 import { pinAgentSessionRecordLaunchDirectory } from './agent-session-record-launch-directory'
 import {
   pickAgentSessionOption,
+  pickAgentSessionOptions,
   recordAgentSessionRanOptions,
   replaceAgentSessionRecordOptions,
   type AgentSessionOptionPick,
+  type AgentSessionOptionPicks,
   type AgentSessionRanOptions
 } from './agent-session-record-options'
 import {
@@ -49,6 +51,7 @@ export type AgentSessionRecordCommand =
   | { kind: 'launch-directory'; launchDirectory: string; now: number }
   | { kind: 'options'; args: AgentSessionOptionsReplacement }
   | { kind: 'pick-option'; args: AgentSessionOptionPick }
+  | { kind: 'pick-options'; args: AgentSessionOptionPicks }
   | { kind: 'ran-options'; args: AgentSessionRanOptions }
   | { kind: 'process'; args: WithoutRecord<typeof commitAgentSessionProcessIdentity> }
   | {
@@ -120,6 +123,9 @@ export function applyAgentSessionRecordCommand(
       break
     case 'pick-option':
       next = pickAgentSessionOption(record, command.args)
+      break
+    case 'pick-options':
+      next = pickAgentSessionOptions(record, command.args)
       break
     case 'ran-options':
       next = recordAgentSessionRanOptions(record, command.args)
