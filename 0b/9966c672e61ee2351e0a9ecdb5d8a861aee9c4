@@ -1,0 +1,38 @@
+src/main/droid/droid-composer-key-help.ts
+  s_d98921461d61e0::t_c1e517741c18f8 1-39
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-composer-droid-keys.ts
+  s_d98921461d61e0::t_44a6f52e034371 1-100
+src/renderer/src/components/native-chat/prompts/NativeChatQuestionCard.escape.test.tsx
+  s_d98921461d61e0::t_9f6aa0675ac189 1-25
+src/renderer/src/components/native-chat/queue/structured-agent-session-queue-request.test.ts
+  s_d98921461d61e0::t_29837140f013df 1-28
+src/shared/droid/droid-composer-keys.ts
+  s_d98921461d61e0::t_d84e10fe9b6842 1-56
+src/main/droid/droid-agent-definition.ts
+  h_476903bd8a47d9 30-31
+src/main/droid/droid-session-adapter.ts
+  h_476903bd8a47d9 166-170
+src/shared/agent-session/view/structured-agent-session-composer.ts
+  h_476903bd8a47d9 32-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0b9966c672e61ee2351e0a9ecdb5d8a861aee9c4",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_d98921461d61e0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "de1bc950-75d7-4fa8-94d4-60268c9ca201",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

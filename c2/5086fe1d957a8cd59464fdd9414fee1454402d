@@ -24,6 +24,14 @@ src/shared/droid/droid-chat-version-floor.ts
         "model": "custom:claude-opus-5-5"
       },
       "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_3fe839bacd08b6": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f8e94f67-ce90-42e6-b45d-4852a6f953f9",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
     }
   }
 }
