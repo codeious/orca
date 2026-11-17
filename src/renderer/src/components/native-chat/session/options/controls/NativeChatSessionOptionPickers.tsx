@@ -7,6 +7,7 @@ import { translate } from '@/i18n/i18n'
 import { useTranslate, type Translate } from '@/i18n/use-translate'
 import { useUiLanguageRevision } from '@/i18n/use-ui-language-revision'
 import { sortNativeChatSessionOptions } from '../../../../../../../shared/native-chat/input/session-options/native-chat-session-option-snapshot'
+import { STRUCTURED_PLAN_MODE_PAIR_OPTION_IDS } from '../../../../../../../shared/agent-session/options/selection/structured-agent-session-plan-mode-pair'
 import {
   sessionOptionDispatchUnconfirmed,
   type SessionOptionDescriptor,
@@ -359,6 +360,8 @@ function NativeChatSessionOptionPickersInner({
   const model = withPendingValue(reportedModel, pending.get(reportedModel.id) ?? null)
   const options = sortNativeChatSessionOptions(snapshot)
     .filter((descriptor) => descriptor.id !== 'interactionMode')
+    // Plan mode uses the main model and effort controls; its saved pair is not another picker.
+    .filter(({ id }) => !STRUCTURED_PLAN_MODE_PAIR_OPTION_IDS.includes(id))
     .map((descriptor) => withPendingValue(descriptor, pending.get(descriptor.id) ?? null))
 
   const markPending = (id: string) => (pick: PendingPick | null) => {

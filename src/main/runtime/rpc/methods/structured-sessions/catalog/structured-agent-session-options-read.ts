@@ -31,6 +31,7 @@ import {
 import type { AgentSessionModelCatalogResult } from '../../../../../../shared/agent-session/agent-session-wire'
 import { structuredAgentSessionOptionModels } from '../../../../../native-chat/agent-session-wire/options/structured-agent-session-option-models'
 import { finishedListingIds } from '../../../../../../shared/agent-session/options/model-catalog/structured-agent-session-listing-verified-ids'
+import { AGENT_SESSION_SESSION_OPTIONS_CAPABILITY } from '../../../../../../shared/agent-session/options/reconciliation/agent-session-session-options'
 
 export const STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS = [
   defineMethod({
@@ -66,7 +67,13 @@ export const STRUCTURED_AGENT_SESSION_OPTIONS_READ_METHODS = [
     handler: async (params, ctx) => {
       const readsWithoutModel = clientReadsOptionsWithoutModel(ctx)
       const host = await requireInstalledStructuredHost(ctx, params.sessionId)
-      const options = await host.readOptions(params.sessionId, { readsWithoutModel })
+      const read = await host.readOptions(params.sessionId, { readsWithoutModel })
+      const { sessionOptions: _sessionOptions, ...compatible } = read
+      const options =
+        ctx.clientKind === undefined ||
+        ctx.clientCapabilities?.includes(AGENT_SESSION_SESSION_OPTIONS_CAPABILITY)
+          ? read
+          : compatible
       const conversation = host.deps.store.getConversation(params.sessionId)
       const result = { ...options, sessionNeverStarted: conversation?.neverStarted }
       if (result.current.model === undefined && !readsWithoutModel) {

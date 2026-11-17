@@ -478,6 +478,7 @@
       "dispatchUnconfirmed": "已发送给智能体 — 尚未确认",
       "modelFullAccessLabel": "模型，{{value}}，完全访问权限",
       "modelLabel": "模型，{{value}}",
+      "modelPermissionLevelLabel": "模型，{{value}}，权限 {{level}}",
       "permissions": "权限",
       "applying": "正在应用…",
       "onAttach": "聊天连接后生效",

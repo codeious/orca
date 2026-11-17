@@ -38,8 +38,10 @@ import {
   SessionOptionSegments,
   showsSessionOptionAsSegments
 } from './MobileNativeChatSessionOptionSegments'
-import { sortNativeChatSessionOptions } from '../../../../../../src/shared/native-chat/input/session-options/native-chat-session-option-snapshot'
-import { AGENT_CHAT_PERMISSION_MODE_OPTION_ID } from '../../../../../../src/shared/agent-launch/permissions/agent-chat-permission-mode-option-id'
+import {
+  composerPermissionDescriptor,
+  sortNativeChatSessionOptions
+} from '../../../../../../src/shared/native-chat/input/session-options/native-chat-session-option-snapshot'
 import {
   permissionChoiceColor,
   permissionChoiceLeading,
@@ -101,9 +103,7 @@ export function MobileNativeChatSessionOptionPickers({
   }, [open, hasControls, onNavigate])
   const model = snapshot.find((descriptor) => descriptor.category === 'model')
   const moreModels = useMoreModelsShown(model)
-  const permission = snapshot.find(
-    (descriptor) => descriptor.id === AGENT_CHAT_PERMISSION_MODE_OPTION_ID
-  )
+  const permission = composerPermissionDescriptor(snapshot)
   const activeDescriptor = hasControls
     ? snapshot.find((descriptor) => descriptor.id === presentation?.page)
     : undefined
@@ -140,9 +140,11 @@ export function MobileNativeChatSessionOptionPickers({
     busy || (isWorking && descriptor.transport !== 'agent-session' && descriptor !== permission)
   const reason = nativeChatSessionOptionDisabledReason(activeDescriptor?.disabledReason, say)
   const permissionChoice = selectedChoice(permission)
-  const permissionColor = permissionChoiceColor(permissionChoice?.value)
+  const permissionColor = permissionChoiceColor(permission, permissionChoice?.value)
   const permissionIcon =
-    !model && permissionChoice ? permissionModeIcon(permissionChoice.value) : undefined
+    !model && permission && permissionChoice
+      ? permissionModeIcon(permission, permissionChoice.value)
+      : undefined
   const segmentOptions = options.filter(showsSessionOptionAsSegments)
   const rowOptions = options.filter((descriptor) => !segmentOptions.includes(descriptor))
   const primary = model
@@ -194,13 +196,19 @@ export function MobileNativeChatSessionOptionPickers({
         accessibleName={
           model
             ? permissionColor && !permissionDeferred
-              ? t(
-                  'chat.sessionOptionPickers.modelFullAccessLabel',
-                  'Model, {{value}}, full access',
-                  {
-                    value: modelValue
-                  }
-                )
+              ? permission?.role === 'permission'
+                ? t(
+                    'chat.sessionOptionPickers.modelPermissionLevelLabel',
+                    'Model, {{value}}, permissions {{level}}',
+                    { value: modelValue, level: mobileSessionOptionSummaryValue(permission) }
+                  )
+                : t(
+                    'chat.sessionOptionPickers.modelFullAccessLabel',
+                    'Model, {{value}}, full access',
+                    {
+                      value: modelValue
+                    }
+                  )
               : t('chat.sessionOptionPickers.modelLabel', 'Model, {{value}}', { value: modelValue })
             : t('chat.sessionOptionPickers.permissionsLabel', 'Permissions, {{value}}', {
                 value: permissionDeferred ?? primary
@@ -227,7 +235,11 @@ export function MobileNativeChatSessionOptionPickers({
           <View style={styles.sheet}>
             <View style={styles.header}>
               <SheetHeader
-                title={nativeChatSessionOptionLabel(activeDescriptor, say)}
+                title={
+                  permissionView
+                    ? t('chat.sessionOptionPickers.permissions', 'Permissions')
+                    : nativeChatSessionOptionLabel(activeDescriptor, say)
+                }
                 subtitle={
                   pendingId !== null
                     ? t('chat.sessionOptionPickers.applying', 'Applying…')
@@ -279,7 +291,12 @@ export function MobileNativeChatSessionOptionPickers({
                   onSetOption: (value) => applyOption(activeDescriptor, value),
                   onInvokeAction: () => invokeAction(activeDescriptor),
                   moreChoices: moreModels,
-                  ...(permissionView ? { choiceLeading: permissionChoiceLeading } : {})
+                  ...(permissionView
+                    ? {
+                        choiceLeading: (value: string) =>
+                          permissionChoiceLeading(activeDescriptor, value)
+                      }
+                    : {})
                 },
                 t
               )}
@@ -349,6 +366,7 @@ function OptionRows({
         {descriptors.flatMap((descriptor) => {
           const isPermission = descriptor === permission
           const deferred = isPermission ? mobileDeferredPermissionSummary(descriptor) : null
+          const shownChoice = isPermission ? selectedChoice(descriptor) : undefined
           const disabled = locked(descriptor) || !descriptor.settable
           if (showsSessionOptionAsSwitch(descriptor)) {
             return descriptorRowElements(
@@ -373,6 +391,11 @@ function OptionRows({
               subtitle={deferred?.timing}
               accessibleValue={deferred?.full}
               valueColor={isPermission ? permissionColor : undefined}
+              leading={
+                shownChoice?.icon
+                  ? permissionChoiceLeading(descriptor, shownChoice.value)
+                  : undefined
+              }
               disabled={disabled}
               onPress={
                 isReadOnlySessionOptionValue(descriptor)
