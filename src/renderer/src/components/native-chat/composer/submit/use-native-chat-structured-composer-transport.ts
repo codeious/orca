@@ -19,6 +19,7 @@ import type { AgentSessionThreadGoalChange } from '../../../../../../shared/agen
 import { translate } from '@/i18n/i18n'
 import type { Translate } from '@/i18n/use-translate'
 import { structuredAgentLabel } from '@/lib/agent-session/launch/structured-agent-session-launch-label'
+import { renameStructuredChatFromComposer } from './structured-composer-rename-command'
 
 function nativeChatSessionAttachmentNotReadyNotice(
   agent: AgentType,
@@ -194,6 +195,8 @@ export function useNativeChatStructuredComposerTransport(args: {
             compactInstructions: controller.compactInstructions,
             runConversationCommand: controller.runConversationCommand,
             runHostCommand: controller.runHostCommand,
+            runSessionAction: async (_name, argument) =>
+              renameStructuredChatFromComposer(props.tabId, argument),
             ...(changeThreadGoal ? { changeThreadGoal } : {}),
             ...(mcpPanel ? { openMcpPanel: mcpPanel.open } : {})
           },
@@ -248,6 +251,7 @@ export function useNativeChatStructuredComposerTransport(args: {
     captureAdmittedReveal,
     optionPickerRequest,
     props.agent,
+    props.tabId,
     props.sessionId,
     props.target,
     sendBlockedReason,

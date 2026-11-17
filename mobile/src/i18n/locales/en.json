@@ -3151,7 +3151,15 @@
       "sessionOptions": "Session options",
       "permissionAppliesNextMessage": "{{saved}} applies to your next message; running {{active}}",
       "permissionAppliesNextMessageCompact": "{{saved}} · next message",
-      "permissionAppliesNextMessageTiming": "Applies next message · running {{active}}"
+      "permissionAppliesNextMessageTiming": "Applies next message · running {{active}}",
+      "autonomyPermissionOff": "Off",
+      "autonomyPermissionOffDescription": "Asks before edits and commands",
+      "autonomyPermissionLow": "Low",
+      "autonomyPermissionLowDescription": "Edits files and runs read-only commands; asks for the rest",
+      "autonomyPermissionMedium": "Medium",
+      "autonomyPermissionMediumDescription": "Also runs reversible commands like installs, builds and local commits; asks for the rest",
+      "autonomyPermissionHigh": "High",
+      "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
     },
     "streamFrame": {
       "streamFailed": "Transcript stream failed",

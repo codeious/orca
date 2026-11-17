@@ -19600,7 +19600,16 @@
         },
         "imageUnavailable": "Vorschau nicht verfügbar",
         "moreControls": "Weitere Chat-Steuerelemente",
-        "exitPlanMode": "Planungsmodus verlassen"
+        "exitPlanMode": "Planungsmodus verlassen",
+        "renameNeedsName": "Use /rename followed by a chat name.",
+        "autonomyPermissionOff": "Aus",
+        "autonomyPermissionOffDescription": "Fragt vor Änderungen und Befehlen nach",
+        "autonomyPermissionLow": "Niedrig",
+        "autonomyPermissionLowDescription": "Bearbeitet Dateien und führt nur lesende Befehle aus; fragt bei allem anderen nach",
+        "autonomyPermissionMedium": "Mittel",
+        "autonomyPermissionMediumDescription": "Führt auch rückgängig machbare Befehle wie Installationen, Builds und lokale Commits aus; fragt bei allem anderen nach",
+        "autonomyPermissionHigh": "Hoch",
+        "autonomyPermissionHighDescription": "Runs commands without asking, except ones the agent blocks"
       },
       "tool": {
         "exitCode": "Rückgabecode {{value0}}",

@@ -7,6 +7,7 @@ import {
   type AgentChatPermissionMode,
   type AgentChatPermissionModeIconName
 } from '../../../../../../../shared/agent-launch/permissions/agent-chat-permission-mode'
+import { NATIVE_CHAT_DROID_CHOICE_COPY } from './native-chat-droid-permission-labels'
 
 export const NATIVE_CHAT_PERMISSION_ICONS_BY_NAME: Record<
   AgentChatPermissionModeIconName,
@@ -32,7 +33,9 @@ export type NativeChatDeclaredChoiceCopy = (
 ) => { label: string; description: string } | undefined
 
 // Providers translate the choices they declare; other choices keep the host's own words.
-const DECLARED_CHOICE_COPY: Readonly<Record<string, NativeChatDeclaredChoiceCopy>> = {}
+const DECLARED_CHOICE_COPY: Readonly<Record<string, NativeChatDeclaredChoiceCopy>> = {
+  ...NATIVE_CHAT_DROID_CHOICE_COPY
+}
 
 export function nativeChatDeclaredChoiceCopy(
   optionId: string,

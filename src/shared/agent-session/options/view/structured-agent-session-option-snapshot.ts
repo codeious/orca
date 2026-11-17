@@ -3,6 +3,7 @@ import type {
   CatalogModel,
   CatalogOption
 } from '../catalog-providers/agent-session-option-catalog-types'
+import { planModeDisplayRecord } from './structured-agent-session-plan-mode-display'
 import {
   nativeChatSessionOptionDescriptors,
   withTrackedNativeChatModel,
@@ -28,6 +29,7 @@ import { listedModelDescribing } from '../model-catalog/structured-agent-session
 import { structuredAgentSessionPermissionDescriptor } from '../permissions/structured-agent-session-permission-option'
 import { structuredAgentSessionInteractionDescriptor } from '../permissions/agent-session-interaction-mode'
 import type { StructuredAgentSessionOptionState } from '../structured-agent-session-options'
+import { withSpecModeSnapshot } from './structured-agent-session-spec-option'
 import {
   sessionScopedOptionAccepts,
   sessionScopedOptionSnapshot
@@ -148,8 +150,11 @@ export function structuredAgentSessionDisplayCatalog(
 }
 
 function drawnModelControls(state: StructuredAgentSessionOptionState) {
-  const { record } = state
   const displayCatalog = structuredAgentSessionDisplayCatalog(state)
+  const main = displayCatalog
+    ? structuredAgentSessionShownModel(displayCatalog, displayCatalog.models, state.record)
+    : null
+  const record = planModeDisplayRecord(state, main?.shown.currentId, main?.isCliDefault ?? false)
   if (
     !displayCatalog ||
     (state.catalogSource === 'seed' && structuredAgentSessionModelId(record, 'own') === null)
@@ -261,8 +266,9 @@ export function structuredAgentSessionOptionSnapshot(
 ): SessionOptionDescriptor[] {
   const permission = structuredAgentSessionPermissionDescriptor(state)
   const extra = sessionScopedOptionSnapshot(state)
+  const base = withSpecModeSnapshot(modelOptionSnapshot(state), state.record)
   const options = [
-    ...modelOptionSnapshot(state).filter((row) => !extra.some((option) => option.id === row.id)),
+    ...base.filter((row) => !extra.some((option) => option.id === row.id)),
     ...extra
   ].map((option) =>
     state.fastModeRestricted && option.id === 'fastMode' ? { ...option, settable: false } : option
@@ -312,6 +318,7 @@ export function canSetStructuredAgentSessionOption(
     (['model', 'effort', 'serviceTier', 'personality'].includes(id) &&
       typeof value === 'string' &&
       value.length > 0) ||
-    (id === 'fastMode' && typeof value === 'boolean')
+    (id === 'fastMode' && typeof value === 'boolean') ||
+    (id === 'planMode' && state.record.values.planMode !== undefined && typeof value === 'boolean')
   )
 }
