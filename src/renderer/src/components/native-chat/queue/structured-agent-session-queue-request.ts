@@ -15,16 +15,19 @@ export type StructuredAgentSessionQueueDelivery = {
   prompts: Parameters<typeof structuredAgentSessionQueueEnabled>[2]
 }
 
-/** The alternate flips the setting first; a waiting command and unanswerable prompts still decide after it. */
+/** The alternate flips the setting first and after-reply asks to queue whatever it reads; a waiting command and unanswerable prompts still decide after them. */
 export function structuredAgentSessionSendQueues(
   queue: StructuredAgentSessionQueueDelivery,
-  alternate?: boolean
+  alternate?: boolean,
+  afterReply?: boolean
 ): boolean {
-  const followUpsQueue = structuredAgentSessionFollowUpsQueue(queue.followUpsQueue, {
-    alternate,
-    isWorking: queue.isWorking,
-    stopping: queue.stopping
-  })
+  const followUpsQueue =
+    afterReply === true ||
+    structuredAgentSessionFollowUpsQueue(queue.followUpsQueue, {
+      alternate,
+      isWorking: queue.isWorking,
+      stopping: queue.stopping
+    })
   return (
     queue.capability === 'supported' &&
     structuredAgentSessionQueueEnabled(followUpsQueue, queue.session, queue.prompts)
@@ -33,7 +36,10 @@ export function structuredAgentSessionSendQueues(
 
 export function structuredAgentSessionQueueRequest(
   queue: StructuredAgentSessionQueueDelivery,
-  alternate?: boolean
+  alternate?: boolean,
+  afterReply?: boolean
 ): 'queue-if-active' | undefined {
-  return structuredAgentSessionSendQueues(queue, alternate) ? 'queue-if-active' : undefined
+  return structuredAgentSessionSendQueues(queue, alternate, afterReply)
+    ? 'queue-if-active'
+    : undefined
 }

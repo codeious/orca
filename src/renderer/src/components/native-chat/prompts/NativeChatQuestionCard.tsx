@@ -13,7 +13,7 @@ import { NativeChatPromptCollapseToggle } from './NativeChatPromptCollapse'
 import { useNativeChatPromptCardFocus } from './use-native-chat-prompt-card-focus'
 import { useNativeChatQuestionAutoAdvance } from './use-native-chat-question-auto-advance'
 import { useNativeChatQuestionKeys } from './use-native-chat-question-keys'
-import { isEditableTarget } from '@/lib/text-input/focus/editable-target'
+import { runNativeChatQuestionCardEscape } from './native-chat-question-card-escape'
 import type { AgentJournalFreeTextInput } from '../../../../../shared/agent-session/journal/agent-session-journal-types'
 import {
   askAcceptsEmptyAnswer,
@@ -37,6 +37,8 @@ export type NativeChatQuestionCardProps = {
   onCancel: () => void
   /** Fold the card to a strip and give the input back, writing nothing; Escape does too. */
   onCollapse?: () => void
+  /** Escape cancels the question instead of folding the card. */
+  cancelOnEscape?: boolean
   /** Take focus when the card takes the input region; number keys pick while it holds. */
   shouldFocus?: boolean
   /** Paste target while the card replaces the composer. */
@@ -63,6 +65,7 @@ export function NativeChatQuestionCard({
   freeTextInputs,
   onCancel,
   onCollapse,
+  cancelOnEscape = false,
   shouldFocus = false,
   answerInputRef
 }: NativeChatQuestionCardProps): React.JSX.Element {
@@ -229,6 +232,8 @@ export function NativeChatQuestionCard({
         onCollapse()
       }
     : undefined
+  // A cancel already on its way is not sent twice.
+  const escape = cancelOnEscape ? (isCancelling ? undefined : cancel) : collapse
 
   return (
     <div
@@ -239,20 +244,9 @@ export function NativeChatQuestionCard({
       tabIndex={-1}
       className="shrink-0 bg-chat-pane focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       aria-busy={isSubmitting}
-      onKeyDown={(event) => {
-        // Why not from a text field: Escape there is editing, and collapsing would hide the draft.
-        if (
-          event.key === 'Escape' &&
-          !event.nativeEvent.isComposing &&
-          collapse &&
-          !isSubmitting &&
-          !isEditableTarget(event.target)
-        ) {
-          event.preventDefault()
-          event.stopPropagation()
-          collapse()
-        }
-      }}
+      onKeyDown={(event) =>
+        runNativeChatQuestionCardEscape(event, isSubmitting ? undefined : escape)
+      }
     >
       <div className="mx-auto w-full max-w-(--chat-content-max-width) px-3 pt-2 pb-4 sm:px-4">
         {total > 1 ? (
