@@ -12,6 +12,7 @@ import { useTranslate } from '@/i18n/use-translate'
 import { AgentDashboardExperimentalSetting } from '../../dashboard/settings/AgentDashboardExperimentalSetting'
 import { EphemeralVmsExperimentalSetting } from '../virtual-machines/recipes/EphemeralVmsExperimentalSetting'
 import { WslHostsExperimentalSetting } from '../wsl/hosts/WslHostsExperimentalSetting'
+import { ChatAgentsExperimentalSetting } from './ChatAgentsExperimentalSetting'
 import { wslHostsAvailable } from '../../sidebar/use-wsl-hosts-enabled'
 import {
   MAX_AGENT_HIBERNATION_IDLE_MS,
@@ -281,6 +282,8 @@ export function ExperimentalPane({
             </div>
           </SearchableSetting>
         ) : null}
+
+        <ChatAgentsExperimentalSetting settings={settings} updateSettings={updateSettings} />
 
         <EphemeralVmsExperimentalSetting settings={settings} updateSettings={updateSettings} />
 
