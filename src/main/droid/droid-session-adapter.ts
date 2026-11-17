@@ -16,6 +16,12 @@ import { prepareDroidPrompt } from './droid-prompt'
 import { DroidSession, type DroidSessionDeps } from './droid-session'
 import { droidInteractionModeFromSavedOptions } from './droid-session-settings'
 import type { DroidResolvedLaunch } from './droid-session-launch-contract'
+import { DROID_TEXT_COMMANDS } from './droid-command-catalog'
+import { runDroidTextCommand } from './droid-text-command'
+import { compactDroidSession } from './droid-compaction'
+import { forkDroidSession, rewindDroidSession } from './droid-fork-and-rewind'
+import { manageDroidMcp } from './droid-mcp'
+import { agentSessionProviderHandleChainHead } from '../../shared/agent-session/lifecycle/provider-handles/agent-session-provider-handle'
 
 export type DroidSessionAdapterDeps = DroidSessionDeps & {
   resolveLaunch: (
@@ -73,6 +79,18 @@ export class DroidSessionAdapter
     return isAgentSessionPreSpawnError(error)
   }
 
+  readCommands = () => DROID_TEXT_COMMANDS
+  atRestCommands = {
+    read: () => DROID_TEXT_COMMANDS,
+    onChange: () => () => {}
+  }
+  hostCommand: NonNullable<StructuredAgentSessionAdapter['hostCommand']> = (input) =>
+    runDroidTextCommand(this.session(input.sessionId, input.fence), input)
+  manageMcp: NonNullable<StructuredAgentSessionAdapter['manageMcp']> = (record, operation) =>
+    manageDroidMcp(this.sessions, record.sessionId, operation)
+  compact: NonNullable<StructuredAgentSessionAdapter['compact']> = (input) =>
+    compactDroidSession(this.session(input.sessionId, input.fence), input.command)
+
   renameProviderSession: NonNullable<StructuredAgentSessionAdapter['renameProviderSession']> =
     async ({ record, providerSessionId, name }) => {
       const session = this.sessions.get(record.sessionId)
@@ -80,6 +98,39 @@ export class DroidSessionAdapter
         await session.request('droid.rename_session', { title: name }, { timeoutMs: 5_000 })
       }
     }
+  copyConversation: NonNullable<StructuredAgentSessionAdapter['copyConversation']> = async ({
+    identity,
+    providerSessionId
+  }) => {
+    const session = this.sessions.get(identity.sessionId)
+    if (session?.connection.closed !== false || session.droidSessionId !== providerSessionId) {
+      throw new Error('Open this chat before making a fork')
+    }
+    return { sessionId: (await forkDroidSession(session)).newSessionId }
+  }
+  readonly forkForRewindRequiresAcquisition = true as const
+  forkForRewind: NonNullable<StructuredAgentSessionAdapter['forkForRewind']> = async ({
+    record,
+    beforeMessage
+  }) => {
+    const session = this.sessions.get(record.sessionId)
+    const original = agentSessionProviderHandleChainHead(record.providerHandleChain)?.handle
+      .nativeId
+    if (session?.connection.closed !== false || !original || session.droidSessionId !== original) {
+      return { ok: false, reason: 'provider-refused' }
+    }
+    const result = await rewindDroidSession(session, beforeMessage.uuid)
+    return {
+      ok: true,
+      fork: {
+        sessionId: result.newSessionId,
+        sourceSessionId: original,
+        replacesSessionId: original,
+        materialized: true
+      }
+    }
+  }
+
   dispatch: StructuredAgentSessionAdapter['dispatch'] = async (input) => {
     const session = this.session(input.sessionId, input.fence)
     const prompt = prepareDroidPrompt(input.body)
@@ -112,8 +163,11 @@ export class DroidSessionAdapter
       true,
       undefined
     )
-  readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = (input) =>
-    this.session(input.sessionId, input.fence).options.read()
+  // copyConversation needs the running child, so only its answer confirms a fork.
+  readOptions: NonNullable<StructuredAgentSessionAdapter['readOptions']> = async (input) => ({
+    ...(await this.session(input.sessionId, input.fence).options.read()),
+    forkSupport: 'supported'
+  })
   canSetOptionWhileIdle: NonNullable<StructuredAgentSessionAdapter['canSetOptionWhileIdle']> = (
     input
   ) => {

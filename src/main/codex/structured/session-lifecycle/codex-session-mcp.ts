@@ -19,10 +19,10 @@ import {
 } from './codex-mcp-server-status'
 import { codexMirrorSourceDeclaring, writeCodexMcpEnabled } from './codex-mcp-enabled-write'
 import {
-  deliverCodexMcpCallback,
-  matchingCodexMcpCallback,
-  readRedirectUri
-} from './codex-mcp-sign-in-callback'
+  deliverMcpSignInCallback,
+  matchingMcpSignInCallback,
+  readMcpSignInRedirectUri
+} from '../../../native-chat/agent-session-wire/operations/structured-agent-session-mcp-callback'
 import {
   runCodexProviderAppServer,
   type CodexProviderInvocationDeps
@@ -123,7 +123,7 @@ export function manageCodexSessionMcp(
         const servers = await listLive(live)
         signIns.set(record.sessionId, {
           server: operation.server,
-          redirectUri: readRedirectUri(login.authorizationUrl),
+          redirectUri: readMcpSignInRedirectUri(login.authorizationUrl),
           expiresAt: Date.now() + SIGN_IN_WINDOW_SECONDS * 1000
         })
         // The URL comes from the MCP server's OAuth metadata; clients open only web pages.
@@ -136,12 +136,12 @@ export function manageCodexSessionMcp(
         const pending = signIns.get(record.sessionId)
         const callback =
           pending && pending.server === operation.server && pending.expiresAt > Date.now()
-            ? matchingCodexMcpCallback(operation.callbackUrl, pending.redirectUri)
+            ? matchingMcpSignInCallback(operation.callbackUrl, pending.redirectUri)
             : null
         if (!callback) {
           throw new Error(MISMATCH)
         }
-        await deliverCodexMcpCallback(callback)
+        await deliverMcpSignInCallback(callback, 'Codex')
         signIns.delete(record.sessionId)
         return ok(await list(record, live))
       }

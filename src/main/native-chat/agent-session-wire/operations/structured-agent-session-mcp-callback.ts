@@ -1,7 +1,7 @@
 const CALLBACK_FETCH_TIMEOUT_MS = 15_000
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '[::1]'])
 
-export function readRedirectUri(authorizationUrl: string): string | null {
+export function readMcpSignInRedirectUri(authorizationUrl: string): string | null {
   try {
     // A server-planted second redirect_uri could steer the host's GET elsewhere.
     const uris = new URL(authorizationUrl).searchParams.getAll('redirect_uri')
@@ -11,8 +11,8 @@ export function readRedirectUri(authorizationUrl: string): string | null {
   }
 }
 
-/** A host-side GET of pasted input: only Codex's own loopback callback for this login. */
-export function matchingCodexMcpCallback(
+/** A host-side GET of pasted input: only the agent's own loopback callback for this sign-in. */
+export function matchingMcpSignInCallback(
   callbackUrl: string,
   redirectUri: string | null
 ): URL | null {
@@ -32,7 +32,7 @@ export function matchingCodexMcpCallback(
   }
 }
 
-export async function deliverCodexMcpCallback(callback: URL): Promise<void> {
+export async function deliverMcpSignInCallback(callback: URL, agentName: string): Promise<void> {
   let response: Response
   try {
     response = await fetch(callback, {
@@ -45,7 +45,7 @@ export async function deliverCodexMcpCallback(callback: URL): Promise<void> {
   await response.body?.cancel()
   if (!response.ok) {
     throw new Error(
-      `Codex refused that address (HTTP ${response.status}). Start the sign-in again.`
+      `${agentName} refused that address (HTTP ${response.status}). Start the sign-in again.`
     )
   }
 }
