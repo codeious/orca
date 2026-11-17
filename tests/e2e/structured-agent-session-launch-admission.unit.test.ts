@@ -155,6 +155,24 @@ afterEach(() => {
 describe('a structured chat launch on a paired server', () => {
   beforeEach(seedPairedServerWorkspace)
 
+  it('names the old release after a terminal fallback', async () => {
+    mocks.createSupport.mockResolvedValue({
+      supported: false,
+      reason: 'agent',
+      agentInstallation: { agent: 'claude', installedVersion: '0.1.0', minimumVersion: '1.0.0' }
+    })
+    const launch = beginStructuredAgentSessionProvisionalLaunch({
+      plan: pairedPlan(),
+      hooks: {},
+      onHostDeclined: () => ({ opened: true })
+    })
+    await expect(launch?.settlement).resolves.toEqual({ kind: 'terminal' })
+    expect(mocks.toastInfo).toHaveBeenCalledWith(expect.any(String), {
+      description: expect.stringMatching(/0\.1\.0[\s\S]*1\.0\.0/)
+    })
+    expectNoChatCommitted()
+  })
+
   it('opens nothing and says so once when the server cannot be reached', async () => {
     mocks.createSupport.mockRejectedValue(new Error('connection lost'))
     const onHostDeclined = vi.fn()

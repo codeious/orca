@@ -30,6 +30,7 @@ import { isFloatingWorkspaceSelector } from '../../../shared/workspace/identity/
 import type { AgentSessionAccountHome } from '../../../shared/agent-session/lifecycle/accounts/agent-session-account-home'
 import type { StructuredAgentId } from '../../../shared/agent-session/lifecycle/provider-handles/agent-session-provider-handle'
 import type { StructuredAgentCreateSupportReply } from '../../../shared/agent-session/structured-agent-create-support-reply'
+import { agentCliInstallationFacts } from '../../../shared/agent-launch/catalog/agent-cli-installation-problem'
 
 export abstract class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport extends StructuredSessionWorkspaceScope {
   protected abstract restoreStructuredAgentSessionTabsOnce(
@@ -173,8 +174,10 @@ export abstract class OrcaRuntimeWithGetStructuredAgentSessionCreateSupport exte
     // importer adopts.
     const transcriptImport = structuredAgentRuntimeMetadata(input.agent)?.transcriptImport
     if (!support.supported || (input.resumeFrom && !transcriptImport)) {
+      const installation = support.supported ? undefined : support.agentInstallation
       throw agentSessionRefusalError('structured_agent_session_unsupported', {
-        reason: 'hostUnsupported'
+        reason: 'hostUnsupported',
+        ...(installation && { ownerVerdict: 'exited', ...agentCliInstallationFacts(installation) })
       })
     }
     await this.accounts.prepareHostAgentLaunch(input.agent)

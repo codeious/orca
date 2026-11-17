@@ -8,19 +8,34 @@ import { useAppStore } from '@/store/index'
 import { selectExecutionHostDisplayLabel } from '@/runtime/hosts/display/execution-host-display-label'
 import { structuredAgentLabel } from '@/lib/agent-session/launch/structured-agent-session-launch-label'
 import { structuredChatUnavailableText } from '@/lib/agent-session/launch/structured-agent-session-launch-failure'
+import type { AgentCliInstallationProblem } from '../../../../../shared/agent-launch/catalog/agent-cli-installation-problem'
+import { agentCliTooOldWords } from '../../../../../shared/agent-session/failures/agent-session-failure-copy'
+import { sayAgentSessionFailureTranslated } from '@/components/native-chat/messages/notices/agent-session-failure-words-text'
 
-export function notifyExplicitChatFailure(agent: TuiAgent, reason?: string): void {
+export function notifyExplicitChatFailure(
+  agent: TuiAgent,
+  reason?: string,
+  installation?: AgentCliInstallationProblem
+): void {
   toast.error(
     translate(
       'auto.components.tab.bar.QuickLaunchButton.chatUnavailableAfterSelection',
       "Couldn't start a {{value0}} chat.",
       { value0: structuredAgentLabel(agent) }
     ),
-    { description: structuredChatUnavailableText(reason) }
+    {
+      description: installation
+        ? agentCliTooOldWords(installation, sayAgentSessionFailureTranslated)
+        : structuredChatUnavailableText(reason)
+    }
   )
 }
 
-export function notifyHostDeclined(agent: TuiAgent, explain = true): void {
+export function notifyHostDeclined(
+  agent: TuiAgent,
+  explain = true,
+  installation?: AgentCliInstallationProblem
+): void {
   const agentLabel = structuredAgentLabel(agent)
   toast.info(
     translate(
@@ -30,11 +45,13 @@ export function notifyHostDeclined(agent: TuiAgent, explain = true): void {
     ),
     explain
       ? {
-          description: translate(
-            'components.native-chat.structuredSessionHostDeclinedDescription',
-            "This workspace can't run a {{value0}} chat.",
-            { value0: agentLabel }
-          )
+          description: installation
+            ? agentCliTooOldWords(installation, sayAgentSessionFailureTranslated)
+            : translate(
+                'components.native-chat.structuredSessionHostDeclinedDescription',
+                "This workspace can't run a {{value0}} chat.",
+                { value0: agentLabel }
+              )
         }
       : undefined
   )
