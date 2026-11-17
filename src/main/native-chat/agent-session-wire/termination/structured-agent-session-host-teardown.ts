@@ -4,7 +4,7 @@
 import { closeStructuredAgentSessionHandovers } from '../delivery/structured-agent-session-handing-over'
 import type { AgentSessionResumeTrigger } from '../../../../shared/agent-session/lifecycle/resume/agent-session-resume-marker'
 import { SUPERVISED_GRACEFUL_EXIT_MS } from '../../../claude/child-process/claude-child-exit-proof-ladder'
-import { PROVIDER_SUPERVISOR_MAX_STOP_MS } from '../../../provider-process/provider-process-supervisor'
+import { PROVIDER_SUPERVISOR_LONGEST_STOP_MS } from '../../../provider-process/provider-process-close'
 import { SNAPSHOT_DRAIN_TIMEOUT_MS } from './structured-agent-session-eviction'
 import type { StructuredAgentSessionRestartResume } from '../recovery/structured-agent-session-restart-resume-contract'
 import {
@@ -27,7 +27,7 @@ export const EVICTION_MARGIN_MS = 1_000
 /** Cover drain and supervised graceful exit within quit’s deadline; supervisors own later tree cleanup. */
 export const CHILD_EVICTION_TIMEOUT_MS =
   SNAPSHOT_DRAIN_TIMEOUT_MS +
-  Math.max(SUPERVISED_GRACEFUL_EXIT_MS, PROVIDER_SUPERVISOR_MAX_STOP_MS) +
+  Math.max(SUPERVISED_GRACEFUL_EXIT_MS, PROVIDER_SUPERVISOR_LONGEST_STOP_MS) +
   EVICTION_MARGIN_MS
 
 /** Bound duration while preserving rejection, unlike withTimeout alone. */

@@ -8,7 +8,7 @@ import {
   type AgentSessionOwnerProbe
 } from '../../../../shared/agent-session/lifecycle/leases/agent-session-lease-adjudication'
 import type { AgentSessionRecord } from '../../../../shared/agent-session/lifecycle/agent-session-record'
-import { PROVIDER_SUPERVISOR_MAX_STOP_MS } from '../../../provider-process/provider-process-supervisor'
+import { PROVIDER_SUPERVISOR_LONGEST_STOP_MS } from '../../../provider-process/provider-process-close'
 import type { AgentSessionRecordStore } from '../../../runtime/agent-session/records/agent-session-record-store'
 
 export type StructuredSessionRecoveryStopSignal = 'SIGTERM' | 'SIGKILL'
@@ -25,7 +25,7 @@ export type StructuredSessionRecoveryResolutionDeps = {
 const STOP_PROBE_INTERVAL_MS = 250
 // Let POSIX supervisors finish group cleanup before SIGKILL; early supervisor death can orphan providers.
 const STOP_PROBES: Record<StructuredSessionRecoveryStopSignal, number> = {
-  SIGTERM: Math.ceil(PROVIDER_SUPERVISOR_MAX_STOP_MS / STOP_PROBE_INTERVAL_MS) + 1,
+  SIGTERM: Math.ceil(PROVIDER_SUPERVISOR_LONGEST_STOP_MS / STOP_PROBE_INTERVAL_MS) + 1,
   SIGKILL: 4
 }
 

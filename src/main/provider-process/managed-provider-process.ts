@@ -5,7 +5,7 @@ import type { ProviderProcessLaunch } from './provider-process-launch'
 import { processEnvWithoutAgentSession } from '../../shared/agent-launch/startup/parent-agent-session-env'
 import {
   PROVIDER_BRIEF_SIGTERM_GRACE_MS,
-  PROVIDER_SUPERVISOR_MAX_STOP_MS,
+  PROVIDER_STDIN_END_GRACE_MS,
   createProviderSpawnSpec,
   type ProviderSupervisorLifetime
 } from './provider-process-supervisor'
@@ -18,6 +18,7 @@ import { providerSpawnAbsence, type ProviderSpawnAbsence } from './provider-exec
 import {
   acceptProviderWriterClose,
   closeProviderProcess,
+  providerSupervisorMaxStopMs,
   rootOnlyProviderClosePolicy,
   type ProviderProcessCloseOptions,
   type ProviderProcessClosePolicy,
@@ -38,7 +39,9 @@ export type ProviderProcessExit = {
 type ManagedProviderProcessOptions = {
   site: string
   /** Defaults to the root-only policy; only a provider with its own reaper overrides it. */
-  policy?: (supervised: boolean) => ProviderProcessClosePolicy
+  policy?: (supervised: boolean, stdinEndGraceMs: number) => ProviderProcessClosePolicy
+  /** Defaults to the shared grace; a CLI that exits slowly on EOF may ask for up to the max. */
+  stdinEndGraceMs?: number
   spawnImpl?: ProviderProcessSpawner
   platform?: NodeJS.Platform
   inheritedEnv?: NodeJS.ProcessEnv
@@ -93,22 +96,25 @@ export function spawnManagedProviderProcess(
 ): ManagedProviderProcess {
   const platform = options.platform ?? process.platform
   const closePolicy = options.policy ?? rootOnlyProviderClosePolicy
+  const stdinEndGraceMs = options.stdinEndGraceMs ?? PROVIDER_STDIN_END_GRACE_MS
   const spec = createProviderSpawnSpec(
     launch,
     options.inheritedEnv ?? processEnvWithoutAgentSession(platform),
     platform,
     {
       // Owner death must request the same close as an explicit provider close.
-      closeRequest: closePolicy(true).signalSupervisorOnClose
+      closeRequest: closePolicy(true, stdinEndGraceMs).signalSupervisorOnClose
         ? 'stdin-end-and-sigterm'
         : 'stdin-end',
+      stdinEndGraceMs,
       ...(options.lifetime ? { lifetime: options.lifetime } : {})
     }
   )
-  const policy = closePolicy(spec.supervised)
-  if (spec.supervised && !(policy.gracefulExitMs >= PROVIDER_SUPERVISOR_MAX_STOP_MS)) {
+  const policy = closePolicy(spec.supervised, stdinEndGraceMs)
+  const supervisorStopMs = providerSupervisorMaxStopMs(stdinEndGraceMs)
+  if (spec.supervised && !(policy.gracefulExitMs >= supervisorStopMs)) {
     throw new RangeError(
-      `Supervised provider graceful exit must wait at least ${PROVIDER_SUPERVISOR_MAX_STOP_MS} ms; received ${policy.gracefulExitMs} ms`
+      `Supervised provider graceful exit must wait at least ${supervisorStopMs} ms; received ${policy.gracefulExitMs} ms`
     )
   }
   const child = spawnProviderProcess(spec, options.spawnImpl)
