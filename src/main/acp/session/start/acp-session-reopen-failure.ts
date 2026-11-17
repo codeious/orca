@@ -8,6 +8,7 @@ import {
   AcpAgentError,
   AcpAuthRequiredError,
   AcpRpcError,
+  ACP_RESOURCE_NOT_FOUND,
   temporaryAcpProviderAnswer
 } from '../../transport/acp-errors'
 import type { AcpDialect } from '../../acp-dialects/acp-dialect'
@@ -16,7 +17,6 @@ import type { AcpStructuredConnection } from '../../process/acp-structured-conne
 import type { AcpStructuredLaunch } from '../../launch/acp-structured-launch-resolution'
 import { providerRequestTimeoutOf } from '../../../provider-process/provider-request-timeout'
 
-const ACP_RESOURCE_NOT_FOUND = -32002
 // Without a `cwd`, OpenCode 2.x lists every folder's sessions.
 const sessionListPage = z.object({
   sessions: z.array(z.looseObject({ sessionId: z.string(), cwd: z.string() })),

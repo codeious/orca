@@ -13,7 +13,7 @@ import {
   type AcpDialect,
   type AcpRequestPresentation
 } from '../acp-dialects/acp-dialect'
-import { AcpRpcError } from '../transport/acp-errors'
+import { AcpRpcError, JSON_RPC_INVALID_PARAMS } from '../transport/acp-errors'
 import type { ClientCapabilities } from '../generated/acp-protocol.generated'
 
 // Longer than any sign-in link; a URL the card cannot show whole is refused.
@@ -48,7 +48,7 @@ export function acpUrlElicitationPresentation(
   const parsed = urlSchema.safeParse(params)
   const url = parsed.success ? readApprovalUrl(parsed.data.url) : null
   if (!parsed.success || !url) {
-    throw new AcpRpcError(-32602, 'Unsupported ACP elicitation URL')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Unsupported ACP elicitation URL')
   }
   const { message, elicitationId } = parsed.data
   return {
@@ -78,7 +78,7 @@ export function acpUrlElicitationPresentation(
       if (response.kind === 'option' && response.optionId === URL_APPROVAL_DECLINE_OPTION_ID) {
         return answer('decline')
       }
-      throw new AcpRpcError(-32602, 'URL request answer must open or decline')
+      throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'URL request answer must open or decline')
     }
   }
 }

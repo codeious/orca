@@ -5,7 +5,7 @@ import {
 } from '../../../shared/agent-session/agent-session-question-answer'
 import type { ToolCallUpdate } from '../generated/acp-protocol.generated'
 import { readAcpPermissionRequest } from '../protocol/acp-permission-requests'
-import { AcpRpcError } from '../transport/acp-errors'
+import { AcpRpcError, JSON_RPC_INVALID_PARAMS } from '../transport/acp-errors'
 import { MAX_JOURNAL_GROUPED_PROMPT_QUESTIONS } from '../../native-chat/agent-session-journal/item-lifecycle/journal-prompt-body-bounds'
 import {
   pendingAcpResolution,
@@ -39,7 +39,7 @@ const planRequestSchema = z.object({ plan: z.string().nullish(), overview: z.str
 function questionRequest(params: unknown): AcpRequestPresentation {
   const parsed = questionRequestSchema.safeParse(params)
   if (!parsed.success) {
-    throw new AcpRpcError(-32602, 'Invalid agent question request')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid agent question request')
   }
   const questions = parsed.data.questions.map((question) => ({
     id: question.id,
@@ -65,7 +65,10 @@ function questionRequest(params: unknown): AcpRequestPresentation {
           ? response.answers
           : legacyAgentSessionQuestionAnswers(body, response.optionId)
       if (!answers || !isValidAgentSessionQuestionAnswers(questions, answers)) {
-        throw new AcpRpcError(-32602, 'Question answer must answer every offered question')
+        throw new AcpRpcError(
+          JSON_RPC_INVALID_PARAMS,
+          'Question answer must answer every offered question'
+        )
       }
       return {
         outcome: {
@@ -104,7 +107,10 @@ function fallbackQuestionRequest(params: unknown): AcpRequestPresentation | unde
       const optionId =
         response.kind === 'option' ? response.optionId : response.answers[0]?.optionIds[0]
       if (!options.some((option) => option.id === optionId)) {
-        throw new AcpRpcError(-32602, 'Question answer must select an offered option')
+        throw new AcpRpcError(
+          JSON_RPC_INVALID_PARAMS,
+          'Question answer must select an offered option'
+        )
       }
       return { outcome: { outcome: 'selected', optionId } }
     }
@@ -130,7 +136,7 @@ function settleRequest(method: string, params: unknown): AcpRequestSettlement | 
   }
   const parsed = planRequestSchema.safeParse(params)
   if (!parsed.success) {
-    throw new AcpRpcError(-32602, 'Invalid agent plan request')
+    throw new AcpRpcError(JSON_RPC_INVALID_PARAMS, 'Invalid agent plan request')
   }
   // Accepting saves Cursor's plan file and ends the turn; building waits for the next message.
   return {
