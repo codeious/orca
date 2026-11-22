@@ -1,0 +1,55 @@
+src/main/agent-hooks/installation/remote-managed-hook-installers.ts
+  s_ad00747fcb93b9::t_c31f91b6d3cf1d 30,86-90
+src/main/agent-hooks/wsl-relay/wsl-hook-fs-adapter.ts
+  s_ad00747fcb93b9::t_c53a2323067d78 68
+src/main/droid/droid-hook-config.ts
+  s_ad00747fcb93b9::t_fc47f6637d498d 1-136
+src/main/droid/droid-hook-file-remote.ts
+  s_ad00747fcb93b9::t_709ebf1a4d9bb8 1-22
+src/main/droid/droid-hook-script.ts
+  s_ad00747fcb93b9::t_18891c24c81235 1-69
+src/main/droid/droid-hook-status.ts
+  s_ad00747fcb93b9::t_80d49ce08521d3 1-86
+src/main/droid/droid-hooks-file.test-fixture.ts
+  s_ad00747fcb93b9::t_c26ea1448cbae6 1-32
+src/main/droid/droid-org-policy.ts
+  s_ad00747fcb93b9::t_3738496c0001ad 1-40
+src/main/droid/hook-service.ts
+  s_ad00747fcb93b9::t_717049ade988d4 4,9-10,12-13,15-27,30-31,34-35,38-42,44-48,51-58,60-62,64,68-73,75,79-81,83-87,92-97,99,101-115,119-124,126-128,130-132,134-135,137-149,153-158,161,166-168,170-178
+src/shared/agent-hook-listener/transport/agent-hook-policy-read-paths.ts
+  s_ad00747fcb93b9::t_979ea6e3871011 1-10
+src/shared/droid/droid-org-settings-path.ts
+  s_ad00747fcb93b9::t_f446afa6f88716 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "62cea38ad158e50ea9a2389fd559247851da5451",
+  "prompts": {},
+  "sessions": {
+    "s_7a3a75c75e164c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5d5c18c1-6928-4660-b797-f1dff9254b1d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ad00747fcb93b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "76dd52ab-a5b9-4faa-8d3f-2f25a389af4b",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d98921461d61e0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "de1bc950-75d7-4fa8-94d4-60268c9ca201",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
