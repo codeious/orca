@@ -1,0 +1,19 @@
+config/main-blocking-helper-baseline.txt
+  s_eb67de07542299::t_4d0537da2938be 1520,1527-1529
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a27bd51fb39d3756a4c0112ebd9cbaf6fde90986",
+  "prompts": {},
+  "sessions": {
+    "s_eb67de07542299": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5050d015-16f4-493e-a0ee-4c8343d5e4eb",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

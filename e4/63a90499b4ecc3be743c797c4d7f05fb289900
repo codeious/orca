@@ -1,0 +1,52 @@
+src/shared/agent-hook-listener/transport/agent-hook-policy-read-paths.ts
+  s_ad00747fcb93b9::t_979ea6e3871011 1-10
+src/main/droid/droid-hooks-file.test-fixture.ts
+  s_ad00747fcb93b9::t_c26ea1448cbae6 1-32
+src/main/droid/droid-hook-script.ts
+  s_9915298ad8a882::t_2877b4912cd6e9 27
+  s_ad00747fcb93b9::t_18891c24c81235 1-26,28-69
+src/main/droid/droid-hook-config.ts
+  s_ad00747fcb93b9::t_fc47f6637d498d 1-36,39-41,59-88,93-95,97-151,153-156
+src/main/droid/droid-org-policy.ts
+  s_ad00747fcb93b9::t_3738496c0001ad 1,2,5-8,10-21,36-37,39-40,42,45,47-48
+src/shared/droid/droid-org-settings-path.ts
+  s_ad00747fcb93b9::t_f446afa6f88716 1-2
+src/main/droid/droid-hook-status.ts
+  s_ad00747fcb93b9::t_80d49ce08521d3 1-3,6-7,9-13,15,19-43,45-55,59-61,63-89
+src/main/agent-hooks/installation/remote-managed-hook-installers.ts
+  s_ad00747fcb93b9::t_c31f91b6d3cf1d 30,86-90
+src/main/droid/droid-hook-file-remote.ts
+  s_ad00747fcb93b9::t_709ebf1a4d9bb8 1,2-5,24,26-28,35,38,40
+src/main/agent-hooks/wsl-relay/wsl-hook-fs-adapter.ts
+  s_ad00747fcb93b9::t_c53a2323067d78 68
+src/main/droid/hook-service.ts
+  s_ad00747fcb93b9::t_717049ade988d4 4,10-11,18,21-28,35-36,68,73,82,85-86,109-114,116,124-126,137-138,140-141,143,145,149,151-156,158,160,164-169,176-177,179-180,213,223-227,229-230
+src/main/droid/hook-service.test.ts
+  s_9915298ad8a882::t_5afb3bc44d0295 2-5,7-82,116-129
+src/wsl-guest/commands/wsl-hook-fs-bridge.ts
+  s_9915298ad8a882::t_10e65b2d828396 6,60-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e463a90499b4ecc3be743c797c4d7f05fb289900",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ad00747fcb93b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "76dd52ab-a5b9-4faa-8d3f-2f25a389af4b",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
