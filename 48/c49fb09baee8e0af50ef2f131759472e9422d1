@@ -1,0 +1,14 @@
+src/wsl-guest/agent-hooks/presence/relay-agent-presence.ts
+  h_476903bd8a47d9 52-56,63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "48c49fb09baee8e0af50ef2f131759472e9422d1",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
