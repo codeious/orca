@@ -1,0 +1,19 @@
+src/main/acp/options/acp-structured-options.ts
+  s_4d566b9688ce31::t_d93a5375651d0c 1,48,52-53,248,323
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "80ee86cfa8c9955933a0548332dfef8aadc545d6",
+  "prompts": {},
+  "sessions": {
+    "s_4d566b9688ce31": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "92a3f17a-0322-476c-8dd3-dc10077845f4",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
