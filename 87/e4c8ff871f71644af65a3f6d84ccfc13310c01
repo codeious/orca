@@ -1,0 +1,54 @@
+src/main/acp/options/acp-structured-options.ts
+  s_4d566b9688ce31::t_d93a5375651d0c 1,48,52-53,248,323
+src/shared/agent-hook-listener/providers/claude/background-tasks/claude-owed-notification-expiry-timers.ts
+  h_476903bd8a47d9 13-16
+src/main/droid/droid-hook-config.ts
+  s_9915298ad8a882::t_e0cd759258a403 38-39,43-59,90-93,97,153
+src/main/droid/hook-service.test.ts
+  s_9915298ad8a882::t_5c74358470eeef 1,6,83-115
+src/main/droid/hook-service.ts
+  s_9915298ad8a882::t_f3b1039d1fbdfe 8,12-16,19-20,29,31-32,39-56,58-67,69-72,74-75,78-81,84,88-105,120-122,127-132,139,146-148,150,157,159,170-173,175,182-209,211,218-220,222,228,231
+src/wsl-guest/agent-hooks/results/agent-hook-result-retry-scheduler.ts
+  s_5f09013adba190::t_7e4d25321f9aa2 28,104-107
+src/wsl-guest/agent-hooks/presence/relay-agent-presence.ts
+  h_476903bd8a47d9 52-56,63
+src/main/acp/session/acp-structured-session-adapter.ts
+  s_9915298ad8a882::t_eb432324858d3d 29-30,228-235
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "87e4c8ff871f71644af65a3f6d84ccfc13310c01",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_4d566b9688ce31": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "92a3f17a-0322-476c-8dd3-dc10077845f4",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_5f09013adba190": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2e4afbb2-f695-416c-a1f8-df437d4387e8",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
