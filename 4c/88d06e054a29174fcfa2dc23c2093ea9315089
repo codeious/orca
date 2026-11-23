@@ -1,0 +1,19 @@
+src/wsl-guest/agent-hooks/results/agent-hook-result-retry-scheduler.ts
+  s_5f09013adba190::t_7e4d25321f9aa2 28,104-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4c88d06e054a29174fcfa2dc23c2093ea9315089",
+  "prompts": {},
+  "sessions": {
+    "s_5f09013adba190": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2e4afbb2-f695-416c-a1f8-df437d4387e8",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
