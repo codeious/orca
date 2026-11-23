@@ -1,0 +1,14 @@
+src/shared/agent-hook-listener/providers/claude/background-tasks/claude-owed-notification-expiry-timers.ts
+  h_476903bd8a47d9 13-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "150aecac89e1bc50cbee8503d9b542264bcd7e81",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
