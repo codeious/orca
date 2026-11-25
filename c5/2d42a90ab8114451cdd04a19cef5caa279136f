@@ -1,0 +1,36 @@
+src/renderer/src/components/new-workspace/source-search/smart-workspace-github-direct-link.ts
+  h_476903bd8a47d9 50,59-62
+src/renderer/src/components/sidebar/workspace-card/details/WorktreeCardMeta.tsx
+  h_476903bd8a47d9 137-145,227-228
+src/renderer/src/components/sidebar/workspace-card/metadata/WorktreeLinkedItemRow.tsx
+  h_476903bd8a47d9 30
+src/renderer/src/components/sidebar/workspace-card/metadata/worktree-attachment-editing.ts
+  h_476903bd8a47d9 13,17,148-151,279
+src/renderer/src/components/sidebar/workspace-card/review/WorkspaceAttachmentSearch.tsx
+  h_476903bd8a47d9 286
+src/renderer/src/components/sidebar/workspace-card/review/WorktreeCardLinkedItemsSection.tsx
+  h_476903bd8a47d9 132
+src/renderer/src/components/sidebar/workspace-card/review/WorktreeCardTaskDetailSection.tsx
+  h_476903bd8a47d9 42-43,157,166,179
+src/renderer/src/components/sidebar/workspace-card/review/workspace-attachment-source-label.ts
+  h_476903bd8a47d9 55,57,59
+src/renderer/src/lib/work-items/github/github-work-item-workspace-attachment.ts
+  h_476903bd8a47d9 2,88
+src/renderer/src/lib/work-items/github/smart-github-submit.ts
+  h_476903bd8a47d9 12-16,223
+src/shared/github/repositories/github-issue-reference.ts
+  h_476903bd8a47d9 4-7,20-35
+src/shared/workspace-attachments/workspace-attachment-normalization.ts
+  h_476903bd8a47d9 13,142-152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c52d42a90ab8114451cdd04a19cef5caa279136f",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
