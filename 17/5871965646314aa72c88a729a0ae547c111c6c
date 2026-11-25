@@ -1,0 +1,19 @@
+src/shared/github/repositories/repository-slug.ts
+  s_4b8255edb6563e::t_da0c1e93b22848 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "175871965646314aa72c88a729a0ae547c111c6c",
+  "prompts": {},
+  "sessions": {
+    "s_4b8255edb6563e": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2207939b-86dc-41e4-89c1-38484e392665",
+        "model": "custom:gpt-6.2-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

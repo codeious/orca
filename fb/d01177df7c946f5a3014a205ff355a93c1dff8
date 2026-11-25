@@ -1,0 +1,25 @@
+src/renderer/src/components/settings/repository/RepositoryGitHubIssueSection.tsx
+  s_61cb09a0a69d7b::t_0676021774b134 1-138
+src/renderer/src/components/settings/repository/RepositoryPane.tsx
+  s_61cb09a0a69d7b::t_c7016d61ff9103 46,145-149,295,297-302,304-306
+src/shared/rpc-contract/projects/repo-update-params.test.ts
+  s_61cb09a0a69d7b::t_ec7ac22a5541c3 1-19
+src/shared/rpc-contract/projects/repo-update-params.ts
+  s_61cb09a0a69d7b::t_164fd655b64a48 6,49-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fbd01177df7c946f5a3014a205ff355a93c1dff8",
+  "prompts": {},
+  "sessions": {
+    "s_61cb09a0a69d7b": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d171f6ab-1fc9-408a-b400-f57f3ab4c194",
+        "model": "custom:gpt-6.2-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

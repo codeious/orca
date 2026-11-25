@@ -1,0 +1,21 @@
+src/renderer/src/components/github-item-dialog/discuss-item/conversation-tab.tsx
+  s_1119e8b6f5d041::t_4e52d01326ebb4 298
+src/renderer/src/components/pull-request-page/conversation/tab.tsx
+  s_1119e8b6f5d041::t_d844507eebe323 171-173,176,295
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "321464ec43ec721421d586bee2851dad4d6dd868",
+  "prompts": {},
+  "sessions": {
+    "s_1119e8b6f5d041": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7fa00941-12ab-4443-b730-590b575617e2",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

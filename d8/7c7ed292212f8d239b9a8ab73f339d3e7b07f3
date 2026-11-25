@@ -1,0 +1,29 @@
+src/main/github/client/fetch/get-work-item.ts
+  s_146fe162b20e72::t_95d5cedf4c7d55 158-159,167
+src/main/github/project-view/project-argument-validation.ts
+  s_1119e8b6f5d041::t_6c69bffe5184d4 3,5,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d87c7ed292212f8d239b9a8ab73f339d3e7b07f3",
+  "prompts": {},
+  "sessions": {
+    "s_1119e8b6f5d041": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7fa00941-12ab-4443-b730-590b575617e2",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_146fe162b20e72": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5b108243-dc52-431c-ab07-416abc2ff20a",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

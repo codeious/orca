@@ -1,0 +1,57 @@
+mobile/src/session/native-chat/links/use-mobile-native-chat-markdown-links.ts
+  s_146fe162b20e72::t_d5b5732354487b 94
+src/main/ipc/repos/repo-update-handler.ts
+  s_146fe162b20e72::t_720513a95889c8 57
+src/main/persistence/tracking-repos/repo-hydration.ts
+  s_146fe162b20e72::t_ee377951c26955 44,60,88
+src/main/persistence/tracking-repos/repo-sanitization.ts
+  s_146fe162b20e72::t_bb4dcb9f437958 87,108-109,111,113
+src/main/persistence/tracking-repos/repo-update-operations.ts
+  s_146fe162b20e72::t_2fed9dc8aece5e 110
+src/main/runtime/repositories/runtime-repository-settings-controller.ts
+  s_146fe162b20e72::t_4aa6d898ccef20 50
+src/preload/api/projects/repository-api.ts
+  s_146fe162b20e72::t_6b31e89cc33e6b 71
+src/renderer/src/components/settings/repository/RepositoryGitHubIssueSection.tsx
+  s_146fe162b20e72::t_11e5e4fd6f6b09 32,41,49,74-75
+src/renderer/src/components/sidebar/workspace-card/metadata/worktree-attachment-editing.ts
+  s_146fe162b20e72::t_f1f8aa01e8aabb 152-153
+src/renderer/src/hooks/composer-state/linked-work-items/github-submit-resolution.ts
+  s_146fe162b20e72::t_efd5a4c10237b7 193
+src/renderer/src/lib/work-items/github/smart-github-submit.ts
+  s_146fe162b20e72::t_e3aa84e6944bf0 216-217,227
+src/renderer/src/store/repos/repo-state.ts
+  s_146fe162b20e72::t_86a95190493512 66
+src/renderer/src/store/repos/repo-update.ts
+  s_146fe162b20e72::t_a8135c0fb1bdc9 154
+src/shared/github/markdown/github-reference-links.test.ts
+  s_146fe162b20e72::t_15aec839301e55 7
+src/shared/github/markdown/github-reference-links.ts
+  s_146fe162b20e72::t_81a7229555381d 25,28-29
+src/shared/github/repositories/github-issue-reference.test.ts
+  s_146fe162b20e72::t_6fed32f2e027fb 21,45,63
+src/shared/github/repositories/github-issue-reference.ts
+  s_146fe162b20e72::t_b7bbef14e37f08 13,97
+src/shared/repository/repo-types.ts
+  s_146fe162b20e72::t_3ab7aa2c50950a 70
+src/shared/rpc-contract/projects/repo-update-params.test.ts
+  s_146fe162b20e72::t_b2f74d4c7baa6d 5,8,13,18-21
+src/shared/rpc-contract/projects/repo-update-params.ts
+  s_146fe162b20e72::t_eaa9512d851a2f 68,107-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "329b890a97b89639a4f2a6554ab9e3408e247391",
+  "prompts": {},
+  "sessions": {
+    "s_146fe162b20e72": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5b108243-dc52-431c-ab07-416abc2ff20a",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
