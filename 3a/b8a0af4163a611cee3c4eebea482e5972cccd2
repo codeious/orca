@@ -1,0 +1,29 @@
+src/shared/github/repositories/github-issue-reference.test.ts
+  s_1119e8b6f5d041::t_4c709add198cc7 34-39,86-87,89
+src/shared/rpc-contract/projects/repo-update-params.ts
+  s_146fe162b20e72::t_30a19e0629ad32 49-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3ab8a0af4163a611cee3c4eebea482e5972cccd2",
+  "prompts": {},
+  "sessions": {
+    "s_1119e8b6f5d041": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7fa00941-12ab-4443-b730-590b575617e2",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_146fe162b20e72": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5b108243-dc52-431c-ab07-416abc2ff20a",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
