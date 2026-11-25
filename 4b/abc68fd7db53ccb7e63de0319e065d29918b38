@@ -1,0 +1,36 @@
+src/renderer/src/components/settings/ChatSettingsSection.tsx
+  s_523078ea2e2274::t_ae331a68cb5c42 10
+  s_523078ea2e2274::t_cbb83379ae3833 38
+src/renderer/src/hooks/useSettingsNavigationMetadata.agent-launch-mode.test.tsx
+  s_523078ea2e2274::t_3a725d050a7269 1-59
+src/renderer/src/components/tab-bar/tab-agent-types-by-tab-id.launch-mode.test.ts
+  s_523078ea2e2274::t_266d026a37e5ac 4,10,19,28
+  s_523078ea2e2274::t_8147fb6bf8a9b5 1-3,5-9,11-18,20-27,29-31
+  s_523078ea2e2274::t_8952f3c0c25c35 32-33
+src/renderer/src/components/settings/ChatSettingsSection.agent-launch-mode.test.tsx
+  s_523078ea2e2274::t_52c43e474efa2e 1-53
+src/renderer/src/hooks/useSettingsNavigationMetadata.ts
+  s_523078ea2e2274::t_d1391603d93371 126
+  s_523078ea2e2274::t_8c2ef05120a3c6 26
+src/renderer/src/components/tab-bar/tab-agent-types-by-tab-id.ts
+  s_523078ea2e2274::t_3aaec402dfd5f5 143
+  s_523078ea2e2274::t_0abdba78bd229c 4-6
+  s_523078ea2e2274::t_482c65e5dd1f14 21
+  s_523078ea2e2274::t_73727b96cabb3c 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4babc68fd7db53ccb7e63de0319e065d29918b38",
+  "prompts": {},
+  "sessions": {
+    "s_523078ea2e2274": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5349094e-5431-4287-9aa5-0e6e2938419d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

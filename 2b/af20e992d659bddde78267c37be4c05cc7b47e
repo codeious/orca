@@ -1,0 +1,59 @@
+src/main/droid/droid-bug-report.test.ts
+  s_212bc5d9899c88::t_5ea40f0315b4c5 1-60
+src/main/droid/droid-host-commands.ts
+  s_212bc5d9899c88::t_67e09b10cb7ade 6,59-75,119-120
+src/main/droid/droid-session-adapter.test.ts
+  s_212bc5d9899c88::t_52672cc7b8fb5b 613,615-617
+src/main/runtime/agent-session-record-store-session-switch.test.ts
+  s_858fce49eaa5e3::t_16ed2006f158ec 4-5,7,9-14,27-44,53,57-61,64,81-95,98-124,126-142,144-162,164-297
+src/renderer/src/components/native-chat/droid-commands.test.ts
+  s_212bc5d9899c88::t_4e11cb3a9cad17 9,19-61
+src/renderer/src/components/native-chat/droid-commands.ts
+  s_212bc5d9899c88::t_073160dd72d0d3 10-14
+src/renderer/src/components/native-chat/use-droid-bug-command.test.tsx
+  s_212bc5d9899c88::t_c7b82bf8e753e5 1-66
+src/renderer/src/components/native-chat/use-droid-bug-command.ts
+  s_212bc5d9899c88::t_62090e7b747afe 1-104
+src/renderer/src/components/native-chat/use-droid-session-commands.test.tsx
+  s_212bc5d9899c88::t_d85629003cc3da 4-5,15-17,20-22,68-82,400-435
+src/renderer/src/lib/droid-chat-session-switch.test.ts
+  s_858fce49eaa5e3::t_5b8cef4f7ba9ce 12,215-254
+src/shared/agent-session-journal-schemas.test.ts
+  s_212bc5d9899c88::t_169058601bf5ce 116-170
+src/shared/rpc-contract/structured-agent-session-droid-command-params.ts
+  s_212bc5d9899c88::t_132909d3034059 5,80-85
+src/shared/structured-agent-session-composer.test.ts
+  s_438f0ea7fa926f::t_c9f24ed24528fd 105-113,351-396
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2baf20e992d659bddde78267c37be4c05cc7b47e",
+  "prompts": {},
+  "sessions": {
+    "s_212bc5d9899c88": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "6da759ad-3217-4eb7-9f99-f21a969d006c",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_438f0ea7fa926f": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5ec4b929-b4a0-4062-a731-5fd011674968",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_858fce49eaa5e3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "088ce064-482d-46fe-b615-5b15be13dd03",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

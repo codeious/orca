@@ -1,0 +1,26 @@
+research/droid-mission-interrupt.md
+  s_c1134de1998cef::t_1acc88aa06ba34 45,47
+  s_c1134de1998cef::t_f34680d4c0badd 74-75
+  s_c1134de1998cef::t_37bf3bc8883465 1-44,46,48-59,61-66,68,70-73,76-99,104-133
+  s_c1134de1998cef::t_7bb56ca6a953b0 60
+  s_c1134de1998cef::t_d8a5d4744c8e85 67
+  s_c1134de1998cef::t_f9a3b6d2153fc7 103
+  s_c1134de1998cef::t_a38d832a0f844f 69
+  s_c1134de1998cef::t_98441af02a36b4 100-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0b858276f5d45feec65b331a9d75a4872a04f421",
+  "prompts": {},
+  "sessions": {
+    "s_c1134de1998cef": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d55b5782-90d1-40f8-a12c-993f1caef77f",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

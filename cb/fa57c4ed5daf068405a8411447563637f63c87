@@ -1,0 +1,19 @@
+src/main/runtime/rpc/methods/structured-agent-session-mobile-options.test.ts
+  s_435fd5999f37df::t_c94a2a1991b76e 1-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cbfa57c4ed5daf068405a8411447563637f63c87",
+  "prompts": {},
+  "sessions": {
+    "s_435fd5999f37df": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "021b859a-bedb-4a26-8206-e76f034baaaf",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

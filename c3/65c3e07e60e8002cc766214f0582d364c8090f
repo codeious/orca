@@ -1,0 +1,27 @@
+src/main/native-chat/transcript-line-decoders-droid.ts
+  s_f87fd4e7a08936::t_4234c1d20ca50d 1-42
+  s_f87fd4e7a08936::t_fdd947f3b21923 43-47
+src/main/ai-vault/session-scanner-droid-parser.ts
+  s_f87fd4e7a08936::t_94e64d688d4d06 135
+  s_f87fd4e7a08936::t_1bbb443bbbf387 15
+src/main/droid/droid-message-visibility.ts
+  s_f87fd4e7a08936::t_37e04479f0ae2a 1-5
+src/main/native-chat/transcript-line-decoders-droid.test.ts
+  s_f87fd4e7a08936::t_58f6606e087aed 1-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c365c3e07e60e8002cc766214f0582d364c8090f",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

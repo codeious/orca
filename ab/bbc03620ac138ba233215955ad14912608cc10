@@ -1,0 +1,14 @@
+research/droid-mission-hooks.md
+  h_476903bd8a47d9 1-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "abbbc03620ac138ba233215955ad14912608cc10",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

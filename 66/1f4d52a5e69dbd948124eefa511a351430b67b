@@ -1,0 +1,21 @@
+src/main/acp/acp-dialects/grok-background-task-stop.ts
+  s_08b0ae162f26b9::t_45214ea247ddbf 1
+src/main/acp/acp-dialects/grok-subagent-stop.ts
+  s_08b0ae162f26b9::t_0c1d282ad0f84d 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "661f4d52a5e69dbd948124eefa511a351430b67b",
+  "prompts": {},
+  "sessions": {
+    "s_08b0ae162f26b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e241a5ba-8a2f-49df-8b78-33914687abfa",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

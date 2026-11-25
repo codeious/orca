@@ -1,0 +1,40 @@
+src/main/acp/acp-peer-dialect.ts
+  s_48f15c05ff9afa::t_bb08b5fd05fa63 1-59
+src/main/acp/acp-rpc-envelope.ts
+  s_48f15c05ff9afa::t_fb486d54e8bd9b 2,19-25,29,31-32,37-38,41
+src/main/acp/acp-json-rpc-peer-dialect.test.ts
+  s_48f15c05ff9afa::t_e645af92c2be6d 89-91
+  s_48f15c05ff9afa::t_81592e26d2aba7 1-88,92-167,169-206
+  s_48f15c05ff9afa::t_06e3599312dfc5 168
+src/main/acp/acp-incoming-requests.ts
+  s_48f15c05ff9afa::t_4c637d946be328 3
+  s_48f15c05ff9afa::t_38d48831327745 46,50
+  s_48f15c05ff9afa::t_38f03222ee5255 73
+  s_48f15c05ff9afa::t_bf9854e9b8ce63 20-21
+src/main/acp/acp-json-rpc-peer.ts
+  s_48f15c05ff9afa::t_40b5a5e2a5ae25 129,131-132,139
+  s_48f15c05ff9afa::t_a8d463dfc5f468 253-258,260-263,266,275,285,290-291
+  s_48f15c05ff9afa::t_c454b7b657a797 165,170
+  s_48f15c05ff9afa::t_ae9c0dff7df210 10-12,14
+  s_48f15c05ff9afa::t_1b6aa2b19ed080 33,35
+  s_48f15c05ff9afa::t_3233dced6ff927 234,240
+  s_48f15c05ff9afa::t_6e3684b52cbc54 50-51,59-66,73-74,80,86,292
+  s_48f15c05ff9afa::t_73c40fe53e8a77 113,119
+  s_48f15c05ff9afa::t_8fb00a5ff67b6a 296,305
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f1580db9b86ade59a0324cbd55633b42ccfc6e81",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

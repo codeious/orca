@@ -1,0 +1,136 @@
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.ts
+  s_767cf5531d83f7::t_2ab86c69d341bb 1-9,11,13-22,25-58,61-62
+src/main/window/createMainWindow-droid-composer-focus-shortcuts.test.ts
+  s_767cf5531d83f7::t_59934912736562 1-219
+src/main/jsonl-rpc/session-adapter.ts
+  s_767cf5531d83f7::t_e09e0faf869631 13
+src/renderer/src/components/native-chat/use-native-chat-composer-send-routes.ts
+  s_767cf5531d83f7::t_bc1d80587e4980 1-15
+src/main/droid/droid-configured-default.test.ts
+  s_767cf5531d83f7::t_19c309b4e1faa7 1
+src/renderer/src/components/native-chat/use-native-chat-droid-turn-keys.test.tsx
+  s_767cf5531d83f7::t_a627f7a568b24d 1-169
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_c3c5fe8bbb7f52::t_972d46ebd708ae 2,11,44-48,105-113
+src/main/droid/droid-model-catalog-probe.ts
+  s_767cf5531d83f7::t_5791c5a6d8a616 5
+src/main/ipc/runtime-environment-mcp-sign-in-call-routing.test.ts
+  s_767cf5531d83f7::t_48b79883e9e2c1 81
+src/renderer/src/components/native-chat/native-chat-selected-text.ts
+  s_767cf5531d83f7::t_7322941b715613 1-36
+src/shared/native-chat-approval-notes.ts
+  s_767cf5531d83f7::t_f5f5d43d01c24b 2-5
+src/main/droid/droid-session-commands.test.ts
+  s_767cf5531d83f7::t_91745bf1feddb8 34-58
+src/renderer/src/components/native-chat/NativeChatApprovalCard.notes.test.tsx
+  s_767cf5531d83f7::t_806a9c3f6922d0 10
+src/shared/agent-session/view/structured-agent-session-composer.ts
+  s_767cf5531d83f7::t_bc3ab08c2a5ab7 1
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown.ts
+  s_767cf5531d83f7::t_1092a9465a1a2f 1-7,28-29,52-53,72,126-134,142-168,171-174,193,228,235
+src/renderer/src/components/native-chat/native-chat-selected-text.test.tsx
+  s_767cf5531d83f7::t_2ba538692d017a 1-72
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.test.tsx
+  s_767cf5531d83f7::t_7862a59c6f9c7e 1-127
+src/renderer/src/components/native-chat/NativeChatComposer.droid-turn-keys.test.tsx
+  s_767cf5531d83f7::t_50505ec13588d1 1-422
+src/renderer/src/components/native-chat/NativeChatApprovalNotes.tsx
+  s_767cf5531d83f7::t_784bb527717b52 9
+src/renderer/src/components/native-chat/use-structured-chat-approval.ts
+  s_767cf5531d83f7::t_6f0d724f786d67 7
+src/main/ipc/runtime-environments/runtime-environment-mcp-sign-in-routing.ts
+  s_767cf5531d83f7::t_d1e21ece8c00e9 38-39
+  s_767cf5531d83f7::t_b3166b9c704cd0 35-37
+src/main/droid/droid-structured-launch-resolution.ts
+  s_767cf5531d83f7::t_805c82cfbd3778 7,10
+src/main/droid/droid-launch-resolution.ts
+  s_0ea6d99759c7f0::t_bb738e6ff9cbd7 2-5
+src/main/droid/droid-text-command.ts
+  s_0ea6d99759c7f0::t_152cbd59fdcc2b 5,45-46
+src/main/ipc/runtime-environments/runtime-environment-connectivity-handlers.ts
+  s_0ea6d99759c7f0::t_4c014446b80dab 255
+src/main/ipc/runtime-environments/runtime-environment-subscription-handlers.ts
+  s_0ea6d99759c7f0::t_05dc2671c63386 1-2,8,16,29-33,35,39,46,58,204,210,230-235,255-261,265-268
+src/main/native-chat/agent-session-wire/structured-agent-session-host.ts
+  s_0ea6d99759c7f0::t_0f9386eaaab05d 56,76,165-166,175,179,257,335-336,352
+src/main/runtime/rpc/methods/structured-agent-session-sleep-workspace.ts
+  s_0ea6d99759c7f0::t_b7d8604b31afaa 1-57
+src/main/window/createMainWindow-renderer-crash-recovery.test.ts
+  s_0ea6d99759c7f0::t_4cb5dd5b22db7f 71
+src/main/window/createMainWindow-startup-reveal.test.ts
+  s_0ea6d99759c7f0::t_b92552d1bd4eae 60
+src/main/window/droid-composer-focus-mirror.ts
+  s_0ea6d99759c7f0::t_56744553165b50 1-40
+src/main/window/main-window-focus-lifecycle.ts
+  s_0ea6d99759c7f0::t_9c7acf334abb4f 30,37,55,144,301,320
+src/main/window/main-window-shortcut-routing.ts
+  s_0ea6d99759c7f0::t_13eac79577bc9d 24,118-120
+src/preload/api/ui-bridge-clipboard-and-window-controls.ts
+  s_0ea6d99759c7f0::t_06125e06fd3073 146-148
+src/preload/api/ui-window-api.ts
+  s_0ea6d99759c7f0::t_3435eb6deb99b0 55
+src/renderer/src/components/native-chat/NativeChatComposerField.tsx
+  s_0ea6d99759c7f0::t_de8bfffd5b582b 344
+src/renderer/src/components/native-chat/NativeChatComposerPane.tsx
+  s_0ea6d99759c7f0::t_363d0a61433b58 23-24,252,256,258-259,266,314-330
+src/renderer/src/components/native-chat/NativeChatInterruptedContinue.test.tsx
+  s_0ea6d99759c7f0::t_d5a199d2701671 41-42
+src/renderer/src/components/native-chat/NativeChatPromptEditor.tsx
+  s_0ea6d99759c7f0::t_d8dd88a98493ab 40,56,69,408
+src/renderer/src/components/native-chat/NativeChatStructuredSession.tsx
+  s_0ea6d99759c7f0::t_f3e91fcd221d0c 51,101,186
+src/renderer/src/components/native-chat/native-chat-composer-input.ts
+  s_0ea6d99759c7f0::t_c6625f211858f8 29-32,38
+src/renderer/src/components/native-chat/use-droid-composer-focus-mirror.test.tsx
+  s_0ea6d99759c7f0::t_d3e74dad40c982 1-104
+src/renderer/src/components/native-chat/use-droid-composer-focus-mirror.ts
+  s_0ea6d99759c7f0::t_4244b38849f4be 1-65
+src/renderer/src/components/native-chat/use-native-chat-composer-droid-keys.ts
+  s_0ea6d99759c7f0::t_039d0734f53481 1-64
+src/renderer/src/components/native-chat/use-native-chat-droid-turn-keys.ts
+  s_0ea6d99759c7f0::t_7a35b69c731a61 1-78
+src/renderer/src/components/native-chat/use-structured-native-chat-pane-commands.tsx
+  s_0ea6d99759c7f0::t_5b632728ec4941 19-20,93-100,128
+src/renderer/src/web/preload-api/web-ui-api.ts
+  s_0ea6d99759c7f0::t_6b0d0b97a86198 2,299
+src/renderer/src/web/preload-api/web-window-focus-api.ts
+  s_0ea6d99759c7f0::t_26d0aa929737ae 1-20
+src/shared/droid-composer-key-help.ts
+  s_0ea6d99759c7f0::t_6481ba619ea9bd 1-36
+src/shared/droid-composer-keys.ts
+  s_0ea6d99759c7f0::t_35ecc67ab242c1 1-51
+src/shared/non-droid-composer-key-agents.test-fixture.ts
+  s_0ea6d99759c7f0::t_33fd3c5cabaf4d 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0ab806782d1fc6093beb42f1e0619e692d189ac4",
+  "prompts": {},
+  "sessions": {
+    "s_0ea6d99759c7f0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "72ecfb7b-c0a0-4219-94dd-f230e9627ca5",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_c3c5fe8bbb7f52": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "12d0e2e5-b786-47df-b094-f55dfe781c28",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+src/renderer/src/components/right-sidebar/ai-vault-droid-holding-terminal.test.ts
+  s_f87fd4e7a08936::t_d0732dde0a2f06 1-96
+  s_f87fd4e7a08936::t_df71f684b90b01 97-105
+src/renderer/src/components/right-sidebar/ai-vault-droid-holding-terminal.ts
+  s_f87fd4e7a08936::t_3c5afea5a9af59 1-27
+src/renderer/src/components/right-sidebar/ai-vault-original-pane.ts
+  s_f87fd4e7a08936::t_812686aecf3a15 144
+  s_f87fd4e7a08936::t_386783bcf781df 125
+  s_f87fd4e7a08936::t_3cb49b7fa8c1f1 27-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "019426a0a62b04937505e4bcf22bffc29b483450",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

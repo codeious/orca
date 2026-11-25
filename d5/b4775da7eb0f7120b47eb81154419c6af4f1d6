@@ -1,0 +1,58 @@
+src/main/droid/droid-session-adapter.test.ts
+  s_d5b497a0ac2ffd::t_8f05e6bbac379d 449
+src/main/droid/droid-session-notifications.ts
+  s_d5b497a0ac2ffd::t_1abe3a7cd1bf29 53-57
+src/shared/agent-session-journal-item-key.ts
+  s_d5b497a0ac2ffd::t_566ba95feb8574 203
+  s_d5b497a0ac2ffd::t_5f4400e7d7f294 201-202
+  s_d5b497a0ac2ffd::t_d733d16a4952e2 145-147
+src/main/native-chat/agent-session-journal/journal-item-identity.test.ts
+  s_d5b497a0ac2ffd::t_d17fff863ee025 114-123
+src/main/droid/droid-steering.test.ts
+  s_d5b497a0ac2ffd::t_627e84d6900f55 302-350,360-375,377
+  s_d5b497a0ac2ffd::t_0568024132c9f0 376
+  s_d5b497a0ac2ffd::t_29990e813b1c9e 168
+  s_d5b497a0ac2ffd::t_46a2773532bb9f 351-359
+  s_d5b497a0ac2ffd::t_0f1de6ef508350 116
+  s_d5b497a0ac2ffd::t_22b765aa17ae13 53-56
+  s_d5b497a0ac2ffd::t_b5f1798a5e3faa 180-202
+  s_d5b497a0ac2ffd::t_257ed6de87d908 159
+  s_d5b497a0ac2ffd::t_2acd3a7c625efd 1-52,57-115,117-138,140-158,160-167,169-179,203-237,239-301,378
+  s_d5b497a0ac2ffd::t_2f77108dbf99d0 139
+  s_d5b497a0ac2ffd::t_872bc771817279 238
+src/shared/agent-session-journal-types.ts
+  s_d5b497a0ac2ffd::t_618691e627dfe2 79-80
+src/main/droid/droid-turns.ts
+  s_d5b497a0ac2ffd::t_92ba037844d86a 4
+  s_d5b497a0ac2ffd::t_4013b38196f63b 260
+  s_d5b497a0ac2ffd::t_cb783b3a9620f2 179,183-188,190-202,205,272
+  s_d5b497a0ac2ffd::t_d073e44f186c6e 261,264-265,267-271
+  s_d5b497a0ac2ffd::t_86ee1c58102518 165
+  s_d5b497a0ac2ffd::t_33e68e349a6d01 189
+  s_d5b497a0ac2ffd::t_7c7522a9378151 22-24
+  s_d5b497a0ac2ffd::t_cd3cad45b3e0f8 88,90-93,95
+  s_d5b497a0ac2ffd::t_2b29a1468b3809 86-87,89
+  s_d5b497a0ac2ffd::t_f1935ce60f8ad4 131-133
+  s_d5b497a0ac2ffd::t_2eb32a54f4e53a 266
+src/main/droid/droid-session.ts
+  s_d5b497a0ac2ffd::t_e34ca73b45dbe9 91-93,96-98,100,107-112
+  s_d5b497a0ac2ffd::t_9deb52b7521a44 63
+src/main/droid/__fixtures__/end-of-turn-interrupt.jsonl
+  s_d5b497a0ac2ffd::t_69c60d5e8b7178 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d5b4775da7eb0f7120b47eb81154419c6af4f1d6",
+  "prompts": {},
+  "sessions": {
+    "s_d5b497a0ac2ffd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "297a2ab9-a21a-4b05-a5dd-22e731673026",
+        "model": "custom:grok-4.7"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

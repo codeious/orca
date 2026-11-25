@@ -1,0 +1,32 @@
+src/main/droid/droid-hook-config.ts
+  s_b463b9de342d45::t_b3325d1a5d95f6 30-32
+src/main/agent-hooks/posix-hook-command.ts
+  s_b463b9de342d45::t_7cd6c7ea37dd9d 12,19-20
+src/main/droid/droid-hook-script.test.ts
+  s_b463b9de342d45::t_27dbb7ac350c46 1-68
+src/main/droid/droid-hook-script.ts
+  s_b463b9de342d45::t_bbe38ca818597c 8-10
+  s_b463b9de342d45::t_c46cf41046271b 39
+  s_b463b9de342d45::t_e6e1dd76527f29 82
+  s_b463b9de342d45::t_958e9119338e1e 59
+  s_b463b9de342d45::t_ca4c25dd3f27a6 7
+src/main/droid/hook-service.test.ts
+  s_b463b9de342d45::t_fc3d901e5b3c64 95
+  s_b463b9de342d45::t_7991507527d21b 187,192
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9be567c84d133c1447de84a9706c5991d05a6b27",
+  "prompts": {},
+  "sessions": {
+    "s_b463b9de342d45": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4c6c14be-bf67-4a08-a792-dd7eca09971c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

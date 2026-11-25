@@ -1,0 +1,22 @@
+src/main/droid/droid-structured-launch-resolution.ts
+  s_0451622378e9c8::t_bc0e1b8a4cf8a1 89-92
+  s_0451622378e9c8::t_1d1477e2841f24 1
+src/main/droid/droid-structured-launch-resolution.test.ts
+  s_0451622378e9c8::t_a965faa0bbfe77 155,158-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8170abd65988dc69671ed159a6ccd8e689812f7a",
+  "prompts": {},
+  "sessions": {
+    "s_0451622378e9c8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d035f68d-089c-477f-9b20-d144473a213c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

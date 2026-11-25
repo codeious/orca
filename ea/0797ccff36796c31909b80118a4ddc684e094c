@@ -1,0 +1,37 @@
+src/main/codex/structured/session-lifecycle/codex-session-mcp.ts
+  s_0fac14e05d9b7e::t_a07ba2234e0e2b 22-25,126,139,144
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_0fac14e05d9b7e::t_8ff3a613290a5e 1-222
+src/main/droid/droid-compaction.ts
+  s_0fac14e05d9b7e::t_4cd85555a29807 1-76
+src/main/droid/droid-fork-and-rewind.ts
+  s_0fac14e05d9b7e::t_f370049df5cc23 1-55
+src/main/droid/droid-recording.test-support.ts
+  s_0fac14e05d9b7e::t_8177aff265dc3c 1-151
+src/main/droid/droid-session-adapter.ts
+  s_0fac14e05d9b7e::t_cdf64fe5bac3be 19-24,82-93,101-133
+src/main/droid/droid-session-commands.test.ts
+  s_0fac14e05d9b7e::t_42fd1b088180f3 1-79
+src/main/droid/fixtures/mcp.jsonl
+  s_0fac14e05d9b7e::t_5d219f92bcbbfe 1-21
+src/main/droid/fixtures/skills.jsonl
+  s_0fac14e05d9b7e::t_2be777937be250 1-6
+src/main/native-chat/agent-session-wire/operations/structured-agent-session-mcp-callback.ts
+  s_0fac14e05d9b7e::t_09b4e2abfa90c5 4,14-15,35,48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ea0797ccff36796c31909b80118a4ddc684e094c",
+  "prompts": {},
+  "sessions": {
+    "s_0fac14e05d9b7e": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "80f74e4a-e5db-4d4c-895a-dd482590df27",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

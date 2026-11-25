@@ -1,0 +1,19 @@
+research/droid-model-listing.md
+  s_8a222c8686ed6e::t_047ab662cf1851 1-212
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "435b2794e0b51d32a048eb7e68071e2ed7e2da08",
+  "prompts": {},
+  "sessions": {
+    "s_8a222c8686ed6e": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "bf2d8a02-44fa-4dd1-b3f1-312795951e9f",
+        "model": "custom:Custom:-Grok-4.7-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

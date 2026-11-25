@@ -1,0 +1,23 @@
+src/main/jsonl-rpc/session-adapter.ts
+  s_767cf5531d83f7::t_e09e0faf869631 1-302
+src/main/jsonl-rpc/session-lifecycle.ts
+  s_767cf5531d83f7::t_936d8bdcde96c1 1-182
+src/main/pi/rpc-exit-classification.ts
+  s_767cf5531d83f7::t_8cb0e5180b0d85 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d9b3c3f546b8ef8e41ae93c2c340e803a8e6c792",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

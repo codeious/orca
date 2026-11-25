@@ -1,0 +1,33 @@
+src/main/droid/droid-session-adapter.test.ts
+  s_48f3bc0d7f0337::t_18dc919b025806 78,83
+  s_48f3bc0d7f0337::t_299c3693d6f67d 468
+  s_48f3bc0d7f0337::t_3915304503a17b 11,16
+  s_48f3bc0d7f0337::t_f8d0f4ede4205c 592
+  s_48f3bc0d7f0337::t_ae772f969e2a51 116
+  s_48f3bc0d7f0337::t_955f0dcced0e60 1-10,12-15,17-48,50-77,79-82,84-115,117-310,312-344,346-467,469-591,593-599
+  s_48f3bc0d7f0337::t_30cd556a27602d 49
+  s_48f3bc0d7f0337::t_7c91863fa77bb6 311
+  s_48f3bc0d7f0337::t_70165563a10bf8 345
+config/scripts/vitest-sqlite-runtime-files.mjs
+  s_48f3bc0d7f0337::t_bbcdc65d8b2825 20
+src/main/droid/droid-session-adapter.ts
+  s_48f3bc0d7f0337::t_1b231dc82e4239 1-231
+src/main/droid/droid-session.ts
+  s_48f3bc0d7f0337::t_6811cc282e98db 1-270
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "613b76b87783912b35eba8e820772e24b29d2afa",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

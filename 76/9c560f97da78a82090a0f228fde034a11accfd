@@ -1,0 +1,87 @@
+src/main/agent-launch/agent-launch-mode-settings.ts
+  s_767cf5531d83f7::t_72a30c033c826b 1-19
+mobile/src/tasks/agent-launch-request.test.ts
+  s_767cf5531d83f7::t_859dd1fb1abb52 58-90
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-admission-notices.ts
+  s_767cf5531d83f7::t_0722fa8e80cdf6 6-7,13,15-19,26-30,34-38,48-54
+src/main/agent-launch/agent-launch-mode.ts
+  s_767cf5531d83f7::t_6c3fb792bc2597 23-30,33,97-101,244-255
+src/main/agent-launch/agent-launch-version-receipt.test.ts
+  s_767cf5531d83f7::t_b698b2d65baea9 1-66
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-create-call.ts
+  s_767cf5531d83f7::t_c04edbe21a4590 11-15,79-88
+src/shared/agent-session/failures/agent-session-refusal-details.ts
+  s_767cf5531d83f7::t_52bdfd60dd89fc 186-192,208
+  s_ed79b846e95547::t_d6ac253efdabd6 6-8,337-340
+src/main/runtime/structured-agent-launch-support.ts
+  s_767cf5531d83f7::t_255b6c10da569e 5,86-93,96-107,111,174-180,183-184
+mobile/src/session/pr-ai-triage-launch.test.ts
+  s_ed79b846e95547::t_bd05d19567c607 96-116
+mobile/src/session/pr-ai-triage-launch.ts
+  s_ed79b846e95547::t_4a57da8a883980 14,102
+mobile/src/tasks/agent-launch-request.ts
+  s_ed79b846e95547::t_3239f047bd1c4e 17-19,97,101-133
+src/main/native-chat/structured-agent-session-create-support.ts
+  s_ed79b846e95547::t_c40763c092b4c6 4,9,15,18-23,26-29
+src/main/runtime/session-tabs/structured-session-create-support.ts
+  s_ed79b846e95547::t_1640378e5d0a16 30-31,47-51,163-169
+src/main/runtime/structured-agent-availability.test.ts
+  s_ed79b846e95547::t_980b45f35d6c02 110-120
+src/main/runtime/structured-agent-availability.ts
+  s_ed79b846e95547::t_f0cd60547187c1 9,67-80
+src/main/runtime/structured-agent-create-support-opencode-rig.test.ts
+  s_ed79b846e95547::t_6f66a7eb1e86b1 110-115
+src/main/runtime/structured-agent-launch-support.test.ts
+  s_ed79b846e95547::t_ec2b9d203c5382 88-120
+src/renderer/src/lib/agent-session/launch/structured-agent-session-host-admission-version.test.ts
+  s_ed79b846e95547::t_831b40f0cffee5 1-54
+src/renderer/src/lib/agent-session/launch/structured-agent-session-host-admission.ts
+  s_ed79b846e95547::t_4e47fb4c5c04bb 16-19,52,103,110,113-115
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-admission.ts
+  s_ed79b846e95547::t_f44116e77c3272 33,178-179,182,241-242,247-248
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-failure.ts
+  s_ed79b846e95547::t_0ae568989f5fcf 72-79
+src/shared/agent-launch-intent.ts
+  s_ed79b846e95547::t_dcc061586dc0f6 5,154
+src/shared/agent-session/agent-session-agent-availability.ts
+  s_ed79b846e95547::t_9152e908785520 11-14,26-31,47,71,75-83
+src/shared/agent-session/failures/agent-session-failure-copy.ts
+  s_ed79b846e95547::t_5d91ee16b421ee 225-228
+src/shared/agent-session/failures/agent-session-installation-refusal.test.ts
+  s_ed79b846e95547::t_c3c558b0bc8155 1-44
+src/shared/agent-session/failures/agent-session-refusal-notice.ts
+  s_ed79b846e95547::t_90acba05ac3679 94-95
+src/shared/agent-session/failures/agent-session-write-failure.ts
+  s_ed79b846e95547::t_7ad94cf9ff7d43 87-90,105
+tests/e2e/structured-agent-session-launch-admission.unit.test.ts
+  s_ed79b846e95547::t_7d772a60138869 154-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "769c560f97da78a82090a0f228fde034a11accfd",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ed79b846e95547": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a380474f-90f8-4792-9f3a-88671b8c97bd",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+src/main/droid/droid-session-commands.test.ts
+  s_767cf5531d83f7::t_91745bf1feddb8 34-58
+src/main/window/createMainWindow-droid-composer-focus-shortcuts.test.ts
+  s_767cf5531d83f7::t_59934912736562 1-219
+src/renderer/src/components/native-chat/NativeChatComposer.droid-turn-keys.test.tsx
+  s_767cf5531d83f7::t_50505ec13588d1 1-422
+src/renderer/src/components/native-chat/native-chat-selected-text.test.tsx
+  s_767cf5531d83f7::t_2ba538692d017a 1-72
+src/renderer/src/components/native-chat/native-chat-selected-text.ts
+  s_767cf5531d83f7::t_7322941b715613 1-36
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown.ts
+  s_767cf5531d83f7::t_1092a9465a1a2f 1-7,28-29,52-53,72,126-134,142-168,171-174,193,228,235
+src/renderer/src/components/native-chat/use-native-chat-composer-send-routes.ts
+  s_767cf5531d83f7::t_bc1d80587e4980 1-15
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.test.tsx
+  s_767cf5531d83f7::t_7862a59c6f9c7e 1-127
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.ts
+  s_767cf5531d83f7::t_2ab86c69d341bb 1-63
+src/renderer/src/components/native-chat/use-native-chat-droid-turn-keys.test.tsx
+  s_767cf5531d83f7::t_a627f7a568b24d 1-169
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_c3c5fe8bbb7f52::t_972d46ebd708ae 2,11,44-48,105-113
+src/main/runtime/structured-agent-create-support-opencode-rig.test.ts
+  s_ed79b846e95547::t_9ae4a6d1a23601 110-115
+src/main/droid/droid-configured-default.test.ts
+  h_476903bd8a47d9 1
+src/main/droid/droid-structured-launch-resolution.test.ts
+  h_476903bd8a47d9 5
+src/main/droid/droid-structured-launch-resolution.ts
+  h_476903bd8a47d9 7
+src/main/runtime/structured-chat-naming-runtime.test.ts
+  h_476903bd8a47d9 218,268-278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "04b6c9427da8976a47a3a27ee20ccf3953bfc834",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_c3c5fe8bbb7f52": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "12d0e2e5-b786-47df-b094-f55dfe781c28",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ed79b846e95547": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a380474f-90f8-4792-9f3a-88671b8c97bd",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

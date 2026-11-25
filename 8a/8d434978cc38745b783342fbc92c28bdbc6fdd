@@ -1,0 +1,19 @@
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-replay.test.ts
+  s_9915298ad8a882::t_5ffb0e41d4e460 113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8a8d434978cc38745b783342fbc92c28bdbc6fdd",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

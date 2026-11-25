@@ -1,0 +1,23 @@
+src/renderer/src/components/native-chat/NativeChatComposerActions.test.tsx
+  s_d13fa423fc676c::t_bc344fa0afb407 3,6,18-22,55-134
+src/renderer/src/components/native-chat/NativeChatPermissionModePicker.test.tsx
+  s_d13fa423fc676c::t_cd5c0e04966732 209-272,332-351
+src/renderer/src/components/native-chat/NativeChatPermissionModePicker.tsx
+  s_d13fa423fc676c::t_8411498a428931 2,18-23,35-38,40-50,53,60,67-80,136-170,188,204,213-267,280,285-298,315
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5dcdbe24bddbdc7d6512f179a03ef1cd4d265ced",
+  "prompts": {},
+  "sessions": {
+    "s_d13fa423fc676c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "6162452c-6c6f-401d-b3b4-3492abfe2e92",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

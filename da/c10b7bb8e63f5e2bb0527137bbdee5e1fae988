@@ -1,0 +1,87 @@
+mobile/src/i18n/locales/de.json
+  s_d98921461d61e0::t_8ab40867d73e72 438-446
+mobile/src/i18n/locales/en.json
+  s_d98921461d61e0::t_ff255a5d64e1a7 3154-3162
+mobile/src/i18n/locales/es.json
+  s_d98921461d61e0::t_f0874cb3c75d17 442-450
+mobile/src/i18n/locales/fr.json
+  s_d98921461d61e0::t_5517124b5e0962 442-450
+mobile/src/i18n/locales/ja.json
+  s_d98921461d61e0::t_c631e06fca2c6d 438-446
+mobile/src/i18n/locales/ko.json
+  s_d98921461d61e0::t_be921594180c6a 438-446
+mobile/src/i18n/locales/pt.json
+  s_d98921461d61e0::t_13b72143e86f75 461-469
+mobile/src/i18n/locales/ru.json
+  s_d98921461d61e0::t_68c7747f2dff80 446-454
+mobile/src/i18n/locales/tr.json
+  s_d98921461d61e0::t_ec935ddf7fdfcd 438-446
+mobile/src/i18n/locales/zh-Hant.json
+  s_d98921461d61e0::t_d508c78cf1a624 438-446
+mobile/src/i18n/locales/zh.json
+  s_d98921461d61e0::t_6f6ab18dc64506 478-486
+src/main/native-chat/agent-session-wire/observations/structured-agent-session-status-summary-equality.ts
+  s_d98921461d61e0::t_fc36e01f3a5d2c 39
+src/main/native-chat/agent-session-wire/observations/structured-agent-session-status-summary.ts
+  s_d98921461d61e0::t_e2e690b0c79fd6 69,103
+src/main/native-chat/agent-session-wire/operations/structured-agent-session-host-mutations.ts
+  s_7a3a75c75e164c::t_58999212d5d727 56,240-243,246-247,249-258
+src/renderer/src/components/native-chat/composer/pickers/use-native-chat-composer-catalog.ts
+  s_7a3a75c75e164c::t_df7b3f2960bbaa 46-47
+src/renderer/src/components/native-chat/composer/submit/structured-composer-rename-command.ts
+  s_7a3a75c75e164c::t_724896581e435a 1-23
+src/renderer/src/components/native-chat/composer/submit/use-native-chat-structured-composer-transport.ts
+  s_7a3a75c75e164c::t_02ab5c047a8ac9 22,198-199,254
+src/renderer/src/components/native-chat/session/options/controls/native-chat-permission-mode-labels.ts
+  s_d98921461d61e0::t_8e99f49b1c4cc6 10,36-38
+src/renderer/src/i18n/locales/de.json
+  s_d98921461d61e0::t_4b8f951f383778 19603-19612
+src/renderer/src/i18n/locales/en.json
+  s_d98921461d61e0::t_9204d9ac15963b 20972-20981
+src/renderer/src/i18n/locales/es.json
+  s_d98921461d61e0::t_1a174a14443201 19280-19289
+src/renderer/src/i18n/locales/fr.json
+  s_d98921461d61e0::t_6960b966fa9bf4 19553-19562
+src/renderer/src/i18n/locales/ja.json
+  s_d98921461d61e0::t_8911d6c98abc1c 19908-19917
+src/renderer/src/i18n/locales/ko.json
+  s_d98921461d61e0::t_a176fe342d597d 18863-18872
+src/renderer/src/i18n/locales/pt.json
+  s_d98921461d61e0::t_6ddc764747fd5f 20797-20806
+src/renderer/src/i18n/locales/ru.json
+  s_d98921461d61e0::t_7d4b1323f44807 20168-20177
+src/renderer/src/i18n/locales/tr.json
+  s_d98921461d61e0::t_db992100279246 19751-19760
+src/renderer/src/i18n/locales/zh-Hant.json
+  s_d98921461d61e0::t_f0c1cd5297fa25 19342-19351
+src/renderer/src/i18n/locales/zh.json
+  s_d98921461d61e0::t_c0f3d48e1c7f35 19895-19904
+src/shared/agent-session/view/structured-agent-session-composer.ts
+  s_d98921461d61e0::t_a3df75b2cac048 2,32,45-48,62-63,95-96,180-185
+src/shared/agent-session/view/structured-agent-session-slash-menu.ts
+  s_7a3a75c75e164c::t_64af945696e3a3 1-4,58-84,92-93,104,110-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dac10b7bb8e63f5e2bb0527137bbdee5e1fae988",
+  "prompts": {},
+  "sessions": {
+    "s_7a3a75c75e164c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5d5c18c1-6928-4660-b797-f1dff9254b1d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d98921461d61e0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "de1bc950-75d7-4fa8-94d4-60268c9ca201",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

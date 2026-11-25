@@ -1,0 +1,61 @@
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_68b3283d706c62::t_9078dda027c1a5 137-142
+src/main/droid/droid-mcp-ssh-forward.test.ts
+  s_68b3283d706c62::t_c5e308f16f1e7f 1-553
+src/main/droid/droid-session.ts
+  s_68b3283d706c62::t_6c8749ce958e9c 20-24,78-82,194
+src/main/ipc/runtime-environment-mcp-sign-in-receiver.test.ts
+  s_36ac4c23d8dd62::t_f401254248b690 1-360
+src/main/ipc/runtime-environment-mcp-sign-in-receiver.ts
+  s_36ac4c23d8dd62::t_92870d365c54f7 1-114
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-command.test.ts
+  s_ea85224c232b38::t_2a90d437738741 12-16,87-163
+src/main/native-chat/agent-session-wire/structured-agent-session-subscribers.ts
+  s_68b3283d706c62::t_6baa3420ed468d 25-28,36,51,66,87,100-113,295
+src/main/runtime/structured-agent-session-mcp-sign-in-forwarding.test.ts
+  s_68b3283d706c62::t_fc463653e8a010 1-288
+src/shared/droid-host-copy.ts
+  s_68b3283d706c62::t_37f075547ca7db 61-62
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_53099c92340287::t_e7852d94021813 500,647
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b2ace18f89d104b39a39d808f2f219e8ae601804",
+  "prompts": {},
+  "sessions": {
+    "s_36ac4c23d8dd62": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "c1e4a31c-d66a-45d5-9923-1395a76af2e5",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_53099c92340287": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "8448f100-c5de-45b1-a4f3-7affb70849ac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_68b3283d706c62": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d83afb7a-acf8-40f2-bcc5-35838d73e73f",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ea85224c232b38": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "05403f2e-92c0-4e1b-8d11-beb2c1e8ff31",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

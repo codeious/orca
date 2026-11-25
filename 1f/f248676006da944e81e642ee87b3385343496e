@@ -1,0 +1,102 @@
+src/preload/api/ai-vault-api.ts
+  s_f87fd4e7a08936::t_7691d9a7cea428 27-28
+  s_f87fd4e7a08936::t_85bd444eb5f4ab 58-60,62-64
+src/main/agent-hooks/server/server-agent-presence.ts
+  s_f87fd4e7a08936::t_e488458c9d3923 58-59
+  s_f87fd4e7a08936::t_a1c895a8433253 73,81-90,92-93,95
+  s_f87fd4e7a08936::t_75a5d3f87ec009 9-12
+src/main/agent-hooks/server-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_fed8a1aaba2f89 249
+  s_f87fd4e7a08936::t_730847e08efcd3 231,233-248,250-262,264-312
+  s_f87fd4e7a08936::t_8667587afa6b20 263
+  s_f87fd4e7a08936::t_570131751dc2a5 12
+  s_7ddff69f1b5110::t_d29cc1d2095a81 47-50,90,98,105,114,123,132,135,145,167,185,202,210,223,230,232
+src/renderer/src/components/right-sidebar/use-ai-vault-row-resume-in-chat.ts
+  s_f87fd4e7a08936::t_d4c91a4b254250 36
+  s_f87fd4e7a08936::t_7095bbf352e0a2 37-39
+src/main/runtime/runtime-ai-vault-commands.test.ts
+  s_f87fd4e7a08936::t_6a08fe833e850b 2,5-6,8,17-23,25-29,32-34,42-44
+src/renderer/src/web/preload-api/web-ai-vault-api.ts
+  s_f87fd4e7a08936::t_e2b0f955e7d701 11-12
+  s_f87fd4e7a08936::t_919a0168cc3d8a 97,99,103
+src/main/runtime/runtime-ai-vault-commands.ts
+  s_f87fd4e7a08936::t_130528dcf1e7b8 6-7
+  s_f87fd4e7a08936::t_0dfa8e1750c55b 23,28,31,36
+src/shared/ai-vault-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_0c6e8be767e8de 2-7,29-90
+  s_7ddff69f1b5110::t_893d0ef9767808 91
+src/main/ai-vault/runtime-droid-session-holder.ts
+  s_f87fd4e7a08936::t_bdf963342b4f4c 2-4,14,23-24,26
+src/preload/api/ai-vault-bridge.ts
+  s_f87fd4e7a08936::t_f1d972128befd5 17,19-21
+  s_f87fd4e7a08936::t_e1a1b8d2dfc950 56-58,61
+  s_f87fd4e7a08936::t_50ba1f6540a416 62-64
+src/main/runtime/rpc/methods/ai-vault-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_b9e8817cef4644 68
+  s_f87fd4e7a08936::t_c843155a794a22 3
+  s_f87fd4e7a08936::t_d1e41e6eeb8539 22-25,30,41-60
+  s_f87fd4e7a08936::t_867bed54890c58 85
+  s_7ddff69f1b5110::t_c95beb4aa0288c 61
+src/main/ipc/ai-vault-droid-session-holder-routing.ts
+  s_f87fd4e7a08936::t_23e246b98cac0b 3,12-16,29,39,41,52,54-57
+src/renderer/src/components/right-sidebar/use-ai-vault-droid-holders.ts
+  s_f87fd4e7a08936::t_744a541ed493b2 33,35
+  s_f87fd4e7a08936::t_4d907b7f61a179 22
+  s_f87fd4e7a08936::t_7f8d2a67acecb2 2,6,10-11
+src/main/runtime/rpc/methods/ai-vault.ts
+  s_f87fd4e7a08936::t_39300a4e9ffde4 151
+src/shared/ai-vault-droid-session-holder.ts
+  s_f87fd4e7a08936::t_d72616221ef9d8 19-30,36-39,41-42,46-49,51-65,67
+  s_f87fd4e7a08936::t_bcb7760b95896d 40,43
+src/renderer/src/components/right-sidebar/ai-vault-droid-session-holder-check.ts
+  s_f87fd4e7a08936::t_5ad12848f23853 35
+  s_f87fd4e7a08936::t_bed4d697a30cca 5-7,13-14,17,19-24,26
+src/main/ai-vault/runtime-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_ee717f0bf477e7 18,32-53,65,73,81
+src/main/ipc/ai-vault-droid-session-holder-routing.test.ts
+  s_f87fd4e7a08936::t_3305918354e906 2-5,14-15,19-21,23-28,33-38,44-45,52,58-59,69,83,96,110,118,124,134,140,160,167-179,199
+src/main/ipc/ai-vault.test.ts
+  s_f87fd4e7a08936::t_4e1e54a726904b 278-279,299
+src/main/runtime/orca-runtime-preserved-branch-cleanup.ts
+  s_f87fd4e7a08936::t_5b872efa4ffc6a 24,130
+src/main/runtime/orca-runtime-state-fields.ts
+  s_f87fd4e7a08936::t_487f04cc894540 19,97
+src/preload/api/ai-vault-bridge-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_dda821eb848879 12,24,29-38,42-44,55-57
+src/renderer/src/components/right-sidebar/AiVaultPanel.droid-resume.test.tsx
+  s_f87fd4e7a08936::t_0670538357c808 134
+src/renderer/src/components/right-sidebar/ai-vault-droid-session-holder-check.test.ts
+  s_f87fd4e7a08936::t_a640e49299927f 5-8,23,92-123
+src/renderer/src/components/right-sidebar/ai-vault-session-launch-actions.test.ts
+  s_f87fd4e7a08936::t_7a2124607801e3 115,131,143,156,165
+src/renderer/src/components/right-sidebar/use-ai-vault-droid-holders.test.ts
+  s_f87fd4e7a08936::t_4c497eaf6c7c05 44-45,49,55-67,76-78,82,93,107,115,122,141,149-152,154
+src/renderer/src/components/right-sidebar/use-ai-vault-row-resume-in-chat.test.ts
+  s_f87fd4e7a08936::t_7c16f8919bcebb 84,95,116,125
+src/renderer/src/web/preload-api/web-ai-vault-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_260ece0b7669c9 11,23-25,32-41,50,59-61,70-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1ff248676006da944e81e642ee87b3385343496e",
+  "prompts": {},
+  "sessions": {
+    "s_7ddff69f1b5110": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "22e4c325-1442-40ad-a7e4-f5dafe0805f6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

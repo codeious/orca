@@ -1,0 +1,47 @@
+src/main/droid/droid-session-commands.test.ts
+  s_767cf5531d83f7::t_91745bf1feddb8 34-58
+src/main/window/createMainWindow-droid-composer-focus-shortcuts.test.ts
+  s_767cf5531d83f7::t_59934912736562 1-219
+src/renderer/src/components/native-chat/NativeChatComposer.droid-turn-keys.test.tsx
+  s_767cf5531d83f7::t_50505ec13588d1 1-422
+src/renderer/src/components/native-chat/native-chat-selected-text.test.tsx
+  s_767cf5531d83f7::t_2ba538692d017a 1-72
+src/renderer/src/components/native-chat/native-chat-selected-text.ts
+  s_767cf5531d83f7::t_7322941b715613 1-36
+src/renderer/src/components/native-chat/use-native-chat-composer-keydown.ts
+  s_767cf5531d83f7::t_1092a9465a1a2f 1-7,30-31,54-55,74,127-135,143-169,172-175,194,229,236
+src/renderer/src/components/native-chat/use-native-chat-composer-send-routes.ts
+  s_767cf5531d83f7::t_bc1d80587e4980 1-15
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.test.tsx
+  s_767cf5531d83f7::t_7862a59c6f9c7e 1-127
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.ts
+  s_767cf5531d83f7::t_2ab86c69d341bb 1-63
+src/renderer/src/components/native-chat/use-native-chat-droid-turn-keys.test.tsx
+  s_767cf5531d83f7::t_a627f7a568b24d 1-169
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_c3c5fe8bbb7f52::t_972d46ebd708ae 2,11,44-48,105-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c361818fccf1552d3368dde34fda80d55a37e054",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_c3c5fe8bbb7f52": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "12d0e2e5-b786-47df-b094-f55dfe781c28",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

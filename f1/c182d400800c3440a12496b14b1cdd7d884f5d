@@ -1,0 +1,160 @@
+mobile/src/i18n/locales/en.json
+  h_476903bd8a47d9 2764-2769
+mobile/src/session/mobile-structured-after-reply.test.tsx
+  h_476903bd8a47d9 1-75
+mobile/src/session/mobile-structured-agent-prompts.ts
+  h_476903bd8a47d9 126-127,132,134-136
+mobile/src/session/mobile-structured-agent-session-contract.ts
+  h_476903bd8a47d9 10-13,54
+mobile/src/session/mobile-structured-agent-session-host-support.ts
+  h_476903bd8a47d9 3-5,36-37,75-76
+mobile/src/session/mobile-structured-agent-session-send.ts
+  h_476903bd8a47d9 30,61
+mobile/src/session/mobile-structured-approval-notes.test.tsx
+  h_476903bd8a47d9 1-101
+mobile/src/session/native-chat/MobileNativeChatView.tsx
+  h_476903bd8a47d9 57-60,140
+mobile/src/session/native-chat/input/MobileNativeChatApprovalNotes.tsx
+  h_476903bd8a47d9 1-90
+mobile/src/session/native-chat/input/MobileNativeChatPermission.tsx
+  h_476903bd8a47d9 15-20,29,36-38,48-49,75-83
+mobile/src/session/native-chat/input/MobileNativeChatPromptCard.tsx
+  h_476903bd8a47d9 22-25,64,114-117
+mobile/src/session/native-chat/input/mobile-native-chat-permission.ts
+  h_476903bd8a47d9 1-9
+mobile/src/session/native-chat/mobile-native-chat-controller-contract.ts
+  h_476903bd8a47d9 8-11,89
+mobile/src/session/native-chat/mobile-native-chat-send.ts
+  h_476903bd8a47d9 31
+mobile/src/session/use-mobile-structured-agent-session.ts
+  h_476903bd8a47d9 126,210,304
+mobile/src/session/use-mobile-structured-prompt-responses.ts
+  h_476903bd8a47d9 2,32,35,38,41-53,64,72
+mobile/src/session/use-mobile-structured-send-with-outcome.ts
+  h_476903bd8a47d9 26,96,125,127-128,227,268-269
+src/main/droid/droid-approval-notes.test.ts
+  h_476903bd8a47d9 1-48
+src/main/droid/droid-permission-requests.ts
+  h_476903bd8a47d9 2,60,95-103,111-117
+src/main/droid/droid-turns.ts
+  h_476903bd8a47d9 69,100
+src/main/native-chat/agent-session-wire/structured-agent-session-after-reply-queue.test.ts
+  h_476903bd8a47d9 1-52
+src/main/native-chat/agent-session-wire/structured-agent-session-approval-notes.test.ts
+  h_476903bd8a47d9 1-151
+src/main/native-chat/agent-session-wire/structured-agent-session-host-mutations.ts
+  h_476903bd8a47d9 63
+src/main/native-chat/agent-session-wire/structured-agent-session-mutation-plans.ts
+  h_476903bd8a47d9 168,297-299
+src/main/native-chat/agent-session-wire/structured-agent-session-queued-messages.ts
+  h_476903bd8a47d9 128,143
+src/main/native-chat/agent-session-wire/structured-agent-session-queued-send.ts
+  h_476903bd8a47d9 14
+src/main/native-chat/agent-session-wire/structured-agent-session-status-summary-equality.ts
+  h_476903bd8a47d9 36
+src/main/native-chat/agent-session-wire/structured-agent-session-status-summary.ts
+  h_476903bd8a47d9 62,88
+src/main/native-chat/agent-session-wire/structured-agent-session-turns-prompt.ts
+  h_476903bd8a47d9 37-39,54-59,62-72
+src/renderer/src/components/native-chat/NativeChatApprovalCard.fixture.tsx
+  h_476903bd8a47d9 1-21
+src/renderer/src/components/native-chat/NativeChatApprovalCard.notes.test.tsx
+  h_476903bd8a47d9 1-193
+src/renderer/src/components/native-chat/NativeChatApprovalCard.tsx
+  h_476903bd8a47d9 1-6,20-23,29-30,55,141,160,181,188-195
+src/renderer/src/components/native-chat/NativeChatApprovalNotes.tsx
+  h_476903bd8a47d9 1-126
+src/renderer/src/components/native-chat/NativeChatInterruptedContinue.test.tsx
+  h_476903bd8a47d9 41-42
+src/renderer/src/components/native-chat/NativeChatQuestionCard.escape.test.tsx
+  h_476903bd8a47d9 1-50
+src/renderer/src/components/native-chat/NativeChatQuestionCard.tsx
+  h_476903bd8a47d9 13,37,63,197-203,219,225,287
+src/renderer/src/components/native-chat/NativeChatQuestionOptionRow.tsx
+  h_476903bd8a47d9 1-60
+src/renderer/src/components/native-chat/NativeChatStructuredQuestionCard.test.tsx
+  h_476903bd8a47d9 26
+src/renderer/src/components/native-chat/NativeChatStructuredQuestionCard.tsx
+  h_476903bd8a47d9 2-7,15-16,23-24,31,45
+src/renderer/src/components/native-chat/NativeChatStructuredSession.tsx
+  h_476903bd8a47d9 53,188,368-369,380-381
+src/renderer/src/components/native-chat/native-chat-composer-types.ts
+  h_476903bd8a47d9 39-42
+src/renderer/src/components/native-chat/native-chat-structured-composer-dispatch.ts
+  h_476903bd8a47d9 17
+src/renderer/src/components/native-chat/structured-agent-session-pending-sends.ts
+  h_476903bd8a47d9 13
+src/renderer/src/components/native-chat/structured-agent-session-prompt-response.test.ts
+  h_476903bd8a47d9 1-111
+src/renderer/src/components/native-chat/structured-agent-session-prompt-response.ts
+  h_476903bd8a47d9 2,6,32-49
+src/renderer/src/components/native-chat/structured-agent-session-send-attempt.ts
+  h_476903bd8a47d9 133
+src/renderer/src/components/native-chat/structured-agent-session-send-slot.ts
+  h_476903bd8a47d9 22,38,60
+src/renderer/src/components/native-chat/structured-agent-session-sending-queued-cards.ts
+  h_476903bd8a47d9 26,31-32,54
+src/renderer/src/components/native-chat/use-structured-agent-session-sends.test.tsx
+  h_476903bd8a47d9 4,12-15,30-88
+src/renderer/src/components/native-chat/use-structured-agent-session-sends.ts
+  h_476903bd8a47d9 1-4,84,132,153
+src/renderer/src/components/native-chat/use-structured-chat-approval.test.tsx
+  h_476903bd8a47d9 1-29
+src/renderer/src/components/native-chat/use-structured-chat-approval.ts
+  h_476903bd8a47d9 1-28
+src/renderer/src/i18n/locales/en.json
+  h_476903bd8a47d9 19985-19991
+src/renderer/src/runtime/structured-agent-session-host-capability.ts
+  h_476903bd8a47d9 1,171-179
+src/shared/agent-session/agent-session-availability.ts
+  h_476903bd8a47d9 40
+src/shared/agent-session/agent-session-question-answer.ts
+  h_476903bd8a47d9 25-31
+src/shared/agent-session/agent-session-wire.ts
+  h_476903bd8a47d9 224
+src/shared/agent-session/journal/agent-session-journal-schemas.ts
+  h_476903bd8a47d9 229-230
+src/shared/agent-session/journal/agent-session-journal-types.ts
+  h_476903bd8a47d9 191-192
+src/shared/agent-session/lifecycle/agent-session-sign-in.ts
+  h_476903bd8a47d9 10
+src/shared/agent-session/options/structured-agent-session-option-snapshot.ts
+  h_476903bd8a47d9 29,224,267-268
+src/shared/agent-session/options/structured-agent-session-option-state.ts
+  h_476903bd8a47d9 12,76,85-86
+src/shared/agent-session/options/structured-agent-session-options.ts
+  h_476903bd8a47d9 169-170,175
+src/shared/agent-session/requests/structured-agent-session-send-mutation.ts
+  h_476903bd8a47d9 17,33
+src/shared/agent-session/structured-agent-session-surface-capabilities.ts
+  h_476903bd8a47d9 2-3,54-55
+src/shared/native-chat-approval-notes.ts
+  h_476903bd8a47d9 1-26
+src/shared/native-chat/input/native-chat-interactive-prompt.ts
+  h_476903bd8a47d9 12-13,24-25,30-31
+src/shared/native-chat/native-chat-agent-profiles.ts
+  h_476903bd8a47d9 10,38-42
+src/shared/plugins/languages/protected-copy-keys.json
+  h_476903bd8a47d9 688-689,693-695
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  h_476903bd8a47d9 604
+src/shared/rpc-contract/structured-agent-session-approval-params.ts
+  h_476903bd8a47d9 1-26
+src/shared/rpc-contract/structured-agent-session-params.ts
+  h_476903bd8a47d9 115,194
+src/shared/structured-agent-session-spec-option.test.ts
+  h_476903bd8a47d9 1-50
+src/shared/structured-agent-session-spec-option.ts
+  h_476903bd8a47d9 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f1c182d400800c3440a12496b14b1cdd7d884f5d",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

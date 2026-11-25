@@ -1,0 +1,65 @@
+src/shared/agent-hook-listener/provider-hook-session.ts
+  s_ad00747fcb93b9::t_7852116527385e 2-5,9,38,55-87
+src/wsl-guest/agent-hooks/status/agent-hook-event-admission.ts
+  s_ad00747fcb93b9::t_a43b4f2b523b4d 36-37,181-188
+src/wsl-guest/agent-hooks/server/agent-hook-spool-ingest.ts
+  s_ad00747fcb93b9::t_0f31742a6a0487 27
+src/shared/agent-hook-listener/provider-hook-capabilities.ts
+  s_ad00747fcb93b9::t_49326bc3e2d2fe 1-9
+src/shared/__fixtures__/droid-parent-process-hooks.meta.json
+  s_ad00747fcb93b9::t_8a143d829787d0 1-17
+src/main/droid/droid-hook-config.ts
+  s_ad00747fcb93b9::t_4e3c1490e6b637 16
+src/shared/__fixtures__/droid-parent-process-hooks.jsonl
+  s_ad00747fcb93b9::t_b46a233121c986 1-24
+src/wsl-guest/agent-hooks/server/agent-hook-server.ts
+  s_ad00747fcb93b9::t_6b291491eb6d53 207,249,308-310
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-exit.test.ts
+  s_ad00747fcb93b9::t_71c4068104fc2b 1-39
+src/wsl-guest/agent-hooks/server/agent-hook-request.ts
+  s_ad00747fcb93b9::t_cfac0c1dbf2dc4 32
+src/wsl-guest/agent-hooks/server/relay-droid-exit-watch.test.ts
+  s_ad00747fcb93b9::t_0fc9cb05b16528 1-141
+src/shared/agent-hook-listener/providers/droid/droid-hook-session.ts
+  s_ad00747fcb93b9::t_d9c9f75e00ea31 3-8,13-15
+src/shared/agent-hook-listener/providers/droid/droid-session-owner.ts
+  s_ad00747fcb93b9::t_be20184e9533ba 1-34
+src/shared/__fixtures__/droid-slow-start-hooks.meta.json
+  s_ad00747fcb93b9::t_3df4df568c0208 1-10
+src/shared/agent-status/process/agent-process-presence.ts
+  s_ad00747fcb93b9::t_8c414b3f3b292c 4,63,68
+src/shared/__fixtures__/droid-slow-start-hooks.jsonl
+  s_ad00747fcb93b9::t_39b2de1f58498f 1-70
+src/main/agent-hooks/server/agent-hook-server.ts
+  s_ad00747fcb93b9::t_f33ec166aa6305 20-21,34,68-75
+src/main/droid/droid-hook-script.ts
+  s_9915298ad8a882::t_2877b4912cd6e9 11-14,31,51,70
+src/shared/agent-hook-listener/providers/droid/droid-sessions.ts
+  s_9915298ad8a882::t_7500f4e0b757a9 1,10,42-48,54,120-126,165-166,173-178,194,197-200,203-206,209,213-215,220,222-225,232-234,241-248,282
+src/wsl-guest/agent-hooks/presence/relay-agent-presence.ts
+  s_9915298ad8a882::t_765eb67ae4a9f2 8-10,13-17,20-28,34,41,70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7d174cdec499aa9d8ad8a12bfa2d007009d83045",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ad00747fcb93b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "76dd52ab-a5b9-4faa-8d3f-2f25a389af4b",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

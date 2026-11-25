@@ -1,0 +1,19 @@
+src/main/droid/droid-configured-default.test.ts
+  s_9e473945bea849::t_596fdffa119bbd 6-8,19-20,25-26,28-31,55-58,60-62,66-69,71-74,77,79-84,89-93,100,104-115,119-120,124,127-128,133-139,146-148,150,153-154,156-158,161-162,164,167-168,170-172,175-180,182,185-191,196-199,201-202,204-205,207,212,215-216,218-221,224-225,227-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "314592a90512e666cf136744c74956a37698f332",
+  "prompts": {},
+  "sessions": {
+    "s_9e473945bea849": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e13e969a-8b8f-472a-b31b-87d5d0067270",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

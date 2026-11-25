@@ -1,0 +1,24 @@
+src/main/droid/droid-rpc-envelope.ts
+  s_48f15c05ff9afa::t_cdcbeef65d928c 7-8
+src/main/droid/droid-json-rpc-peer.ts
+  s_48f15c05ff9afa::t_47795dd2fc6462 84
+  s_48f15c05ff9afa::t_5383a4399ae02b 2,4,22-44,46-48,51,53-56,59-61,64-65,68-83,85-88,93,101-106,112-113
+  s_48f15c05ff9afa::t_853307f6939dbd 45
+  s_48f15c05ff9afa::t_9bde602d93afe4 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "14329b8d737a7f099cefa8ca49c4922d71c79412",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

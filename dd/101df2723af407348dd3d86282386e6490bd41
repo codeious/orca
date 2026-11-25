@@ -1,0 +1,35 @@
+src/main/provider-process/provider-process-supervisor.integration.test.ts
+  s_4849b3466f1948::t_73421ed8cd92a1 81-87
+  s_4849b3466f1948::t_574de30285c337 519-570
+src/main/provider-process/provider-process-supervisor.ts
+  s_4849b3466f1948::t_fd3e912404dbba 278-283
+  s_4849b3466f1948::t_66f29538dbd828 200-201
+  s_4849b3466f1948::t_07b73a117585a4 229-230
+  s_4849b3466f1948::t_936eba7f5cf6b8 300
+  s_4849b3466f1948::t_eabc0d34ad1f47 254
+  s_4849b3466f1948::t_88cf2c6f0c3efd 139-143
+  s_4849b3466f1948::t_b5d4ebb34baf3c 126-127
+src/main/droid/droid-agent-connection.ts
+  s_4849b3466f1948::t_f172b100df0b9c 71-72
+src/main/droid/droid-agent-connection-supervisor.integration.test.ts
+  s_4849b3466f1948::t_09b94b3fc8870a 1-80
+src/main/provider-process/managed-provider-process.ts
+  s_4849b3466f1948::t_61d36d2d4746a1 86-87
+  s_4849b3466f1948::t_ceb278bab859c2 47-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dd101df2723af407348dd3d86282386e6490bd41",
+  "prompts": {},
+  "sessions": {
+    "s_4849b3466f1948": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "45ef26b7-bcfc-4335-a206-357a3f4a4c66",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

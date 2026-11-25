@@ -1,0 +1,106 @@
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_7e8558ffa4d9dd::t_f257d3b3e6a331 134
+src/main/droid/droid-session-title.ts
+  s_7e8558ffa4d9dd::t_b2457d10aec0d4 25
+  s_7e8558ffa4d9dd::t_65037b4eb39a9d 1-5,8-24,26-47
+  s_7e8558ffa4d9dd::t_ca712f4e726f15 6-7
+src/main/droid/droid-host-commands.test.ts
+  s_7e8558ffa4d9dd::t_e7f74865d1723d 301-303,312-314
+  s_7e8558ffa4d9dd::t_ab18ac0d71c7eb 369
+  s_7e8558ffa4d9dd::t_5d44954012459a 342-344
+  s_7e8558ffa4d9dd::t_51e724b76f5cdb 1
+  s_7e8558ffa4d9dd::t_16dad1ca87cb97 340
+  s_7e8558ffa4d9dd::t_f75f4a3967e2cc 296-299,305-311,315-322
+  s_7e8558ffa4d9dd::t_9896de866f6470 278-295,300,304,323-339,341,345-354,365-368,370-391
+  s_7e8558ffa4d9dd::t_95a9a2d1081b3f 355-364
+src/main/droid/fixtures/rename-session.jsonl
+  s_7e8558ffa4d9dd::t_e8f20188f757c6 1-4
+src/renderer/src/components/native-chat/droid-child-commands.test.ts
+  s_7e8558ffa4d9dd::t_e7f74865d1723d 455
+  s_7e8558ffa4d9dd::t_e7d108f4aad31a 424
+  s_7e8558ffa4d9dd::t_e6a5fd64923f83 417-423,425-448,450-454,456-464,466-469,478-501,510,512-529
+  s_7e8558ffa4d9dd::t_628cb0f30f9df2 502-509
+  s_7e8558ffa4d9dd::t_d665f7d28e0021 511
+  s_7e8558ffa4d9dd::t_4d288c37d48f1d 449
+  s_7e8558ffa4d9dd::t_e6bef5404ea990 24-25,30-31
+  s_7e8558ffa4d9dd::t_54cab1a2ca2248 465,470-477
+src/main/droid/droid-host-commands.ts
+  s_7e8558ffa4d9dd::t_93b152113be494 55-64,68-72
+  s_7e8558ffa4d9dd::t_f642f342230561 65-67
+  s_7e8558ffa4d9dd::t_114e0acbd71380 2
+  s_7e8558ffa4d9dd::t_119a45d23e45ff 54
+  s_7e8558ffa4d9dd::t_4dc48368f844ea 87-88
+src/renderer/src/components/native-chat/use-droid-session-commands.test.tsx
+  s_7e8558ffa4d9dd::t_3cc7f100d2c2fb 337-345,349-350
+  s_7e8558ffa4d9dd::t_e7f74865d1723d 346-348
+  s_7e8558ffa4d9dd::t_292bb9b6f507a1 297,303
+  s_7e8558ffa4d9dd::t_7f780b9fb75fb7 11,19-24
+src/renderer/src/components/native-chat/droid-child-commands.ts
+  s_7e8558ffa4d9dd::t_36fa0d7ffd1fa4 52-53
+  s_7e8558ffa4d9dd::t_5b9b13a39b98a7 4-7
+  s_7e8558ffa4d9dd::t_bd0e9d83d9c27c 31-32
+  s_7e8558ffa4d9dd::t_43f5cff1d42b51 160-161
+  s_7e8558ffa4d9dd::t_83faea99f7621c 192
+  s_7e8558ffa4d9dd::t_326e8f18a313d4 236
+  s_7e8558ffa4d9dd::t_8035d977c81da6 138-149,153-159,162-169,171-173
+src/main/droid/droid-runtime-registration.ts
+  s_7e8558ffa4d9dd::t_a0f58fa3f78181 24
+  s_7e8558ffa4d9dd::t_4c6827844692fe 64-68
+src/renderer/src/components/native-chat/use-droid-session-commands.ts
+  s_7e8558ffa4d9dd::t_7602f61cbaaa8a 97
+  s_7e8558ffa4d9dd::t_9901f244066c88 131
+  s_7e8558ffa4d9dd::t_e7f74865d1723d 132-134
+src/main/runtime/rpc/methods/structured-agent-session-droid-command.test.ts
+  s_7e8558ffa4d9dd::t_0a33fa5fe50eb1 49-53
+  s_7e8558ffa4d9dd::t_6ab6eb59f06239 28
+src/renderer/src/lib/droid-chat-session-switch.test.ts
+  s_7e8558ffa4d9dd::t_e7f74865d1723d 199-201
+  s_7e8558ffa4d9dd::t_1be8199ed3f57f 198,202-213
+src/main/droid/droid-session-title.test.ts
+  s_7e8558ffa4d9dd::t_96e10a74ecee5c 2-6
+  s_7e8558ffa4d9dd::t_1bc67a098cc84f 1,7-99,101-171
+  s_7e8558ffa4d9dd::t_19bd520c6b0abd 100
+src/renderer/src/i18n/locales/en.json
+  s_7e8558ffa4d9dd::t_56b3e1cb20591e 18755
+  s_7e8558ffa4d9dd::t_7b24a141c6214c 18774-18776
+src/renderer/src/components/native-chat/droid-commands.ts
+  s_7e8558ffa4d9dd::t_1cd145f0cb1ed1 49-53
+src/main/droid/droid-turns.ts
+  s_7e8558ffa4d9dd::t_78bad9cd22f199 29-30
+  s_7e8558ffa4d9dd::t_8e6c667577c384 165-167
+src/renderer/src/components/native-chat/use-native-chat-composer-catalog.test.tsx
+  s_7e8558ffa4d9dd::t_48c6cdd6fe45f3 22
+src/main/droid/droid-session-notifications.ts
+  s_7e8558ffa4d9dd::t_da603e545fb800 65-71
+src/main/droid/droid-session.ts
+  s_7e8558ffa4d9dd::t_6d98ab13706933 25
+  s_7e8558ffa4d9dd::t_87e4bfc63132e7 59-60
+  s_7e8558ffa4d9dd::t_33c8d39bb71c0f 85
+  s_7e8558ffa4d9dd::t_7b56da5a917c56 179-184
+src/shared/rpc-contract/structured-agent-session-droid-command-params.ts
+  s_7e8558ffa4d9dd::t_a33220b1bf9916 2
+  s_7e8558ffa4d9dd::t_c6c394f87b0192 20-25
+src/renderer/src/components/native-chat/droid-commands.test.ts
+  s_7e8558ffa4d9dd::t_d8ce818d5f7d71 31,37,41
+src/shared/droid-command-registry.ts
+  s_7e8558ffa4d9dd::t_e2c3081d7853ed 7
+src/shared/droid-host-command.ts
+  s_7e8558ffa4d9dd::t_9b4b0744587a4a 13
+  s_7e8558ffa4d9dd::t_0381253b9c8be5 31-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c401ccc77131325c8645af3c698c684291404840",
+  "prompts": {},
+  "sessions": {
+    "s_7e8558ffa4d9dd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "1e7c946d-10ae-4c7d-a448-612ae14c211f",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

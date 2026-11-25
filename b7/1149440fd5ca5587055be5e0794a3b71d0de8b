@@ -1,0 +1,19 @@
+research/droid-install-and-auth.md
+  s_0844230782d601::t_f20be6fa63efc6 55,137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b71149440fd5ca5587055be5e0794a3b71d0de8b",
+  "prompts": {},
+  "sessions": {
+    "s_0844230782d601": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a58b6577-303f-46bc-be29-b9375657cede",
+        "model": "custom:Claude-Sonnet-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

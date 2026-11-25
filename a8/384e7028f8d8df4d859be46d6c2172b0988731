@@ -1,0 +1,107 @@
+mobile/src/session/native-chat/agent-session/mobile-structured-agent-session-host-support.ts
+  s_91d04d84653459::t_a643a9534fcd4b 4-6,45,99
+mobile/src/session/native-chat/agent-session/mobile-structured-agent-session-send.ts
+  s_91d04d84653459::t_cc38e76610f344 30,63
+mobile/src/session/native-chat/agent-session/use-mobile-structured-agent-session.ts
+  s_91d04d84653459::t_449ef463c95be0 195-196
+mobile/src/session/native-chat/composer/mobile-native-chat-send.ts
+  s_91d04d84653459::t_960144b885b006 46
+mobile/src/session/native-chat/composer/mobile-structured-after-reply.test.tsx
+  s_3e2460b1afa01c::t_15e3cbab3b6d6d 1-80
+mobile/src/session/native-chat/composer/use-mobile-structured-send-with-outcome.ts
+  s_91d04d84653459::t_fdff13c7dfbf0b 86,118-119,249,298-299
+src/main/droid/droid-compaction.ts
+  s_91d04d84653459::t_e0a44c9e0fc64b 57
+src/main/droid/droid-text-command.ts
+  s_91d04d84653459::t_6a7d90d3f3b064 5,45-46
+src/main/native-chat/agent-session-wire/delivery/structured-agent-session-after-reply-queue.test.ts
+  s_3e2460b1afa01c::t_26652af070e387 1-36
+src/main/native-chat/agent-session-wire/delivery/structured-agent-session-queued-messages.ts
+  s_91d04d84653459::t_9296d077d1d731 59,110-111
+src/main/native-chat/agent-session-wire/delivery/structured-agent-session-queued-send.ts
+  s_91d04d84653459::t_3777a1038d0a92 17
+src/main/native-chat/agent-session-wire/operations/structured-agent-session-host-mutations.ts
+  s_91d04d84653459::t_23f1901c954c2b 60
+src/renderer/src/components/native-chat/NativeChatStructuredHistoryState.tsx
+  s_91d04d84653459::t_2fb881d6528b62 1-42
+src/renderer/src/components/native-chat/NativeChatStructuredSession.tsx
+  s_91d04d84653459::t_ec0fda3bb4eb28 11,20,279-285,322,367
+src/renderer/src/components/native-chat/composer/NativeChatComposerPane.tsx
+  s_91d04d84653459::t_79dda898ce1ef4 313-316
+src/renderer/src/components/native-chat/composer/editor/native-chat-composer-input.ts
+  s_91d04d84653459::t_519fb702832680 30-33
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-composer-droid-keys.ts
+  s_91d04d84653459::t_9220cf117fd4fc 1-97
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-composer-provider-keys.ts
+  s_91d04d84653459::t_b138babf5d7c8f 9,21,33-35
+src/renderer/src/components/native-chat/composer/editor/use-native-chat-droid-turn-keys.ts
+  s_91d04d84653459::t_d1e4d26121ae1c 1-78
+src/renderer/src/components/native-chat/composer/submit/native-chat-composer-send-intent.ts
+  s_91d04d84653459::t_4a981d1aca5a14 4-7
+src/renderer/src/components/native-chat/composer/submit/native-chat-structured-composer-dispatch.ts
+  s_91d04d84653459::t_39c8dc45628bc2 20
+src/renderer/src/components/native-chat/prompts/NativeChatQuestionCard.escape.test.tsx
+  s_e709f6525cdb61::t_2bb506a0a75244 1-25
+src/renderer/src/components/native-chat/prompts/NativeChatQuestionCard.tsx
+  s_91d04d84653459::t_0fc5381d26da6d 40,67,232-238,254,260
+src/renderer/src/components/native-chat/prompts/NativeChatStructuredPromptCard.tsx
+  s_91d04d84653459::t_e36682c1469072 6,19-20,28,48
+src/renderer/src/components/native-chat/prompts/NativeChatStructuredQuestionCard.tsx
+  s_91d04d84653459::t_511cff709adf78 14,22,40
+src/renderer/src/components/native-chat/queue/structured-agent-session-sending-queued-cards.ts
+  s_91d04d84653459::t_e19abb99ea8e3e 26-31,37-41,63
+src/renderer/src/components/native-chat/session/structured/delivery/structured-agent-session-pending-sends.ts
+  s_91d04d84653459::t_55ea03eb99ec6b 12
+src/renderer/src/components/native-chat/session/structured/delivery/structured-agent-session-send-attempt.ts
+  s_91d04d84653459::t_a6625f4e83ef29 145
+src/renderer/src/components/native-chat/session/structured/delivery/structured-agent-session-send-slot.ts
+  s_91d04d84653459::t_5eaeb7f66fa860 28,50,72
+src/renderer/src/components/native-chat/session/structured/delivery/use-structured-agent-session-sends.ts
+  s_91d04d84653459::t_2b2d11144aafec 1-4,84,134,155
+src/renderer/src/runtime/native-chat/host-capabilities/structured-agent-session-host-capability.ts
+  s_91d04d84653459::t_64e9a5ec9d9098 1,190-198
+src/shared/agent-session/requests/structured-agent-session-send-mutation.ts
+  s_91d04d84653459::t_69029bddaba158 17,33
+src/shared/agent-session/structured-agent-session-surface-capabilities.ts
+  s_91d04d84653459::t_afd07634b59333 7,66
+src/shared/droid-composer-key-help.ts
+  s_91d04d84653459::t_054033ebc2ea8c 1-36
+src/shared/droid-composer-keys.ts
+  s_91d04d84653459::t_82f89aabb6cf9e 1-52
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_91d04d84653459::t_6147a60b5f4d88 2,22,56-57
+src/shared/rpc-contract/structured-agent-session-params.ts
+  s_91d04d84653459::t_1c61c395203479 118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a8384e7028f8d8df4d859be46d6c2172b0988731",
+  "prompts": {},
+  "sessions": {
+    "s_3e2460b1afa01c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a954d65b-e10c-408f-a022-ce2d95d891d7",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_e709f6525cdb61": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "0d853de5-b261-491f-9c34-d9ab4f2c4e13",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

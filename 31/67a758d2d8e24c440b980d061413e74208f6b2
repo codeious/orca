@@ -1,0 +1,19 @@
+src/main/jsonl-rpc/session-adapter.ts
+  s_a71ca3b06ed7b3::t_38ad03fd2c7bf8 97-99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3167a758d2d8e24c440b980d061413e74208f6b2",
+  "prompts": {},
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

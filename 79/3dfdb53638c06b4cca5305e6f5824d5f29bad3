@@ -1,0 +1,60 @@
+src/main/native-chat/agent-session-wire/structured-agent-session-adapter.ts
+  h_476903bd8a47d9 123-128
+src/main/native-chat/agent-session-wire/structured-agent-session-failed-create-refusal.ts
+  h_476903bd8a47d9 49-77,106-117,181-184
+src/main/native-chat/agent-session-wire/structured-agent-session-pre-spawn-error.ts
+  h_476903bd8a47d9 1-51
+src/main/native-chat/agent-session-wire/structured-agent-session-pre-spawn-first-answer.test.ts
+  h_476903bd8a47d9 118-119,235-268
+src/main/native-chat/agent-session-wire/structured-agent-session-refusal-details.test.ts
+  h_476903bd8a47d9 21-24,158-223
+src/main/runtime/orca-runtime-get-structured-agent-session-create-support.ts
+  h_476903bd8a47d9 212-220
+src/main/runtime/orca-runtime-structured-agent-session-create-intent.test.ts
+  h_476903bd8a47d9 44,47-88
+src/renderer/src/components/native-chat/agent-session-availability-words-text.ts
+  h_476903bd8a47d9 8,21-22,74-86
+src/renderer/src/components/native-chat/agent-session-failure-words-text.test.ts
+  h_476903bd8a47d9 216-242
+src/renderer/src/i18n/en-runtime-required.json
+  h_476903bd8a47d9 2838-2839
+src/renderer/src/i18n/locales/en.json
+  h_476903bd8a47d9 18097-18098
+src/renderer/src/i18n/locales/es.json
+  h_476903bd8a47d9 17817-17818
+src/renderer/src/i18n/locales/fr.json
+  h_476903bd8a47d9 17919-17920
+src/renderer/src/i18n/locales/ja.json
+  h_476903bd8a47d9 17852-17853
+src/renderer/src/i18n/locales/ko.json
+  h_476903bd8a47d9 17852-17853
+src/renderer/src/i18n/locales/zh.json
+  h_476903bd8a47d9 17831-17832
+src/shared/agent-session-failure-copy.ts
+  h_476903bd8a47d9 135-138,157-159
+src/shared/agent-session-failure-words.test.ts
+  h_476903bd8a47d9 11,165-199
+src/shared/agent-session-failure-words.ts
+  h_476903bd8a47d9 30,175-178
+src/shared/agent-session-refusal-details.ts
+  h_476903bd8a47d9 130-132,158-167,189,265-279,312-314
+src/shared/agent-session-refusal-notice.test.ts
+  h_476903bd8a47d9 363-368,463
+src/shared/agent-session-refusal-reason-words.ts
+  h_476903bd8a47d9 183-186
+src/shared/agent-session-release-sentence.ts
+  h_476903bd8a47d9 1-23
+src/shared/agent-session-wire-refusals.test.ts
+  h_476903bd8a47d9 199-233
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "793dfdb53638c06b4cca5305e6f5824d5f29bad3",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

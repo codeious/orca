@@ -1,0 +1,39 @@
+src/main/droid/droid-account-home.ts
+  s_91d04d84653459::t_c5118ea5bef876 1-17
+src/main/droid/droid-agent-definition.ts
+  s_91d04d84653459::t_49ce391f20f0d0 1-58
+src/main/droid/droid-autonomy-cap-notice.ts
+  s_91d04d84653459::t_6caebe2f3172a5 1-32
+src/main/droid/droid-autonomy-level.ts
+  s_91d04d84653459::t_85063dbe15fe82 1-38
+src/main/droid/droid-compaction-summary.ts
+  s_91d04d84653459::t_406955f79755b9 1-64
+src/main/droid/droid-protocol-version.ts
+  s_91d04d84653459::t_807af70c2ef86c 1-3
+src/main/droid/droid-rewind-target.ts
+  s_91d04d84653459::t_54f4deeb37e488 1-15
+src/main/droid/droid-session-file.ts
+  s_91d04d84653459::t_b215c1182bcea2 1-112
+src/main/droid/droid-session-id.ts
+  s_91d04d84653459::t_c3daff121bfd6e 1-6
+src/main/droid/droid-session-launch-contract.ts
+  s_91d04d84653459::t_0f323bb875079e 1-34
+src/main/droid/droid-started-session.ts
+  s_91d04d84653459::t_2eb348713ff1e3 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8f761fbb4d0baa71c3bb740768208e46b111be55",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

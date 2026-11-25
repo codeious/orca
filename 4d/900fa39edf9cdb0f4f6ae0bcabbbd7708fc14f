@@ -1,0 +1,19 @@
+research/droid-install-and-auth.md
+  s_ef45928f851bdc::t_55def25f9bfb1f 1-171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4d900fa39edf9cdb0f4f6ae0bcabbbd7708fc14f",
+  "prompts": {},
+  "sessions": {
+    "s_ef45928f851bdc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "067b9822-c03d-42ee-9e02-2f9b634f5813",
+        "model": "custom:Custom:-Grok-4.7-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

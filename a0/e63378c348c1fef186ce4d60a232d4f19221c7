@@ -1,0 +1,156 @@
+src/main/droid/droid-session-adapter.ts
+  s_bde4d4cb749c06::t_b7fcb67a6b587b 49-50,54-55
+  s_bde4d4cb749c06::t_b8e4098fe5818b 2
+src/main/native-chat/agent-session-wire/structured-agent-definition.ts
+  s_bde4d4cb749c06::t_bad8c4968807fd 28-33
+src/renderer/src/lib/structured-agent-session-launch-options.ts
+  s_bde4d4cb749c06::t_2223f53baad965 6
+  s_bde4d4cb749c06::t_b15b4c896fcd0a 56-57,60-61
+  s_bde4d4cb749c06::t_ae035d1124885b 75-77,84-86
+src/shared/native-chat-session-options.ts
+  s_bde4d4cb749c06::t_b1df1f35a1e6c4 2
+  s_bde4d4cb749c06::t_f1f9fdd7777af7 138-146,150-151
+src/main/native-chat/agent-session-wire/structured-agent-session-host-types.ts
+  s_bde4d4cb749c06::t_c0f3399692bfa2 139-143
+src/main/native-chat/agent-session-wire/structured-agent-session-options-read.ts
+  s_bde4d4cb749c06::t_407c2a52cb9a2e 58-61
+  s_bde4d4cb749c06::t_2a560ca04e7a4e 96
+  s_bde4d4cb749c06::t_0d7c52e9a0db16 107-108,113-121
+  s_bde4d4cb749c06::t_4658cc4d201879 122-124
+src/main/droid/droid-session.ts
+  s_bde4d4cb749c06::t_7f8b6fe36a2d11 60-66
+  s_bde4d4cb749c06::t_d51e08b7d28319 139
+  s_bde4d4cb749c06::t_365e967acfdbf5 214-217
+src/main/droid/droid-session-settings.ts
+  s_bde4d4cb749c06::t_aabbbfd67d8815 3
+src/shared/structured-agent-session-options.ts
+  s_bde4d4cb749c06::t_833ffbf1356867 169
+  s_bde4d4cb749c06::t_b0a0a2555a0691 67-69
+  s_bde4d4cb749c06::t_939d9db776ec0f 2
+src/main/droid/droid-structured-launch-resolution.ts
+  s_bde4d4cb749c06::t_23980435c626dd 17-18
+src/main/native-chat/agent-session-wire/structured-agent-session-droid-autonomy-at-rest.test.ts
+  s_bde4d4cb749c06::t_c541e628215855 1-152
+  s_bde4d4cb749c06::t_097c0744959430 153-155
+src/shared/droid-autonomy-options.ts
+  s_bde4d4cb749c06::t_bd23b300aef3a1 1-2
+  s_bde4d4cb749c06::t_134b3d7e8333d9 20-32
+  s_bde4d4cb749c06::t_a3f30e7ec27696 14-19
+  s_bde4d4cb749c06::t_b96ef8df573ef8 34,36-37,40-41,43-44,46-51
+  s_bde4d4cb749c06::t_8c45bb3c3d7523 3-13,33,35,38-39,42,45,52
+src/renderer/src/components/native-chat/NativeChatAutonomyPicker.tsx
+  s_bde4d4cb749c06::t_73ee29429339f2 13-15
+  s_bde4d4cb749c06::t_e0895b2dfb6f00 51,54
+  s_bde4d4cb749c06::t_6ac885d7047070 1-12,16-50,52-53,55-85
+  s_bde4d4cb749c06::t_81bfbb1b1ae0f3 86-88
+src/renderer/src/components/native-chat/structured-agent-session-draft-controls.ts
+  s_bde4d4cb749c06::t_51c5298c0ec567 55,59-62
+  s_bde4d4cb749c06::t_5fee625392abd2 18
+  s_bde4d4cb749c06::t_ca4caa6bf13895 1-17,19-54,56-58,63
+src/main/droid/droid-autonomy-level.ts
+  s_bde4d4cb749c06::t_591e62cb0b8c0a 1-5
+src/renderer/src/components/native-chat/NativeChatAutonomyPicker.test.tsx
+  s_bde4d4cb749c06::t_203a852596056f 1-103,105-106,123-184
+  s_bde4d4cb749c06::t_4f36dc5a629b33 104,107-113,119-122
+  s_bde4d4cb749c06::t_dc782e923bf913 114-118
+src/shared/droid-spec-pair-view.ts
+  s_bde4d4cb749c06::t_2e79f49e81ecc7 5-6
+  s_bde4d4cb749c06::t_a0a3e260daa640 141-142,149-151
+src/main/droid/droid-autonomy-cap-notice.ts
+  s_bde4d4cb749c06::t_b91f3423b781a8 2-3
+src/main/runtime/structured-agent-session-runtime.ts
+  s_bde4d4cb749c06::t_93509718d0993c 323
+src/renderer/src/i18n/locales/en.json
+  s_bde4d4cb749c06::t_ccbe288d3374d0 18342-18348
+src/renderer/src/components/native-chat/NativeChatSessionOptionPickers.tsx
+  s_bde4d4cb749c06::t_06119744badb3c 16
+  s_bde4d4cb749c06::t_bb60a311db7c9d 177
+  s_bde4d4cb749c06::t_f9762ccfd1c9dd 307-318
+  s_bde4d4cb749c06::t_79802861631e2f 40
+src/renderer/src/lib/structured-agent-session-launch-options.test.ts
+  s_bde4d4cb749c06::t_7d1c44e55ab553 367-389,391-408,410-421,423-433,435-457
+  s_bde4d4cb749c06::t_5c614f8d4d6bc8 390,409,422,434
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.test.tsx
+  s_bde4d4cb749c06::t_46c077eef1f913 39-43,46
+  s_bde4d4cb749c06::t_f199ebb2d7de36 3-4,8,10
+  s_bde4d4cb749c06::t_555b24b167d5aa 188,192,199
+  s_bde4d4cb749c06::t_71249d1939e949 240
+  s_bde4d4cb749c06::t_5c614f8d4d6bc8 145
+  s_bde4d4cb749c06::t_0fad10039d5650 128-144,146-187,189-191,193-198,200-239,241-262
+src/renderer/src/components/native-chat/use-structured-agent-session-options.autonomy.test.tsx
+  s_bde4d4cb749c06::t_2960c831f124d1 1-234
+  s_bde4d4cb749c06::t_27acacc023fe4e 235-238
+src/shared/droid-autonomy-options.test.ts
+  s_bde4d4cb749c06::t_f8846950a202d1 1-19,21-49
+  s_bde4d4cb749c06::t_ba05055fd9d164 20
+src/main/droid/droid-agent-definition.ts
+  s_bde4d4cb749c06::t_bcf31b0bd44320 1-4,7
+  s_bde4d4cb749c06::t_eee78b71eb7098 38-42
+  s_bde4d4cb749c06::t_0e5f0d5cceb221 30-34
+src/renderer/src/components/native-chat/NativeChatSessionOptionPickerTrigger.tsx
+  s_bde4d4cb749c06::t_425c613434fe88 83
+  s_bde4d4cb749c06::t_817d7f6b9ebd7c 6,9-11,16,20-27
+  s_bde4d4cb749c06::t_62ecf15e0c205a 48
+  s_bde4d4cb749c06::t_131159e1ca5a6c 69
+src/main/droid/droid-spec-option.test.ts
+  s_bde4d4cb749c06::t_99dcda11811131 136-137
+src/shared/droid-autonomy-view.ts
+  s_bde4d4cb749c06::t_61e047a81f2cf9 21
+  s_bde4d4cb749c06::t_2ccf460c3def6f 32-35,38
+  s_bde4d4cb749c06::t_5d066b0d0a9119 9
+  s_bde4d4cb749c06::t_dde48455b37a78 1-3,12-14,22,27,40-41,43,48,56-57,59-60,62,74
+  s_bde4d4cb749c06::t_d652d18f6fadad 7,11,15-20,25-26,46-47,49,68-71
+  s_bde4d4cb749c06::t_eaf7f116fe5bc0 4-6,8,10,23-24,28-31,36-37,39,42,44-45,50-55,58,61,63-67,72-73
+src/main/droid/droid-autonomy-picker.test.ts
+  s_bde4d4cb749c06::t_f6027133065682 225-226
+  s_bde4d4cb749c06::t_c9aabeafdeb2cc 44-47
+  s_bde4d4cb749c06::t_cfe7aa90cd0aad 1-43,48-224,227-271
+  s_bde4d4cb749c06::t_53ee096e8a2c9b 272-278
+src/renderer/src/components/native-chat/use-structured-agent-session-options.ts
+  s_bde4d4cb749c06::t_87baa8dc18c1be 28-31
+  s_bde4d4cb749c06::t_b68f0457471c71 154
+  s_bde4d4cb749c06::t_3e29bb6ae7b709 253
+  s_bde4d4cb749c06::t_f0e8c37e7b2789 207
+  s_bde4d4cb749c06::t_b697db387e833d 283-289
+  s_bde4d4cb749c06::t_c9e8be949e9d59 296-297,299
+  s_bde4d4cb749c06::t_c6d01482088a64 229-237
+  s_bde4d4cb749c06::t_47f8cc697dd098 8-9
+  s_bde4d4cb749c06::t_55bff7fd754102 153
+src/shared/droid-autonomy-view.test.ts
+  s_bde4d4cb749c06::t_4e95772d45cb5b 173-188
+  s_bde4d4cb749c06::t_4f7fe243fb4414 1-5,7-9,11-12,14-25,27-161,237-246
+  s_bde4d4cb749c06::t_19869d013ccc91 26
+  s_bde4d4cb749c06::t_aaeb0c8efe2844 162-172,189-236
+  s_bde4d4cb749c06::t_7f5468dc9a6194 10,13
+  s_bde4d4cb749c06::t_a16978a5cd0ef7 6
+src/shared/agent-session-wire.ts
+  s_bde4d4cb749c06::t_530ba695f9821e 498-501
+src/main/droid/droid-session-options.ts
+  s_bde4d4cb749c06::t_fc1d8832a35c0a 113-115
+  s_bde4d4cb749c06::t_b22a3e00736ff2 212
+  s_bde4d4cb749c06::t_9e4c1c99124ee4 3-6
+  s_bde4d4cb749c06::t_c0808dde73f4c4 134-155
+  s_bde4d4cb749c06::t_3cc51e1d7e18b7 81-84,91,94-96
+  s_bde4d4cb749c06::t_d288586488bf74 34-36
+  s_bde4d4cb749c06::t_a3406b9790e7e4 71-74
+  s_bde4d4cb749c06::t_92e92db2ef1743 222-223
+  s_bde4d4cb749c06::t_e24e3e51d970c4 2
+src/renderer/src/components/native-chat/use-native-chat-droid-composer-keys.ts
+  s_bde4d4cb749c06::t_c8c475b657a4a6 4-7,20,26-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a0e63378c348c1fef186ce4d60a232d4f19221c7",
+  "prompts": {},
+  "sessions": {
+    "s_bde4d4cb749c06": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "c72004db-77fc-4d27-8332-0295141f4ac1",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

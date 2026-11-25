@@ -1,0 +1,35 @@
+src/shared/__fixtures__/droid-parent-process-hooks.jsonl
+  s_cc5e4a6cdbd85d::t_2338feda2cd411 1-24
+src/shared/__fixtures__/droid-parent-process-hooks.meta.json
+  s_cc5e4a6cdbd85d::t_07fd20ebd0d6b8 1-17
+src/shared/__fixtures__/droid-slow-start-hooks.jsonl
+  s_cc5e4a6cdbd85d::t_1dc3a8c5b2309a 1-70
+src/shared/__fixtures__/droid-slow-start-hooks.meta.json
+  s_cc5e4a6cdbd85d::t_6cae4b3370a832 1-10
+src/wsl-guest/relay-droid-exit-watch.test.ts
+  s_91d04d84653459::t_63d390efc32c81 1-141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2582ac68a13a008c0961f1d566538f76f9ac6349",
+  "prompts": {},
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_cc5e4a6cdbd85d": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f26e0b46-5399-4064-a893-2fcb3c48f02e",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

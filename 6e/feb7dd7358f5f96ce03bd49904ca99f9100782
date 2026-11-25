@@ -1,0 +1,16 @@
+src/main/runtime/rpc/methods/structured-agent-session-client-permissions.test.ts
+  h_476903bd8a47d9 5-6,12,25-51,74-75
+src/shared/agent-session/structured-agent-session-renderer-client-capabilities.ts
+  h_476903bd8a47d9 11,39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6efeb7dd7358f5f96ce03bd49904ca99f9100782",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

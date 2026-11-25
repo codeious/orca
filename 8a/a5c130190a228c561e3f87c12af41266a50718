@@ -1,0 +1,38 @@
+src/main/ipc/ai-vault-droid-session-holder-routing.test.ts
+  s_f87fd4e7a08936::t_288ce47b0c8bc7 1-175
+src/main/ipc/ai-vault.ts
+  s_f87fd4e7a08936::t_2551ba889784a8 65-66
+  s_f87fd4e7a08936::t_4fb74cd13bebe9 30-32
+  s_f87fd4e7a08936::t_4fcc9063e33cae 275
+  s_f87fd4e7a08936::t_0fe2e5ea8365a5 29
+src/main/ai-vault/runtime-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_35f0c868e064b3 1-62
+src/main/ipc/register-core-handlers/register-core-handlers.ts
+  s_f87fd4e7a08936::t_06d7050fa0f05c 239-241
+  s_f87fd4e7a08936::t_45c16b983e0900 96
+src/main/ipc/ai-vault.test.ts
+  s_f87fd4e7a08936::t_0f9430ae8a37ac 263,266-305
+  s_f87fd4e7a08936::t_52ad60c5321dcf 264-265
+src/shared/ai-vault-droid-session-holder.ts
+  s_f87fd4e7a08936::t_f9487d2c65620b 11-13
+src/main/ipc/ai-vault-droid-session-holder-routing.ts
+  s_f87fd4e7a08936::t_868a89f5eeb4cb 1-73
+src/main/ai-vault/runtime-droid-session-holder.ts
+  s_f87fd4e7a08936::t_6d63be34bd5bf0 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8aa5c130190a228c561e3f87c12af41266a50718",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

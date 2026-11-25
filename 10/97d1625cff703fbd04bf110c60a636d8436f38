@@ -1,0 +1,33 @@
+src/main/droid/droid-agent-connection.ts
+  s_ad00747fcb93b9::t_0237d6e037df62 1-18,21-33,36-68,70-223
+src/main/droid/droid-json-rpc-peer.ts
+  s_d345d6582cef1f::t_ab86de8248b5b1 1-125
+src/main/droid/droid-rpc-envelope.ts
+  s_d345d6582cef1f::t_192150ea3a502e 1-27
+src/main/droid/droid-rpc-errors.ts
+  s_d345d6582cef1f::t_f1ef823b6e22e4 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1097d1625cff703fbd04bf110c60a636d8436f38",
+  "prompts": {},
+  "sessions": {
+    "s_ad00747fcb93b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "76dd52ab-a5b9-4faa-8d3f-2f25a389af4b",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d345d6582cef1f": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "323cafb8-377f-429c-b22d-f2ad363a55e6",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

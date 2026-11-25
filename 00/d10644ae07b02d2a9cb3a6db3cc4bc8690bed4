@@ -1,0 +1,34 @@
+src/main/agent-hooks/server-droid-session-holder.test.ts
+  s_f87fd4e7a08936::t_8e1cd9ea667255 137-138
+  s_f87fd4e7a08936::t_e2361d37ca0ebd 167,176,182-198
+  s_f87fd4e7a08936::t_7fbeace156a58c 1-54,56-57,59-64,67-69,71-90,92-97,106,108,110-111,120-124,126-136,139-143,202-209,218-219,221-224
+  s_f87fd4e7a08936::t_c279e0d0862a79 144-166,168-175,177-181,199-201
+  s_f87fd4e7a08936::t_2b576a3df6c57f 91,98-105,107,109,112-119,125
+  s_f87fd4e7a08936::t_91b7fd38f6e3b8 55,58,65-66
+  s_f87fd4e7a08936::t_eba7d1b37c17d8 210-217
+  s_f87fd4e7a08936::t_c27289dd427488 70
+  s_f87fd4e7a08936::t_9b0d75131c0e20 220
+  s_f87fd4e7a08936::t_687beb9b42736b 225-228
+src/main/agent-hooks/server/server-agent-presence.ts
+  s_f87fd4e7a08936::t_a8b4a5980b0c70 74-75
+  s_f87fd4e7a08936::t_8eb5c3711ade68 11-12
+  s_f87fd4e7a08936::t_9f30d3735f26a2 56-57,61,76-77,79,81-91
+  s_f87fd4e7a08936::t_f558c536ebb419 62
+  s_f87fd4e7a08936::t_8de1a5849f3f15 58-60,63-73,78,80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "00d10644ae07b02d2a9cb3a6db3cc4bc8690bed4",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+config/scripts/test-runtime/environment/vitest-real-agent-home-write-guard.test.ts
+  h_476903bd8a47d9 47-72
+config/scripts/test-runtime/environment/vitest-real-agent-home-write-guard.ts
+  h_476903bd8a47d9 19-25,34-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f1949994f9a85457721a66cf8cfc852fda0a89c4",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

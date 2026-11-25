@@ -1,0 +1,61 @@
+src/main/droid/droid-history-catch-up.test.ts
+  h_476903bd8a47d9 1-66
+src/main/droid/droid-history-catch-up.ts
+  h_476903bd8a47d9 1-208
+src/main/droid/droid-runtime-registration.ts
+  h_476903bd8a47d9 10,49-54
+src/main/droid/droid-session-adapter.ts
+  h_476903bd8a47d9 162
+src/main/droid/droid-session.ts
+  h_476903bd8a47d9 3,85,243-249
+src/main/droid/droid-spec-continuation.ts
+  h_476903bd8a47d9 1-114
+src/main/droid/droid-spec-handoff.test.ts
+  h_476903bd8a47d9 1-77
+src/main/droid/droid-transcript-line-decoder.ts
+  h_476903bd8a47d9 1-47
+src/main/native-chat/agent-session-journal/history-import/adopted-transcript-source.ts
+  h_476903bd8a47d9 14-19,85-88
+src/main/native-chat/agent-session-journal/history-import/journal-legacy-identity.ts
+  h_476903bd8a47d9 13
+src/main/native-chat/agent-session-journal/history-import/journal-legacy-import.ts
+  h_476903bd8a47d9 16-20,99
+src/main/native-chat/agent-session-journal/history-import/journal-legacy-transcript-stream.ts
+  h_476903bd8a47d9 1-3,41-42,44-54
+  s_91a1eab52ed9bd::t_5f46ebf413624a 1-3,41-42,44-54
+src/main/native-chat/agent-session-wire/acquisition/structured-agent-session-adopted-import.ts
+  h_476903bd8a47d9 82
+src/main/native-chat/agent-session-wire/acquisition/structured-agent-session-attach.ts
+  h_476903bd8a47d9 72-73
+src/main/native-chat/agent-session-wire/operations/structured-agent-session-host-mutations.ts
+  h_476903bd8a47d9 246
+src/main/native-chat/agent-session-wire/operations/structured-agent-session-turns-prompt.ts
+  h_476903bd8a47d9 32,153
+src/main/native-chat/agent-session-wire/providers/structured-agent-session-adapter.ts
+  h_476903bd8a47d9 300
+src/main/runtime/agent-session/installation/structured-agent-session-runtime-contract.ts
+  h_476903bd8a47d9 78-82
+src/main/runtime/workspaces/process-listing/workspace-process-listing.ts
+  h_476903bd8a47d9 1,67-70,300-301
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "09cd3b5643d283daf0e7d360bb653c47082ce305",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_91a1eab52ed9bd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f2a8e9fd-b7c8-4bfc-9428-79cd9e011c55",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

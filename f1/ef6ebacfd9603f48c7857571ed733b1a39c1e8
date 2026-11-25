@@ -1,0 +1,49 @@
+src/main/droid/droid-permission-requests.ts
+  s_767cf5531d83f7::t_ae83444d9bcb68 15,55,63-64,100,107-110,113-118
+src/main/droid/droid-resume-grammar.test.ts
+  s_767cf5531d83f7::t_ad566e2106cc19 1-49
+src/main/droid/droid-resume-grammar.ts
+  s_767cf5531d83f7::t_b78a57732ce425 1-133
+src/main/droid/droid-runtime-registration.ts
+  s_767cf5531d83f7::t_d5ea5e68f81ac4 11,51-56
+src/main/droid/droid-session.ts
+  s_767cf5531d83f7::t_ff4862e5816104 31,49,144-146,148-149,175
+src/main/droid/droid-spec-continuation.ts
+  s_767cf5531d83f7::t_38d6750b958778 1-114
+src/main/droid/droid-spec-handoff.ts
+  s_767cf5531d83f7::t_8ee05bd325ea59 1-127
+src/main/native-chat/agent-session-journal/journal-legacy-import.ts
+  s_767cf5531d83f7::t_1b8f1f78877aad 27,93-96,198-199,202-205
+src/main/native-chat/transcript-line-decoders-droid.test.ts
+  s_767cf5531d83f7::t_38ab7db6091abf 1-98
+src/main/native-chat/transcript-line-decoders-droid.ts
+  s_767cf5531d83f7::t_58b20fd1a33f3c 1-47
+src/main/runtime/session-tabs/structured-session-cli-writer-host.ts
+  s_767cf5531d83f7::t_b720471f66a63c 7-10,19-29
+src/main/runtime/structured-agent-cli-holders.test.ts
+  s_767cf5531d83f7::t_c814e2450e752e 1-79
+src/main/runtime/structured-agent-cli-writers.ts
+  s_767cf5531d83f7::t_c79970a57a5513 7-10,23-52
+src/shared/ai-vault-session-holder.test.ts
+  s_767cf5531d83f7::t_8d07a174442d6e 1-25
+src/shared/ai-vault-session-holder.ts
+  s_767cf5531d83f7::t_ec2b248d9a3bf0 1-57
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_767cf5531d83f7::t_a8be9d680ab8c4 83,843
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f1ef6ebacfd9603f48c7857571ed733b1a39c1e8",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

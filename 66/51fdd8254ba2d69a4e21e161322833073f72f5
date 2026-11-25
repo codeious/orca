@@ -1,0 +1,41 @@
+src/renderer/src/i18n/locales/de.json
+  s_826ce93d1267f7::t_2b95ca5fd2b707 14702-14703,15026-15030,20275-20278
+src/renderer/src/i18n/locales/en.json
+  s_826ce93d1267f7::t_2827949503104c 15748-15749,16076-16080,21833-21835
+src/renderer/src/i18n/locales/es.json
+  s_826ce93d1267f7::t_6a7a7caa6cc978 14390-14391,14709-14713,20079-20082
+src/renderer/src/i18n/locales/fr.json
+  s_826ce93d1267f7::t_00b6acce95f4a1 14661-14662,14980-14984,20352-20355
+src/renderer/src/i18n/locales/ja.json
+  s_826ce93d1267f7::t_77e1b4dc64ee75 14837-14838,15155-15159,20714-20716
+src/renderer/src/i18n/locales/ko.json
+  s_826ce93d1267f7::t_97030c862682b5 14032-14033,14346-14350,19570-19573
+src/renderer/src/i18n/locales/pt.json
+  s_826ce93d1267f7::t_253987a3e78e7e 11056-11057,11650-11654,21777-21779
+src/renderer/src/i18n/locales/ru.json
+  s_826ce93d1267f7::t_75e16762796a0e 15125-15126,15473-15477,20931-20934
+src/renderer/src/i18n/locales/tr.json
+  s_826ce93d1267f7::t_1dd122a40e92d4 14849-14850,15173-15177,20420-20423
+src/renderer/src/i18n/locales/zh-Hant.json
+  s_826ce93d1267f7::t_339fc199e0b678 14503-14504,14817-14821,19966-19969
+src/renderer/src/i18n/locales/zh.json
+  s_826ce93d1267f7::t_2edf255efa9e94 14893-14894,15211-15215,20784-20786
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_826ce93d1267f7::t_8e4365e18d72d4 95,938
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6651fdd8254ba2d69a4e21e161322833073f72f5",
+  "prompts": {},
+  "sessions": {
+    "s_826ce93d1267f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "b53df055-90a1-44e1-bf15-8a04028becbf",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

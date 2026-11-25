@@ -1,0 +1,18 @@
+src/main/acp/acp-dialects/droid-dialect.ts
+  h_476903bd8a47d9 3,51
+src/main/acp/acp-dialects/droid-model-catalog.ts
+  h_476903bd8a47d9 1-78
+src/main/droid/droid-acp-launch-spec.ts
+  h_476903bd8a47d9 4,44-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bb96823cc43ac37b04cc056ba881e09b7dce9cfa",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

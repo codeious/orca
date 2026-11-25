@@ -1,0 +1,75 @@
+src/shared/agent-session-journal-types.ts
+  s_9906055b8cf3ba::t_79336e1405cb5a 1
+  s_9906055b8cf3ba::t_0ff4a92798cc29 195
+src/renderer/src/i18n/locales/en.json
+  s_9906055b8cf3ba::t_ef1215d21683e7 18559
+src/renderer/src/components/native-chat/NativeChatQuestionCard.tsx
+  s_9906055b8cf3ba::t_21ac3f6c412a8e 165-169
+  s_9906055b8cf3ba::t_2d1fb96fc32f1b 10-11
+  s_9906055b8cf3ba::t_f1154188c3ad95 246-248
+  s_9906055b8cf3ba::t_c54a31d862ac9d 31-32
+  s_9906055b8cf3ba::t_954d708d58b7a8 338
+  s_9906055b8cf3ba::t_3786827cfff46f 9
+  s_9906055b8cf3ba::t_771e01699dedcf 62,72-74,78-80
+  s_9906055b8cf3ba::t_9b6efcc81496b4 240-245,249-250,252
+  s_9906055b8cf3ba::t_52ab97425c09b2 314-331,336-337,339-348
+src/renderer/src/components/native-chat/NativeChatQuestionSearch.tsx
+  s_9906055b8cf3ba::t_2f3960e40ddf32 1-26
+src/renderer/src/components/native-chat/NativeChatStructuredSession.tsx
+  s_9906055b8cf3ba::t_2fefcf2022d731 384-385
+src/main/droid/droid-pick-options-requests.ts
+  s_9906055b8cf3ba::t_c1d1868a35b75d 1-16,18-24,26-49,59-101
+  s_9906055b8cf3ba::t_d67e22a678b616 17
+  s_9906055b8cf3ba::t_cc1ee65335fe6c 25
+  s_9906055b8cf3ba::t_8453d5c0c08e2e 50
+  s_9906055b8cf3ba::t_8a093dbc111baf 51-58
+src/renderer/src/components/native-chat/NativeChatQuestionOptionRow.tsx
+  s_9906055b8cf3ba::t_2ceb31540775e3 1-48
+src/renderer/src/components/native-chat/native-chat-question-search.ts
+  s_9906055b8cf3ba::t_d516ee07f37aff 1-6,9-10
+  s_9906055b8cf3ba::t_21a077a8a00dbe 7-8
+src/renderer/src/components/native-chat/NativeChatStructuredQuestionCard.tsx
+  s_9906055b8cf3ba::t_ac42ad4790f802 48-49
+  s_9906055b8cf3ba::t_4c672338511af7 10,18-19,27-29,31-46
+  s_9906055b8cf3ba::t_df060f5f4af639 30
+src/renderer/src/components/native-chat/NativeChatStructuredQuestionCard.test.tsx
+  s_9906055b8cf3ba::t_1d9f79ec62ae27 20,29,35-66
+  s_9906055b8cf3ba::t_0f83c313e426a3 267-280
+  s_9906055b8cf3ba::t_0413c54d11e48c 67,164-266,281-288
+src/main/droid/droid-prompts.ts
+  s_9906055b8cf3ba::t_8c259ea5be5fdb 15
+  s_9906055b8cf3ba::t_2b01f5c2903d9d 25-26
+src/main/native-chat/agent-session-journal/journal-prompt-body-bounds.ts
+  s_9906055b8cf3ba::t_73620eeba65daf 113-125
+src/main/droid/droid-pick-options.test.ts
+  s_9906055b8cf3ba::t_83b1e26ebfe929 214-222,224-231,240-244
+  s_9906055b8cf3ba::t_fae3126d2215b3 245-265
+  s_9906055b8cf3ba::t_1126ba50d8838d 266-270,274-281
+  s_9906055b8cf3ba::t_21a077a8a00dbe 149,232-239
+  s_9906055b8cf3ba::t_8c494491aaaf9c 271-273
+  s_9906055b8cf3ba::t_2fa1c7e704d8a6 178,181,186,189,191-192,194-197,200,202-204,208-210
+  s_9906055b8cf3ba::t_d25f68bb9bc8a1 1-148,150-177,179-180,182-185,187-188,190,193,198-199,201,205-207,211-212,282-291
+  s_9906055b8cf3ba::t_58865decd911ff 213,223
+src/shared/agent-session-journal-schemas.ts
+  s_9906055b8cf3ba::t_67f3d3f190dac2 152-154
+src/shared/native-chat-ask-types.ts
+  s_9906055b8cf3ba::t_2cfc765ba5123f 8-9,12-15
+src/shared/agent-session-journal-question-picker.ts
+  s_9906055b8cf3ba::t_03e24b01805f69 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "089bae044915f654a4f5f77c53422525f0955b30",
+  "prompts": {},
+  "sessions": {
+    "s_9906055b8cf3ba": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "071d5557-c583-4976-b17b-d0a55e234827",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

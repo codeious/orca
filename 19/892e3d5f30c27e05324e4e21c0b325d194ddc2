@@ -1,0 +1,61 @@
+src/renderer/src/components/right-sidebar/AiVaultVirtualRow.tsx
+  s_f87fd4e7a08936::t_c82a1007c7231e 203-211
+  s_f87fd4e7a08936::t_15821c12532769 121-125
+  s_f87fd4e7a08936::t_54851434ee0137 88
+  s_f87fd4e7a08936::t_8ee43895047b5f 6
+  s_f87fd4e7a08936::t_2c69617157649b 212
+src/renderer/src/components/right-sidebar/AiVaultVirtualRow.test.tsx
+  s_f87fd4e7a08936::t_9996116ad0c2c4 67
+  s_f87fd4e7a08936::t_507e7398da0998 224-314
+  s_f87fd4e7a08936::t_cc3e5a1a0501f7 40-48,53
+  s_f87fd4e7a08936::t_1673ac7378e34e 80-82,85
+  s_f87fd4e7a08936::t_1d653af0fdb0a5 101
+  s_f87fd4e7a08936::t_5ac9b40fbb9a73 10-11
+  s_f87fd4e7a08936::t_207dc8b473b0b1 315-319
+src/renderer/src/i18n/locales/es.json
+  s_f87fd4e7a08936::t_c0a95c38e07ad2 13774-13775
+src/renderer/src/i18n/locales/fr.json
+  s_f87fd4e7a08936::t_d88fec561953f2 13880-13881
+src/renderer/src/components/right-sidebar/AiVaultSessionVirtualList.tsx
+  s_f87fd4e7a08936::t_f2ba417c066983 80
+src/renderer/src/i18n/locales/ko.json
+  s_f87fd4e7a08936::t_6efb33aed33c73 13774-13775
+src/renderer/src/components/right-sidebar/SessionRowTrailingActions.tsx
+  s_f87fd4e7a08936::t_e22a7328be1f69 98-103
+  s_f87fd4e7a08936::t_d20e16fd1d182d 53
+  s_f87fd4e7a08936::t_1cdc87b05a2cec 120
+  s_f87fd4e7a08936::t_471a03b23c7e74 133
+  s_f87fd4e7a08936::t_dc626326567b6e 274
+  s_f87fd4e7a08936::t_137400398fecd7 79
+src/renderer/src/components/right-sidebar/AiVaultSessionActionMenuItems.tsx
+  s_f87fd4e7a08936::t_f2c836655fd29f 49
+  s_f87fd4e7a08936::t_a1d65db15f0051 27
+  s_f87fd4e7a08936::t_6aca3db8add948 96-100
+src/renderer/src/components/right-sidebar/AiVaultSessionRow.tsx
+  s_f87fd4e7a08936::t_71df82dec0209d 76-77
+  s_f87fd4e7a08936::t_842ceefb5649d2 269
+  s_f87fd4e7a08936::t_76105038a6396a 44
+  s_f87fd4e7a08936::t_cbb3e844fd5b8c 202
+src/renderer/src/i18n/locales/zh.json
+  s_f87fd4e7a08936::t_5ce32d15214adf 13788-13789
+src/renderer/src/i18n/locales/ja.json
+  s_f87fd4e7a08936::t_e8e7daaf61f4e9 13774-13775
+src/renderer/src/i18n/locales/en.json
+  s_f87fd4e7a08936::t_60b366e2f06237 14054-14055
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "19892e3d5f30c27e05324e4e21c0b325d194ddc2",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

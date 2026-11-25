@@ -1,0 +1,79 @@
+src/main/ai-vault/structured-sessions/structured-chat-terminal-handoff.ts
+  s_a5203e9fd77d8f::t_c49d19df307d92 1-69
+src/main/ipc/ai-vault/ai-vault-resume.ts
+  s_96673cf912c415::t_faf6263eac2a38 3,62-65
+src/main/native-chat/agent-model-catalog/agent-model-catalog-entry.ts
+  s_96673cf912c415::t_7f471d82d51d42 26-27,231,235,244
+src/main/native-chat/agent-session-wire/host/structured-provider-session-ownership.ts
+  s_96673cf912c415::t_0471268782e997 7,68
+src/main/pi/rpc/options/rpc-model-catalog-probe.ts
+  s_96673cf912c415::t_7dc7c56e170165 131-136,176-181
+src/main/runtime/rpc/methods/history/ai-vault.ts
+  s_96673cf912c415::t_d8d897fcf237d8 3,145,147-149
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-create-handler.ts
+  s_96673cf912c415::t_b8464510b9a3cd 2-3,170-172,179-182
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-reopen.ts
+  s_96673cf912c415::t_6f836c22869b57 1-90
+src/main/runtime/rpc/methods/structured-sessions/structured-agent-session.ts
+  s_96673cf912c415::t_e35967ddfcbbe1 7,53,114,116-121
+src/renderer/src/components/native-chat/pane/actions/NativeChatResumeInCliButton.tsx
+  s_96673cf912c415::t_6d1dddb0716daf 1,105-111
+src/renderer/src/components/tab-bar/NativeChatCliForkMenuItems.tsx
+  s_96673cf912c415::t_762ac9901a04e0 1,50-57
+src/renderer/src/components/tab-bar/cli-chat-resume-close-admission.ts
+  s_96673cf912c415::t_1b627dc292343d 1,30,35-39,113,126-127,142,155,172,180-184
+src/renderer/src/components/tab-bar/cli-chat-resume-pending.ts
+  s_96673cf912c415::t_4a296552b59fa1 1-28
+src/renderer/src/components/tab-bar/cli-chat-resume-reopen.ts
+  s_96673cf912c415::t_4111640827067b 1-57
+src/renderer/src/components/tab-bar/cli-chat-resume-run.ts
+  s_96673cf912c415::t_f6b194ae498b8b 3,10-15,152-167
+src/renderer/src/components/tab-bar/native-chat-cli-fork-run.ts
+  s_96673cf912c415::t_ef0c8913f45f86 1,35-36,142,204,219-226,241-246,249-256
+src/renderer/src/lib/agent-session/launch/structured-agent-session-host-admission.ts
+  s_96673cf912c415::t_c99a18ba85928f 1,3,45,105,123-138
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-admission.ts
+  s_96673cf912c415::t_82e3bdca40fb81 214-227
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-create-call.ts
+  s_96673cf912c415::t_bea686e17e0fbb 109
+src/renderer/src/lib/agent-session/resume/cli-fork/native-chat-cli-fork-preparation.ts
+  s_96673cf912c415::t_cc659ae23797fa 10,32,46-51,109-124,128-129,133,137
+src/renderer/src/lib/agent-session/resume/history/ai-vault-session-resume-preparation.ts
+  s_96673cf912c415::t_28f0a3956bc10f 10,98,102
+src/shared/ai-vault/contracts/ai-vault-runtime-capabilities.ts
+  s_96673cf912c415::t_ca8042dd5323f7 1-4,19-20
+src/shared/ai-vault/resume/ai-vault-resume-preparation.ts
+  s_96673cf912c415::t_c24141acc8d7e3 20-21,34-39,43
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_96673cf912c415::t_3ae8f9712d278e 10-11
+src/shared/rpc-contract/ai-vault/ai-vault-params.ts
+  s_96673cf912c415::t_ab538cf72ac86b 81-89
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_96673cf912c415::t_b79b5ff388c64a 218,671,884,1083
+src/shared/rpc-contract/structured-agent-session/structured-agent-session-params.ts
+  s_96673cf912c415::t_660395df62dcc6 90-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "227fbf61ed14c22e62a3b7dbe31649800ddabf24",
+  "prompts": {},
+  "sessions": {
+    "s_96673cf912c415": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4ae29918-15ea-41dd-9b44-817eecf4a4d4",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_a5203e9fd77d8f": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "9156308b-f41c-419b-af73-4ff11af744f2",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

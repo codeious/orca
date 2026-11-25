@@ -1,0 +1,26 @@
+src/main/agent-launch/agent-launch-executor.test.ts
+  h_476903bd8a47d9 16,24,195-220
+src/main/agent-launch/agent-launch-mode.ts
+  h_476903bd8a47d9 28-31,55,58-63,100,112,124,217,234,243-250,257-261,263
+src/main/native-chat/structured-agent-session-create-support.test.ts
+  h_476903bd8a47d9 19-50
+src/main/native-chat/structured-agent-session-create-support.ts
+  h_476903bd8a47d9 5-14,18-20,27,30-35,38-41
+src/main/runtime/orca-runtime-get-structured-agent-session-create-support.ts
+  h_476903bd8a47d9 14,40
+src/main/runtime/rpc/methods/orchestration-worker-start-mode.ts
+  h_476903bd8a47d9 21,74
+src/shared/agent-launch-intent.ts
+  h_476903bd8a47d9 229-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a2732842ca2917b5168ae493e46d3e00a90a0de5",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

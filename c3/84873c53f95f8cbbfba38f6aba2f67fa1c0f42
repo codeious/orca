@@ -1,0 +1,19 @@
+src/wsl-guest/relay-droid-exit-watch.test.ts
+  s_b463b9de342d45::t_d6be76d4ec55db 82-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c384873c53f95f8cbbfba38f6aba2f67fa1c0f42",
+  "prompts": {},
+  "sessions": {
+    "s_b463b9de342d45": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4c6c14be-bf67-4a08-a792-dd7eca09971c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,252 @@
+docs/agents/issue-tracker.md
+  s_531579506f5f37::t_7a4f04663f796d 1-45
+docs/adr/0002-plan-mode-is-an-agent-neutral-session-option.md
+  s_47b02db75fb320::t_0f09a4d3a5813c 1-19
+docs/adr/0008-mission-control-steers-only-through-the-panes-terminal-and-reads-detail-from-version-gated-files.md
+  s_299a13d525e4b8::t_c7fe24e6124431 13-15
+  s_af2bfccd3e6c6b::t_e16241033c22a4 19-21
+  s_af2bfccd3e6c6b::t_0d7c88f0237f7e 38
+  s_af2bfccd3e6c6b::t_dfe3ad3fad097b 32
+  s_ab68a57872e5d0::t_242eefbcec57b8 27
+  s_f5f17994cf6edd::t_c4a2184a3380c9 1-6,8-12,18,22-23,28-30,35,37
+  s_af2bfccd3e6c6b::t_826a7e3a37c4c7 7
+  s_af2bfccd3e6c6b::t_36ecf46ed014f2 31
+  s_78afc9d74eeb56::t_ec0bb606116bed 33-34
+  s_78afc9d74eeb56::t_04e281b444f781 16-17
+  s_af2bfccd3e6c6b::t_aa2a564b868305 36
+  s_af2bfccd3e6c6b::t_b8f633596b8143 39-42,44
+  s_299a13d525e4b8::t_0ccef1c665b80b 43
+  s_58091df8939457::t_3cb3292603c60d 24-26
+docs/specs/droid-first-class.md
+  s_62682a86ec0a50::t_862078206a08c8 461
+  s_62682a86ec0a50::t_5184a4fe29c5a9 1-460,462-586
+docs/agents/domain.md
+  s_531579506f5f37::t_007f41191af786 1-51
+CLAUDE.md
+  s_531579506f5f37::t_7f1277fe5b9ff4 2-15
+.gitignore
+  s_531579506f5f37::t_95c61cfd482bd2 119-122
+  s_62682a86ec0a50::t_d84a94f0195a6c 123-124
+docs/adr/0003-droid-launch-mode-is-a-per-agent-setting.md
+  s_29f102823d6123::t_67b51806a7340a 1-24
+docs/adr/0006-droid-computers-are-plain-ssh-hosts-and-orca-stays-out-of-factory-cloud-api.md
+  s_853d18290211d8::t_73b027f8f0ca46 1-26
+docs/adr/0007-orca-keeps-one-writer-per-droid-session-among-the-writers-it-can-see.md
+  s_af2bfccd3e6c6b::t_72ac6354b2a4bb 25
+  s_d035c548dd9444::t_525284cbf2e3a6 17-18
+  s_af2bfccd3e6c6b::t_2c6c58bc9610ca 19
+  s_4924d143ceb5fa::t_96cbb3eca01af3 1-16,21-24,26-31
+  s_62682a86ec0a50::t_79839057f4212a 20
+  s_62682a86ec0a50::t_ee43ad40446a69 32-33
+docs/adr/0001-structured-droid-sessions-use-stream-jsonrpc.md
+  s_d6bec125b611b4::t_49eaf0fb68f590 1-20
+docs/adr/0004-droid-hooks-live-in-hooks-json-and-config-uis-follow-claude-parity.md
+  s_e86a8811ad04a0::t_4a478188732fe3 1-23,25-26
+  s_d035c548dd9444::t_525284cbf2e3a6 24
+CONTEXT.md
+  s_47b02db75fb320::t_22c5ace3b95b3a 45-58
+  s_ac0773a09cdbae::t_874dcf8e87019d 25-28
+  s_b007c4f1152632::t_64a74aeabd1fb0 37,39,44
+  s_f5f17994cf6edd::t_54d242a7dd8176 93,95-96
+  s_853d18290211d8::t_faa055e9941e47 97-106
+  s_2d69b6a8a686e4::t_7f356343f1e3e2 81-88
+  s_29f102823d6123::t_45b93c245d8021 17-24
+  s_c442ec4375ad06::t_821021420a798a 38,40-43
+  s_62682a86ec0a50::t_636458f28172e2 33-36
+  s_0844230782d601::t_d55fb5c8062083 1-16,59-68,73-80,107-111
+  s_58091df8939457::t_8a1d9cdbf1e0d2 69-72
+  s_af2bfccd3e6c6b::t_2410f3e557a56d 89-92,94
+  s_4924d143ceb5fa::t_5ade1881ea6938 29-32
+docs/adr/0005-owned-missions-live-in-droid-terminal-sessions-and-report-as-child-work.md
+  s_b007c4f1152632::t_3d8ab3a9b894d2 15-16
+  s_235aff8ae37721::t_7449b4de3e59d3 30
+  s_235aff8ae37721::t_0a8e3385ae3c67 33
+  s_af2bfccd3e6c6b::t_82c1310df051f8 31
+  s_4924d143ceb5fa::t_e27a690fce3cec 29
+  s_235aff8ae37721::t_cae5c73c606beb 22
+  s_af2bfccd3e6c6b::t_17d9d264a23e8e 32
+  s_ab68a57872e5d0::t_e6535c9ab4aa97 17-18
+  s_ab68a57872e5d0::t_6c0a115b053dce 34-35
+  s_b007c4f1152632::t_98c57699bb89a0 7
+  s_2d69b6a8a686e4::t_df97752d66dbb8 1-6,8-14,19-21,24-28,37-39
+  s_af2bfccd3e6c6b::t_1fb70878e16a5c 23
+  s_ab68a57872e5d0::t_cc45fd5866b79b 36
+docs/agents/triage-labels.md
+  s_531579506f5f37::t_54c3b07f01e46a 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "922b475bd4eec73ff7adcf9702071ae4d90ff82b",
+  "prompts": {},
+  "sessions": {
+    "s_0844230782d601": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a58b6577-303f-46bc-be29-b9375657cede",
+        "model": "custom:Claude-Sonnet-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_235aff8ae37721": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "652ffc96-07a1-4aaa-9e48-6906ad60aa12",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_299a13d525e4b8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2b3dca20-6dcc-4a36-8e35-25f37139d4dc",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_29f102823d6123": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "c16ec107-b0c1-4832-bcc9-0ad084364408",
+        "model": "custom:Claude-Sonnet-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_2d69b6a8a686e4": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fbc71b38-7e09-4173-aa0a-4e261f8202c2",
+        "model": "custom:Claude-Opus-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_47b02db75fb320": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4693f6f5-2e8d-486f-a3dd-0bd5d908c22a",
+        "model": "custom:Claude-Opus-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_4924d143ceb5fa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "de80d0d4-1c88-4795-9c02-58f32b34264c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_531579506f5f37": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "34591e91-01f8-4e1a-b15d-819d875e4b50",
+        "model": "custom:Claude-Sonnet-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_58091df8939457": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "da1b8394-f91e-45a9-b755-622157b1e968",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_62682a86ec0a50": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "33bbbed0-0477-451f-af00-0b8a6a2f40c2",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_78afc9d74eeb56": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "909114e6-1e79-42cc-981f-9e175d2f8a17",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_853d18290211d8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d01794d4-9789-4f85-96c1-7d6e9908f6e7",
+        "model": "custom:Claude-Sonnet-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ab68a57872e5d0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ea0c5f04-05cc-4886-a9b6-fe9fc349e6ba",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ac0773a09cdbae": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "b8113347-0ea1-4702-9d68-0c0938e28699",
+        "model": "custom:Claude-Opus-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_af2bfccd3e6c6b": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "65432cc6-1404-4d26-9468-cb6e5c3320f3",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_b007c4f1152632": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a645c29c-0994-47f6-9521-54bd080893b9",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_c442ec4375ad06": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "cecdcd09-fa52-400a-af23-b877b5af0f55",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d035c548dd9444": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "684ecc2d-d437-413c-b87c-ea8afdc77517",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d6bec125b611b4": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ee5527ab-7099-4cc9-a200-956d949b4dbb",
+        "model": "custom:Claude-Opus-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_e86a8811ad04a0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "cf03411d-22b3-4e93-b0ae-167074beca6e",
+        "model": "custom:Claude-Opus-5-5-via-CLIProxy-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_f5f17994cf6edd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e64a30bd-18e0-40ee-9ec3-5f79c0aa8185",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

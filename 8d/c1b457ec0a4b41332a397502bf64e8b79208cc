@@ -1,0 +1,43 @@
+src/main/ai-vault/structured-chat-terminal-handoff.test.ts
+  s_8f38564f63f944::t_85776866127788 1-147
+src/main/runtime/rpc/methods/structured-agent-session-reopen.test.ts
+  s_8f38564f63f944::t_d303873f9689c5 1-127
+src/renderer/src/components/native-chat/NativeChatResumeInCliButton.tsx
+  s_8f38564f63f944::t_9958244891674e 100-106
+src/renderer/src/components/tab-bar/NativeChatCliForkMenuItems.tsx
+  s_8f38564f63f944::t_9f8658366f4c0c 49-56
+src/renderer/src/components/tab-bar/cli-chat-resume-close-admission.ts
+  s_8f38564f63f944::t_869666fd30d8eb 31,36-40,114,127,142,155,172,180-184
+src/renderer/src/components/tab-bar/cli-chat-resume-pending.ts
+  s_8f38564f63f944::t_f8d2e4f0865281 1-28
+src/renderer/src/components/tab-bar/native-chat-cli-fork-run.test.ts
+  s_8f38564f63f944::t_981606cfc1d4b1 17,47-52,87,95-120
+src/renderer/src/components/tab-bar/native-chat-cli-fork-run.ts
+  s_8f38564f63f944::t_2fdf2204d9299f 31-32,56,118,133-140,154-160,163-170
+src/renderer/src/lib/agent-session/launch/structured-agent-session-host-admission.ts
+  s_8f38564f63f944::t_7bbfacd0ac6d1d 2,46,106,124-135
+src/renderer/src/lib/native-chat-cli-fork-preparation.test.ts
+  s_8f38564f63f944::t_096d1f21543e9a 6-9,37-76
+src/renderer/src/lib/native-chat-cli-fork-preparation.ts
+  s_8f38564f63f944::t_3ae29dc1dc1c51 6,27,32-37,82-97,101-102,106,110
+src/shared/ai-vault-resume-preparation.ts
+  s_8f38564f63f944::t_a6485fdb08513a 19-20,33-38,42
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_8f38564f63f944::t_8f139c042e58b6 200,623,804,992
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8dc1b457ec0a4b41332a397502bf64e8b79208cc",
+  "prompts": {},
+  "sessions": {
+    "s_8f38564f63f944": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "b5ddccf8-c036-4c31-a34a-1676c38c536e",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

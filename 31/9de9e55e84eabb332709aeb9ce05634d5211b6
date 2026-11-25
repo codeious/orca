@@ -1,0 +1,24 @@
+src/main/droid/droid-session.ts
+  s_48f15c05ff9afa::t_511f913c7e35c7 69
+  s_48f15c05ff9afa::t_c042c2d292c0f1 153
+  s_48f15c05ff9afa::t_092b6dbd95bdb5 1
+  s_48f15c05ff9afa::t_0d3e4459dccecd 100,108-121
+  s_48f15c05ff9afa::t_3a41327d63e40b 136
+  s_48f15c05ff9afa::t_b208263e7c78b7 122-123,207-208,212,216,220
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "319de9e55e84eabb332709aeb9ce05634d5211b6",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

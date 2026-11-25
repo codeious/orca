@@ -1,0 +1,25 @@
+src/main/droid/droid-session-real-cli.test.ts
+  s_48f3bc0d7f0337::t_70a2d095e02ae2 2,11,58,64,68-72,77,80-90,92-93,95-111,113-118,120-121,123-124,132-137,139-152,155-164
+  s_48f3bc0d7f0337::t_f1ef7f4b1034a7 1,3-10,12-17,19-57,59-63,65-67,73-76,78-79,112,119,122,125-131,138,165
+  s_48f3bc0d7f0337::t_47ad246a2dba1b 91,94
+  s_48f3bc0d7f0337::t_51d1f2a37fc9ee 18
+  s_48f3bc0d7f0337::t_2c77797e9fad34 153-154
+config/scripts/vitest-sqlite-runtime-files.mjs
+  s_48f3bc0d7f0337::t_94e383a3cd70fe 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d130ee0f96fe8761fd7e99de973b32e8a721ee13",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

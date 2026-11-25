@@ -1,0 +1,128 @@
+src/main/agent-hooks/installation/remote-managed-hook-installers.ts
+  s_ad00747fcb93b9::t_c31f91b6d3cf1d 30,86-90
+src/main/agent-hooks/wsl-relay/wsl-hook-fs-adapter.ts
+  s_ad00747fcb93b9::t_c53a2323067d78 68
+src/main/droid/droid-hook-config.ts
+  s_ad00747fcb93b9::t_fc47f6637d498d 1-15,17-137
+  s_ad00747fcb93b9::t_4e3c1490e6b637 16
+src/main/droid/droid-hook-file-remote.ts
+  s_ad00747fcb93b9::t_709ebf1a4d9bb8 1-22
+src/main/droid/droid-hook-script.ts
+  s_ad00747fcb93b9::t_18891c24c81235 1-10,15-30,32-50,52-69,71-75
+  s_9915298ad8a882::t_2877b4912cd6e9 11-14,31,51,70
+src/main/droid/droid-hook-status.ts
+  s_ad00747fcb93b9::t_80d49ce08521d3 1-86
+src/main/droid/droid-hooks-file.test-fixture.ts
+  s_ad00747fcb93b9::t_c26ea1448cbae6 1-32
+src/main/droid/droid-org-policy.ts
+  s_ad00747fcb93b9::t_3738496c0001ad 1-40
+src/main/droid/hook-service.ts
+  s_ad00747fcb93b9::t_717049ade988d4 4,9-10,12-13,15-27,30-31,34-35,38-42,44-48,51-58,60-62,64,68-73,75,79-81,83-87,92-97,99,101-115,119-124,126-128,130-132,134-135,137-149,153-158,161,166-168,170-178
+src/shared/agent-hook-listener/transport/agent-hook-policy-read-paths.ts
+  s_ad00747fcb93b9::t_979ea6e3871011 1-10
+src/shared/droid/droid-org-settings-path.ts
+  s_ad00747fcb93b9::t_f446afa6f88716 1-2
+src/shared/__fixtures__/droid-subagent-hooks.jsonl
+  s_ad00747fcb93b9::t_b2cfdec2c63a54 1-37
+src/shared/__fixtures__/droid-subagent-hooks.meta.json
+  s_ad00747fcb93b9::t_1325064fe7d72e 1-12
+src/shared/agent-hook-listener/hook-normalization-policy.ts
+  s_ad00747fcb93b9::t_52e4fe07de657e 1-10,13-45
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-driver.test-support.ts
+  s_ad00747fcb93b9::t_cc9ca795747bb0 1-2,8-9,14-62,73-117
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-ownership.test.ts
+  s_ad00747fcb93b9::t_ae85a3ced49f4f 1-72
+src/shared/agent-hook-listener/normalization/hook-prompt-identity.ts
+  s_ad00747fcb93b9::t_d02261c3611d36 1-23
+src/shared/agent-hook-listener/pane-provider-session.ts
+  s_ad00747fcb93b9::t_4d5a0759527346 16,74-82,255-256
+src/shared/agent-hook-listener/provider-hook-session.ts
+  s_ad00747fcb93b9::t_65c5246bd4b9e2 1,6-8,10-37,39-54,88-98
+  s_ad00747fcb93b9::t_7852116527385e 2-5,9,38,55-87
+src/shared/agent-hook-listener/providers/droid/droid-hook-session.ts
+  s_ad00747fcb93b9::t_419d0792e43f90 1-2,9-12,16-39
+  s_ad00747fcb93b9::t_d9c9f75e00ea31 3-8,13-15
+src/shared/agent-hook-listener/providers/droid/droid-lease-expiry.ts
+  s_ad00747fcb93b9::t_4e1be37e1d53f7 1-31
+src/shared/agent-hook-listener/providers/droid/droid-probe-log-replay.test-fixture.ts
+  s_ad00747fcb93b9::t_22be420bef89ad 1-141
+src/shared/agent-hook-listener/providers/droid/droid-session-status.ts
+  s_ad00747fcb93b9::t_e7de81fdb0dc4a 1-107
+src/shared/agent-hook-listener/providers/droid/droid-sessions.ts
+  s_ad00747fcb93b9::t_8846a2a80cf99c 2-9,11-41,49-53,55-119,127-164,167-172,179-193,195-196,201-202,207-208,210-212,227-231,235-240,249-281,283-297
+  s_9915298ad8a882::t_7500f4e0b757a9 1,10,42-48,54,120-126,165-166,173-178,194,197-200,203-206,209,213-215,217-220,232-234,241-248,282
+src/shared/agent-hook-listener/providers/droid/droid-transcript-origin.ts
+  s_ad00747fcb93b9::t_9cf67e4b6cd03e 1-17
+src/shared/agent-hook-listener/state/provider-hook-state-slots.ts
+  s_ad00747fcb93b9::t_81fefef896345b 41-55
+src/wsl-guest/agent-hooks/status/agent-hook-event-admission.ts
+  s_ad00747fcb93b9::t_a43b4f2b523b4d 36-37,181-188
+src/wsl-guest/agent-hooks/server/agent-hook-spool-ingest.ts
+  s_ad00747fcb93b9::t_0f31742a6a0487 27
+src/shared/agent-hook-listener/provider-hook-capabilities.ts
+  s_ad00747fcb93b9::t_49326bc3e2d2fe 1-9
+src/shared/__fixtures__/droid-parent-process-hooks.meta.json
+  s_ad00747fcb93b9::t_8a143d829787d0 1-17
+src/shared/__fixtures__/droid-parent-process-hooks.jsonl
+  s_ad00747fcb93b9::t_b46a233121c986 1-24
+src/wsl-guest/agent-hooks/server/agent-hook-server.ts
+  s_ad00747fcb93b9::t_6b291491eb6d53 207,249,308-310
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-exit.test.ts
+  s_ad00747fcb93b9::t_71c4068104fc2b 1-39
+src/wsl-guest/agent-hooks/server/agent-hook-request.ts
+  s_ad00747fcb93b9::t_cfac0c1dbf2dc4 32
+src/wsl-guest/agent-hooks/server/relay-droid-exit-watch.test.ts
+  s_ad00747fcb93b9::t_0fc9cb05b16528 1-141
+src/shared/agent-hook-listener/providers/droid/droid-session-owner.ts
+  s_ad00747fcb93b9::t_be20184e9533ba 1-34
+src/shared/__fixtures__/droid-slow-start-hooks.meta.json
+  s_ad00747fcb93b9::t_3df4df568c0208 1-10
+src/shared/agent-status/process/agent-process-presence.ts
+  s_ad00747fcb93b9::t_8c414b3f3b292c 4,63,68
+src/shared/__fixtures__/droid-slow-start-hooks.jsonl
+  s_ad00747fcb93b9::t_39b2de1f58498f 1-70
+src/main/agent-hooks/server/agent-hook-server.ts
+  s_ad00747fcb93b9::t_f33ec166aa6305 20-21,34,68-75
+src/wsl-guest/agent-hooks/presence/relay-agent-presence.ts
+  s_9915298ad8a882::t_765eb67ae4a9f2 8-10,13-17,20-28,34,41,70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "34517cfa5da7ddb377b92b2d7cf2167a057eb2cb",
+  "prompts": {},
+  "sessions": {
+    "s_7a3a75c75e164c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5d5c18c1-6928-4660-b797-f1dff9254b1d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ad00747fcb93b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "76dd52ab-a5b9-4faa-8d3f-2f25a389af4b",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d98921461d61e0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "de1bc950-75d7-4fa8-94d4-60268c9ca201",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

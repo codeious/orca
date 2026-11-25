@@ -1,0 +1,19 @@
+src/main/native-chat/agent-session-wire/structured-agent-session-host-mutations.ts
+  s_d90bd476ba2d44::t_8dd4d58862dd01 54-57,239-259,263-264
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dededbc05178a5f11cf2378b67852d17225d518b",
+  "prompts": {},
+  "sessions": {
+    "s_d90bd476ba2d44": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5c817159-1747-4a01-9538-e3b1ab4b5da1",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

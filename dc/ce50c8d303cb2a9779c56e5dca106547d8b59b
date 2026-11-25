@@ -1,0 +1,19 @@
+src/main/droid/droid-plan-approval.ts
+  s_08b0ae162f26b9::t_fcac5145365c1a 1-160
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dcce50c8d303cb2a9779c56e5dca106547d8b59b",
+  "prompts": {},
+  "sessions": {
+    "s_08b0ae162f26b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e241a5ba-8a2f-49df-8b78-33914687abfa",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+src/main/droid/droid-session-notifications.ts
+  s_8f63c4159d32dc::t_1311799beae1d1 57
+  s_8f63c4159d32dc::t_ad3081af6a5137 53-56,58
+src/main/droid/droid-session.ts
+  s_8f63c4159d32dc::t_215eaaa582283e 110-111
+  s_8f63c4159d32dc::t_71feea6e07d7bd 13
+  s_8f63c4159d32dc::t_2ee9c20140e72f 61
+  s_8f63c4159d32dc::t_59771d7655791e 163-166,172,174,178-187
+  s_8f63c4159d32dc::t_f3f928278d84d1 62
+  s_8f63c4159d32dc::t_fbca78f6995b8b 71-72
+  s_8f63c4159d32dc::t_85f9112a657c40 14-18
+  s_a57587060a50e5::t_4dcb7e72b545fe 188-189
+src/main/droid/droid-autonomy-cap.test.ts
+  s_8f63c4159d32dc::t_d4b679794e5762 1,8-16,18-22,24-73
+  s_8f63c4159d32dc::t_3dbdebb872526b 2-7
+  s_8f63c4159d32dc::t_4899f41847395a 17
+  s_8f63c4159d32dc::t_d103da92f46ece 23
+  s_8f63c4159d32dc::t_9b813e40bba985 74-77
+src/main/droid/droid-turns.ts
+  s_8f63c4159d32dc::t_63dd68405fe9ef 21-22
+  s_8f63c4159d32dc::t_0988228b5104fe 145-150
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_8f63c4159d32dc::t_039a2b60151e82 1,5-6
+  s_8f63c4159d32dc::t_ad2299cb17860b 167
+  s_8f63c4159d32dc::t_385613a23aab69 112-130,134
+  s_8f63c4159d32dc::t_38aea36deef571 131-133
+config/scripts/vitest-sqlite-runtime-files.mjs
+  s_8f63c4159d32dc::t_89f8cf3c903c8b 21
+src/main/droid/droid-autonomy-cap-notice.ts
+  s_8f63c4159d32dc::t_bc6cffff2900d4 1-31
+src/main/droid/droid-recording.test-support.ts
+  s_8f63c4159d32dc::t_890ef2b0606495 1-57,60,65-79
+  s_8f63c4159d32dc::t_fc2e028b1d7d3a 58-59,61-64
+  s_8f63c4159d32dc::t_a89f71602eb5e9 80-81
+src/main/droid/droid-turns.test.ts
+  s_8f63c4159d32dc::t_b1a47654dcd9d2 45-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fdb02c79e40349b1740ecbe35b73602b04b5dd56",
+  "prompts": {},
+  "sessions": {
+    "s_8f63c4159d32dc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7e1dec78-7ceb-4d1c-a3bc-a56fb13268c4",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_a57587060a50e5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fd4afa99-8ef7-4d49-9697-13345392d392",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

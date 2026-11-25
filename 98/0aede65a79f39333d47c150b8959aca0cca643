@@ -1,0 +1,27 @@
+src/main/droid/droid-fixture-privacy.test.ts
+  s_8f63c4159d32dc::t_ae197f380edafb 1-21
+src/main/acp/acp-fixture-privacy.test.ts
+  s_8f63c4159d32dc::t_b4f0927599815f 3
+src/main/droid/fixtures/autonomy-cap-clamp.jsonl
+  s_8f63c4159d32dc::t_3491bf05a29001 1-35
+src/main/droid/fixtures/model-blocked-by-org.jsonl
+  s_8f63c4159d32dc::t_e7c08205f0d082 1-11
+src/main/native-chat/provider-recording-privacy.test-support.ts
+  s_8f63c4159d32dc::t_9162af65295008 1-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "980aede65a79f39333d47c150b8959aca0cca643",
+  "prompts": {},
+  "sessions": {
+    "s_8f63c4159d32dc": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7e1dec78-7ceb-4d1c-a3bc-a56fb13268c4",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

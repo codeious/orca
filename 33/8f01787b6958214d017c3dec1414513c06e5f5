@@ -1,0 +1,35 @@
+src/shared/__fixtures__/droid-parent-process-hooks.jsonl
+  s_51d34b8191f915::t_419873c3e01784 1-24
+src/shared/__fixtures__/droid-slow-start-hooks.jsonl
+  s_51d34b8191f915::t_431cece5beb76d 1-70
+src/shared/__fixtures__/droid-subagent-hooks.jsonl
+  s_51d34b8191f915::t_d938d93bbdbe11 1-37
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-replay.test.ts
+  s_51d34b8191f915::t_055271bb7b4865 7-10,33,68,86,95-99,102-103,105-109,159-164,172,187
+src/wsl-guest/relay-droid-exit-watch.test.ts
+  s_9e473945bea849::t_2d68960202c5b6 19,55,71-72,81-85,89,100-127,130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "338f01787b6958214d017c3dec1414513c06e5f5",
+  "prompts": {},
+  "sessions": {
+    "s_51d34b8191f915": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "bbe947ef-36bd-4d2e-bb24-f36d2c545aa7",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_9e473945bea849": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e13e969a-8b8f-472a-b31b-87d5d0067270",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

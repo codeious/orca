@@ -1,0 +1,27 @@
+src/shared/__fixtures__/droid-parent-process-hooks.meta.json
+  s_0451622378e9c8::t_5c6a1e795439e4 8
+src/main/droid/droid-fixture-privacy.test.ts
+  s_0451622378e9c8::t_647d03c148f147 43-45
+  s_0451622378e9c8::t_a03309fd0c1fc2 46,48
+  s_0451622378e9c8::t_f23c85a54a1c82 5-23,26-42,47,49-63
+src/main/droid/__fixtures__/end-of-turn-interrupt.jsonl
+  s_0451622378e9c8::t_0309a710b3bd54 1
+src/shared/__fixtures__/droid-parent-process-hooks.jsonl
+  s_0451622378e9c8::t_3076eb16770845 25-31,33-35,37-43,45-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c19a12389de6416ba9dbbe866ec14e46aba9955a",
+  "prompts": {},
+  "sessions": {
+    "s_0451622378e9c8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d035f68d-089c-477f-9b20-d144473a213c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

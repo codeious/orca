@@ -1,0 +1,35 @@
+src/main/ai-vault/structured-chat-terminal-handoff.ts
+  s_bb5217dd1cbb24::t_d064cccce81df7 7,17-18,25,40,49
+src/main/native-chat/agent-session-wire/host/structured-provider-session-ownership.ts
+  s_bb5217dd1cbb24::t_19f36137623667 7,65-66,69
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-create-handler.ts
+  s_bb5217dd1cbb24::t_1f2300b9ac8f16 7,166-167
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-reopen.ts
+  s_bb5217dd1cbb24::t_94b92ea0f3fcfe 5,21,49
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_51d34b8191f915::t_3fd120392b1776 16-18,56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6650b84e6b1d81b2cd3024b9f5395aa013ea623d",
+  "prompts": {},
+  "sessions": {
+    "s_51d34b8191f915": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "bbe947ef-36bd-4d2e-bb24-f36d2c545aa7",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_bb5217dd1cbb24": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f533207f-8bb7-46e9-8d6c-f0aa3f9e7dc1",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

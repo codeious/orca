@@ -1,0 +1,68 @@
+src/main/droid/droid-agent-definition.ts
+  s_57750309b54426::t_a0077eba728ad7 23-24
+src/main/droid/droid-model-catalog-probe.ts
+  s_57750309b54426::t_34e9b5c7532427 1-104
+src/main/droid/droid-configured-default.test.ts
+  s_57750309b54426::t_f3bcbdbbc4c4ce 1-90,98-99,101,106-223,230-282,286-360,373-392
+  s_57750309b54426::t_ebd39bedc64d71 100,102-103
+  s_57750309b54426::t_d155546157f9d2 91-97,104-105
+  s_57750309b54426::t_7bc6fdb6c27664 283-285
+  s_57750309b54426::t_a08075ca177d35 224-229
+  s_57750309b54426::t_c98afb633e8aad 361-372
+src/main/runtime/structured-agent-model-catalog-discovery.test.ts
+  s_57750309b54426::t_7c53aa2ad3e055 66-67,70
+src/main/droid/droid-session-adapter.ts
+  s_57750309b54426::t_04472284cefb47 108
+  s_57750309b54426::t_0d066673b16c10 170,174-182
+  s_57750309b54426::t_acc12b6af8b883 107
+src/main/droid/droid-session-model.ts
+  s_57750309b54426::t_20877962f23cae 1-14,20-85
+  s_57750309b54426::t_3122e64ab01edb 15-19
+src/main/native-chat/agent-model-catalog/agent-model-catalog-persistence.ts
+  s_57750309b54426::t_8b2c51560108e9 74
+src/main/droid/droid-model-catalog-probe.test.ts
+  s_57750309b54426::t_a0f441f62a194a 130-132
+  s_57750309b54426::t_2169eb958e8eb0 1-129,133-209
+src/main/droid/droid-session.ts
+  s_57750309b54426::t_a74354a61633f7 165,167-176,181-183,187-192
+  s_57750309b54426::t_e13a68ac484f5f 67
+  s_57750309b54426::t_5385605eb0b061 131,143-149,166,177,184-186,193
+  s_57750309b54426::t_39703468448454 13-14
+  s_57750309b54426::t_945a361a1c3b00 66
+  s_d5b497a0ac2ffd::t_c33e82c7cf00a9 194
+src/shared/agent-session-wire.ts
+  s_57750309b54426::t_bd0bcd0815fb52 400-401
+src/main/droid/droid-model-options.ts
+  s_57750309b54426::t_9a578fcc4e42b6 1-163
+src/main/droid/droid-session-adapter.test.ts
+  s_57750309b54426::t_05f98290b4ee6e 632-633,637-647,649
+  s_57750309b54426::t_afc7de475986e6 648
+src/main/droid/droid-runtime-registration.ts
+  s_57750309b54426::t_c3b9c28de7c90c 23-33,40
+  s_57750309b54426::t_32dd7c66068dfd 88-97
+  s_57750309b54426::t_ae49b6c116af9a 9,14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ca7d8d8c95bfb72b02df309654d77cdc33179fff",
+  "prompts": {},
+  "sessions": {
+    "s_57750309b54426": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fe844fd6-6376-4329-bd5c-d9649a6de275",
+        "model": "custom:grok-4.7"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d5b497a0ac2ffd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "297a2ab9-a21a-4b05-a5dd-22e731673026",
+        "model": "custom:grok-4.7"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

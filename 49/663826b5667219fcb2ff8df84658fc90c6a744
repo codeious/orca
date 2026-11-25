@@ -1,0 +1,42 @@
+src/main/agent-hooks/wsl-relay/wsl-hook-fs-adapter.ts
+  h_476903bd8a47d9 65
+src/main/agent-hooks/installation/remote-managed-hook-installers.ts
+  h_476903bd8a47d9 30,86-90
+src/main/droid/droid-org-policy.ts
+  s_cc5e4a6cdbd85d::t_4abe1d73ec3927 5-8,13
+src/main/droid/droid-remote-install-platform.test.ts
+  h_476903bd8a47d9 1-24
+src/shared/agent-hook-policy-read-paths.ts
+  s_91d04d84653459::t_2fc5be802e4350 1-4,8-9
+src/shared/droid-org-settings-path.ts
+  s_91d04d84653459::t_3918e179140970 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "49663826b5667219fcb2ff8df84658fc90c6a744",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_cc5e4a6cdbd85d": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f26e0b46-5399-4064-a893-2fcb3c48f02e",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

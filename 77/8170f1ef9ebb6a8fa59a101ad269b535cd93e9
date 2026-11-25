@@ -1,0 +1,43 @@
+research/droid-session-replacement-tree-resume.md
+  s_8a69d815ad458d::t_b1778f94a3d9ea 50-51
+  s_8a69d815ad458d::t_bc81c2c403c089 34
+  s_8a69d815ad458d::t_13d3d6e7f8f099 85-86
+  s_8a69d815ad458d::t_a20f682b80856e 1-33,35-39,41-49,52-75,77-84,88-108
+  s_8a69d815ad458d::t_0b74d1efceed86 76
+  s_8a69d815ad458d::t_cc69031cc2760f 87
+  s_8a69d815ad458d::t_f394f41ea75459 40
+research/droid-session-replacement.md
+  s_8a69d815ad458d::t_e11b00a325b199 3-4
+research/droid-session-replacement/probe/tree_resume_switches.py
+  s_8a69d815ad458d::t_4a8a9a8e031da7 174,176-180,182-187
+  s_8a69d815ad458d::t_6161a8d7458069 1-160,162-173,188-223,231-232,235-245,248,261-303,306,308-310,312,316,318-386
+  s_8a69d815ad458d::t_4e4e6ae6daf22b 175,181
+  s_8a69d815ad458d::t_b3d000863a814d 224-230,233-234,246-247,249-260
+  s_8a69d815ad458d::t_95ee1c6d73ed74 304,307,311,313-315
+  s_8a69d815ad458d::t_eecf3ff56dd2b4 305,317
+  s_8a69d815ad458d::t_a537e43bf09035 161
+research/droid-session-replacement/probe/switch_order.py
+  s_8a69d815ad458d::t_abdd17ef177dc5 40-43
+  s_8a69d815ad458d::t_f4d258cdf69385 2-9,23,25-29,32-33,44,64,66,83-92,96
+  s_8a69d815ad458d::t_59fa75f3156ef8 1,10-22,24,30-31,34-39,45-63,65,67-82,93-95
+research/droid-session-replacement/tree-resume-hooks.jsonl
+  s_8a69d815ad458d::t_9dc5acfb8e62b8 1-378
+research/droid-session-replacement/tree-resume-switches.jsonl
+  s_8a69d815ad458d::t_8e7ed89cb8f349 1-189
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "778170f1ef9ebb6a8fa59a101ad269b535cd93e9",
+  "prompts": {},
+  "sessions": {
+    "s_8a69d815ad458d": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "53099807-b41b-40ed-a9bf-e589dafd93b5",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

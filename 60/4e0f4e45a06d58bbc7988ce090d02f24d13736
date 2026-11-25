@@ -1,0 +1,14 @@
+src/shared/agent-session/view/structured-agent-session-composer.ts
+  h_476903bd8a47d9 32-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "604e0f4e45a06d58bbc7988ce090d02f24d13736",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

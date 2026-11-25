@@ -1,0 +1,44 @@
+src/main/native-chat/structured-agent-session-create-support.test.ts
+  s_48f3bc0d7f0337::t_05b6e6cdb908a6 20-25
+  s_48f3bc0d7f0337::t_600d975daf3324 36-41
+  s_48f3bc0d7f0337::t_520971ffbe2e65 19,26-35,42-50
+src/main/agent-launch/agent-launch-executor.test.ts
+  s_48f3bc0d7f0337::t_7460597aa11fa3 196
+  s_48f3bc0d7f0337::t_2b0c306a5016cc 201,206
+  s_48f3bc0d7f0337::t_b152a3f73fef14 202-205,209,217
+  s_48f3bc0d7f0337::t_b53bc26f8fa6d6 16
+  s_48f3bc0d7f0337::t_be3d3323ef4f40 195,197-200,207-208,210-216,218-220
+  s_48f3bc0d7f0337::t_5e7057076aafd1 24
+src/main/agent-launch/agent-launch-mode.ts
+  s_48f3bc0d7f0337::t_eeea0642d06919 55,58-59
+  s_48f3bc0d7f0337::t_a2290a1810a5f0 28-31
+  s_48f3bc0d7f0337::t_c3cd821469490b 217,243-250,257-260
+  s_48f3bc0d7f0337::t_c6742ddbfbc591 60-63,100,112,124,234,261,263
+src/main/runtime/orca-runtime-get-structured-agent-session-create-support.ts
+  s_48f3bc0d7f0337::t_04eb005e3007da 40
+  s_48f3bc0d7f0337::t_11570aebb9c61f 14
+src/main/runtime/rpc/methods/orchestration-worker-start-mode.ts
+  s_48f3bc0d7f0337::t_fdb5cf8bfa44f3 74
+  s_48f3bc0d7f0337::t_27d9f573a370a8 21
+src/shared/agent-launch-intent.ts
+  s_48f3bc0d7f0337::t_a41103e882b2a1 229-230
+src/main/native-chat/structured-agent-session-create-support.ts
+  s_48f3bc0d7f0337::t_e2c7d170940662 5-6,9-14,18-20,27,30-35,38-41
+  s_48f3bc0d7f0337::t_667d888667eee7 7-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7af37a2a94b2bf9383390e5b871f26b09cdc1c78",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+src/main/runtime/structured-session-child-launch-env.test.ts
+  s_48f15c05ff9afa::t_cedbb83b77cdd2 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3c6633208a0fdebbcba2a2c45a46c21fc25b8d6c",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

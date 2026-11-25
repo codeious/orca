@@ -1,0 +1,32 @@
+src/main/runtime/rpc/methods/structured-agent-session-droid-adoption-replay.test.ts
+  s_f87fd4e7a08936::t_93805bfd30ec5a 124
+  s_f87fd4e7a08936::t_b4183931b16621 165
+  s_f87fd4e7a08936::t_8a155d46f235a6 85
+src/renderer/src/components/right-sidebar/AiVaultPanel.droid-resume.test.tsx
+  s_f87fd4e7a08936::t_8d875122ea8958 115
+  s_f87fd4e7a08936::t_62d9e29811e198 84
+  s_f87fd4e7a08936::t_95385752eccca4 138
+  s_f87fd4e7a08936::t_f7159c00f4eab5 148
+  s_f87fd4e7a08936::t_2d090566c84e4d 8,10-11
+src/main/ipc/ai-vault-droid-session-holder-routing.test.ts
+  s_f87fd4e7a08936::t_e22aaabd15f62b 138
+src/main/runtime/structured-agent-session-droid-adoption.test-support.ts
+  s_f87fd4e7a08936::t_152bde6fe6a7d7 32
+  s_f87fd4e7a08936::t_40f0b416fe815b 43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2299a1fdf952542cc3c2d945db6785ed26fb6ede",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

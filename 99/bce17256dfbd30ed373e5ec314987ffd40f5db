@@ -1,0 +1,30 @@
+src/main/droid/droid-session-continuation.ts
+  h_476903bd8a47d9 1-50
+src/main/droid/droid-session-deps.ts
+  h_476903bd8a47d9 1-44
+src/main/droid/droid-session-mode-reports.ts
+  h_476903bd8a47d9 1-55
+src/main/droid/droid-session.ts
+  h_476903bd8a47d9 1-311
+src/main/native-chat/agent-session-wire/startup/structured-agent-session-provider-open-contract.ts
+  h_476903bd8a47d9 17-18
+src/main/native-chat/agent-session-wire/startup/structured-agent-session-provider-picks.test.ts
+  h_476903bd8a47d9 1-34
+src/main/native-chat/agent-session-wire/startup/structured-agent-session-provider-started.ts
+  h_476903bd8a47d9 30,223-241
+src/main/runtime/agent-session/records/agent-session-record-options.ts
+  h_476903bd8a47d9 36-47,51
+src/shared/agent-session/options/agent-session-options-result.ts
+  h_476903bd8a47d9 64-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "99bce17256dfbd30ed373e5ec314987ffd40f5db",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

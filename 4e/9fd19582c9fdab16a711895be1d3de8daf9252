@@ -1,0 +1,26 @@
+src/main/native-chat/agent-session-journal/journal-legacy-import.ts
+  s_f87fd4e7a08936::t_1a490c640d7334 154
+  s_f87fd4e7a08936::t_8b8fc18efe9a90 92-93
+  s_f87fd4e7a08936::t_12c68a37e9ec0a 30
+  s_f87fd4e7a08936::t_ce890c3c7f9bae 94,155
+src/main/native-chat/agent-session-journal/journal-legacy-import-droid.test.ts
+  s_f87fd4e7a08936::t_b40d0c8089d073 1-143
+src/main/native-chat/agent-session-journal/journal-legacy-identity.ts
+  s_f87fd4e7a08936::t_9c8ffca2855f17 29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4e9fd19582c9fdab16a711895be1d3de8daf9252",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

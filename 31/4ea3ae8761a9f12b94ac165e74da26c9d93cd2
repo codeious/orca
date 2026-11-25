@@ -1,0 +1,36 @@
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.host-list.test.ts
+  s_cac6815b4d1ce8::t_eaf51daa791407 113-121
+  s_cac6815b4d1ce8::t_e960b957be597b 20
+  s_cac6815b4d1ce8::t_1cd8b468ac01a7 44
+  s_cac6815b4d1ce8::t_9c961bc9ee003d 1-19,21-43,45-112,122-172,178-191
+  s_cac6815b4d1ce8::t_5094da5f2a67cb 173-177
+src/renderer/src/lib/agent-session-launch-plan.ts
+  s_cac6815b4d1ce8::t_189bc2e1350593 65-66
+  s_cac6815b4d1ce8::t_56f5ad7571ba2d 163-164,167-173
+src/renderer/src/lib/agent-session-launch-plan.test.ts
+  s_cac6815b4d1ce8::t_c40f45fd0e8fe8 219-259
+src/main/runtime/rpc/methods/structured-agent-session-agents.test.ts
+  s_cac6815b4d1ce8::t_7297c54418ead3 3-4
+  s_cac6815b4d1ce8::t_6b53645d2e9899 33-42
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.ts
+  s_cac6815b4d1ce8::t_856dbd0cace4ef 64-67
+  s_cac6815b4d1ce8::t_f7d24e2b74570c 9-12
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.test.ts
+  s_cac6815b4d1ce8::t_96ad5d22cefa6a 136-156
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "314ea3ae8761a9f12b94ac165e74da26c9d93cd2",
+  "prompts": {},
+  "sessions": {
+    "s_cac6815b4d1ce8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "de94a793-4665-4704-ba19-d5a8368d0c7c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

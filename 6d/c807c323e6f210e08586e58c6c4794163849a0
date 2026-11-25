@@ -1,0 +1,64 @@
+src/renderer/src/components/native-chat/NativeChatComposerNotices.test.tsx
+  s_2d904c24fc0209::t_51750280282a55 39-60,64-88,92,96-97
+  s_2d904c24fc0209::t_a2709ca4372247 61-63,89-91,93-95
+src/shared/structured-agent-session-composer.ts
+  s_2d904c24fc0209::t_2f5e2e455a5739 61-62
+  s_2d904c24fc0209::t_6fd9ae23168ee6 43-44
+  s_2d904c24fc0209::t_3ab7d4bb65b991 207-209
+src/shared/structured-agent-session-composer-host-answer.test.ts
+  s_2d904c24fc0209::t_2ba7528cdccc1d 13,20,31,34,41,51-65
+src/renderer/src/components/native-chat/NativeChatComposerNotices.tsx
+  s_2d904c24fc0209::t_72cde781ebc1a3 66
+  s_2d904c24fc0209::t_27ae66560a038d 1,8-13
+  s_2d904c24fc0209::t_2ddab93fd142dc 14
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-transport.test.tsx
+  s_2d904c24fc0209::t_7dcd18919e02c8 32
+  s_2d904c24fc0209::t_a00fe551961992 1-31,33-54
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-send.test.tsx
+  s_2d904c24fc0209::t_a2709ca4372247 154-159,202-217
+  s_2d904c24fc0209::t_fbd6924fbadaa4 24
+  s_2d904c24fc0209::t_a87179e192393d 182-201
+  s_2d904c24fc0209::t_a13b21ef621cbf 152-153,160-181,218-219
+  s_2d904c24fc0209::t_ba5d1bf1754276 8,21-22,34-35
+src/renderer/src/components/native-chat/native-chat-structured-session-notices.ts
+  s_2d904c24fc0209::t_d89c6050da3ff6 115-123
+  s_2d904c24fc0209::t_1bd52c58949ddd 90
+  s_2d904c24fc0209::t_27ec3e12a90509 13-14
+src/renderer/src/components/native-chat/native-chat-composer-types.ts
+  s_2d904c24fc0209::t_f20be34da87069 26-27
+src/renderer/src/components/native-chat/use-native-chat-structured-composer-send.ts
+  s_2d904c24fc0209::t_70ee7c7a5d4bc3 96
+  s_2d904c24fc0209::t_d7f9c7363bb8f4 95,97-100
+src/renderer/src/components/native-chat/use-native-chat-composer-notice.test.tsx
+  s_2d904c24fc0209::t_8656e19d1a282e 4-7,16-40,48-55
+  s_2d904c24fc0209::t_f798f95df9e741 41-47
+  s_2d904c24fc0209::t_98283bddd85480 56
+src/renderer/src/components/native-chat/use-native-chat-composer-notice.ts
+  s_2d904c24fc0209::t_8139a1825268b0 49,61-62
+  s_2d904c24fc0209::t_3e81df5fa1add0 78
+  s_2d904c24fc0209::t_225fc3f28f1b8a 14
+  s_2d904c24fc0209::t_d92cabf0cbbcb3 46
+  s_2d904c24fc0209::t_d107630cf0766e 3
+src/renderer/src/components/native-chat/native-chat-structured-session-notices.host-answer.test.ts
+  s_2d904c24fc0209::t_6220d2c2646279 1-16,20-50
+  s_2d904c24fc0209::t_a2709ca4372247 17-19
+src/renderer/src/components/native-chat/native-chat-composer-notice.ts
+  s_2d904c24fc0209::t_40959279bbcac4 18-19,21-24
+  s_2d904c24fc0209::t_dd36db536a80a5 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6dc807c323e6f210e08586e58c6c4794163849a0",
+  "prompts": {},
+  "sessions": {
+    "s_2d904c24fc0209": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7421ece0-d6e9-485a-a334-7b9c47f0494d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

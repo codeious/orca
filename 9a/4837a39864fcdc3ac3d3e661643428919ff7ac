@@ -1,0 +1,22 @@
+src/main/droid/droid-turns.test.ts
+  s_48f3bc0d7f0337::t_697cf1fae1706e 149-173
+src/main/droid/droid-turns.ts
+  s_48f3bc0d7f0337::t_563088f8442fe7 69-80
+  s_48f3bc0d7f0337::t_82ccfb7ce7e883 52-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9a4837a39864fcdc3ac3d3e661643428919ff7ac",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

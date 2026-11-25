@@ -1,0 +1,71 @@
+src/shared/droid-probe-log-replay.test-fixture.ts
+  s_b463b9de342d45::t_b8f0bdd81b975e 241-242
+  s_b463b9de342d45::t_f5cff73fe40e83 257
+  s_b463b9de342d45::t_e52ebfe4ac720c 264-278
+  s_b463b9de342d45::t_edd058097e177d 223-225
+  s_b463b9de342d45::t_d616c486d1a57a 1-92,99-188,191-222,226-240,243-256,258-263
+  s_b463b9de342d45::t_bdcf4ce6ed3273 93-98
+  s_b463b9de342d45::t_e4e002f3a0d24a 189-190
+src/shared/agent-lease-expiry-timers.ts
+  s_b463b9de342d45::t_0584d7d58e12be 19
+  s_b463b9de342d45::t_3ed1b044d6454e 14-18,28-77,79,81
+src/shared/agent-hook-listener-droid-replay.test.ts
+  s_b463b9de342d45::t_a93d01d763e749 1-14,16-26,29-38,46-159,162,171-180,183,190-252
+  s_b463b9de342d45::t_19a55ffa5cf02b 15
+  s_b463b9de342d45::t_ceacf55cc47baa 181-182,184-189
+  s_b463b9de342d45::t_3f72a84ccc9b1e 160-161,163-164,166-170
+  s_b463b9de342d45::t_8513f4246181a1 165
+  s_b463b9de342d45::t_e68452601deba4 27-28,39-45
+src/main/agent-hooks/server-droid-exit-watch-replay.test.ts
+  s_b463b9de342d45::t_1b6db5b5bb7e66 8
+  s_b463b9de342d45::t_8ef9658856c572 178
+  s_b463b9de342d45::t_d3f452e532329a 179-181,189,207-208,213-219,221-222,228
+  s_b463b9de342d45::t_80133d2f82e27e 5
+  s_b463b9de342d45::t_6f3c2534a6c3be 187
+  s_b463b9de342d45::t_5a8722e942b23f 220
+  s_b463b9de342d45::t_a8bc35e8a4813e 223-227,229-235
+  s_b463b9de342d45::t_c115290bec9d7c 1-4,6-7,9-20,22-25,27-177,182-186,188,190-206,236
+  s_b463b9de342d45::t_e3ef311b135a5f 21
+  s_b463b9de342d45::t_9867a2d78f5381 209-212
+  s_b463b9de342d45::t_b14874a6850d73 26
+src/shared/__fixtures__/droid-new-clear-hooks.jsonl
+  s_b463b9de342d45::t_252d509aa4a1ee 1-81
+src/shared/__fixtures__/droid-new-clear-hooks.meta.json
+  s_b463b9de342d45::t_f8802bab7185a0 1-10
+src/shared/__fixtures__/droid-parent-process-hooks.jsonl
+  s_b463b9de342d45::t_26a3fd3f363a2e 1-140
+src/shared/__fixtures__/droid-parent-process-hooks.meta.json
+  s_b463b9de342d45::t_e4d4211a54052e 1-10
+src/shared/__fixtures__/droid-slow-start-hooks.jsonl
+  s_b463b9de342d45::t_8c857e89413760 1-270
+src/shared/__fixtures__/droid-slow-start-hooks.meta.json
+  s_b463b9de342d45::t_524b39de5ccb53 1-10
+src/shared/__fixtures__/droid-subagent-hooks.jsonl
+  s_b463b9de342d45::t_8bea70295123e8 1-71
+src/shared/__fixtures__/droid-subagent-hooks.meta.json
+  s_b463b9de342d45::t_5adbc90f64b051 1-10
+src/shared/__fixtures__/droid-tree-resume-hooks.jsonl
+  s_b463b9de342d45::t_e8dc255061f207 1-126
+src/shared/__fixtures__/droid-tree-resume-hooks.meta.json
+  s_b463b9de342d45::t_30cbdc054f5f64 1-10
+src/shared/__fixtures__/droid-two-command-hooks.jsonl
+  s_b463b9de342d45::t_c246f8d2f76e7a 1-39
+src/shared/__fixtures__/droid-two-command-hooks.meta.json
+  s_b463b9de342d45::t_e027aa7bce6c9e 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "265055075ad539e17d93ba12a1d07d8ec3b45b2d",
+  "prompts": {},
+  "sessions": {
+    "s_b463b9de342d45": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4c6c14be-bf67-4a08-a792-dd7eca09971c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

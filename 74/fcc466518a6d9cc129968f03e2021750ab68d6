@@ -1,0 +1,40 @@
+src/main/droid/droid-session-file.ts
+  s_0f8146f37120f5::t_4ff074b27ec503 3
+  s_0f8146f37120f5::t_1452437b0a5fb8 38-61,66-71
+  s_0f8146f37120f5::t_80c357969ab851 1,9-10
+  s_0f8146f37120f5::t_9acca9da34d774 62-65
+  s_0f8146f37120f5::t_e375e5466bcc0e 11
+src/main/native-chat/agent-session-wire/structured-agent-session-adopted-import.ts
+  s_0f8146f37120f5::t_eb22f8bdbdba76 8
+  s_0f8146f37120f5::t_00b84df0d38362 92
+  s_0f8146f37120f5::t_69a212729e35db 52,55,61-64,72-79
+  s_0f8146f37120f5::t_e4a89c5c54736c 117-119,122,124-128,136,144-149
+  s_0f8146f37120f5::t_da44227c2644db 80-81
+src/main/droid/droid-session-file.test.ts
+  s_0f8146f37120f5::t_317c9485b2b5d4 1-79
+src/main/runtime/rpc/methods/structured-agent-session-droid-adoption-replay.test.ts
+  s_0f8146f37120f5::t_08855c18d83e41 170-174
+  s_0f8146f37120f5::t_67a031d6724e4e 245-248,250-255,258-310
+  s_0f8146f37120f5::t_2a98977063edef 17
+  s_0f8146f37120f5::t_316bc464646fec 249,256-257
+src/main/runtime/structured-agent-session-droid-adoption.test-support.ts
+  s_0f8146f37120f5::t_bc709999aedaf3 51-55,58-65,67,71-79,81
+src/main/native-chat/agent-session-wire/structured-agent-session-adopted-import.test.ts
+  s_0f8146f37120f5::t_a1d8cc2d266b57 223-243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "74fcc466518a6d9cc129968f03e2021750ab68d6",
+  "prompts": {},
+  "sessions": {
+    "s_0f8146f37120f5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fb8c1d01-a3af-41e7-9b6d-f46b3621ba5b",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

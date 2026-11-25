@@ -1,0 +1,20 @@
+src/main/acp/acp-launch-specs.ts
+  s_48f15c05ff9afa::t_ec03bc918997be 5
+  s_48f15c05ff9afa::t_26171443de79bf 201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3bc4b2fc78cb2cb83e28439e72641e272ce14edc",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

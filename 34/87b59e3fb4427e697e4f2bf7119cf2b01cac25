@@ -1,0 +1,21 @@
+src/main/droid/droid-agent-connection.test.ts
+  s_7f3bc2e74546fd::t_47823e522361ab 1-121
+src/main/droid/droid-json-rpc-peer.test.ts
+  s_7f3bc2e74546fd::t_177039752afc05 1-312
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3487b59e3fb4427e697e4f2bf7119cf2b01cac25",
+  "prompts": {},
+  "sessions": {
+    "s_7f3bc2e74546fd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "aa07dea2-64a5-475a-94d5-7eee368e5a2b",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

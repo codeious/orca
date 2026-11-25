@@ -1,0 +1,23 @@
+src/shared/agent-hook-listener-droid-ended-row.test.ts
+  s_523078ea2e2274::t_e1d17589e0d724 1-87
+  s_523078ea2e2274::t_8fb9a4222e821a 88-90
+src/shared/agent-hook-listener/providers/droid-sessions.ts
+  s_523078ea2e2274::t_b5d94d5197651a 140-150
+  s_523078ea2e2274::t_0c4eed7af8afca 219-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1af9a2be9cb8b17a40367fea58bd34e74cc5c995",
+  "prompts": {},
+  "sessions": {
+    "s_523078ea2e2274": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5349094e-5431-4287-9aa5-0e6e2938419d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

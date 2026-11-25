@@ -1,0 +1,19 @@
+src/main/droid/droid-session-adapter.ts
+  s_48f15c05ff9afa::t_252a7729141a71 3-6,12,23-27,29-31,33-63,66-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5f982fee23ffbf4ae48d39bf1544ecb4e52c618b",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

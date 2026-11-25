@@ -1,0 +1,35 @@
+src/shared/agent-hook-listener-hermes-codex-droid.test.ts
+  s_71448096a73472::t_c742785066a019 258
+src/shared/agent-hook-listener/providers/droid-tool-fields.ts
+  s_71448096a73472::t_8c7a4ae9b29798 63
+src/shared/agent-hook-listener/providers/droid-events.ts
+  s_71448096a73472::t_f1a6717f204dc5 36
+src/main/agent-hooks/server-codex-normalization.test.ts
+  s_71448096a73472::t_8a1888f8568dbf 411-414,424-431
+  s_71448096a73472::t_de5e46a57f9bd5 389
+  s_8732efc3d35d8a::t_f849ae3e20949b 432-433
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "372887fd99f22782cc755a3238ed9f520e1d71fc",
+  "prompts": {},
+  "sessions": {
+    "s_71448096a73472": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "1d31046c-224a-488a-a880-13eaf851c74a",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_8732efc3d35d8a": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f534b0b4-edc9-4c8d-83fe-87cf164dfbfc",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

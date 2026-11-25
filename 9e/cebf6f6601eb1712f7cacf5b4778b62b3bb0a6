@@ -1,0 +1,63 @@
+src/main/droid/droid-command-catalog.ts
+  s_767cf5531d83f7::t_985336114617f0 4-15
+src/main/droid/droid-mcp-sign-in.ts
+  s_767cf5531d83f7::t_580ac3f9c84585 1-108
+src/main/droid/droid-mcp.ts
+  s_767cf5531d83f7::t_02b8c3c19cbbde 1-179
+src/main/droid/droid-service-command-types.ts
+  s_767cf5531d83f7::t_64cf4e9c9c63af 1-31
+src/main/droid/droid-service-command.test.ts
+  s_767cf5531d83f7::t_97381a374b062b 1-159
+src/main/droid/droid-service-command.ts
+  s_767cf5531d83f7::t_b37a9b80694ef7 1-102
+src/main/droid/droid-text-command.ts
+  s_767cf5531d83f7::t_5406da137e7504 4,7-13,15,20-23
+src/main/droid/fixtures/mcp.jsonl
+  s_767cf5531d83f7::t_edac9417000fab 1-21
+src/main/ipc/external-http-url.ts
+  s_767cf5531d83f7::t_144adc22d55797 1-17
+src/main/ipc/runtime-environment-mcp-sign-in-call-routing.test.ts
+  s_767cf5531d83f7::t_48b79883e9e2c1 1-80,82-118
+src/main/ipc/runtime-environment-mcp-sign-in-receiver.test.ts
+  s_767cf5531d83f7::t_49677b2e43e1a1 1-360
+src/main/ipc/runtime-environment-mcp-sign-in-receiver.ts
+  s_767cf5531d83f7::t_62968d8ab26d29 1-114
+src/main/ipc/runtime-environments/runtime-environment-mcp-sign-in-routing.ts
+  s_767cf5531d83f7::t_d1e21ece8c00e9 1-16,18-32,34-36,38-72
+src/main/ipc/runtime-environments/runtime-environment-transport-routing.ts
+  s_767cf5531d83f7::t_a3be1a6dd5c60f 9,209-212,233,241-242,247-248,250,269,287,289
+src/main/native-chat/agent-session-wire/agent-session-mcp-sign-in-forwarding.test.ts
+  s_767cf5531d83f7::t_e4bb7e8c93604f 1-106
+src/main/native-chat/agent-session-wire/structured-agent-session-host-command.test.ts
+  s_767cf5531d83f7::t_ae350e7c4a7f14 11-52
+src/main/native-chat/agent-session-wire/structured-agent-session-host-command.ts
+  s_767cf5531d83f7::t_f607ef982f5701 86-87
+src/main/runtime/construction/runtime-host-services.ts
+  s_767cf5531d83f7::t_a9fe5968bed529 2,94-95,97,99,101,103,105,111,113,115,118,122,147,151,154,157,160,163,166,168,170,172,174,177,181,185,188
+src/main/startup/mcp-sign-in-opener.test.ts
+  s_767cf5531d83f7::t_17c04b5908119b 1-52
+src/main/startup/mcp-sign-in-opener.ts
+  s_767cf5531d83f7::t_580b19f7722634 1-18
+src/shared/agent-session-mcp-sign-in-capability.ts
+  s_767cf5531d83f7::t_04044fc80010bb 1-3
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_767cf5531d83f7::t_5e6353a2edec74 612,808
+src/shared/rpc-contract/structured-agent-session-mcp-sign-in-params.ts
+  s_767cf5531d83f7::t_0ed29b340845e6 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9ecebf6f6601eb1712f7cacf5b4778b62b3bb0a6",
+  "prompts": {},
+  "sessions": {
+    "s_767cf5531d83f7": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e321acc0-0240-42ed-91f0-6ae41bceeaff",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

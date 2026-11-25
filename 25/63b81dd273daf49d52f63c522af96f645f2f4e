@@ -1,0 +1,52 @@
+src/renderer/src/lib/droid-chat-session-switch.test.ts
+  s_0960747cf4cc40::t_9eb8b712a21012 65
+  s_0960747cf4cc40::t_e6f168b39a50fa 10
+  s_0960747cf4cc40::t_e05554e7549256 171,176,179,182,198,260,272,277,281,298,301,310,332,351,362
+  s_0960747cf4cc40::t_480675b07465b1 11
+  s_0960747cf4cc40::t_6af806d915f7c1 134-138
+  s_0960747cf4cc40::t_7bbb12d046c3d8 124-127,181,189,312
+  s_0960747cf4cc40::t_7f5cf15a4792e5 22-33
+  s_0960747cf4cc40::t_316b69ef694338 300
+  s_0960747cf4cc40::t_7f88a714d9a3c6 1-9,12-21,34-60,63-64,66-72,74-109,111-123,128-133,139-154,158-170,172-175,177-178,180,183-188,190-197,199-206,250,254-259,261-271,273-276,278-280,282-297,299,302-309,311,313-331,333,335-350,352-361,363-381
+  s_0960747cf4cc40::t_b72a3bf28e12dc 155-157
+  s_0960747cf4cc40::t_5034812190d186 73
+  s_0960747cf4cc40::t_a9b9beb9da1807 334
+  s_0960747cf4cc40::t_b4466e4752f430 61-62
+  s_0960747cf4cc40::t_0ba20ab9725048 110
+  s_0960747cf4cc40::t_09be583c45e137 207-249
+  s_0960747cf4cc40::t_f10c0425e7ffb6 251-253
+src/renderer/src/lib/structured-agent-session-provisional-tab.ts
+  s_0960747cf4cc40::t_909a9fc54a9d43 43
+  s_0960747cf4cc40::t_1ba541cdaf1288 74-81
+  s_0960747cf4cc40::t_7bbb12d046c3d8 44-49
+src/renderer/src/lib/structured-agent-session-provisional-tab.test.ts
+  s_0960747cf4cc40::t_3e00a08d82a54c 74-118
+  s_0960747cf4cc40::t_06fce31e8f901b 26-29
+src/renderer/src/lib/droid-chat-session-switch.ts
+  s_0960747cf4cc40::t_809f5253f14687 125,134,136
+  s_0960747cf4cc40::t_445e63a6a6f1a4 1-6,8-14,16,67,69-92,94,100-101,103-108,110-124,126-133,135,137-145
+  s_0960747cf4cc40::t_306fad32582be5 52-64,66,68
+  s_0960747cf4cc40::t_2515d90c32c4e0 7,18-51,146
+  s_0960747cf4cc40::t_bf9ac56695f0ff 65
+  s_0960747cf4cc40::t_eacb54a9504cce 17
+  s_0960747cf4cc40::t_a2ec4053c451bd 15
+  s_0960747cf4cc40::t_9967c1ab1e5590 93,95-99,102,109
+src/main/runtime/agent-session-record-store-session-switch.test.ts
+  s_0960747cf4cc40::t_908b0b37babe68 1-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2563b81dd273daf49d52f63c522af96f645f2f4e",
+  "prompts": {},
+  "sessions": {
+    "s_0960747cf4cc40": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4b0095d4-6d08-420e-904b-36cb4dc917d3",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

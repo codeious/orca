@@ -1,0 +1,52 @@
+src/main/droid/droid-cli-conversations.ts
+  s_91d04d84653459::t_3c44b5c31f887a 1-19
+  h_476903bd8a47d9 1-19
+src/main/droid/droid-experimental-create.test.ts
+  s_91d04d84653459::t_1bb07e634bbc14 1-40
+  h_476903bd8a47d9 1-40
+src/main/droid/droid-resume-grammar.ts
+  s_91d04d84653459::t_a34507177070ea 1-133
+  h_476903bd8a47d9 1-133
+src/main/droid/droid-runtime-metadata.ts
+  s_91d04d84653459::t_bff421ce3b77b6 1-13
+  h_476903bd8a47d9 1-13
+src/main/droid/droid-runtime-registration.ts
+  s_91d04d84653459::t_0b75c4d7aa74d4 1-55
+  h_476903bd8a47d9 1-55
+src/main/droid/droid-session-adapter.ts
+  s_91d04d84653459::t_bce78f7440b0f2 1-142
+  h_476903bd8a47d9 1-142
+src/main/droid/droid-structured-launch-resolution.ts
+  s_91d04d84653459::t_0c293840143b70 1-82
+  h_476903bd8a47d9 1-82
+src/main/runtime/agent-session/installation/structured-agent-runtime-metadata.ts
+  s_91d04d84653459::t_3610fb0f14ff04 18,39,144
+  h_476903bd8a47d9 18,39,144
+src/main/runtime/agent-session/installation/structured-agent-runtime-registrations.ts
+  s_91d04d84653459::t_2f9d04e1d11c1c 24,213-214
+  h_476903bd8a47d9 24,213-214
+src/shared/agent-session/options/structured-agent-session-plan-mode-pair.ts
+  s_91d04d84653459::t_e26eefed805724 1,12-14
+  h_476903bd8a47d9 1,12-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0977492ef48986e4ce200f08c4997cd422072df6",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  },
+  "sessions": {
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

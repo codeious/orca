@@ -1,0 +1,87 @@
+src/main/ai-vault/structured-chat-terminal-handoff.ts
+  s_81ba6feba81e27::t_dfff3873302ad5 1-59
+src/main/ipc/ai-vault/ai-vault-resume.ts
+  s_81ba6feba81e27::t_ab0c8789d3a8dd 3,54-57
+src/main/native-chat/agent-model-catalog/agent-model-catalog-entry.test.ts
+  s_41b057fc6a7e24::t_293e089320491a 6-7,182-201
+src/main/native-chat/agent-session-wire/host/structured-provider-session-ownership.ts
+  s_2ff199e299c023::t_b4b5a72729f942 7,68
+src/main/pi/rpc-model-catalog-probe.ts
+  s_2ff199e299c023::t_6cc09b175feca0 120-125
+src/main/runtime/rpc/methods/history/ai-vault.ts
+  s_81ba6feba81e27::t_6e48d46f812da0 2,143,145-147
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-create-handler.ts
+  s_41b057fc6a7e24::t_46dad0b16cb76a 2-3,166-168,175-178
+src/main/runtime/rpc/methods/structured-sessions/creation/structured-agent-session-reopen.ts
+  s_81ba6feba81e27::t_fda884ee4d605a 1-90
+src/main/runtime/rpc/methods/structured-sessions/structured-agent-session.ts
+  s_2ff199e299c023::t_3747fcf680b3f4 5,51,112-113
+src/renderer/src/components/native-chat/pane/actions/NativeChatResumeInCliButton.tsx
+  s_41b057fc6a7e24::t_cd347a16c40c1b 1,105-111
+src/renderer/src/components/tab-bar/NativeChatCliForkMenuItems.tsx
+  s_81ba6feba81e27::t_e4e5157909043b 1,50-57
+src/renderer/src/components/tab-bar/cli-chat-resume-close-admission.ts
+  s_81ba6feba81e27::t_af87bfd5416d1c 1,30,35-39,113,126-127,142,155,172,180-184
+src/renderer/src/components/tab-bar/cli-chat-resume-pending.ts
+  s_81ba6feba81e27::t_ba730aa84834df 1-28
+src/renderer/src/components/tab-bar/cli-chat-resume-reopen.ts
+  s_41b057fc6a7e24::t_233779aa87b4df 1-57
+src/renderer/src/components/tab-bar/cli-chat-resume-run.ts
+  s_81ba6feba81e27::t_8d1f36665de2f9 3,10-15,152-167
+src/renderer/src/components/tab-bar/native-chat-cli-fork-run.ts
+  s_81ba6feba81e27::t_b61be6ee93e3a7 1,35-36,142,204,219-226,241-246,249-256
+src/renderer/src/lib/agent-session/launch/structured-agent-session-host-admission.ts
+  s_81ba6feba81e27::t_326760c8cdb040 1,3,45,105,123-138
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-admission.ts
+  s_81ba6feba81e27::t_416890a52afdd2 214-227
+src/renderer/src/lib/agent-session/launch/structured-agent-session-launch-create-call.ts
+  s_81ba6feba81e27::t_9fcb6f799ff6a3 109
+src/renderer/src/lib/agent-session/resume/cli-fork/native-chat-cli-fork-preparation.ts
+  s_81ba6feba81e27::t_48cb99a673d449 10,32,46-51,109-124,128-129,133,137
+src/renderer/src/lib/agent-session/resume/history/ai-vault-session-resume-preparation.ts
+  s_81ba6feba81e27::t_f70bbf59501542 10,104,108
+src/shared/ai-vault/contracts/ai-vault-runtime-capabilities.ts
+  s_81ba6feba81e27::t_094404059787da 1-4,19-20
+src/shared/ai-vault/resume/ai-vault-resume-preparation.ts
+  s_81ba6feba81e27::t_decb0cf25b2a69 19-20,33-38,42
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_2ff199e299c023::t_984c69e4cc619e 10-11
+src/shared/rpc-contract/ai-vault-params.ts
+  s_81ba6feba81e27::t_b2b92bdf665b5b 81-89
+src/shared/rpc-contract/rpc-params-catalog.generated.ts
+  s_81ba6feba81e27::t_81cd763bc390fd 207,655,848,1040
+src/shared/rpc-contract/structured-agent-session-params.ts
+  s_81ba6feba81e27::t_d64a9df44a2dc8 112-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "522564c28bb6bddb31b6184e164db167eb86db99",
+  "prompts": {},
+  "sessions": {
+    "s_2ff199e299c023": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "cc8b1f7a-85cb-44a3-8d11-54b5b380d9f7",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_41b057fc6a7e24": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "01de2f4f-b27c-4d29-b7d8-0c3f94886fa5",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_81ba6feba81e27": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5eb8a6c5-5f41-4d48-96b4-a43a7c9a6504",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

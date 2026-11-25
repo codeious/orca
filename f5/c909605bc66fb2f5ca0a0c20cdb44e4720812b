@@ -1,0 +1,16 @@
+src/main/droid/droid-session-options.ts
+  h_476903bd8a47d9 34-36,133,285
+src/shared/plugins/languages/protected-copy-keys.json
+  h_476903bd8a47d9 688-689,693-695
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f5c909605bc66fb2f5ca0a0c20cdb44e4720812b",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

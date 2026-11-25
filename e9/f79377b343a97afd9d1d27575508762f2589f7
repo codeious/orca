@@ -1,0 +1,33 @@
+src/main/ai-vault/structured-session-ownership.test.ts
+  s_f87fd4e7a08936::t_03e5a3e594672f 23-24
+  s_f87fd4e7a08936::t_c8958d99efd06b 202-315
+  s_f87fd4e7a08936::t_b9963217b3a6bc 377-379
+  s_f87fd4e7a08936::t_5927c03a36a011 20
+  s_f87fd4e7a08936::t_2685e76c393a0c 316-326,365,380-390
+src/main/ai-vault/structured-session-resume-grammar.ts
+  s_f87fd4e7a08936::t_46db4cd77ddda4 128
+  s_f87fd4e7a08936::t_49c7fad0cc767d 163
+  s_f87fd4e7a08936::t_facfc0f64b4d63 1-14,17-82,84-94,96-127,129-162,164-185
+  s_f87fd4e7a08936::t_03a5a4fe32cfaf 15-16
+  s_f87fd4e7a08936::t_50bc1e29d4e455 83
+  s_f87fd4e7a08936::t_6c6ceb9e7fc0d4 95
+src/main/ai-vault/structured-session-ownership.ts
+  s_f87fd4e7a08936::t_b54b472b12bf3e 13
+  s_f87fd4e7a08936::t_e11ea4ad9a4a28 14-16,100,140,161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e9f79377b343a97afd9d1d27575508762f2589f7",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

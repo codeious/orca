@@ -1,0 +1,33 @@
+src/main/droid/hook-service-remote.test.ts
+  s_9591f6f76450ed::t_3c1578cbb1ee3a 1-120
+src/main/droid/hook-service-migration.test.ts
+  s_9591f6f76450ed::t_0e7678b40d9d31 1-144
+src/main/droid/droid-hooks-file.test-fixture.ts
+  s_9591f6f76450ed::t_86ae09f6a0e646 1-32
+src/main/droid/droid-org-policy.ts
+  s_cc5e4a6cdbd85d::t_4abe1d73ec3927 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9d58f5d71b76a7af1e0a3c12f2b5ab19153552e8",
+  "prompts": {},
+  "sessions": {
+    "s_9591f6f76450ed": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "c962a90c-6839-48b5-bcf2-f1bd1c523426",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_cc5e4a6cdbd85d": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f26e0b46-5399-4064-a893-2fcb3c48f02e",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,123 @@
+src/shared/agent-launch-mode-preference.test.ts
+  s_523078ea2e2274::t_ee24f763c36b54 123-132
+  s_523078ea2e2274::t_b691f17bc46b2f 24-42
+src/main/persistence/loading-store/normalize-loaded-global-settings.test.ts
+  s_523078ea2e2274::t_8c9ff25b1d1f63 129
+  s_523078ea2e2274::t_b52f80276b1bb8 113-128,130-133
+  s_523078ea2e2274::t_9f47483f05a144 134-136
+src/shared/agent-launch-mode-preference.ts
+  s_523078ea2e2274::t_d8e9775d628d7a 7-8,10-14,22
+  s_523078ea2e2274::t_e78c67d9d1ab5e 39,41
+src/main/persistence/loading-store/normalize-loaded-global-settings.ts
+  s_523078ea2e2274::t_409c40ce9d5479 75-76
+  s_523078ea2e2274::t_15c8b0ceebfcc5 1
+src/main/droid/droid-permission-requests.ts
+  s_523078ea2e2274::t_0a1faa3ad4458c 3,6
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-action.ts
+  s_523078ea2e2274::t_c44a1bef7bef07 7
+  s_523078ea2e2274::t_1ce8391598a221 23
+src/main/ai-vault/structured-session-resume-grammar.ts
+  s_523078ea2e2274::t_dad99266bc9179 1
+  s_523078ea2e2274::t_45451948bca2c5 180
+src/main/acp/acp-dialects/grok-background-task-stop.ts
+  s_523078ea2e2274::t_f4ebfc5e35c26c 2
+  s_523078ea2e2274::t_57966898b42537 19
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-launch.ts
+  s_523078ea2e2274::t_585f2b50906be8 15
+  s_523078ea2e2274::t_5c60553b00a122 31
+src/renderer/src/lib/agent-launch-through-host.ts
+  s_523078ea2e2274::t_169475bdf912cc 145-147
+  s_523078ea2e2274::t_bcd7e625a8444b 26
+src/shared/ai-vault-droid-session-holder.ts
+  s_523078ea2e2274::t_005ece9d423047 39-44,48,53
+src/main/acp/acp-session-runtime.ts
+  s_523078ea2e2274::t_8a078d3b982f51 4,8-10
+  s_523078ea2e2274::t_33ab178f7cc8c3 118
+  s_523078ea2e2274::t_4830825951c8c8 260
+  s_523078ea2e2274::t_b811a4d8997c6e 279
+  s_523078ea2e2274::t_028fc7110f95fd 286
+src/main/acp/acp-timeline-requests.ts
+  s_523078ea2e2274::t_922d24da3bc3a5 9
+  s_523078ea2e2274::t_5ec19bf5ebcb93 23
+  s_523078ea2e2274::t_5db6f14c91757d 45-48
+  s_523078ea2e2274::t_8fa53b549d629b 79
+src/main/acp/acp-session-setup.ts
+  s_523078ea2e2274::t_9e80dad1b53547 62
+  s_523078ea2e2274::t_6b8c6db313ab53 2
+src/main/droid/droid-session-id.test.ts
+  s_523078ea2e2274::t_e4409cd8e093f0 1-18
+src/main/runtime/orca-runtime-get-structured-agent-session-create-support.ts
+  s_523078ea2e2274::t_3f33a6427e8e08 31
+src/main/acp/acp-structured-prompts.ts
+  s_523078ea2e2274::t_c5d75e833bf1ec 51
+  s_523078ea2e2274::t_431932deb26484 16
+  s_523078ea2e2274::t_86ef197b0e9def 52-54,72
+src/main/droid/droid-session-file.ts
+  s_523078ea2e2274::t_7d2a429b434fce 3
+  s_523078ea2e2274::t_ef986360c2d0a9 16
+src/main/droid/droid-prompts.ts
+  s_523078ea2e2274::t_8989e73d0264ba 17
+  s_523078ea2e2274::t_6c5f840fbed2f2 7
+src/shared/structured-adoption-agent.test.ts
+  s_523078ea2e2274::t_f549fcfa6e3471 1-20
+src/main/acp/acp-dialects/grok-requests.ts
+  s_523078ea2e2274::t_22ab820490d463 6
+  s_523078ea2e2274::t_72b8038c6588b1 32
+  s_523078ea2e2274::t_22ef8152fea2c6 68-71
+  s_523078ea2e2274::t_cda0de61fd409e 113
+src/main/acp/acp-errors.ts
+  s_523078ea2e2274::t_f0138db6d3f034 3-12
+  s_523078ea2e2274::t_738acf2df87e56 51
+  s_523078ea2e2274::t_65c88fc604f609 39
+src/main/acp/acp-oversized-lines.ts
+  s_523078ea2e2274::t_cea4338f841672 23
+  s_523078ea2e2274::t_eb9f5d11573cd3 3
+src/main/acp/acp-incoming-requests.ts
+  s_523078ea2e2274::t_bfeef3d7fb36cd 47
+  s_523078ea2e2274::t_9ff7e1c444ee16 109,112-115
+  s_523078ea2e2274::t_6604b1b9bf3a2a 1-6
+  s_523078ea2e2274::t_64c7737985c65f 79-82
+src/main/acp/acp-peer-dialect.ts
+  s_523078ea2e2274::t_1afc0a910e0607 7-8
+  s_523078ea2e2274::t_9a4158b2745df3 60-61
+src/main/droid/droid-question-requests.ts
+  s_523078ea2e2274::t_0022c5ca061c2e 7,13
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat.ts
+  s_523078ea2e2274::t_5aa3bd62ebc20f 99
+  s_523078ea2e2274::t_0969452a26ee92 11
+src/main/runtime/structured-agent-session-create-adoption.ts
+  s_523078ea2e2274::t_d78abea0ee35c5 13,15
+src/main/droid/droid-session-id.ts
+  s_523078ea2e2274::t_e4cec5b4fb4b0f 1-6
+src/main/acp/acp-dialects/grok-subagent-stop.ts
+  s_523078ea2e2274::t_b86a69fb6ef26d 2
+  s_523078ea2e2274::t_a0bbdefb010ecb 18
+src/main/native-chat/structured-agent-session-history-adoption.ts
+  s_523078ea2e2274::t_e5f7f0e7cc9655 14,17
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat-workspace.ts
+  s_523078ea2e2274::t_e60a8b083aee65 11
+  s_523078ea2e2274::t_b83a671ee8078a 51
+src/shared/structured-adoption-agent.ts
+  s_523078ea2e2274::t_94227ca687be74 1-10
+src/main/droid/droid-json-rpc-peer.ts
+  s_523078ea2e2274::t_0bda5e50771551 2-7,13
+src/main/acp/acp-dialects/omp-dialect.ts
+  s_523078ea2e2274::t_50ff7b84410acc 2
+  s_523078ea2e2274::t_fc0e4181369751 119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3f457e65afd74f181b8a4bbdbcfc72ec8db4712e",
+  "prompts": {},
+  "sessions": {
+    "s_523078ea2e2274": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5349094e-5431-4287-9aa5-0e6e2938419d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

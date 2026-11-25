@@ -1,0 +1,43 @@
+src/main/droid/droid-json-rpc-peer.test.ts
+  s_48f3bc0d7f0337::t_66b61d5adf2a8d 3-12
+  s_48f3bc0d7f0337::t_bf7b644a8e84e7 34-109,111-125
+  s_48f3bc0d7f0337::t_fcd79ba81a2cd5 31
+  s_48f3bc0d7f0337::t_dd904f14d07864 110
+  s_48f3bc0d7f0337::t_7a44c5f18862a3 126-225
+  s_48f3bc0d7f0337::t_d8c2ab626799d6 1-2,13-15,17-30,32-33,226-288
+  s_48f3bc0d7f0337::t_73b6de87bc12f4 16
+src/main/droid/droid-rpc-errors.ts
+  s_48f3bc0d7f0337::t_0793270aeca3bf 1-25
+src/main/droid/droid-rpc-envelope.ts
+  s_48f3bc0d7f0337::t_e8b2096677486b 1-28
+  s_48f3bc0d7f0337::t_04eeb7a32ded19 29-30
+src/main/droid/droid-json-rpc-peer.ts
+  s_48f3bc0d7f0337::t_32891de80e02be 252-261
+  s_48f3bc0d7f0337::t_d33fbc8fc374b7 61-64,69-81
+  s_48f3bc0d7f0337::t_2d03a25aea448c 168-174
+  s_48f3bc0d7f0337::t_9c85572895bbf1 36
+  s_48f3bc0d7f0337::t_d68fb54353ede3 268-271
+  s_48f3bc0d7f0337::t_4af7f08152cedf 136-139,145-148
+  s_48f3bc0d7f0337::t_2b1d8671105453 1-15,17,22-35,37-60,65-68,82-135,140-144,149-167,175-195,242-251,262-267,272-278
+  s_48f3bc0d7f0337::t_31f721a124a30b 196-241
+  s_48f3bc0d7f0337::t_e47e90838ce7d8 16,18-21
+  s_48f3bc0d7f0337::t_bf0b19bbf2f8d4 279-285
+src/main/droid/droid-rpc-envelope.test.ts
+  s_48f3bc0d7f0337::t_4007bb967328f1 1-85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "50f890a409d2530bcaa34e753da5f3bae43e63dd",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

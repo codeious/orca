@@ -1,0 +1,24 @@
+src/main/droid/droid-session-adapter.ts
+  s_48f15c05ff9afa::t_252a7729141a71 3-6,12,23-27,29-31,33-63,66-68
+src/main/runtime/structured-session-child-launch-env.test.ts
+  s_48f15c05ff9afa::t_15ed9a155c5a25 2-6
+  s_48f15c05ff9afa::t_33a2e87a4082e4 61
+  s_48f15c05ff9afa::t_4fe73a5bf70be6 35-43
+  s_48f15c05ff9afa::t_d3eca7f7562605 17-18,23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7f8ab763aa84a2c7e8ded39f03f95c30972b1049",
+  "prompts": {},
+  "sessions": {
+    "s_48f15c05ff9afa": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5f0c0579-d38a-4756-9487-6104b9079939",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+src/main/runtime/structured-agent-launch-support.test.ts
+  s_48f3bc0d7f0337::t_0012d59007ee88 1-4,6-10,12-13,16-20,24-25,29-35,38-49,52-70,73-78,80-82,85-86,89-97,100-106
+  s_48f3bc0d7f0337::t_a20b7f7265e4cd 88
+  s_48f3bc0d7f0337::t_1a8595b8d05f3b 87,107-111
+src/main/droid/droid-environment.test.ts
+  s_48f3bc0d7f0337::t_9a8be0f08f6412 2
+  s_48f3bc0d7f0337::t_15c033cb19b974 1,3-17
+src/main/droid/droid-launch-resolution.ts
+  s_48f3bc0d7f0337::t_32829db3f48e38 1-56
+src/main/droid/droid-environment.ts
+  s_48f3bc0d7f0337::t_c80eba53765484 1-9
+src/main/droid/droid-launch-resolution.test.ts
+  s_48f3bc0d7f0337::t_02b2aa514d8c85 1-66
+src/main/droid/droid-version-support.ts
+  s_48f3bc0d7f0337::t_c3299fd20c32c4 2-3,18-34
+  s_b463b9de342d45::t_8ab4d45eb14f4b 35
+src/main/runtime/structured-agent-launch-support.ts
+  s_48f3bc0d7f0337::t_1d4cf8d5d40594 89-92,95-96
+  s_48f3bc0d7f0337::t_440888ecec8d06 30-45,58-69,71
+  s_48f3bc0d7f0337::t_6fd76ab33a4098 9-10,12-15
+src/main/droid/droid-version-support.test.ts
+  s_48f3bc0d7f0337::t_b65b1aee9d61c1 5-6,9-25
+  s_b463b9de342d45::t_418c8b5311f779 26
+src/main/runtime/structured-agent-runtime-registrations.ts
+  s_48f3bc0d7f0337::t_d0c459c1edb1b0 22
+  s_48f3bc0d7f0337::t_9a7424cc144991 123-127
+  s_48f3bc0d7f0337::t_a7fd0a270c8fef 106-112
+  s_48f3bc0d7f0337::t_d4110d3b17a6ea 128-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "82f07bdf664688f1a20c8111c68b821168c2eca0",
+  "prompts": {},
+  "sessions": {
+    "s_48f3bc0d7f0337": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "637bfb3f-8226-4fa0-a31e-170c5ca02ee0",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_b463b9de342d45": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4c6c14be-bf67-4a08-a792-dd7eca09971c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

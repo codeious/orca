@@ -1,0 +1,24 @@
+src/main/agent-hooks/server-droid-background-child-lease.test.ts
+  s_b463b9de342d45::t_1b6ae39078c236 105,109-111
+  s_b463b9de342d45::t_f5e782914d4546 17-18
+src/wsl-guest/agent-hook-server-droid-background-child-lease.test.ts
+  s_b463b9de342d45::t_1cb17011ce4eee 24-25
+  s_b463b9de342d45::t_303335ef99810a 43-48
+  s_b463b9de342d45::t_6bebfeaf9b9fd9 95,99-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b6b18ae06c93ae77ca96b9a77fa32b4a728c2557",
+  "prompts": {},
+  "sessions": {
+    "s_b463b9de342d45": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4c6c14be-bf67-4a08-a792-dd7eca09971c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

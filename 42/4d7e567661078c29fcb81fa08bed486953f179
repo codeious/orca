@@ -1,0 +1,26 @@
+src/main/droid/droid-real-cli-test-gate.test.ts
+  s_71448096a73472::t_cbc58d3daed295 1-48
+src/main/droid/droid-real-cli-session-test-support.ts
+  s_71448096a73472::t_247abd40674cc9 1-94
+src/main/droid/droid-real-cli-test-gate.ts
+  s_71448096a73472::t_0f7189f7365131 1-25
+src/main/droid/hook-service-real-cli.test.ts
+  s_71448096a73472::t_b2bb915e915825 1-159,161-162
+  s_71448096a73472::t_df9b760ac468d3 160,163-166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "424d7e567661078c29fcb81fa08bed486953f179",
+  "prompts": {},
+  "sessions": {
+    "s_71448096a73472": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "1d31046c-224a-488a-a880-13eaf851c74a",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+src/main/native-chat/agent-session-journal/history-import/journal-legacy-transcript-stream.ts
+  s_91a1eab52ed9bd::t_5f46ebf413624a 1-3,41-42,44-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "22afaded0c76abc886986b680af8f872d3230c20",
+  "prompts": {},
+  "sessions": {
+    "s_91a1eab52ed9bd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f2a8e9fd-b7c8-4bfc-9428-79cd9e011c55",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

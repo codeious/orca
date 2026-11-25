@@ -1,0 +1,124 @@
+research/droid-signed-out-screen/probe/run-case.sh
+  s_9d52dc6a9689b0::t_fe1e4397bb8bcd 1-57
+research/droid-signed-out-screen.md
+  s_9d52dc6a9689b0::t_d6822d21970471 1-32,34-41,51-62,64-68,70-118
+  s_9d52dc6a9689b0::t_f06b0ab4334c3f 33,42-50
+  s_9d52dc6a9689b0::t_e23a8acf8d6c58 63
+  s_9d52dc6a9689b0::t_70c5516e6ac794 69
+research/droid-signed-out-screen/replay-signed-out.test.ts
+  s_9d52dc6a9689b0::t_e3dd23b6de58e6 163
+  s_9d52dc6a9689b0::t_9ec1e50174a6e0 158
+  s_9d52dc6a9689b0::t_5f3f8f07d9e1af 122
+  s_9d52dc6a9689b0::t_2e72d8a2411b0c 1-21,26-27,40-71,74-89,91-99,115-121,123-150,152-157,159-162,164-169,171-178
+  s_9d52dc6a9689b0::t_bb95b42f76b514 170
+  s_9d52dc6a9689b0::t_c38f8f71d813ec 72-73
+  s_9d52dc6a9689b0::t_2a04b0811d412a 109-112
+  s_9d52dc6a9689b0::t_db4889b3fc459d 22-25,28-39
+  s_9d52dc6a9689b0::t_6b26a8c549f8fa 90
+  s_9d52dc6a9689b0::t_6d928ddceca853 100-108,113-114
+  s_9d52dc6a9689b0::t_310f21c8bf48a1 151
+research/droid-signed-out-screen/build-replay-fixtures.mjs
+  s_9d52dc6a9689b0::t_db47d8efd92c90 1-52
+research/droid-signed-out-screen/capture/droid-0-238-0-signed-out-badkey-bare-120x40.meta.json
+  s_9d52dc6a9689b0::t_53ddf56548a503 1-14
+research/droid-signed-out-screen/capture/droid-0-238-0-signed-out-badkey-bare-120x40.txt
+  s_9d52dc6a9689b0::t_2c01d90a8b66ee 1-1838
+research/droid-signed-out-screen/capture/droid-0-238-0-signed-out-badkey-prompt-120x40.meta.json
+  s_9d52dc6a9689b0::t_1bc5a343f5cf16 1-14
+research/droid-signed-out-screen/capture/droid-0-238-0-signed-out-badkey-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_727b942a9895e5 1-1838
+research/droid-signed-out-screen/capture/droid-0-238-0-signed-out-bare-120x40.meta.json
+  s_9d52dc6a9689b0::t_c5520b0828d7ec 1-14
+research/droid-signed-out-screen/capture/droid-0-238-0-signed-out-bare-120x40.txt
+  s_9d52dc6a9689b0::t_7eee0ae49a6e2d 1-1868
+research/droid-signed-out-screen/capture/droid-0-238-0-signed-out-prompt-120x40.meta.json
+  s_9d52dc6a9689b0::t_4189bab54df9a3 1-14
+research/droid-signed-out-screen/capture/droid-0-238-0-signed-out-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_c5e3832d05fce2 1-1868
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-auto-prompt-120x40.meta.json
+  s_9d52dc6a9689b0::t_4dc404b1195641 1-14
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-auto-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_0b2e9efae16d36 1-1868
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-badkey-bare-120x40.meta.json
+  s_9d52dc6a9689b0::t_d9730eda12196b 1-14
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-badkey-bare-120x40.txt
+  s_9d52dc6a9689b0::t_cdabbea45ab518 1-1838
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-badkey-prompt-120x40.meta.json
+  s_9d52dc6a9689b0::t_f91c57988aced2 1-14
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-badkey-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_1faa4afbebe042 1-1838
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-bare-120x40.meta.json
+  s_9d52dc6a9689b0::t_c15600a93dc1c4 1-14
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-bare-120x40.txt
+  s_9d52dc6a9689b0::t_dc8eaf8247f1ec 1-1868
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-bare-80x24.meta.json
+  s_9d52dc6a9689b0::t_31c33f377d8251 1-14
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-bare-80x24.txt
+  s_9d52dc6a9689b0::t_c57d044733597a 1-1107
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-prompt-120x40.meta.json
+  s_9d52dc6a9689b0::t_e3209867e8e5a8 1-14
+research/droid-signed-out-screen/capture/droid-0-249-0-signed-out-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_98d3dc880b294a 1-1868
+research/droid-signed-out-screen/probe/analyze.py
+  s_9d52dc6a9689b0::t_07fe863d94e543 1-59
+research/droid-signed-out-screen/probe/hook-log.py
+  s_9d52dc6a9689b0::t_3fede8902402db 1-97
+research/droid-signed-out-screen/probe/open-stub.sh
+  s_9d52dc6a9689b0::t_05f2b6e7430488 1-5
+research/droid-signed-out-screen/probe/pty-timing-drive.py
+  s_9d52dc6a9689b0::t_a39ef345e24e24 1-91
+research/droid-signed-out-screen/replay-results.json
+  s_9d52dc6a9689b0::t_603fa27dfb2de3 1-267
+research/droid-signed-out-screen/replay/droid-0-238-0-signed-out-badkey-bare-120x40.timing.json
+  s_9d52dc6a9689b0::t_5339cb47d3605d 1
+research/droid-signed-out-screen/replay/droid-0-238-0-signed-out-badkey-bare-120x40.txt
+  s_9d52dc6a9689b0::t_5d7fcc87e07480 1-1838
+research/droid-signed-out-screen/replay/droid-0-238-0-signed-out-badkey-prompt-120x40.timing.json
+  s_9d52dc6a9689b0::t_c2c6cb8181fd9a 1
+research/droid-signed-out-screen/replay/droid-0-238-0-signed-out-badkey-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_685b12c574d762 1-1838
+research/droid-signed-out-screen/replay/droid-0-238-0-signed-out-bare-120x40.timing.json
+  s_9d52dc6a9689b0::t_6f709ea4c98ebd 1
+research/droid-signed-out-screen/replay/droid-0-238-0-signed-out-bare-120x40.txt
+  s_9d52dc6a9689b0::t_b4613d39f2b4f8 1-1868
+research/droid-signed-out-screen/replay/droid-0-238-0-signed-out-prompt-120x40.timing.json
+  s_9d52dc6a9689b0::t_2bdd3aa72faf5e 1
+research/droid-signed-out-screen/replay/droid-0-238-0-signed-out-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_821ddd1ea1e864 1-1868
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-auto-prompt-120x40.timing.json
+  s_9d52dc6a9689b0::t_a0b5b559cfc631 1
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-auto-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_7d70c2cd0f0d6b 1-1868
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-badkey-bare-120x40.timing.json
+  s_9d52dc6a9689b0::t_846f1a2d5d568d 1
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-badkey-bare-120x40.txt
+  s_9d52dc6a9689b0::t_615f28ce51370c 1-1838
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-badkey-prompt-120x40.timing.json
+  s_9d52dc6a9689b0::t_67841359881d8a 1
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-badkey-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_62102025125e87 1-1838
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-bare-120x40.timing.json
+  s_9d52dc6a9689b0::t_ecc7d72d81a08f 1
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-bare-120x40.txt
+  s_9d52dc6a9689b0::t_c45ddb675ca70b 1-1868
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-prompt-120x40.timing.json
+  s_9d52dc6a9689b0::t_67ed81c15911c4 1
+research/droid-signed-out-screen/replay/droid-0-249-0-signed-out-prompt-120x40.txt
+  s_9d52dc6a9689b0::t_bd8f7d3499dbef 1-1868
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "514ce2b6c5134827745b1bd47e48fbd32b53190c",
+  "prompts": {},
+  "sessions": {
+    "s_9d52dc6a9689b0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "3433f54e-0dd1-4423-9a44-f8b8365114da",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

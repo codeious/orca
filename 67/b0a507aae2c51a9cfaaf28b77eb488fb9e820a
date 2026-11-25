@@ -1,0 +1,19 @@
+src/shared/agent-session/lifecycle/rewind/agent-session-rewind-targets.test.ts
+  s_3fe839bacd08b6::t_7446524951c911 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "67b0a507aae2c51a9cfaaf28b77eb488fb9e820a",
+  "prompts": {},
+  "sessions": {
+    "s_3fe839bacd08b6": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "f8e94f67-ce90-42e6-b45d-4852a6f953f9",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

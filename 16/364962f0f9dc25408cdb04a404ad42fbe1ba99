@@ -1,0 +1,21 @@
+src/main/acp/acp-peer-handlers.ts
+  s_a71ca3b06ed7b3::t_413cf8f1356967 1-11
+src/main/acp/acp-session-setup.ts
+  s_a71ca3b06ed7b3::t_62f23db0c0af13 2-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "16364962f0f9dc25408cdb04a404ad42fbe1ba99",
+  "prompts": {},
+  "sessions": {
+    "s_a71ca3b06ed7b3": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "e3e0ac8e-7b50-4758-b1b1-81aa53ce3b22",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

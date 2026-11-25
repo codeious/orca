@@ -1,0 +1,19 @@
+research/droid-mission-execution-model.md
+  s_290ccab7507d11::t_7bff7d019f8677 1-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2a46b1d812b3a19ad9e6cacd94b404a459609ec4",
+  "prompts": {},
+  "sessions": {
+    "s_290ccab7507d11": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "de3a7dee-e410-4626-97d1-c43a982b74b2",
+        "model": "custom:Custom:-Grok-4.7-0"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

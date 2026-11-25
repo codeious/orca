@@ -1,0 +1,14 @@
+src/main/droid/droid-session-adapter.test.ts
+  h_476903bd8a47d9 184,189,192-195,199
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bbaa3e83d6955667a52ea918f6d583d7d93bb253",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

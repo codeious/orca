@@ -1,0 +1,19 @@
+config/tsconfig.cli.json
+  s_a57587060a50e5::t_9502a6deb4e8e9 236-239
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ef85c994aafa2f29944478ea97add93cf96fd071",
+  "prompts": {},
+  "sessions": {
+    "s_a57587060a50e5": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "fd4afa99-8ef7-4d49-9697-13345392d392",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

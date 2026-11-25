@@ -1,0 +1,91 @@
+src/main/droid/droid-adapter-rig.test-support.ts
+  s_3e2460b1afa01c::t_053197bf8d9493 1-222
+  s_91d04d84653459::t_b6466ee9e01e9e 1-222
+src/main/droid/droid-agent-definition.ts
+  s_3e2460b1afa01c::t_601d8fd01fbb69 2,26,28-29
+  s_8a8450ee44990e::t_0af1eafa84b227 2,26,28-29
+src/main/droid/droid-command-catalog.ts
+  s_3e2460b1afa01c::t_a963be8a804246 1-19
+  s_8a8450ee44990e::t_b39ce15d317764 1-19
+src/main/droid/droid-compaction.ts
+  s_3e2460b1afa01c::t_c00a2b865078c0 1-76
+  s_8a8450ee44990e::t_e6466bae910bd3 1-76
+src/main/droid/droid-fork-and-rewind.ts
+  s_3e2460b1afa01c::t_695760ce262de4 1-55
+  s_8a8450ee44990e::t_6d8c6d6dfa2c2e 1-55
+src/main/droid/droid-mcp-sign-in.ts
+  s_3e2460b1afa01c::t_7d4aa674fe2912 1-108
+  s_8a8450ee44990e::t_2dcda5adede870 1-108
+src/main/droid/droid-mcp.ts
+  s_3e2460b1afa01c::t_0f50a7c1e8cd35 1-179
+  s_8a8450ee44990e::t_88bd15dfc88d44 1-179
+src/main/droid/droid-recording.test-support.ts
+  s_3e2460b1afa01c::t_e46ef74580fadd 1-151
+  s_91d04d84653459::t_c4b653a2f39ce7 1-151
+src/main/droid/droid-service-command-error.ts
+  s_3e2460b1afa01c::t_9c2e064cdbc0f4 1-31
+  s_8a8450ee44990e::t_56e53f25f2fd5c 1-31
+src/main/droid/droid-service-command-types.ts
+  s_3e2460b1afa01c::t_490e379cc1325b 1-31
+  s_8a8450ee44990e::t_30b57e660ee8fa 1-31
+src/main/droid/droid-service-command.test.ts
+  s_3e2460b1afa01c::t_55ada18e05f445 1-116
+  s_91d04d84653459::t_0cb106fe6d261d 1-116
+src/main/droid/droid-service-command.ts
+  s_3e2460b1afa01c::t_95c92d8e1c51ee 1-102
+  s_8a8450ee44990e::t_581ae0d79163a6 1-102
+src/main/droid/droid-session-adapter.ts
+  s_3e2460b1afa01c::t_2943fe06ba81b0 19-23,83-91,99-131
+  s_8a8450ee44990e::t_1cf6d515bc7230 19-23,83-91,99-131
+src/main/droid/droid-session-commands.test.ts
+  s_3e2460b1afa01c::t_fdbb92a9374a49 1-79
+src/main/droid/droid-session.ts
+  s_3e2460b1afa01c::t_b42682701a1ac8 2,59,128,308
+  s_8a8450ee44990e::t_7f31f4279838cf 2,59,128,308
+src/main/droid/droid-skills.ts
+  s_3e2460b1afa01c::t_11ed0806b65693 1-55
+  s_8a8450ee44990e::t_5f620ec1ea6b4e 1-55
+src/main/droid/droid-text-command.ts
+  s_3e2460b1afa01c::t_131d4baf16ed98 1-58
+  s_8a8450ee44990e::t_56e5d5b45e9edd 1-58
+src/main/droid/fixtures/mcp.jsonl
+  s_3e2460b1afa01c::t_ac6f257bf44327 1-21
+  s_91d04d84653459::t_ce5bf34772f5df 1-21
+src/main/droid/fixtures/skills.jsonl
+  s_3e2460b1afa01c::t_1209d6541e7177 1-6
+  s_91d04d84653459::t_7e16dcdc5b787d 1-6
+src/main/ipc/external-http-url.ts
+  s_8a8450ee44990e::t_513b54e34d041b 1-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "eb634c984e8063aab78a95374c98c8de5316aa42",
+  "prompts": {},
+  "sessions": {
+    "s_3e2460b1afa01c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "a954d65b-e10c-408f-a022-ce2d95d891d7",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_8a8450ee44990e": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7caf459a-0a02-4270-b7eb-e042fc181ce6",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_91d04d84653459": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "7d883a4b-ed72-44f2-9cab-f2b829bfccac",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

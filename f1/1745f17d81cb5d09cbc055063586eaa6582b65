@@ -1,0 +1,46 @@
+research/droid-missions-launch-prompt.md
+  s_bc8da1d0468e42::t_fc16b99ab0d61b 55
+  s_bc8da1d0468e42::t_f225b669638b43 66
+  s_bc8da1d0468e42::t_0e6f843a41f0f1 68
+  s_bc8da1d0468e42::t_9b3e366b7db19e 1-54,56-65,67,69-74
+research/droid-missions-launch-prompt/probe/capture-crosscheck.sh
+  s_bc8da1d0468e42::t_35064200a9f237 1-24
+research/droid-missions-launch-prompt/probe/hook-log.py
+  s_bc8da1d0468e42::t_b7090d60d44891 1-97
+research/droid-missions-launch-prompt/probe/inspect-messages.py
+  s_bc8da1d0468e42::t_f53dbb9fbff67b 1-48
+research/droid-missions-launch-prompt/probe/inspect.py
+  s_bc8da1d0468e42::t_4fd1591e134ff4 1-41
+research/droid-missions-launch-prompt/probe/launch.py
+  s_bc8da1d0468e42::t_46731f9bd73d25 1-26
+research/droid-missions-launch-prompt/probe/make-home.sh
+  s_bc8da1d0468e42::t_99fc3e7461685f 1-19
+research/droid-missions-launch-prompt/probe/matrix.sh
+  s_bc8da1d0468e42::t_1e26f26e35c030 1-33
+research/droid-missions-launch-prompt/probe/pty_drive.py
+  s_bc8da1d0468e42::t_b1db5a85fadb40 1-154
+research/droid-missions-launch-prompt/probe/render_screen.py
+  s_bc8da1d0468e42::t_324f0f9528a1a5 1-17
+research/droid-missions-launch-prompt/probe/summarize.py
+  s_bc8da1d0468e42::t_44ed83fc3afdaa 1-51
+research/droid-missions-launch-prompt/results.jsonl
+  s_bc8da1d0468e42::t_3f2172e2f8c17f 1-9
+research/droid-missions-launch-prompt/screens.txt
+  s_bc8da1d0468e42::t_a08f265a77768a 1-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f11745f17d81cb5d09cbc055063586eaa6582b65",
+  "prompts": {},
+  "sessions": {
+    "s_bc8da1d0468e42": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "47144e7a-bdba-433e-8792-53c06a495a86",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

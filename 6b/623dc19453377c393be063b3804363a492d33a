@@ -1,0 +1,19 @@
+src/main/runtime/rpc/methods/structured-agent-session-droid-adoption-replay.test.ts
+  s_f87fd4e7a08936::t_b5c76876bcb555 143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6b623dc19453377c393be063b3804363a492d33a",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

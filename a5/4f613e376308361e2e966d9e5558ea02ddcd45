@@ -1,0 +1,22 @@
+src/shared/agent-resume-argv.ts
+  s_f87fd4e7a08936::t_09c2140adb78d1 83,92-100
+src/shared/tui-agent-fork-startup.test.ts
+  s_f87fd4e7a08936::t_45ea51e97cd2d5 8-24
+  s_f87fd4e7a08936::t_422eeeb75f43c0 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a54f613e376308361e2e966d9e5558ea02ddcd45",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

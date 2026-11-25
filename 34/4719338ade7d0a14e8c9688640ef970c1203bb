@@ -1,0 +1,26 @@
+src/shared/agent-hook-listener/providers/droid-sessions.ts
+  s_0451622378e9c8::t_c932733b6aa6a6 38-53
+  s_0451622378e9c8::t_4bc123f5511788 1
+src/main/agent-hooks/server/server-agent-presence.ts
+  s_0451622378e9c8::t_9466ea5e368875 28-30
+  s_0451622378e9c8::t_bc59b362153fc5 8
+src/wsl-guest/relay-agent-presence.ts
+  s_0451622378e9c8::t_59188a8d5682fc 72
+  s_0451622378e9c8::t_cd0a5729ef7ffe 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "344719338ade7d0a14e8c9688640ef970c1203bb",
+  "prompts": {},
+  "sessions": {
+    "s_0451622378e9c8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d035f68d-089c-477f-9b20-d144473a213c",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

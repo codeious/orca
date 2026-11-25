@@ -1,0 +1,29 @@
+src/main/acp/acp-dialects/cursor-dialect.ts
+  s_96673cf912c415::t_562fb96b478fc5 8,42,68-71,110-113,139
+src/main/acp/acp-dialects/opencode-dialect.ts
+  s_96673cf912c415::t_1c801abf705597 3,85
+src/main/acp/discovery/acp-listing-session-models.ts
+  s_96673cf912c415::t_e227b0d9993998 18,48
+src/main/acp/discovery/acp-model-catalog-probe.ts
+  s_96673cf912c415::t_9b74775238baa8 41,258,273
+src/main/acp/requests/acp-form-elicitation.ts
+  s_96673cf912c415::t_ab15aa9cb572c1 9,44-45,165-168
+src/main/acp/requests/acp-url-elicitation.ts
+  s_96673cf912c415::t_5718fdd683d747 16,51,81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "38aa4e160307fbcfbd9431ab9479bbc55c55a867",
+  "prompts": {},
+  "sessions": {
+    "s_96673cf912c415": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "4ae29918-15ea-41dd-9b44-817eecf4a4d4",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

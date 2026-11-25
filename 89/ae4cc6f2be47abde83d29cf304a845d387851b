@@ -1,0 +1,51 @@
+src/main/native-chat/agent-session-journal/journal-domain-rewind-cut.ts
+  s_7a3a75c75e164c::t_37f6814bc7fb31 16-22,54-59,61,70,72-73
+src/main/native-chat/agent-session-journal/journal-sql-rewind-command.ts
+  s_7a3a75c75e164c::t_122256222123a9 91,97-101
+src/main/native-chat/agent-session-journal/journal-sql-rewind.test-fixture.ts
+  s_d98921461d61e0::t_7727d1e64bdba0 22-25,91-92,115-116
+src/main/native-chat/agent-session-wire/providers/structured-agent-session-adapter.ts
+  s_7a3a75c75e164c::t_4401cfdc111d81 256-257
+src/main/native-chat/agent-session-wire/rewind/structured-agent-session-rewind.ts
+  s_7a3a75c75e164c::t_e034f1a04e17ed 51,53-55,65,129-133,259
+src/main/native-chat/agent-session-wire/rewind/structured-rewind-cut.ts
+  s_7a3a75c75e164c::t_02df9531dd1b70 18-19,24-34,65-66,73-77
+src/main/native-chat/agent-session-wire/rewind/structured-rewind-recovery.ts
+  s_7a3a75c75e164c::t_c6a832559544ed 18,25-26,67,81,131-132
+src/main/runtime/rpc/methods/structured-sessions/creation/droid-chat-reopen.test.ts
+  s_d98921461d61e0::t_7c4f5ab67409eb 1-45
+src/shared/agent-launch/startup/agent-resume-argv.ts
+  s_7a3a75c75e164c::t_55692df28d814b 99
+src/shared/agent-session/lifecycle/launch/agent-session-setup-commands.ts
+  s_7a3a75c75e164c::t_d14deab2538367 35
+src/shared/agent-session/lifecycle/rewind/agent-session-rewind.ts
+  s_7a3a75c75e164c::t_129be2b58e856d 113
+src/shared/agent-session/view/structured-agent-cli-conversation-adoption.ts
+  s_7a3a75c75e164c::t_063e86e958f552 6
+src/shared/native-chat/native-chat-agent-profiles.ts
+  s_7a3a75c75e164c::t_895ca3dbefa7e8 55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "89ae4cc6f2be47abde83d29cf304a845d387851b",
+  "prompts": {},
+  "sessions": {
+    "s_7a3a75c75e164c": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5d5c18c1-6928-4660-b797-f1dff9254b1d",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_d98921461d61e0": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "de1bc950-75d7-4fa8-94d4-60268c9ca201",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

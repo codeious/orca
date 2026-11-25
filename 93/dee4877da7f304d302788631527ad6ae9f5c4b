@@ -1,0 +1,21 @@
+src/main/droid/droid-session-option-descriptors.test.ts
+  s_47f783ef5b6cbd::t_7ff050964db1f7 11-48,77-87,114
+src/main/native-chat/agent-session-wire/structured-agent-session-option-intent.test.ts
+  s_47f783ef5b6cbd::t_1c59da06b83fc1 1-120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "93dee4877da7f304d302788631527ad6ae9f5c4b",
+  "prompts": {},
+  "sessions": {
+    "s_47f783ef5b6cbd": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "403d47c9-7e7b-40ae-a554-d47c903eb653",
+        "model": "custom:gpt-6.1-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

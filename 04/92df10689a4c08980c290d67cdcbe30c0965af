@@ -1,0 +1,30 @@
+src/renderer/src/components/right-sidebar/ai-vault-session-resume-in-chat.ts
+  s_f87fd4e7a08936::t_353b1370f7f778 37-43
+  s_f87fd4e7a08936::t_c547a331c68f18 16
+src/renderer/src/components/right-sidebar/use-ai-vault-row-resume-in-chat.ts
+  s_f87fd4e7a08936::t_e19442cea49e45 2-3,6,17,40-45,47-59
+src/renderer/src/components/right-sidebar/use-ai-vault-row-resume-in-chat.test.ts
+  s_f87fd4e7a08936::t_a8297cf8f6e64b 52-58,60
+  s_f87fd4e7a08936::t_f275c6d90068b8 239-248,255-256
+  s_f87fd4e7a08936::t_6daec6b595e76d 174-182
+  s_f87fd4e7a08936::t_f9160860e8d5dc 249-254
+  s_f87fd4e7a08936::t_e7d9b6acb41f03 2,4,6
+  s_f87fd4e7a08936::t_e014c7f77d5a22 141-173,183-230,237-238,257-267
+  s_f87fd4e7a08936::t_9c443c69143485 231-236
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0492df10689a4c08980c290d67cdcbe30c0965af",
+  "prompts": {},
+  "sessions": {
+    "s_f87fd4e7a08936": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "221855da-e4c9-4d02-9ef1-733b06173844",
+        "model": "custom:claude-sonnet-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
