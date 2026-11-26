@@ -1,0 +1,19 @@
+config/scripts/test-runtime/environment/vitest-real-agent-home-write-guard.ts
+  s_ebe1e6c490ddf8::t_c7014e46d53380 19-25,34-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fa1715fc876329d5dfa4f5b06c6f5af183583c21",
+  "prompts": {},
+  "sessions": {
+    "s_ebe1e6c490ddf8": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "2be24091-3113-43c1-8649-3fa33fbf0b1d",
+        "model": "custom:gpt-6.2-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
