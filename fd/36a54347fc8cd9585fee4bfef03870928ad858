@@ -1,0 +1,18 @@
+src/main/github/client/fetch/get-work-item.ts
+  h_476903bd8a47d9 188,197
+src/main/github/work-items/work-item-details-repository.test.ts
+  h_476903bd8a47d9 1-65
+src/main/github/work-items/work-item-details.ts
+  h_476903bd8a47d9 127-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fd36a54347fc8cd9585fee4bfef03870928ad858",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

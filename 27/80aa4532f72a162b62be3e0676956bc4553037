@@ -1,0 +1,19 @@
+src/shared/new-workspace/github-links.test.ts
+  s_c7fa4d4122a83e::t_8799a5d2ca4710 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2780aa4532f72a162b62be3e0676956bc4553037",
+  "prompts": {},
+  "sessions": {
+    "s_c7fa4d4122a83e": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "9a17dc27-66cf-47b3-a6b0-2bfe6fd43c3d",
+        "model": "custom:gpt-6.2-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

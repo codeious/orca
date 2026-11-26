@@ -1,0 +1,14 @@
+.factory/matt-flow.json
+  h_476903bd8a47d9 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1f59304483cc2978bd924d04dc7b11081f2b3437",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

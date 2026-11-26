@@ -1,0 +1,14 @@
+src/shared/rpc-contract/projects/repo-update-params.test.ts
+  h_476903bd8a47d9 1-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "14c00975756aac3b0c6ada106645221d09be5590",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}

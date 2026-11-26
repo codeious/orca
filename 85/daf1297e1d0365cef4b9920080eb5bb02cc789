@@ -1,0 +1,25 @@
+src/renderer/src/components/sidebar/workspace-card/review/WorktreeCardTaskDetailSection.tsx
+  s_cc43cdcbe5520f::t_c87e72b43affbd 5,11-12,37,43-49,154-155,164-165,174,186-217
+src/renderer/src/components/sidebar/workspace-card/review/workspace-attachment-source-label.ts
+  s_cc43cdcbe5520f::t_fdbd2db8d53140 2-7,12-15,48-73,105
+src/shared/github/repositories/github-issue-reference.test.ts
+  s_cc43cdcbe5520f::t_3bdb9e653a6945 1-87
+src/shared/github/repositories/github-issue-reference.ts
+  s_cc43cdcbe5520f::t_cce96b35dab6fd 1-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "85daf1297e1d0365cef4b9920080eb5bb02cc789",
+  "prompts": {},
+  "sessions": {
+    "s_cc43cdcbe5520f": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "90544709-bfd0-44a9-9588-fe46b8dd012f",
+        "model": "custom:gpt-6.2-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

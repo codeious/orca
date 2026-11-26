@@ -1,0 +1,29 @@
+src/renderer/src/lib/work-items/github/smart-github-submit.ts
+  s_1cbb3c6e69ec0b::t_c727acff4aa0d6 11,13-18,28,33,58,69,151,153,182-183,189-190,207-249
+src/shared/github/markdown/github-reference-links.ts
+  s_146fe162b20e72::t_4754b9cd6f2d28 23,25,28-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "99c22cd914f67bcf7e055512dca5630afe26b501",
+  "prompts": {},
+  "sessions": {
+    "s_146fe162b20e72": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5b108243-dc52-431c-ab07-416abc2ff20a",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_1cbb3c6e69ec0b": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "d03a4c89-4d99-4e83-ac85-122e37615b02",
+        "model": "custom:gpt-6.2-sol"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}

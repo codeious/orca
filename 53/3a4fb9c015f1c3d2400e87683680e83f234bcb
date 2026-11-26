@@ -1,0 +1,14 @@
+src/renderer/src/components/settings/repository/RepositoryGitHubIssueSection.tsx
+  h_476903bd8a47d9 30-58,65,92-95,98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "533a4fb9c015f1c3d2400e87683680e83f234bcb",
+  "prompts": {},
+  "humans": {
+    "h_476903bd8a47d9": {
+      "author": "noter <patryk@codeious.io>"
+    }
+  }
+}
