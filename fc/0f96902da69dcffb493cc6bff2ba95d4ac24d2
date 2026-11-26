@@ -1,0 +1,39 @@
+src/main/droid/hook-service.ts
+  s_ad00747fcb93b9::t_717049ade988d4 31,40,160
+src/main/droid/hook-service.test.ts
+  s_9915298ad8a882::t_5afb3bc44d0295 1,3,6,8,13,44-45,46-47,54-56,58-59,105,108,113-114,119,124-125,176-177,218
+config/main-blocking-helper-baseline.txt
+  s_eb67de07542299::t_4d0537da2938be 1516,1523-1525
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fc0f96902da69dcffb493cc6bff2ba95d4ac24d2",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_ad00747fcb93b9": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "76dd52ab-a5b9-4faa-8d3f-2f25a389af4b",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_eb67de07542299": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5050d015-16f4-493e-a0ee-4c8343d5e4eb",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
