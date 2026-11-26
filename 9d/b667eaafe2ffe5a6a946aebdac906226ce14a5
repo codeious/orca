@@ -1,0 +1,65 @@
+src/wsl-guest/agent-hooks/server/agent-hook-server.ts
+  s_9915298ad8a882::t_d78e91297b46d5 173-174
+src/shared/agent-hook-listener/providers/droid/droid-lease-expiry.ts
+  s_9915298ad8a882::t_9cbf2654d65d3a 1-31
+src/shared/__fixtures__/droid-subagent-hooks.meta.json
+  s_9915298ad8a882::t_0ee72c8f72693a 1-12
+src/shared/agent-hook-listener/hook-normalization-policy.ts
+  s_9915298ad8a882::t_25bc4b2ef8a4ce 1-45
+config/main-blocking-helper-baseline.txt
+  s_eb67de07542299::t_4d0537da2938be 1516,1523-1525
+src/shared/agent-hook-listener/state/provider-hook-state-slots.ts
+  s_9915298ad8a882::t_85d3febbf37407 41-55
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-driver.test-support.ts
+  s_9915298ad8a882::t_ce40340a0ecd9f 1-117
+src/shared/agent-hook-listener/provider-hook-session.ts
+  s_9915298ad8a882::t_28780f5d8a25b9 1-59
+src/shared/agent-hook-listener/provider-dispatch.ts
+  s_9915298ad8a882::t_d222cbfbbf2c28 38,65,68-81
+src/shared/agent-hook-listener/normalization/agent-hook-listener-droid-ownership.test.ts
+  s_9915298ad8a882::t_7d812b2854d984 1-89
+src/shared/agent-hook-listener/providers/droid/droid-events.ts
+  s_9915298ad8a882::t_d414aa7027d58e 1,4-5,8,13-23,31-110,117-120,122-141,143,152,162,164,174-190
+src/shared/agent-hook-listener/providers/droid/droid-transcript-origin.ts
+  s_9915298ad8a882::t_aaab679b37565d 1-17
+src/shared/agent-hook-listener/leases/hook-lease-expiry-timers.ts
+  s_9915298ad8a882::t_f522ee16d50f6b 4,8
+src/shared/__fixtures__/droid-subagent-hooks.jsonl
+  s_9915298ad8a882::t_4ef0209e9b3d17 1-37
+src/shared/agent-hook-listener/pane-provider-session.ts
+  s_9915298ad8a882::t_06a9767a8d6fe9 16,74-82,255-256
+src/shared/agent-hook-listener/normalization/hook-prompt-identity.ts
+  s_9915298ad8a882::t_0dbc3f3de259f6 1-23
+src/shared/agent-hook-listener/normalization/normalize-hook-payload.ts
+  s_9915298ad8a882::t_b0350b585697ae 6-10,19,42,113-117,219-239,249-255,287,307
+src/wsl-guest/agent-hooks/results/agent-hook-result-retry-scheduler.ts
+  s_9915298ad8a882::t_acdc765d729305 28,104-107
+src/shared/agent-hook-listener/providers/droid/droid-probe-log-replay.test-fixture.ts
+  s_9915298ad8a882::t_e5749f4fb19f2f 1-141
+src/shared/agent-hook-listener/providers/droid/droid-subagent-hooks.test.ts
+  s_9915298ad8a882::t_4ad818359d32f9 8-9,42-49,82-85,93-102,146-147,155,178-181,183-184,187,189,203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9db667eaafe2ffe5a6a946aebdac906226ce14a5",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    },
+    "s_eb67de07542299": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "5050d015-16f4-493e-a0ee-4c8343d5e4eb",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
