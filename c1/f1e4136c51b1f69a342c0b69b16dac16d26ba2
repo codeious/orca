@@ -1,0 +1,39 @@
+src/wsl-guest/agent-hooks/server/agent-hook-server.ts
+  s_9915298ad8a882::t_cf7b0598d3691c 244
+src/shared/agent-hook-listener/pane-state-claims.ts
+  s_9915298ad8a882::t_cb38ebc9ed1463 6
+src/shared/agent-hook-listener/providers/claude/background-tasks/claude-owed-notification-expiry-timers.ts
+  s_9915298ad8a882::t_24dd78aeb1ecf9 8,10-12,17-26,28-30,32-34,37,41,43
+src/shared/agent-hook-listener/state/provider-hook-state-slots.ts
+  s_9915298ad8a882::t_a24459171dd016 1-40
+src/wsl-guest/agent-hooks/results/agent-hook-result-retry-scheduler.ts
+  s_9915298ad8a882::t_6c87e9f5204742 26,60,76,91,94-96
+src/shared/agent-hook-listener/leases/hook-lease-expiry-timers.ts
+  s_9915298ad8a882::t_e35c41caa2f386 1-9
+src/main/agent-hooks/server/server-cleanup.ts
+  s_9915298ad8a882::t_f296bb40b868cb 272-273
+src/main/agent-hooks/server/server-lifecycle.ts
+  s_9915298ad8a882::t_1398575b13b953 263
+src/shared/agent-hook-listener/leases/agent-lease-expiry-timers.ts
+  s_9915298ad8a882::t_0fa18e3f54ddc5 1-69
+src/wsl-guest/agent-hooks/server/agent-hook-request.ts
+  s_9915298ad8a882::t_6f3bfa28e83f55 141
+src/main/agent-hooks/server/server-status-row-mutation.ts
+  s_9915298ad8a882::t_13553b182dfb40 8,32,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c1f1e4136c51b1f69a342c0b69b16dac16d26ba2",
+  "prompts": {},
+  "sessions": {
+    "s_9915298ad8a882": {
+      "agent_id": {
+        "tool": "droid",
+        "id": "ad8da964-b03d-40d2-990c-1888065f3678",
+        "model": "custom:claude-opus-5-5"
+      },
+      "human_author": "noter <patryk@codeious.io>"
+    }
+  }
+}
